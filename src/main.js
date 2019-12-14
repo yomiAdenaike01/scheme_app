@@ -2,8 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-
-Vue.config.productionTip = false
+import Transitions from 'vue2-transitions'
+import './plugins/element.js'
+Vue.use(Transitions)
 
 new Vue({
   router,
