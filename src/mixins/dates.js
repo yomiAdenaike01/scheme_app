@@ -1,9 +1,12 @@
 import moment from 'moment'
 export default {
   methods: {
+    toISO(date) {
+      return moment(date).toISOString()
+    },
     format(date, format) {
       const _date = moment(date).format(format)
-      console.log(_date, date)
+
       return _date
     }
   }

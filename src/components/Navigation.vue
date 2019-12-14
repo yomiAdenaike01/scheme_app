@@ -19,6 +19,10 @@ export default {
           path: "/schedule"
         },
         {
+          name: "Reports",
+          path: "/reports"
+        },
+        {
           name: "Messenger",
           path: "/messenger"
         },

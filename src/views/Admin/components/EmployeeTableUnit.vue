@@ -1,11 +1,11 @@
 <template>
   <el-row>
-    <el-col :span="1">
+    <el-col :span="3">
       <el-avatar icon="el-icon-user-solid"></el-avatar>
     </el-col>
     <el-col :span="6">
-      <strong class="black">{{ data.name }}</strong
-      ><br />
+      <strong class="black">{{ data.name }}</strong>
+      <br />
       <span class="position">{{ data.position }}</span>
     </el-col>
   </el-row>
@@ -13,11 +13,11 @@
 
 <script>
 export default {
-  name: 'EmployeeTableUnit',
+  name: "EmployeeTableUnit",
   props: {
     data: Object
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
 <template>
-  <el-row>
+  <el-row v-loading="loading">
     <el-col :span="3">
       <el-menu class="sidebar">
         <el-menu-item v-for="item in filterConfig" :key="item">
@@ -61,12 +61,12 @@
             <EmployeeTableUnit :data="scope.row" />
           </template>
         </el-table-column>
+        <el-table-column></el-table-column>
       </el-table>
     </el-col>
 
     <!-- TODO: ADD REASON FOR TIME OFF ADD ATTACHMENT ,FOR SICK NOTES ,ADD VALIDATION -->
     <el-dialog
-      v-loading="dialogLoading"
       custom-class="event_dialog"
       :title="getIsAdmin ? 'Create Event' : 'Create Request'"
       :visible.sync="modals.createEvent"
@@ -86,7 +86,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Shift or Holiday">
+        <el-form-item label="Request Type">
           <el-select v-model="eventData.eventType" :placeholder="getIsAdmin ? '' : 'Holiday'">
             <el-option label="Shift" value="1" v-if="getIsAdmin" />
             <el-option label="Time-Off" value="4" />
@@ -138,7 +138,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" round @click="createEvent">Publish</el-button>
+        <el-button round type="primary" @click="createEvent">Publish</el-button>
         <el-button round @click="modals.createEvent = false">Cancel</el-button>
       </span>
     </el-dialog>
@@ -156,13 +156,13 @@ export default {
     return {
       repeat_toggle: false,
       save_as_template: false,
-      dialogLoading: true,
+      loading: false,
 
       filters: {
-        shifts: "",
+        employee: "",
         abscences: "",
-        assignments: "",
-        preferences: ""
+        holidays: "",
+        late: ""
       },
       modals: {
         createEvent: false,
@@ -202,7 +202,6 @@ export default {
           date: "2016-05-04",
           name: "Tom",
           position: "Locumn",
-
           approved: false
         },
         {
@@ -234,18 +233,14 @@ export default {
             trigger: "change"
           }
         ]
-      }
+      },
+      success: false
     };
   },
   created() {
     this.getTeam();
   },
-  mounted() {
-    // const vuecal = this.$refs.vuecal
-    // this.currentView = vuecal.defaultView
-    // this.startDate = vuecal.view.startDate
-    // this.endDate = vuecal.view.endDate
-  },
+
   computed: {
     ...mapState(["team"]),
     ...mapGetters(["getIsAdmin"]),
@@ -276,9 +271,50 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["getTeam"]),
+    ...mapActions(["getTeam", "request"]),
     createEvent() {
-      console.log(this.eventData);
+      this.loading = true;
+      this.modals.createEvent = false;
+      const date = { start: this.eventData.start, end: this.eventData.end };
+      const startTime = this.format(date.start.time, "HH:mm:ss");
+      const endTime = this.format(date.end.time, "HH:mm:ss");
+      const startDate = this.format(date.start.date, "MM/DD/YYYY");
+      const endDate = this.format(date.end.date, "MM/DD/YYYY");
+
+      const completeStartDate = this.toISO(`${startDate} ${startTime}`);
+      const completeEndDate = this.toISO(`${endDate} ${endTime}`);
+
+      const payload = {
+        url: "/shifts/create",
+        method: "POST",
+        data: {
+          startDate: completeStartDate,
+          endDate: completeEndDate,
+          shift_type: this.eventData.eventType
+        }
+      };
+      if (this.eventData.assignTo) {
+        payload.assigned_to = this.eventData.assignTo;
+      }
+      this.request(payload)
+        .then(response => {
+          const message = this.getIsAdmin
+            ? "Event successfully created"
+            : "Request successfully created";
+          this.$notify({
+            title: "Success",
+            message: message,
+            type: "success"
+          });
+          this.loading = false;
+        })
+        .catch(error => {
+          this.$notify.error({
+            title: "Error",
+            message: "Error when creating event, please try again later"
+          });
+          this.loading = false;
+        });
     },
     displayModals(command) {
       console.log(command);
