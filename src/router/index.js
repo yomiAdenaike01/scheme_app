@@ -4,6 +4,9 @@ import store from './../store/index'
 const login = () => import('@/views/User/Login')
 const dashboard = () => import('@/views/Admin/Dashboard')
 const schedule = () => import('@/views/Admin/Schedule')
+const messenger = () => import('@/views/Comms/Messenger')
+const reports = () => import('@/views/Admin/Reports')
+const staff = () => import('@/views/Admin/Staff')
 
 Vue.use(VueRouter)
 
@@ -28,6 +31,33 @@ const routes = [
     component: schedule,
     meta: {
       title: 'schedule',
+      authRequired: true
+    }
+  },
+  {
+    path: '/messenger',
+    name: 'messenger',
+    component: messenger,
+    meta: {
+      title: 'messenger',
+      authRequired: true
+    }
+  },
+  {
+    path: '/reports',
+    name: 'reports',
+    component: reports,
+    meta: {
+      title: 'reports',
+      authRequired: true
+    }
+  },
+  {
+    path: '/staff',
+    name: 'staff',
+    component: staff,
+    meta: {
+      title: 'staff',
       authRequired: true
     }
   }
