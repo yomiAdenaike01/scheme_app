@@ -21,7 +21,7 @@ const storage = {
 export default new Vuex.Store({
   state: {
     token: storage.get('token'),
-    currentUser: storage.get('currentUser'),
+    currentUser: JSON.parse(storage.get('currentUser')),
     team: [],
     shifts: [],
     requests: [],
@@ -40,10 +40,20 @@ export default new Vuex.Store({
       storage.set('currentUser', payload.user)
     },
     UPDATE_MESSAGES(state) {},
-    UPDATE_TRANSCRIPTS(state) {},
+    UPDATE_TRANSCRIPTS(state, payload) {
+      if (payload.type == 'all') {
+        state.transcripts = payload.data
+      } else {
+        state.transcripts.push(payload)
+      }
+    },
     UPDATE_SHIFTS(state) {},
     UPDATE_REQUESTS(state) {},
     UPDATE_TEAM(state, payload) {
+      const index = payload.findIndex(x => {
+        return x._id == state.currentUser._id
+      })
+      payload.splice(index, 1)
       state.team = payload
     }
   },
@@ -53,6 +63,26 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    getTranscripts(context) {
+      const anyTranscripts = context.state.transcripts.length <= 0
+      if (anyTranscripts) {
+        const payload = {
+          method: 'GET',
+          url: '/messenger/transcripts'
+        }
+        context
+          .dispatch('request', payload)
+          .then(response => {
+            context.commit('UPDATE_TRANSCRIPTS', {
+              data: response,
+              type: 'all'
+            })
+          })
+          .catch(error => {
+            return error
+          })
+      }
+    },
     getTeam(context) {
       if (context.state.team.length <= 0) {
         const payload = {
