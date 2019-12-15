@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-loading="getContentLoaded">
     <Navigation />
     <keep-alive>
       <router-view></router-view>
@@ -8,8 +8,21 @@
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "app",
+
+  computed: {
+    ...mapGetters(["getContentLoaded"])
+  },
+  created() {
+    this.getTeam();
+    this.getTranscripts();
+    this.getShifts();
+  },
+  methods: {
+    ...mapActions(["getTeam", "getTranscripts", "getShifts"])
+  },
   components: {
     Navigation: () => import("@/components/Navigation")
   }

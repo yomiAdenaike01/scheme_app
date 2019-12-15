@@ -58,11 +58,32 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    getConentLoaded(state) {
+      return (
+        state.shifts.length > 0 &&
+        state.transcripts.length > 0 &&
+        state.team.length > 0
+      )
+    },
     getIsAdmin(state) {
       return state.currentUser.employee_type == 1
     }
   },
   actions: {
+    getShifts() {
+      const payload = {
+        method: 'GET',
+        url: '/shifts/all'
+      }
+      context
+        .dispatch('request', payload)
+        .then(response => {
+          context.commit('UPDATE_SHIFTS', response)
+        })
+        .catch(error => {
+          return errror
+        })
+    },
     getTranscripts(context) {
       const anyTranscripts = context.state.transcripts.length <= 0
       if (anyTranscripts) {

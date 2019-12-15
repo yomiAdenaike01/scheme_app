@@ -42,15 +42,12 @@ export default {
       loading: false
     };
   },
-  created() {
-    this.getTeam();
-    this.getTranscripts();
-  },
+
   computed: {
     ...mapState(["transcripts", "team"])
   },
   methods: {
-    ...mapActions(["request", "getTeam", "getTranscripts"]),
+    ...mapActions(["request"]),
     getMessages(event) {
       const message = this.message;
       message.transcript_id = event.id;
