@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-col :span="5" class="p-4">
+    <el-col :span="5">
       <PreviousChat
         v-for="transcript in transcripts"
         :transcriptData="transcript"
@@ -8,9 +8,12 @@
         @chatData="getMessages"
       />
     </el-col>
-    <el-col :span="17" style="rgb(250,250,250)">
-      <Message v-for="message in messages" :key="message._id" :message="message" />
-      <!-- <el-row type="flex" justify="center" align="center">
+    <el-container>
+      <el-main style="height:10%">
+        <Message v-for="message in messages" :key="message._id" :message="message" />
+      </el-main>
+    </el-container>
+    <!-- <el-row type="flex" justify="center" align="center">
         <el-col :span="20">
           <el-input placeholder="Message Content" v-model="message.content" />
         </el-col>
@@ -20,8 +23,7 @@
           @click="sendMessage"
           class="ml-3"
         />
-      </el-row>-->
-    </el-col>
+    </el-row>-->
   </el-row>
 </template>
 

@@ -67,7 +67,11 @@
     </el-container>
     <el-container>
       <el-main>
-        <el-table :data="team"></el-table>
+        <el-table :data="returnTeam">
+          <el-table-column prop="name" label="Name"></el-table-column>
+
+          <el-table-column prop="employee_type" label="Role"></el-table-column>
+        </el-table>
       </el-main>
     </el-container>
   </div>
@@ -85,6 +89,28 @@ export default {
   },
   computed: {
     ...mapState(["team"]),
+    returnTeam() {
+      let newTeam = [...this.team];
+      const len = this.team.length;
+      for (let i = 0; i < len; i++) {
+        const member = newTeam[i];
+        switch (member.employee_type) {
+          case 1: {
+            member.employee_type = "Admin";
+            break;
+          }
+          case 2: {
+            member.employee_type = "Staff";
+            break;
+          }
+          case 3: {
+            member.employee_type = "Locumn";
+            break;
+          }
+        }
+      }
+      return newTeam;
+    },
     ...mapGetters(["getIsAdmin"])
   }
 };

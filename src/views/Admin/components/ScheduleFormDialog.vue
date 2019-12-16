@@ -1,0 +1,147 @@
+<template>
+  <!-- TODO: ADD REASON FOR TIME OFF ADD ATTACHMENT ,FOR SICK NOTES ,ADD VALIDATION -->
+
+  <el-dialog
+    custom-class="event_dialog"
+    :title="getIsAdmin ? 'Create Event' : 'Create Request'"
+    :visible.sync="view"
+  >
+    <el-form status-icon :rules="validationData" label-position="left" :model="eventData">
+      <el-form-item label="Employee" v-if="getIsAdmin">
+        <el-select
+          v-model="eventData.assignTo"
+          placeholder="Please select a team member you want to assign this to"
+        >
+          <el-option
+            v-for="member in team"
+            :key="member._id"
+            :label="member.name"
+            :value="member._id"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Request Type">
+        <el-select v-model="eventData.eventType" :placeholder="getIsAdmin ? '' : 'Holiday'">
+          <el-option label="Shift" value="1" v-if="getIsAdmin" />
+          <el-option label="Time-Off" value="4" />
+          <el-option label="Holiday" value="3" />
+          <el-option label="Sick Leave" value="5" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item prop="date1" label="Start Date ">
+        <el-date-picker type="date" placeholder="Pick a date" v-model="eventData.start.date"></el-date-picker>
+      </el-form-item>
+      <el-form-item prop="date2" label="Start Time">
+        <el-time-picker placeholder="Pick a time" v-model="eventData.start.time"></el-time-picker>
+      </el-form-item>
+      <el-form-item prop="date1" label="End Date">
+        <el-date-picker type="date" placeholder="Pick a date" v-model="eventData.end.date"></el-date-picker>
+      </el-form-item>
+      <el-form-item prop="date2" label="End Time">
+        <el-time-picker placeholder="Pick a time" v-model="eventData.end.time"></el-time-picker>
+      </el-form-item>
+      <el-form-item
+        label="Repeat Days"
+        class="p-4"
+        style="background:rgb(253,253,253); border-radius:10px"
+      >
+        <el-switch v-model="repeat_toggle" />
+        <div v-if="repeat_toggle">
+          <Title subtitle="Select the days of week that you wish to repeat this event for." />
+          <el-checkbox-group v-model="eventData.repeat_days">
+            <el-checkbox-button
+              v-for="(btn,index) in repeatDaysConfig"
+              :key="btn"
+              :label="index"
+            >{{btn}}</el-checkbox-button>
+          </el-checkbox-group>
+        </div>
+      </el-form-item>
+
+      <el-form-item
+        label="Save As Template"
+        class="p-4"
+        style="background:rgb(253,253,253); border-radius:10px"
+      >
+        <el-switch v-model="save_as_template" />
+        <div v-if="save_as_template">
+          <Title subtitle="Your templates will be stored so that you can use them later." />
+          <el-input placeholder="E.g Yearly Time Off" v-model="eventData.template_name" />
+        </div>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button round type="primary" @click="$emit('createEvent',eventData)">Publish</el-button>
+      <el-button round @click="$emit('toggle',false)">Cancel</el-button>
+    </span>
+  </el-dialog>
+</template>
+
+<script>
+import { mapGetters, mapState } from "vuex";
+export default {
+  name: "EventFormDialog",
+  data() {
+    return {
+      repeat_toggle: false,
+      save_as_template: false,
+      eventData: {
+        start: {
+          time: "",
+          date: ""
+        },
+        assignTo: "",
+        end: {
+          time: "",
+          date: ""
+        },
+        loading: false,
+        eventType: "3",
+        repeat_days: [0]
+      },
+      validationData: {
+        startDate: [
+          {
+            type: "date",
+            required: true,
+            message: "Please pick a date",
+            trigger: "change"
+          }
+        ],
+        endDate: [
+          {
+            type: "date",
+            required: true,
+            message: "Please pick a date",
+            trigger: "change"
+          }
+        ]
+      },
+      success: false
+    };
+  },
+  props: {
+    display: Boolean
+  },
+  computed: {
+    ...mapGetters(["getIsAdmin"]),
+    ...mapState(["team"]),
+    view: {
+      get() {
+        return this.display;
+      },
+      set(toggle) {
+        this.$emit("toggle", toggle);
+      }
+    },
+    repeatDaysConfig() {
+      return ["Mon", "Tue", "Wed", "Thurs", "Fri", "Sat", "Sun"];
+    }
+  }
+};
+</script>
+
+<style>
+</style>

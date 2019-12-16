@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: "EmployeeTableUnit",
+  name: "ScheduleTableUnit",
   props: {
     data: Object
   }

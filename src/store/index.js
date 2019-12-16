@@ -47,10 +47,13 @@ export default new Vuex.Store({
         state.transcripts.push(payload)
       }
     },
-    UPDATE_SHIFTS(state) {},
+    UPDATE_SHIFTS(state, payload) {
+      state.shifts = payload
+    },
     UPDATE_REQUESTS(state) {},
     UPDATE_TEAM(state, payload) {
       const index = payload.findIndex(x => {
+        delete x.password
         return x._id == state.currentUser._id
       })
       payload.splice(index, 1)
@@ -58,11 +61,11 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    getConentLoaded(state) {
+    getContentLoaded(state) {
       return (
-        state.shifts.length > 0 &&
-        state.transcripts.length > 0 &&
-        state.team.length > 0
+        state.shifts.length <= 0 &&
+        state.transcripts.length <= 0 &&
+        state.team.length <= 0
       )
     },
     getIsAdmin(state) {
@@ -70,7 +73,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    getShifts() {
+    getShifts(context) {
       const payload = {
         method: 'GET',
         url: '/shifts/all'

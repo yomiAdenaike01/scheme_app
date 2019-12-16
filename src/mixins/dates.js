@@ -8,6 +8,9 @@ export default {
       const _date = moment(date).format(format)
 
       return _date
+    },
+    calendar(date) {
+      return moment(date).calendar()
     }
   }
 }

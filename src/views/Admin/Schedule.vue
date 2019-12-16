@@ -34,114 +34,24 @@
           <el-dropdown @command="displayModals">
             <el-button type="primary" round>Actions</el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="add_event">Create Request</el-dropdown-item>
-              <el-dropdown-item command="edit_event">Update / Remove Request</el-dropdown-item>
+              <el-dropdown-item
+                command="add_event"
+              >{{getIsAdmin ? 'Create Event' : 'Create Request' }}</el-dropdown-item>
+              <el-dropdown-item
+                command="edit_event"
+              >{{getIsAdmin ? 'Update / Remove Event' : 'Update / Remove Request'}}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
       </el-row>
-      <!-- <vue-cal
-        editable-events
-        hide-view-selector
-        ref="vuecal"
-        default-view="week"
-        :events="events"
-      >
-        <template v-slot:title="{ title, view }">
-          <span v-if="view.id == 'week' || view.id == 'month'"
-            >{{ format(view.startDate, dateFormat) }} -
-            {{ format(view.endDate, dateFormat) }}</span
-          >
-          <span v-else>{{ format(view.startDate, dateFormat) }}</span>
-        </template>
-      </vue-cal>-->
-      <el-table :data="tableData" border>
-        <el-table-column>
-          <template slot-scope="scope">
-            <EmployeeTableUnit :data="scope.row" />
-          </template>
-        </el-table-column>
-        <el-table-column></el-table-column>
-      </el-table>
+      <ScheduleTable :tableData="tableData" />
     </el-col>
 
-    <!-- TODO: ADD REASON FOR TIME OFF ADD ATTACHMENT ,FOR SICK NOTES ,ADD VALIDATION -->
-    <el-dialog
-      custom-class="event_dialog"
-      :title="getIsAdmin ? 'Create Event' : 'Create Request'"
-      :visible.sync="modals.createEvent"
-    >
-      <el-form status-icon :rules="validationData" label-position="left" :model="eventData">
-        <el-form-item label="Employee" v-if="getIsAdmin">
-          <el-select
-            v-model="eventData.assignTo"
-            placeholder="Please select a team member you want to assign this to"
-          >
-            <el-option
-              v-for="member in team"
-              :key="member._id"
-              :label="member.name"
-              :value="member._id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="Request Type">
-          <el-select v-model="eventData.eventType" :placeholder="getIsAdmin ? '' : 'Holiday'">
-            <el-option label="Shift" value="1" v-if="getIsAdmin" />
-            <el-option label="Time-Off" value="4" />
-            <el-option label="Holiday" value="3" />
-            <el-option label="Sick Leave" value="5" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item prop="date1" label="Start Date ">
-          <el-date-picker type="date" placeholder="Pick a date" v-model="eventData.start.date"></el-date-picker>
-        </el-form-item>
-        <el-form-item prop="date2" label="Start Time">
-          <el-time-picker placeholder="Pick a time" v-model="eventData.start.time"></el-time-picker>
-        </el-form-item>
-        <el-form-item prop="date1" label="End Date">
-          <el-date-picker type="date" placeholder="Pick a date" v-model="eventData.end.date"></el-date-picker>
-        </el-form-item>
-        <el-form-item prop="date2" label="End Time">
-          <el-time-picker placeholder="Pick a time" v-model="eventData.end.time"></el-time-picker>
-        </el-form-item>
-        <el-form-item
-          label="Repeat Days"
-          class="p-4"
-          style="background:rgb(253,253,253); border-radius:10px"
-        >
-          <el-switch v-model="repeat_toggle" />
-          <div v-if="repeat_toggle">
-            <Title subtitle="Select the days of week that you wish to repeat this event for." />
-            <el-checkbox-group v-model="eventData.repeat_days">
-              <el-checkbox-button
-                v-for="(btn,index) in repeatDaysConfig"
-                :key="btn"
-                :label="index"
-              >{{btn}}</el-checkbox-button>
-            </el-checkbox-group>
-          </div>
-        </el-form-item>
-
-        <el-form-item
-          label="Save As Template"
-          class="p-4"
-          style="background:rgb(253,253,253); border-radius:10px"
-        >
-          <el-switch v-model="save_as_template" />
-          <div v-if="save_as_template">
-            <Title subtitle="Your templates will be stored so that you can use them later." />
-            <el-input placeholder="E.g Yearly Time Off" v-model="eventData.template_name" />
-          </div>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button round type="primary" @click="createEvent">Publish</el-button>
-        <el-button round @click="modals.createEvent = false">Cancel</el-button>
-      </span>
-    </el-dialog>
+    <ScheduleFormDialog
+      @toggle="modals.createEvent = $event"
+      @createEvent="createEvent"
+      :display="modals.createEvent"
+    />
   </el-row>
 </template>
 
@@ -150,12 +60,11 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters } from "vuex";
+import ScheduleFormDialog from "./components/ScheduleFormDialog";
 export default {
   name: "Schedule",
   data() {
     return {
-      repeat_toggle: false,
-      save_as_template: false,
       loading: false,
 
       filters: {
@@ -167,21 +76,6 @@ export default {
       modals: {
         createEvent: false,
         editEvent: false
-      },
-
-      eventData: {
-        start: {
-          time: "",
-          date: ""
-        },
-        assignTo: "",
-        end: {
-          time: "",
-          date: ""
-        },
-        loading: false,
-        eventType: "3",
-        repeat_days: [0]
       },
 
       tableData: [
@@ -214,27 +108,7 @@ export default {
       ],
 
       currentView: "",
-      dateFormat: "DD MMMM",
-
-      validationData: {
-        startDate: [
-          {
-            type: "date",
-            required: true,
-            message: "Please pick a date",
-            trigger: "change"
-          }
-        ],
-        endDate: [
-          {
-            type: "date",
-            required: true,
-            message: "Please pick a date",
-            trigger: "change"
-          }
-        ]
-      },
-      success: false
+      dateFormat: "DD MMMM"
     };
   },
   created() {
@@ -244,9 +118,7 @@ export default {
   computed: {
     ...mapState(["team"]),
     ...mapGetters(["getIsAdmin"]),
-    repeatDaysConfig() {
-      return ["Mon", "Tue", "Wed", "Thurs", "Fri", "Sat", "Sun"];
-    },
+
     viewSelectionConfig() {
       return [
         { name: "Month", value: "month" },
@@ -272,10 +144,10 @@ export default {
   },
   methods: {
     ...mapActions(["getTeam", "request"]),
-    createEvent() {
+    createEvent(eventData) {
       this.loading = true;
       this.modals.createEvent = false;
-      const date = { start: this.eventData.start, end: this.eventData.end };
+      const date = { start: eventData.start, end: eventData.end };
       const startTime = this.format(date.start.time, "HH:mm:ss");
       const endTime = this.format(date.end.time, "HH:mm:ss");
       const startDate = this.format(date.start.date, "MM/DD/YYYY");
@@ -290,11 +162,11 @@ export default {
         data: {
           startDate: completeStartDate,
           endDate: completeEndDate,
-          shift_type: this.eventData.eventType
+          shift_type: eventData.eventType
         }
       };
-      if (this.eventData.assignTo) {
-        payload.assigned_to = this.eventData.assignTo;
+      if (eventData.assignTo) {
+        payload.assigned_to = eventData.assignTo;
       }
       this.request(payload)
         .then(response => {
@@ -329,8 +201,9 @@ export default {
 
   components: {
     VueCal,
-    EmployeeTableUnit: () => import("./components/EmployeeTableUnit"),
-    Title: () => import("@/components/Title")
+    Title: () => import("@/components/Title"),
+    ScheduleTable: () => import("./components/ScheduleTable"),
+    ScheduleFormDialog
   }
 };
 </script>
