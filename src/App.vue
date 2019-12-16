@@ -1,6 +1,6 @@
 <template>
   <div id="app" v-loading="getContentLoaded">
-    <Navigation />
+    <Navigation v-if="$route.name != 'login' && $route.name != 'register'" />
     <keep-alive>
       <router-view></router-view>
     </keep-alive>

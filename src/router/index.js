@@ -12,6 +12,10 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/',
+    redirect: { name: 'login' }
+  },
+  {
     path: '/login',
     name: 'login',
     component: login
@@ -82,6 +86,16 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     next()
+  }
+  if (to.name == 'login') {
+    if (isLoggedIn) {
+      next({
+        path: '/dashboard',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
   }
 })
 
