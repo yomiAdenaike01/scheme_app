@@ -48,13 +48,16 @@ export default {
     ...mapState(["transcripts", "team"])
   },
   updated() {
-    var messageDisplay = document.getElementsByTagName("main")[0];
-    if (this.messages.length > 0) {
-      messageDisplay.scrollTop = messageDisplay.scrollHeight;
-    }
+    this.scrollToBottom();
   },
   methods: {
     ...mapActions(["request"]),
+    scrollToBottom() {
+      var messageDisplay = document.getElementsByTagName("main")[0];
+      if (this.messages.length > 0) {
+        messageDisplay.scrollTop = messageDisplay.scrollHeight;
+      }
+    },
     getMessages(event) {
       const message = this.message;
       message.transcript_id = event.id;
@@ -88,6 +91,7 @@ export default {
           this.messages.push(response);
           this.message.content = "";
           this.loading = false;
+          this.scrollToBottom();
         })
         .catch(error => {
           this.$notify.error({
