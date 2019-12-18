@@ -1,11 +1,7 @@
 <template>
-  <el-row>
-    <el-col>
-      <span
-        :class="['message mt-3 p-3',{user:message.sender_id == currentUser._id}]"
-      >{{message.content}}</span>
-    </el-col>
-  </el-row>
+  <span
+    :class="['message mt-3 p-3',{user:message.sender_id == currentUser._id}]"
+  >{{message.content}}</span>
 </template>
 
 <script>

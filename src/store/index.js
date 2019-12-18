@@ -26,13 +26,9 @@ export default new Vuex.Store({
     shifts: [],
     requests: [],
     messages: [],
-    transcripts: [],
-    notifications: []
+    transcripts: []
   },
   mutations: {
-    CREATE_NOTIFICATION(state, payload) {
-      state.notifications.push(payload)
-    },
     UPDATE_USER(state, payload) {
       state.currentUser = payload.user
       state.token = payload.token
@@ -131,13 +127,19 @@ export default new Vuex.Store({
           if (response.hasOwnProperty('success')) {
             return response.content
           } else if (response.hasOwnProperty('error')) {
-            context.commit('CREATE_NOTIFICATION', response)
+            this.$notify.error({
+              title: 'Error',
+              message: error.message
+            })
             return response
           }
         })
         .catch(error => {
           error = error.data
-          context.commit('CREATE_NOTIFICATION', error)
+          this.$notify.error({
+            title: 'Error',
+            message: error.message
+          })
           return error
         })
     }

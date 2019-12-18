@@ -9,24 +9,20 @@
       />
     </el-col>
     <el-container style="height:100%">
-      <el-main style="height:90%" v-if="messages.length > 0">
-        <Message v-for="message in messages" :key="message._id" :message="message" />
-      </el-main>
-      <el-main v-else class="no_messages_container">
+      <!-- TODO: CONVERT TO COMPONENT -->
+      <div class="chat_body" v-show="messages.length > 0">
+        <el-main>
+          <Message v-for="message in messages" :key="message._id" :message="message" />
+        </el-main>
+        <div class="chat_sender_container">
+          <el-input v-model="message.content" placeholder="Message Content...." />
+          <el-button icon="el-icon-s-promotion" @click="sendMessage" v-loading="loading" />
+        </div>
+      </div>
+      <el-main v-show="messages.length <= 0" class="no_messages_container">
         <h1>Select a conversation to view the messages.</h1>
       </el-main>
     </el-container>
-    <!-- <el-row type="flex" justify="center" align="center">
-        <el-col :span="20">
-          <el-input placeholder="Message Content" v-model="message.content" />
-        </el-col>
-        <el-button
-          v-loading="loading"
-          icon="el-icon-s-promotion"
-          @click="sendMessage"
-          class="ml-3"
-        />
-    </el-row>-->
   </el-row>
 </template>
 
@@ -51,6 +47,12 @@ export default {
   computed: {
     ...mapState(["transcripts", "team"])
   },
+  updated() {
+    var messageDisplay = document.getElementsByTagName("main")[0];
+    if (this.messages.length > 0) {
+      messageDisplay.scrollTop = messageDisplay.scrollHeight;
+    }
+  },
   methods: {
     ...mapActions(["request"]),
     getMessages(event) {
@@ -70,11 +72,30 @@ export default {
         .catch(error => {
           this.$notify.error({
             title: "Error",
-            message: "Error when getting messages, please try again later"
+            message: error.message
           });
         });
     },
-    sendMessage() {}
+    sendMessage() {
+      this.loading = true;
+      const payload = {
+        method: "POST",
+        data: this.message,
+        url: "/messenger/send"
+      };
+      this.request(payload)
+        .then(response => {
+          this.messages.push(response);
+          this.message.content = "";
+          this.loading = false;
+        })
+        .catch(error => {
+          this.$notify.error({
+            title: "Error",
+            message: error.message
+          });
+        });
+    }
   },
   components: {
     PreviousChat: () => import("./components/PreviousChat"),
@@ -91,5 +112,16 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+.chat_body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 90%;
+}
+.chat_sender_container {
+  display: flex;
+  padding: 1.5em;
 }
 </style>
