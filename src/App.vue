@@ -30,6 +30,14 @@ export default {
 </script>
 
 <style lang="scss">
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+html,
+body {
+  height: 100%;
+}
 @import "./assets/spacing";
 @import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d");
 @font-face {

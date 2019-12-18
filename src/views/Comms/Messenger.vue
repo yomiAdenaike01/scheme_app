@@ -1,5 +1,5 @@
 <template>
-  <el-row>
+  <el-row style="height:100%">
     <el-col :span="5">
       <PreviousChat
         v-for="transcript in transcripts"
@@ -8,9 +8,12 @@
         @chatData="getMessages"
       />
     </el-col>
-    <el-container>
-      <el-main style="height:10%">
+    <el-container style="height:100%">
+      <el-main style="height:90%" v-if="messages.length > 0">
         <Message v-for="message in messages" :key="message._id" :message="message" />
+      </el-main>
+      <el-main v-else class="no_messages_container">
+        <h1>Select a conversation to view the messages.</h1>
       </el-main>
     </el-container>
     <!-- <el-row type="flex" justify="center" align="center">
@@ -80,5 +83,13 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.no_messages_container {
+  background: #f9f9f9;
+  color: #999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 </style>

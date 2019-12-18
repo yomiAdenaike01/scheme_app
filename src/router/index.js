@@ -18,7 +18,10 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: login
+    component: login,
+    meta: {
+      title: 'Login'
+    }
   },
   {
     path: '/dashboard',
@@ -34,7 +37,7 @@ const routes = [
     name: 'schedule',
     component: schedule,
     meta: {
-      title: 'schedule',
+      title: 'Schedule',
       authRequired: true
     }
   },
@@ -43,7 +46,7 @@ const routes = [
     name: 'messenger',
     component: messenger,
     meta: {
-      title: 'messenger',
+      title: 'Messenger',
       authRequired: true
     }
   },
@@ -52,7 +55,7 @@ const routes = [
     name: 'reports',
     component: reports,
     meta: {
-      title: 'reports',
+      title: 'Reports',
       authRequired: true
     }
   },
@@ -61,7 +64,7 @@ const routes = [
     name: 'staff',
     component: staff,
     meta: {
-      title: 'staff',
+      title: 'Staff',
       authRequired: true
     }
   }
@@ -74,7 +77,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const authRequired = to.matched.some(route => route.meta.authRequired)
   const isLoggedIn = Object.keys(store.state.currentUser).length > 0
-
+  document.title = to.meta.title
   if (authRequired) {
     if (!isLoggedIn) {
       next({
