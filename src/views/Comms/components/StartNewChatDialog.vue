@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="display" title="Start New Chat">
+  <el-dialog :visible.sync="displayModal" title="Start New Chat">
     <Title title="Select a team member" subtitle="That you want to start a new chat wiith" />
   </el-dialog>
 </template>
@@ -11,6 +11,16 @@ export default {
   name: "StartNewChatDialog",
   computed: {
     ...mapState(["team", "transcripts"]),
+
+    displayModal: {
+      get() {
+        return this.display;
+      },
+      set(display) {
+        this.$emit("toggle", display);
+      }
+    },
+
     filteredTeam() {
       const len = transcripts.length;
       let filterTeam = [...this.team];
