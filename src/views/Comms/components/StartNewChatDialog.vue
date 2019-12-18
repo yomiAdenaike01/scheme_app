@@ -1,0 +1,43 @@
+<template>
+  <el-dialog :visible.sync="display" title="Start New Chat">
+    <Title title="Select a team member" subtitle="That you want to start a new chat wiith" />
+  </el-dialog>
+</template>
+
+<script>
+import Title from "@/components/Title";
+import { mapState } from "vuex";
+export default {
+  name: "StartNewChatDialog",
+  computed: {
+    ...mapState(["team", "transcripts"]),
+    filteredTeam() {
+      const len = transcripts.length;
+      let filterTeam = [...this.team];
+      for (let i = 0; i < len; i++) {
+        const transcript = transcripts[i];
+        const user2 = transcript.user_2;
+        const index = team.findIndex(member => {
+          return member.id == user2;
+        });
+        if (index >= 0) {
+          filterTeam.splice(index, 1);
+        }
+      }
+      return filterTeam;
+    }
+  },
+  components: {
+    Title
+  },
+  props: {
+    display: {
+      type: Boolean,
+      default: false
+    }
+  }
+};
+</script>
+
+<style>
+</style>

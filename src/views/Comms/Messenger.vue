@@ -1,8 +1,9 @@
 <template>
   <el-row style="height:100%">
     <el-col :span="5">
+      <StartNewChat v-model="searches.transcriptSearch" />
       <PreviousChat
-        v-for="transcript in transcripts"
+        v-for="transcript in searchedTranscripts"
         :transcriptData="transcript"
         :key="transcript._id"
         @chatData="getMessages"
@@ -27,12 +28,17 @@
 </template>
 
 <script>
+import StartNewChat from "./components/StartNewChat";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "Messenger",
 
   data() {
     return {
+      searches: {
+        messageSearch: "",
+        transcriptSearch: ""
+      },
       messages: [],
       message: {
         content: "",
@@ -45,7 +51,31 @@ export default {
   },
 
   computed: {
-    ...mapState(["transcripts", "team"])
+    ...mapState(["transcripts", "team"]),
+    searchedTranscripts() {
+      let transcripts = this.transcripts;
+      let search = this.searches.transcriptSearch;
+      // Search the users and return their ids
+      let team = this.team;
+      let user2 = team.find(member => {
+        if (search == member.name) {
+          return member.id;
+        }
+      });
+      if (user2) {
+        return transcripts.filter(transcript => {
+          return transcript.user_2 == user2;
+        });
+      }
+      return transcripts;
+    },
+    searchedMessages() {
+      let messages = this.messages;
+      const searchQuery = this.searchQuery;
+      messages.filter(x => {
+        return x.content == searchQuery;
+      });
+    }
   },
   updated() {
     this.scrollToBottom();
@@ -103,7 +133,8 @@ export default {
   },
   components: {
     PreviousChat: () => import("./components/PreviousChat"),
-    Message: () => import("./components/Message")
+    Message: () => import("./components/Message"),
+    StartNewChat
   }
 };
 </script>
