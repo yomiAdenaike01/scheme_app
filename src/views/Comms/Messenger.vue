@@ -1,6 +1,6 @@
 <template>
   <el-row style="height:100%">
-    <el-col :span="5">
+    <el-col :span="5" class="chatinfo_container">
       <StartNewChat v-model="searches.transcriptSearch" />
       <PreviousChat
         v-for="transcript in searchedTranscripts"
@@ -140,6 +140,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.chatinfo_container {
+  height: 100%;
+  background: #fdfdfd;
+  border-right: 1px solid #e6e6e6;
+}
 .no_messages_container {
   background: #f9f9f9;
   color: #999;
