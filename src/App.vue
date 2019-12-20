@@ -21,7 +21,8 @@ export default {
     this.getShifts();
   },
   methods: {
-    ...mapActions(["getTeam", "getTranscripts", "getShifts"])
+    ...mapActions(["getTeam", "getShifts"]),
+    ...mapActions("Comms", ["getTranscripts"])
   },
   components: {
     Navigation: () => import("@/components/Navigation")

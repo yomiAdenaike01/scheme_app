@@ -1,7 +1,7 @@
 <template>
-  <span :class="['message mt-3 p-3',{user:message.sender_id == currentUser._id}]">
-    <span>{{message.content}}</span>
-  </span>
+  <div class="message mt-3" :class="classes">
+    <span class="p-3" :class="classes">{{message.content}}</span>
+  </div>
 </template>
 
 <script>
@@ -12,21 +12,32 @@ export default {
     message: Object
   },
   computed: {
-    ...mapState(["currentUser"])
+    ...mapState(["currentUser"]),
+    classes() {
+      const message = this.message;
+      const currentUser = this.currentUser;
+      if (message.sender_id == currentUser._id) {
+        return "user";
+      } else {
+        return "other";
+      }
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .message {
-  border-radius: 5px;
-  display: flex;
   color: white;
-  background: rgb(220, 220, 220);
-  justify-content: flex-start;
+  display: flex;
 }
 .user {
   background: #2f74eb;
+  border-radius: 5px;
   justify-content: flex-end;
+}
+.other {
+  border-radius: 5px;
+  background: rgb(220, 220, 220);
 }
 </style>

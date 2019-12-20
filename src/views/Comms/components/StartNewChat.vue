@@ -6,19 +6,18 @@
       type="primary"
       round
       icon="el-icon-chat-round"
-      @click="display = true"
+      @click="UPDATE_START_NEW_CHAT(true)"
     >New Chat</el-button>
-    <StartNewChatDialog :display="display" @newUser="startNewChat" @toggle="display=$event" />
+    <StartNewChatDialog @newUser="createNewChatTranscript" />
   </el-container>
 </template>
 
 <script>
 import StartNewChatDialog from "./StartNewChatDialog";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
-      display: false,
       search: "",
       newTranscript: {
         message: {
@@ -35,10 +34,12 @@ export default {
     this.newTranscript.user_1 = this.currentUser._id;
   },
   computed: {
-    ...mapState(["currentUser"])
+    ...mapState(["currentUser"]),
+    ...mapState("Comms", ["startNewChat"])
   },
   methods: {
-    startNewChat(e) {
+    ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"]),
+    createNewChatTranscript(e) {
       const newTranscript = this.newTranscript;
       newTranscript.user_2 = e;
       this.UPDATE_ACTIVE_TRANSCRIPT(newTranscript);

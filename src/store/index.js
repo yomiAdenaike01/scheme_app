@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import Comms from './Comms'
 Vue.use(Vuex)
 axios.defaults.baseURL = 'http://localhost:3000/api'
 const storage = {
@@ -24,10 +25,7 @@ export default new Vuex.Store({
     currentUser: JSON.parse(storage.get('currentUser')),
     team: [],
     shifts: [],
-    requests: [],
-    messages: [],
-    transcripts: [],
-    activeTranscript: ''
+    requests: []
   },
   mutations: {
     UPDATE_USER(state, payload) {
@@ -36,27 +34,12 @@ export default new Vuex.Store({
       storage.set('token', payload.token)
       storage.set('currentUser', payload.user)
     },
-    UPDATE_MESSAGES(state, payload) {
-      if (payload.event == 'equal') {
-        state.messages = payload.messages
-      } else {
-        state.messages.push(payload.messages)
-      }
-    },
-    UPDATE_TRANSCRIPTS(state, payload) {
-      if (payload.type == 'all') {
-        state.transcripts = payload.data
-      } else {
-        state.transcripts.push(payload)
-      }
-    },
+
     UPDATE_SHIFTS(state, payload) {
       state.shifts = payload
     },
     UPDATE_REQUESTS(state) {},
-    UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
-      state.activeTranscript = payload
-    },
+
     UPDATE_TEAM(state, payload) {
       const index = payload.findIndex(x => {
         delete x.password
@@ -68,9 +51,10 @@ export default new Vuex.Store({
   },
   getters: {
     getContentLoaded(state) {
+      console.log(state)
       return (
         state.shifts.length <= 0 &&
-        state.transcripts.length <= 0 &&
+        state.Comms.transcripts.length <= 0 &&
         state.team.length <= 0
       )
     },
@@ -97,26 +81,7 @@ export default new Vuex.Store({
           console.error(error)
         })
     },
-    getTranscripts(context) {
-      const anyTranscripts = context.state.transcripts.length <= 0
-      if (anyTranscripts) {
-        const payload = {
-          method: 'GET',
-          url: '/messenger/transcripts'
-        }
-        context
-          .dispatch('request', payload)
-          .then(response => {
-            context.commit('UPDATE_TRANSCRIPTS', {
-              data: response,
-              type: 'all'
-            })
-          })
-          .catch(error => {
-            return error
-          })
-      }
-    },
+
     getTeam(context) {
       if (context.state.team.length <= 0) {
         const payload = {
@@ -158,7 +123,7 @@ export default new Vuex.Store({
         })
     }
   },
-  modules: {}
+  modules: { Comms }
 })
 
 const sortPayload = (state, payload) => {

@@ -22,7 +22,7 @@ export default {
     this.scrollToBottom();
   },
   computed: {
-    ...mapState(["messages"])
+    ...mapState("Comms", ["messages"])
   },
   components: {
     Message: () => import("./Message"),
@@ -50,8 +50,7 @@ export default {
 }
 .chat_body {
   display: flex;
-  justify-content: center;
-  align-items: center;
+
   flex-direction: column;
   height: 90%;
 }

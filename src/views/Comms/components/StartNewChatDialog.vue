@@ -6,7 +6,7 @@
         <template slot-scope="scope">
           <div
             class="select_user_2"
-            @click="$emit('newUser',scope.row._id),displayModal='false',$emit('toggle',false)"
+            @click="$emit('newUser',scope.row._id),UPDATE_START_NEW_CHAT(false),$emit('toggle',false)"
           >
             <p>{{scope.row.name}}</p>
           </div>
@@ -19,18 +19,19 @@
 <script>
 import Title from "@/components/Title";
 import ScheduleTable from "@/views/Admin/components/ScheduleTable";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 export default {
   name: "StartNewChatDialog",
   computed: {
-    ...mapState(["team", "transcripts"]),
+    ...mapState(["team"]),
+    ...mapState("Comms", ["transcripts", "startNewChat"]),
 
     displayModal: {
       get() {
-        return this.display;
+        return this.startNewChat;
       },
       set(display) {
-        this.$emit("toggle", display);
+        this.UPDATE_START_NEW_CHAT(display);
       }
     },
 
@@ -49,6 +50,9 @@ export default {
       }
       return filterTeam;
     }
+  },
+  methods: {
+    ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"])
   },
   components: {
     Title,

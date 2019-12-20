@@ -1,27 +1,34 @@
 <template>
-  <div>
+  <div v-if="transcripts.length > 0">
     <div
-      class="previous_chat"
+      class="previous_chat p-3"
       @click="getMessages(transcript)"
       v-for="transcript in transcripts"
       :key="transcript._id"
     >
-      <div class="grid p-2">
-        <el-avatar class="mr-4" icon="el-icon-user-solid"></el-avatar>
-        <div class="icon_wrapper_grid">
-          <div class="grid_content">
-            <span>{{transcript.message.content}}</span>
-            <br />
-            <span class="grey">{{calendar(transcript.updated_at)}}</span>
-          </div>
+      <el-row type="flex" justify="space-between" align="top">
+        <el-col>
+          <el-avatar icon="el-icon-user"></el-avatar>
+        </el-col>
+        <el-col>
+          <span>{{transcript.message.content}}</span>
+          <br />
+          <span class="grey">{{calendar(transcript.updated_at)}}</span>
+        </el-col>
+        <el-col class="icon_container">
           <i
             v-if="activeTranscript._id == transcript._id "
             class="chat_indicator el-icon-chat-dot-round"
           ></i>
-        </div>
-      </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
+  <el-container v-else @click="UPDATE_START_NEW_CHAT(true)">
+    <el-main>
+      <h4 class="light">Press new chat to start a new conversation.</h4>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -30,10 +37,14 @@ import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   name: "PreviousChat",
   computed: {
-    ...mapState(["transcripts", "activeTranscript"])
+    ...mapState("Comms", ["transcripts", "activeTranscript"])
   },
   methods: {
-    ...mapMutations(["UPDATE_ACTIVE_TRANSCRIPT", "UPDATE_MESSAGES"]),
+    ...mapMutations("Comms", [
+      "UPDATE_ACTIVE_TRANSCRIPT",
+      "UPDATE_MESSAGES",
+      "UPDATE_START_NEW_CHAT"
+    ]),
     ...mapActions(["request"]),
 
     getMessages(event) {
@@ -81,5 +92,13 @@ export default {
 .chat_indicator {
   color: #2f74eb;
   font-size: 1.3em;
+}
+.icon_container {
+  display: flex;
+  justify-content: center;
+}
+.light {
+  color: #999;
+  text-align: center;
 }
 </style>

@@ -147,14 +147,9 @@ export default {
     createEvent(eventData) {
       this.loading = true;
       this.modals.createEvent = false;
-      const date = { start: eventData.start, end: eventData.end };
-      const startTime = this.format(date.start.time, "HH:mm:ss");
-      const endTime = this.format(date.end.time, "HH:mm:ss");
-      const startDate = this.format(date.start.date, "MM/DD/YYYY");
-      const endDate = this.format(date.end.date, "MM/DD/YYYY");
-
-      const completeStartDate = this.toISO(`${startDate} ${startTime}`);
-      const completeEndDate = this.toISO(`${endDate} ${endTime}`);
+      const date = { start: eventData.date[0], end: eventData.date[1] };
+      const completeStartDate = this.toISO(date.start);
+      const completeEndDate = this.toISO(date.end);
 
       const payload = {
         url: "/shifts/create",

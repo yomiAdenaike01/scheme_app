@@ -30,22 +30,20 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item prop="date1" label="Start Date ">
-        <el-date-picker type="date" placeholder="Pick a date" v-model="eventData.start.date"></el-date-picker>
+      <el-form-item prop="date1" label="Start & End Time ">
+        <el-date-picker
+          start-placeholder="Start date & time"
+          end-placeholder="End date & time"
+          type="datetimerange"
+          placeholder="Pick a date"
+          v-model="eventData.date"
+        ></el-date-picker>
       </el-form-item>
-      <el-form-item prop="date2" label="Start Time">
-        <el-time-picker placeholder="Pick a time" v-model="eventData.start.time"></el-time-picker>
-      </el-form-item>
-      <el-form-item prop="date1" label="End Date">
-        <el-date-picker type="date" placeholder="Pick a date" v-model="eventData.end.date"></el-date-picker>
-      </el-form-item>
-      <el-form-item prop="date2" label="End Time">
-        <el-time-picker placeholder="Pick a time" v-model="eventData.end.time"></el-time-picker>
-      </el-form-item>
+
       <el-form-item
         label="Repeat Days"
         class="p-4"
-        style="background:rgb(253,253,253); border-radius:10px"
+        style="background:rgb(250,250,250); border-radius:10px"
       >
         <el-switch v-model="repeat_toggle" />
         <div v-if="repeat_toggle">
@@ -63,7 +61,7 @@
       <el-form-item
         label="Save As Template"
         class="p-4"
-        style="background:rgb(253,253,253); border-radius:10px"
+        style="background:rgb(250,250,250); border-radius:10px"
       >
         <el-switch v-model="save_as_template" />
         <div v-if="save_as_template">
@@ -88,15 +86,9 @@ export default {
       repeat_toggle: false,
       save_as_template: false,
       eventData: {
-        start: {
-          time: "",
-          date: ""
-        },
+        date: {},
         assignTo: "",
-        end: {
-          time: "",
-          date: ""
-        },
+
         loading: false,
         eventType: "3",
         repeat_days: [0]

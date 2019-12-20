@@ -1,8 +1,17 @@
 <template>
-  <div class="chat_sender_container">
-    <el-input v-model="message.content" placeholder="Message Content...." />
-    <el-button icon="el-icon-s-promotion" @click="sendMessage" v-loading="loading" />
-  </div>
+  <el-row type="flex" :gutter="5" class="p-3" align="middle">
+    <el-col>
+      <el-input v-model="message.content" placeholder="Message Content...." type="textarea" />
+    </el-col>
+    <el-col>
+      <el-button
+        type="primary"
+        icon="el-icon-s-promotion"
+        @click="sendMessage"
+        v-loading="loading"
+      />
+    </el-col>
+  </el-row>
 </template>
 
 <script>
@@ -20,10 +29,22 @@ export default {
       }
     };
   },
+
   computed: {
-    ...mapState(["activeTranscript"])
+    ...mapState("Comms", ["activeTranscript"]),
+    dropdownConfig() {
+      return [
+        {
+          name: "Add Attachments",
+          command: "add_attachments"
+        }
+      ];
+    }
   },
   methods: {
+    handleTools(e) {
+      console.log(e);
+    },
     sendMessage() {
       this.loading = true;
 
@@ -53,5 +74,3 @@ export default {
 };
 </script>
 
-<style>
-</style>
