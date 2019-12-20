@@ -26,7 +26,8 @@ export default new Vuex.Store({
     shifts: [],
     requests: [],
     messages: [],
-    transcripts: []
+    transcripts: [],
+    activeTranscript: ''
   },
   mutations: {
     UPDATE_USER(state, payload) {
@@ -35,7 +36,13 @@ export default new Vuex.Store({
       storage.set('token', payload.token)
       storage.set('currentUser', payload.user)
     },
-    UPDATE_MESSAGES(state) {},
+    UPDATE_MESSAGES(state, payload) {
+      if (payload.event == 'equal') {
+        state.messages = payload.messages
+      } else {
+        state.messages.push(payload.messages)
+      }
+    },
     UPDATE_TRANSCRIPTS(state, payload) {
       if (payload.type == 'all') {
         state.transcripts = payload.data
@@ -47,6 +54,9 @@ export default new Vuex.Store({
       state.shifts = payload
     },
     UPDATE_REQUESTS(state) {},
+    UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
+      state.activeTranscript = payload
+    },
     UPDATE_TEAM(state, payload) {
       const index = payload.findIndex(x => {
         delete x.password
@@ -80,7 +90,11 @@ export default new Vuex.Store({
           context.commit('UPDATE_SHIFTS', response)
         })
         .catch(error => {
-          return errror
+          this.$notify.error({
+            title: 'Error',
+            message: error.message
+          })
+          console.error(error)
         })
     },
     getTranscripts(context) {
@@ -138,7 +152,7 @@ export default new Vuex.Store({
           error = error.data
           this.$notify.error({
             title: 'Error',
-            message: error.message
+            message: error
           })
           return error
         })

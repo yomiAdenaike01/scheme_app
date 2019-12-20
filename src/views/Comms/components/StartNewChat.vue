@@ -8,7 +8,7 @@
       icon="el-icon-chat-round"
       @click="display = true"
     >New Chat</el-button>
-    <StartNewChatDialog :display="display" @newUser="emitStartNewChat" @toggle="display=$event" />
+    <StartNewChatDialog :display="display" @newUser="startNewChat" @toggle="display=$event" />
   </el-container>
 </template>
 
@@ -21,6 +21,9 @@ export default {
       display: false,
       search: "",
       newTranscript: {
+        message: {
+          content: ""
+        },
         user_1: "",
         user_2: "",
         created_at: Date.now(),
@@ -35,10 +38,10 @@ export default {
     ...mapState(["currentUser"])
   },
   methods: {
-    emitStartNewChat(e) {
+    startNewChat(e) {
       const newTranscript = this.newTranscript;
       newTranscript.user_2 = e;
-      this.$emit("startNewChat", newTranscript);
+      this.UPDATE_ACTIVE_TRANSCRIPT(newTranscript);
     }
   },
   components: {

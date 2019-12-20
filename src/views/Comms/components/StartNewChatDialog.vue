@@ -1,11 +1,24 @@
 <template>
   <el-dialog :visible.sync="displayModal" title="Start New Chat">
     <Title title="Select a team member" subtitle="That you want to start a new chat wiith" />
+    <el-table :data="team">
+      <el-table-column prop="name">
+        <template slot-scope="scope">
+          <div
+            class="select_user_2"
+            @click="$emit('newUser',scope.row._id),displayModal='false',$emit('toggle',false)"
+          >
+            <p>{{scope.row.name}}</p>
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
   </el-dialog>
 </template>
 
 <script>
 import Title from "@/components/Title";
+import ScheduleTable from "@/views/Admin/components/ScheduleTable";
 import { mapState } from "vuex";
 export default {
   name: "StartNewChatDialog",
@@ -38,7 +51,8 @@ export default {
     }
   },
   components: {
-    Title
+    Title,
+    ScheduleTable
   },
   props: {
     display: {
@@ -49,5 +63,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.select_user_2 {
+  text-transform: capitalize;
+  cursor: pointer;
+}
 </style>
