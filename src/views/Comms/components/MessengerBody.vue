@@ -1,7 +1,7 @@
 <template>
   <el-container style="height:100%">
     <el-container v-show="messages.length > 0" direction="vertical">
-      <div style="overflow:auto; height:85%">
+      <div style="overflow:auto; height:84%" class="p-1">
         <Message v-for="msg in messages" :key="msg._id" :message="msg" />
       </div>
       <MessageSender />
