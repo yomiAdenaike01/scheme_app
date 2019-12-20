@@ -1,5 +1,11 @@
 <template>
-  <el-row type="flex" :gutter="5" class="p-3" align="middle" style="width:70%">
+  <el-row
+    type="flex"
+    :gutter="5"
+    align="middle"
+    style="background:rgb(249,249,249);"
+    class="pt-3 pb-3"
+  >
     <el-col>
       <el-input v-model="message.content" placeholder="Message Content...." type="textarea" />
     </el-col>

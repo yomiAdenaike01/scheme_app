@@ -1,26 +1,55 @@
 <template>
-  <div class="message mt-3" :class="classes">
-    <span class="p-3" :class="classes">{{message.content}}</span>
-  </div>
+  <el-row class="message">
+    <el-col :style="stylePositions">
+      <div class="m-2">
+        <p style="color:#999; font-size:0.7em;">{{format(message.time,"DD/MM/YYYY hh:mm a")}}</p>
+        <p class="p-3" :style="colors">{{message.content}}</p>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import dates from "@/mixins/dates";
 export default {
   name: "Message",
+  mixins: [dates],
   props: {
     message: Object
   },
   computed: {
     ...mapState(["currentUser"]),
-    classes() {
+    stylePositions() {
+      let styleObj = {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-start"
+      };
+      if (this.isUserTheSender == "user") {
+        styleObj.justifyContent = "flex-end";
+      }
+      return styleObj;
+    },
+
+    colors() {
+      let styleObj = {
+        borderRadius: "10px 10px 10px 0px",
+        backgroundColor: "rgb(220,220,220)"
+      };
+      if (this.isUserTheSender == "user") {
+        styleObj.borderRadius = "10px 10px 0px 10px";
+        styleObj.backgroundColor = "#2f74eb";
+      }
+      return styleObj;
+    },
+    isUserTheSender() {
       const message = this.message;
       const currentUser = this.currentUser;
       if (message.sender_id == currentUser._id) {
         return "user";
-      } else {
-        return "other";
       }
+      return "other";
     }
   }
 };
@@ -28,16 +57,7 @@ export default {
 
 <style lang="scss" scoped>
 .message {
-  color: white;
   display: flex;
-}
-.user {
-  background: #2f74eb;
-  border-radius: 5px;
-  justify-content: flex-end;
-}
-.other {
-  border-radius: 5px;
-  background: rgb(220, 220, 220);
+  color: white;
 }
 </style>

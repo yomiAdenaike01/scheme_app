@@ -1,11 +1,11 @@
 <template>
   <el-container style="height:100%">
-    <div class="chat_body" v-show="messages.length > 0">
-      <el-main>
+    <el-container v-show="messages.length > 0" direction="vertical">
+      <div style="overflow:auto; height:85%">
         <Message v-for="msg in messages" :key="msg._id" :message="msg" />
-      </el-main>
+      </div>
       <MessageSender />
-    </div>
+    </el-container>
     <el-main v-show="messages.length <= 0" class="no_messages_container">
       <h1>Select a conversation to view the messages.</h1>
     </el-main>
@@ -47,11 +47,5 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-}
-.chat_body {
-  display: flex;
-
-  flex-direction: column;
-  height: 90%;
 }
 </style>
