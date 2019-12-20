@@ -13,7 +13,8 @@ export default {
   name: "app",
 
   computed: {
-    ...mapGetters(["getContentLoaded"])
+    ...mapGetters(["getContentLoaded"]),
+    ...mapState(["notifications"])
   },
   created() {
     this.getTeam();
@@ -26,6 +27,19 @@ export default {
   },
   components: {
     Navigation: () => import("@/components/Navigation")
+  },
+  watch: {
+    notifications: {
+      immediate: true,
+      handler(val) {
+        if (val.length > 0) {
+          this.$notify.error({
+            message: val,
+            title: "Error"
+          });
+        }
+      }
+    }
   }
 };
 </script>

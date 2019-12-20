@@ -1,10 +1,10 @@
 <template>
   <el-container style="height:100%">
     <el-container v-show="messages.length > 0" direction="vertical">
-      <div style="overflow:auto; height:84%" class="p-1">
+      <div style="overflow:auto; height:84%" class="p-1" id="message_holder">
         <Message v-for="msg in messages" :key="msg._id" :message="msg" />
       </div>
-      <MessageSender />
+      <MessageSender @scroll="scrollToBottom" />
     </el-container>
     <el-main v-show="messages.length <= 0" class="no_messages_container">
       <h1>Select a conversation to view the messages.</h1>
@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     scrollToBottom() {
-      var messageDisplay = document.getElementsByTagName("main")[0];
+      var messageDisplay = document.getElementById("message_holder");
       if (this.messages.length > 0) {
         messageDisplay.scrollTop = messageDisplay.scrollHeight;
       }

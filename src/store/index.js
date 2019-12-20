@@ -25,7 +25,8 @@ export default new Vuex.Store({
     currentUser: JSON.parse(storage.get('currentUser')),
     team: [],
     shifts: [],
-    requests: []
+    requests: [],
+    notifications: []
   },
   mutations: {
     UPDATE_USER(state, payload) {
@@ -39,6 +40,9 @@ export default new Vuex.Store({
       state.shifts = payload
     },
     UPDATE_REQUESTS(state) {},
+    UPDATE_NOTIFICATIONS(state, notification) {
+      state.notifications = notification
+    },
 
     UPDATE_TEAM(state, payload) {
       const index = payload.findIndex(x => {
@@ -68,18 +72,9 @@ export default new Vuex.Store({
         method: 'GET',
         url: '/shifts/all'
       }
-      context
-        .dispatch('request', payload)
-        .then(response => {
-          context.commit('UPDATE_SHIFTS', response)
-        })
-        .catch(error => {
-          this.$notify.error({
-            title: 'Error',
-            message: error.message
-          })
-          console.error(error)
-        })
+      context.dispatch('request', payload).then(response => {
+        context.commit('UPDATE_SHIFTS', response)
+      })
     },
 
     getTeam(context) {
@@ -88,14 +83,9 @@ export default new Vuex.Store({
           method: 'GET',
           url: '/users/all'
         }
-        context
-          .dispatch('request', payload)
-          .then(response => {
-            context.commit('UPDATE_TEAM', response)
-          })
-          .catch(error => {
-            return error
-          })
+        context.dispatch('request', payload).then(response => {
+          context.commit('UPDATE_TEAM', response)
+        })
       }
     },
     request(context, payload) {
@@ -106,20 +96,14 @@ export default new Vuex.Store({
           if (response.hasOwnProperty('success')) {
             return response.content
           } else if (response.hasOwnProperty('error')) {
-            this.$notify.error({
-              title: 'Error',
-              message: error.message
-            })
-            return response
+            context.commit('UPDATE_NOTIFICATIONS', response)
           }
         })
         .catch(error => {
           error = error.data
-          this.$notify.error({
-            title: 'Error',
-            message: error
-          })
-          return error
+          console.log(error)
+
+          context.commit('UPDATE_NOTIFICATIONS', error)
         })
     }
   },

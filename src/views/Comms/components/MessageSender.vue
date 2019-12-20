@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   name: "MessageSender",
   data() {
@@ -62,14 +62,16 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["request"]),
+    ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
     handleTools(e) {
       console.log(e);
     },
     sendMessage() {
       this.loading = true;
 
-      this.message.transcript_id = this.activeTranscript.id;
-      this.message.reciever_id = this.activeTranscript.reciever;
+      this.message.transcript_id = this.activeTranscript._id;
+      this.message.reciever_id = this.activeTranscript.user_2;
 
       const payload = {
         method: "POST",
@@ -82,18 +84,18 @@ export default {
           this.UPDATE_MESSAGES({ messages: response, event: "push" });
           this.message.content = "";
           this.loading = false;
+          this.$emit("scroll");
         })
         .catch(error => {
           this.$notify.error({
             title: "Error",
-            message: error.message
+            message: error
           });
         });
+      this.loading = false;
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-.tool_icon {
-}
 </style>
