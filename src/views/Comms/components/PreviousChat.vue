@@ -16,7 +16,7 @@
           </div>
           <i
             v-if="activeTranscript._id == transcript._id "
-            class="chat_indicator el-icon-chat-round"
+            class="chat_indicator el-icon-chat-dot-round"
           ></i>
         </div>
       </div>
@@ -80,5 +80,6 @@ export default {
 }
 .chat_indicator {
   color: #2f74eb;
+  font-size: 1.3em;
 }
 </style>

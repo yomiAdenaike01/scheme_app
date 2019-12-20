@@ -1,7 +1,7 @@
 <template>
-  <span
-    :class="['message mt-3 p-3',{user:message.sender_id == currentUser._id}]"
-  >{{message.content}}</span>
+  <span :class="['message mt-3 p-3',{user:message.sender_id == currentUser._id}]">
+    <span>{{message.content}}</span>
+  </span>
 </template>
 
 <script>
@@ -26,7 +26,7 @@ export default {
   justify-content: flex-start;
 }
 .user {
-  background: #67c23a;
+  background: #2f74eb;
   justify-content: flex-end;
 }
 </style>
