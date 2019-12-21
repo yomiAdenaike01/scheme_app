@@ -18,7 +18,8 @@
         <el-col class="icon_container">
           <i
             v-if="activeTranscript._id == transcript._id "
-            class="chat_indicator el-icon-chat-dot-round"
+            class="chat_indicator el-icon-circle-close"
+            @click="deleteTranscript(transcript)"
           ></i>
         </el-col>
       </el-row>
@@ -46,7 +47,30 @@ export default {
       "UPDATE_START_NEW_CHAT"
     ]),
     ...mapActions(["request"]),
-
+    deleteTranscript(transcript) {
+      this.$confirm(
+        "This will permanently delete the transcript. Continue?",
+        "Warning",
+        {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "warning"
+        }
+      ).then(() => {
+        const payload = {
+          method: "DELETE",
+          url: "/messenger/transcripts",
+          data: { transcript_id: transcript._id }
+        };
+        this.request(payload).then(response => {
+          this.$notify.success({
+            title: "Success",
+            message: response
+          });
+          window.location.reload();
+        });
+      });
+    },
     getMessages(event) {
       this.UPDATE_ACTIVE_TRANSCRIPT(event);
       const payload = {
