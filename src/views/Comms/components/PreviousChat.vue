@@ -8,16 +8,16 @@
     >
       <el-row type="flex" justify="space-between" align="top">
         <el-col>
-          <el-avatar icon="el-icon-user"></el-avatar>
+          <Avatar :name="findUser" />
         </el-col>
         <el-col>
-          <span>{{transcript.message.content}}</span>
+          <span>{{ transcript.message.content }}</span>
           <br />
-          <span class="grey">{{calendar(transcript.updated_at)}}</span>
+          <span class="grey">{{ calendar(transcript.updated_at) }}</span>
         </el-col>
         <el-col class="icon_container">
           <i
-            v-if="activeTranscript._id == transcript._id "
+            v-if="activeTranscript._id == transcript._id"
             class="chat_indicator el-icon-circle-close"
             @click="deleteTranscript(transcript)"
           ></i>
@@ -33,69 +33,85 @@
 </template>
 
 <script>
-import dates from "@/mixins/dates";
-import { mapState, mapMutations, mapActions } from "vuex";
+import dates from '@/mixins/dates'
+import { mapState, mapMutations, mapActions } from 'vuex'
 export default {
-  name: "PreviousChat",
-  computed: {
-    ...mapState("Comms", ["transcripts", "activeTranscript"])
-  },
+  name: 'PreviousChat',
+
   created() {
-    this.getTranscripts();
+    this.getTranscripts()
+  },
+  computed: {
+    ...mapState('Comms', ['transcripts', 'activeTranscript']),
+    ...mapState(['team']),
+    findUser() {
+      const user2 = this.activeTranscript.user_2
+      const foundUser = this.team.find(member => {
+        return member._id == user2
+      })
+      if (foundUser) {
+        return foundUser.name
+      } else {
+        return 'John Doe'
+      }
+    }
   },
   methods: {
-    ...mapMutations("Comms", [
-      "UPDATE_ACTIVE_TRANSCRIPT",
-      "UPDATE_MESSAGES",
-      "UPDATE_START_NEW_CHAT"
+    ...mapMutations('Comms', [
+      'UPDATE_ACTIVE_TRANSCRIPT',
+      'UPDATE_MESSAGES',
+      'UPDATE_START_NEW_CHAT'
     ]),
-    ...mapActions(["request"]),
-    ...mapActions("Comms", ["getTranscripts"]),
+    ...mapActions(['request']),
+    ...mapActions('Comms', ['getTranscripts']),
     deleteTranscript(transcript) {
       this.$confirm(
-        "This will permanently delete the transcript. Continue?",
-        "Warning",
+        'This will permanently delete the transcript. Continue?',
+        'Warning',
         {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "warning"
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
         }
       ).then(() => {
         const payload = {
-          method: "DELETE",
-          url: "/messenger/transcripts",
+          method: 'DELETE',
+          url: '/messenger/transcripts',
           data: { transcript_id: transcript._id }
-        };
+        }
         this.request(payload).then(response => {
           this.$notify.success({
-            title: "Success",
+            title: 'Success',
             message: response
-          });
-          window.location.reload();
-        });
-      });
+          })
+          window.location.reload()
+        })
+      })
     },
     getMessages(event) {
-      this.UPDATE_ACTIVE_TRANSCRIPT(event);
+      this.UPDATE_ACTIVE_TRANSCRIPT(event)
       const payload = {
-        method: "POST",
-        url: "/messenger/messages",
+        method: 'POST',
+        url: '/messenger/messages',
         data: { transcript_id: event._id }
-      };
+      }
       this.request(payload)
         .then(response => {
-          this.UPDATE_MESSAGES({ messages: response, event: "equal" });
+          this.UPDATE_MESSAGES({ messages: response, event: 'equal' })
         })
         .catch(error => {
           this.$notify.error({
-            title: "Error",
+            title: 'Error',
             message: error.message
-          });
-        });
+          })
+        })
     }
   },
-  mixins: [dates]
-};
+  mixins: [dates],
+  components: {
+    Avatar: () => import('@/components/Avatar')
+  }
+}
 </script>
 
 <style lang="scss" scoped>
