@@ -1,6 +1,10 @@
 <template>
-  <el-menu :default-active="$route.path" :router="true" class="el-menu-demo" mode="horizontal">
-    <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">{{route.name}}</el-menu-item>
+  <el-menu style="height:100%" :default-active="$route.path" :router="true" mode="vertical">
+    <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
+      <i :class="route.icon"></i>
+
+      <span slot="title">{{route.name}}</span>
+    </el-menu-item>
   </el-menu>
 </template>
 
@@ -9,22 +13,27 @@ export default {
   name: "Navigation",
   data() {
     return {
+      isCollapse: true,
       routes: [
         {
           name: "Dashboard",
-          path: "/dashboard"
+          path: "/dashboard",
+          icon: "el-icon-s-data"
         },
         {
           name: "Schedule",
-          path: "/schedule"
+          path: "/schedule",
+          icon: "el-icon-time"
         },
         {
           name: "Reports",
-          path: "/reports"
+          path: "/reports",
+          icon: "el-icon-notebook-1"
         },
         {
           name: "Messenger",
-          path: "/messenger"
+          path: "/messenger",
+          icon: "el-icon-chat-round"
         }
       ]
     };

@@ -1,6 +1,21 @@
 import moment from 'moment'
 export default {
+  computed: {
+    now() {
+      return moment()
+    }
+  },
   methods: {
+    isFuture(date, isNow, afterDate) {
+      if (isNow) {
+        return moment(date).isAfter(this.now)
+      } else {
+        return moment(date).isAfter(afterDate)
+      }
+    },
+    isToday(date) {
+      return moment(date).isSame(new Date(), 'day')
+    },
     toISO(date) {
       return moment(date).toISOString()
     },
@@ -11,6 +26,10 @@ export default {
     },
     calendar(date) {
       return moment(date).calendar()
+    },
+    isThisWeek(date) {
+      const now = this.now
+      return moment(date).isBetween(now.startOf('week'), now.endOf('week'))
     }
   }
 }

@@ -1,14 +1,22 @@
 <template>
   <div id="app" v-loading="getContentLoaded">
-    <Navigation v-if="$route.name != 'login' && $route.name != 'register'" />
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <UserInfoBar />
+    <el-row type="flex" style="height:100%">
+      <el-col :span="3">
+        <Navigation v-if="$route.name != 'login' && $route.name != 'register'" />
+      </el-col>
+      <el-col>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
+import UserInfoBar from "@/components/UserInfoBar";
 export default {
   name: "app",
 
@@ -26,7 +34,8 @@ export default {
     ...mapActions("Comms", ["getTranscripts"])
   },
   components: {
-    Navigation: () => import("@/components/Navigation")
+    Navigation: () => import("@/components/Navigation"),
+    UserInfoBar
   },
   watch: {
     notifications: {
