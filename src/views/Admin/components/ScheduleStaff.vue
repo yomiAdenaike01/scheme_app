@@ -1,41 +1,5 @@
 <template>
   <div>
-    <el-row type="flex" class="mt-4 mb-4">
-      <el-col>
-        <h1>
-          Staff
-          <strong class="grey">({{ getTeam.length }})</strong>
-        </h1>
-      </el-col>
-      <el-col>
-        <Popover>
-          <template #content>
-            <el-input placeholder="Search" />
-          </template>
-          <template #trigger>
-            <el-button icon="el-icon-search" circle />
-          </template>
-        </Popover>
-      </el-col>
-      <el-col>
-        <el-dropdown>
-          <el-button round plain>
-            Export
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>Export Employees</el-dropdown-item>
-            <el-dropdown-item>Export Shifts</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </el-col>
-      <el-col :span="2" v-if="getIsAdmin">
-        <el-button round type="primary" @click="employeeDialog = true"
-          >Add Employee</el-button
-        >
-      </el-col>
-    </el-row>
-
     <StaffAddEmployeeDialog
       :display="employeeDialog"
       @toggle="employeeDialog = $event"
@@ -59,7 +23,6 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import StaffAddEmployeeDialog from './StaffAddEmployeeDialog'
-import Popover from '@/components/Popover'
 
 export default {
   name: 'ScheduleStaff',
@@ -70,13 +33,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getTeam']),
+    ...mapGetters('Admin', ['getTeam']),
 
     ...mapGetters(['getIsAdmin'])
   },
   components: {
     StaffAddEmployeeDialog,
-    Popover,
     Avatar: () => import('@/components/Avatar')
   }
 }

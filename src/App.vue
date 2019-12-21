@@ -17,30 +17,30 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex";
-import UserInfoBar from "@/components/UserInfoBar";
+import { mapActions, mapState, mapGetters } from 'vuex'
+import UserInfoBar from '@/components/UserInfoBar'
 export default {
-  name: "app",
+  name: 'app',
 
   computed: {
-    ...mapGetters(["getContentLoaded"]),
-    ...mapState(["notifications"]),
+    ...mapGetters(['getContentLoaded']),
+    ...mapState(['notifications']),
     validRoute() {
-      let $route = this.$route;
-      return $route.name != "login" && $route.name != "register";
+      let $route = this.$route
+      return $route.name != 'login' && $route.name != 'register'
     }
   },
   created() {
-    this.getTeam();
-    this.getTranscripts();
-    this.getShifts();
+    this.getTeam()
+    this.getTranscripts()
+    this.getShifts()
   },
   methods: {
-    ...mapActions(["getTeam", "getShifts"]),
-    ...mapActions("Comms", ["getTranscripts"])
+    ...mapActions('Admin', ['getTeam', 'getShifts']),
+    ...mapActions('Comms', ['getTranscripts'])
   },
   components: {
-    Navigation: () => import("@/components/Navigation"),
+    Navigation: () => import('@/components/Navigation'),
     UserInfoBar
   },
   watch: {
@@ -50,13 +50,13 @@ export default {
         if (val.length > 0) {
           this.$notify.error({
             message: val,
-            title: "Error"
-          });
+            title: 'Error'
+          })
         }
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -91,23 +91,23 @@ body {
 .primary {
   color: #2f74eb;
 }
-@import "./assets/spacing";
-@import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d");
+@import './assets/spacing';
+@import url('http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d');
 @font-face {
-  font-family: "AvenirNextLTW01-Regular";
-  src: url("./assets/Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix");
-  src: url("./assets/Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix")
-      format("eot"),
-    url("./assets/Fonts/2cd55546-ec00-4af9-aeca-4a3cd186da53.woff2")
-      format("woff2"),
-    url("./assets/Fonts/1e9892c0-6927-4412-9874-1b82801ba47a.woff")
-      format("woff"),
-    url("./assets/Fonts/46cf1067-688d-4aab-b0f7-bd942af6efd8.ttf")
-      format("truetype");
+  font-family: 'AvenirNextLTW01-Regular';
+  src: url('./assets/Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix');
+  src: url('./assets/Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix')
+      format('eot'),
+    url('./assets/Fonts/2cd55546-ec00-4af9-aeca-4a3cd186da53.woff2')
+      format('woff2'),
+    url('./assets/Fonts/1e9892c0-6927-4412-9874-1b82801ba47a.woff')
+      format('woff'),
+    url('./assets/Fonts/46cf1067-688d-4aab-b0f7-bd942af6efd8.ttf')
+      format('truetype');
 }
 
 * {
-  font-family: "AvenirNextLTW01-Regular";
+  font-family: 'AvenirNextLTW01-Regular';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;

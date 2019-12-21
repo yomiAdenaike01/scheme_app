@@ -35,8 +35,9 @@ export default {
   },
   mixins: [dates],
   computed: {
-    ...mapState(['shifts', 'requests']),
-    ...mapGetters(['getTeam']),
+    ...mapState(['requests']),
+    ...mapState('Admin', ['shifts']),
+    ...mapGetters('Admin', ['getTeam']),
     items() {
       return [
         {

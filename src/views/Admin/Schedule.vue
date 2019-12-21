@@ -1,81 +1,64 @@
 <template>
   <div>
+    <h1 class="m-4">Schedule</h1>
     <el-row v-loading="loading" type="flex">
-      <el-col :span="3">
-        <el-menu class="sidebar">
-          <el-menu-item v-for="item in filterConfig" :key="item">
-            <el-checkbox class="checkbox" v-model="filters[item]">{{ item }}</el-checkbox>
-          </el-menu-item>
-        </el-menu>
-      </el-col>
-
-      <el-col :span="20" class="p-3">
+      <el-col class="p-3">
         <el-row class="m-4" type="flex" justify="space-between">
-          <el-col :span="5" type="flex" align="center">
-            <el-dropdown trigger="click">
-              <span title="view_container">
-                <span class="black bold">Schedule:</span>
-                <span class="bold el-dropdown-link view_indicator">
-                  {{
-                  currentView
-                  }}
-                </span>
-                <i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="view in viewSelectionConfig"
-                  :key="view.value"
-                  :command="view"
-                >{{ view.name }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-col>
-          <el-col :span="4">
-            <el-dropdown @command="displayModals">
-              <el-button type="primary" round>Actions</el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  command="add_event"
-                >{{getIsAdmin ? 'Create Event' : 'Create Request' }}</el-dropdown-item>
-                <el-dropdown-item
-                  command="edit_event"
-                >{{getIsAdmin ? 'Update / Remove Event' : 'Update / Remove Request'}}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+          <el-col>
+            <Popover>
+              <template #content>
+                <el-input placeholder="Search" />
+              </template>
+              <template #trigger>
+                <el-button icon="el-icon-search" circle />
+              </template>
+            </Popover>
+            <Dropdown
+              :items="items"
+              @method="displayModals"
+              :icon="false"
+              position="right"
+            >
+              <el-button round
+                >Actions <i class="el-icon-arrow-right "></i
+              ></el-button>
+            </Dropdown>
           </el-col>
         </el-row>
         <ScheduleTable :tableData="tableData" />
         <ScheduleStaff />
       </el-col>
-
-      <ScheduleFormDialog
-        @toggle="modals.createEvent = $event"
-        @createEvent="createEvent"
-        :display="modals.createEvent"
-      />
     </el-row>
+
+    <ScheduleFormDialog
+      @toggle="modals.createEvent = $event"
+      @createEvent="createEvent"
+      :display="modals.createEvent"
+    />
   </div>
 </template>
 
 <script>
-import VueCal from "vue-cal";
-import "vue-cal/dist/vuecal.css";
-import dates from "@/mixins/dates";
-import { mapState, mapActions, mapGetters } from "vuex";
-import ScheduleFormDialog from "./components/ScheduleFormDialog";
-import ScheduleStaff from "./components/ScheduleStaff";
+import VueCal from 'vue-cal'
+import 'vue-cal/dist/vuecal.css'
+import dates from '@/mixins/dates'
+import { mapState, mapActions, mapGetters } from 'vuex'
+import ScheduleFormDialog from './components/ScheduleFormDialog'
+import ScheduleStaff from './components/ScheduleStaff'
+import Dropdown from '@/components/Dropdown.vue'
+import Popover from '@/components/Popover'
+
 export default {
-  name: "Schedule",
+  name: 'Schedule',
   data() {
     return {
       loading: false,
 
       filters: {
-        employee: "",
-        abscences: "",
-        holidays: "",
-        late: ""
+        employee: '',
+        abscences: '',
+        holidays: '',
+        late: ''
       },
       modals: {
         createEvent: false,
@@ -84,115 +67,152 @@ export default {
 
       tableData: [
         {
-          date: "2016-05-03",
-          name: "Simon",
-          position: "Locumn",
+          date: '2016-05-03',
+          name: 'Simon',
+          position: 'Locumn',
           approved: false
         },
         {
-          date: "2016-05-02",
-          name: "Yomi",
-          position: "Floor Staff",
+          date: '2016-05-02',
+          name: 'Yomi',
+          position: 'Floor Staff',
 
           approved: true
         },
         {
-          date: "2016-05-04",
-          name: "Tom",
-          position: "Locumn",
+          date: '2016-05-04',
+          name: 'Tom',
+          position: 'Locumn',
           approved: false
         },
         {
-          date: "2016-05-01",
-          name: "Jumoke",
-          position: "Floor Staff",
+          date: '2016-05-01',
+          name: 'Jumoke',
+          position: 'Floor Staff',
 
           approved: true
         }
       ],
 
-      currentView: "",
-      dateFormat: "DD MMMM"
-    };
+      currentView: '',
+      dateFormat: 'DD MMMM'
+    }
   },
   created() {
-    this.getTeam();
+    this.getTeam()
   },
 
   computed: {
-    ...mapState(["team"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapState('Admin', ['team']),
+    ...mapGetters(['getIsAdmin']),
+    items() {
+      const isAdmin = this.getIsAdmin
+      let items = [
+        {
+          name: isAdmin ? 'Create Event' : 'Create Request',
+          command: 'add_event'
+        },
+        {
+          name: 'Create Employee',
+          command: 'create_employee'
+        },
+        {
+          name: isAdmin ? 'Update / Remove Event' : 'Update / Remove Request',
+          command: 'edit_event'
+        },
+
+        {
+          name: 'Export Employee',
+          command: 'export_employee'
+        },
+        {
+          name: 'Export Schedule',
+          command: 'export_schedule'
+        }
+      ]
+
+      if (!isAdmin) {
+        items.filter(item => {
+          return (
+            item.command == 'export_employee' ||
+            item.command == 'create_employee'
+          )
+        })
+      }
+      return items
+    },
 
     viewSelectionConfig() {
       return [
-        { name: "Month", value: "month" },
-        { name: "Week", value: "week" },
-        { name: "Day", value: "day" }
-      ];
+        { name: 'Month', value: 'month' },
+        { name: 'Week', value: 'week' },
+        { name: 'Day', value: 'day' }
+      ]
     },
     filterConfig() {
-      let filters = [];
+      let filters = []
       for (let filter in this.filters) {
-        filters.push(filter);
+        filters.push(filter)
       }
-      return filters;
+      return filters
     },
     formConfig() {
       return [
         {
-          label: "Assign To and Date",
-          items: { name: "", model: "", component: "" }
+          label: 'Assign To and Date',
+          items: { name: '', model: '', component: '' }
         }
-      ];
+      ]
     }
   },
   methods: {
-    ...mapActions(["getTeam", "request"]),
+    ...mapActions(['request']),
+    ...mapActions('Admin', ['getTeam']),
     createEvent(eventData) {
-      this.loading = true;
-      this.modals.createEvent = false;
-      const date = { start: eventData.date[0], end: eventData.date[1] };
-      const completeStartDate = this.toISO(date.start);
-      const completeEndDate = this.toISO(date.end);
+      this.loading = true
+      this.modals.createEvent = false
+      const date = { start: eventData.date[0], end: eventData.date[1] }
+      const completeStartDate = this.toISO(date.start)
+      const completeEndDate = this.toISO(date.end)
 
       const payload = {
-        url: "/shifts/create",
-        method: "POST",
+        url: '/shifts/create',
+        method: 'POST',
         data: {
           startDate: completeStartDate,
           endDate: completeEndDate,
           shift_type: eventData.eventType
         }
-      };
+      }
       if (eventData.assignTo) {
-        payload.assigned_to = eventData.assignTo;
+        payload.assigned_to = eventData.assignTo
       }
       this.request(payload)
         .then(response => {
           const message = this.getIsAdmin
-            ? "Event successfully created"
-            : "Request successfully created";
+            ? 'Event successfully created'
+            : 'Request successfully created'
           this.$notify({
-            title: "Success",
+            title: 'Success',
             message: message,
-            type: "success"
-          });
-          this.loading = false;
+            type: 'success'
+          })
+          this.loading = false
         })
         .catch(error => {
           this.$notify.error({
-            title: "Error",
-            message: "Error when creating event, please try again later"
-          });
-          this.loading = false;
-        });
+            title: 'Error',
+            message: 'Error when creating event, please try again later'
+          })
+          this.loading = false
+        })
     },
     displayModals(command) {
-      console.log(command);
-      if (command == "add_event") {
-        this.modals.createEvent = true;
+      console.log(command)
+      if (command == 'add_event') {
+        this.modals.createEvent = true
       } else {
-        this.modals.editEvent = true;
+        this.modals.editEvent = true
       }
     }
   },
@@ -200,12 +220,14 @@ export default {
 
   components: {
     VueCal,
-    Title: () => import("@/components/Title"),
-    ScheduleTable: () => import("./components/ScheduleTable"),
+    Title: () => import('@/components/Title'),
+    ScheduleTable: () => import('./components/ScheduleTable'),
     ScheduleFormDialog,
-    ScheduleStaff
+    ScheduleStaff,
+    Dropdown,
+    Popover
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

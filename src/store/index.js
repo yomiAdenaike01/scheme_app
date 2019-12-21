@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import Comms from './Comms'
+import Admin from './Admin'
+
 Vue.use(Vuex)
 axios.defaults.baseURL = 'http://localhost:3000/api'
 const storage = {
@@ -30,9 +32,7 @@ export default new Vuex.Store({
     currentUser: storage.get('currentUser')
       ? JSON.parse(storage.get('currentUser'))
       : {},
-    team: [],
-    shifts: [],
-    requests: [],
+
     notifications: []
   },
   mutations: {
@@ -49,21 +49,8 @@ export default new Vuex.Store({
       storage.set('currentUser', payload.user)
     },
 
-    UPDATE_SHIFTS(state, payload) {
-      state.shifts = payload
-    },
-    UPDATE_REQUESTS(state) {},
     UPDATE_NOTIFICATIONS(state, notification) {
       state.notifications = notification
-    },
-
-    UPDATE_TEAM(state, payload) {
-      const index = payload.findIndex(x => {
-        delete x.password
-        return x._id == state.currentUser._id
-      })
-      payload.splice(index, 1)
-      state.team = payload
     }
   },
   getters: {
@@ -73,50 +60,9 @@ export default new Vuex.Store({
     getIsAdmin(state) {
       const employee_type = state.currentUser.employee_type
       return employee_type == 1 || employee_type == 'Admin'
-    },
-    getTeam(state) {
-      return state.team.filter(member => {
-        switch (member.employee_type) {
-          case 1: {
-            member.employee_type = 'Admin'
-            break
-          }
-          case 2: {
-            member.employee_type = 'Staff'
-            break
-          }
-          case 3: {
-            member.employee_type = 'Locumn'
-            break
-          }
-        }
-        console.log(state.currentUser._id, member._id)
-        return member._id != state.currentUser._id
-      })
     }
   },
   actions: {
-    getShifts(context) {
-      const payload = {
-        method: 'GET',
-        url: '/shifts/all'
-      }
-      context.dispatch('request', payload).then(response => {
-        context.commit('UPDATE_SHIFTS', response)
-      })
-    },
-
-    getTeam(context) {
-      if (context.state.team.length <= 0) {
-        const payload = {
-          method: 'GET',
-          url: '/users/all'
-        }
-        context.dispatch('request', payload).then(response => {
-          context.commit('UPDATE_TEAM', response)
-        })
-      }
-    },
     request(context, payload) {
       payload = sortPayload(context.state, payload)
       return axios(payload)
@@ -136,7 +82,7 @@ export default new Vuex.Store({
         })
     }
   },
-  modules: { Comms }
+  modules: { Comms, Admin }
 })
 
 const sortPayload = (state, payload) => {

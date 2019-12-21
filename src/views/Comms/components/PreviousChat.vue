@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     ...mapState('Comms', ['transcripts', 'activeTranscript']),
-    ...mapState(['team']),
+    ...mapState('Admin', ['team']),
     findUser() {
       const user2 = this.activeTranscript.user_2
       const foundUser = this.team.find(member => {
