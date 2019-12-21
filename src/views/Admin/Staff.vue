@@ -1,11 +1,11 @@
 <template>
-  <div class="container">
-    <el-container>
+  <div>
+    <el-container type="vertical">
       <el-main>
         <el-row>
           <el-col :span="15">
             <h1>
-              Employees
+              Staff
               <strong class="grey">({{team.length}})</strong>
             </h1>
           </el-col>
@@ -65,20 +65,26 @@
         </el-form>
       </el-dialog>
     </el-container>
-    <el-container>
-      <el-main>
-        <el-table :data="returnTeam">
-          <el-table-column prop="name" label="Name"></el-table-column>
-
-          <el-table-column prop="employee_type" label="Role"></el-table-column>
-        </el-table>
-      </el-main>
-    </el-container>
+    <el-row type="flex" :gutter="9" class="p-4">
+      <el-col v-for="member in returnTeam" :key="member._id">
+        <el-card :body-style="{ padding: '0px' }">
+          <el-avatar>{{member.name}}</el-avatar>
+          <div style="padding: 14px;">
+            <span>{{member.employee_type}}</span>
+            <div class="bottom clearfix">
+              <el-button type="text" class="button">View Profile</el-button>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <!-- <Schedule /> -->
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters } from "vuex";
+// import Schedule from "./Schedule";
 export default {
   name: "Staff",
 
@@ -112,6 +118,9 @@ export default {
       return newTeam;
     },
     ...mapGetters(["getIsAdmin"])
+  },
+  components: {
+    // Schedule
   }
 };
 </script>

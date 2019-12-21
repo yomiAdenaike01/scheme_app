@@ -1,58 +1,61 @@
 <template>
-  <el-row v-loading="loading">
-    <el-col :span="3">
-      <el-menu class="sidebar">
-        <el-menu-item v-for="item in filterConfig" :key="item">
-          <el-checkbox class="checkbox" v-model="filters[item]">{{ item }}</el-checkbox>
-        </el-menu-item>
-      </el-menu>
-    </el-col>
+  <div>
+    <el-row v-loading="loading">
+      <el-col :span="3">
+        <el-menu class="sidebar">
+          <el-menu-item v-for="item in filterConfig" :key="item">
+            <el-checkbox class="checkbox" v-model="filters[item]">{{ item }}</el-checkbox>
+          </el-menu-item>
+        </el-menu>
+      </el-col>
 
-    <el-col :span="20">
-      <el-row class="m-4" type="flex" justify="space-between">
-        <el-col :span="5" type="flex" align="center">
-          <el-dropdown trigger="click">
-            <span title="view_container">
-              <span class="black bold">Schedule:</span>
-              <span class="bold el-dropdown-link view_indicator">
-                {{
-                currentView
-                }}
+      <el-col :span="20">
+        <el-row class="m-4" type="flex" justify="space-between">
+          <el-col :span="5" type="flex" align="center">
+            <el-dropdown trigger="click">
+              <span title="view_container">
+                <span class="black bold">Schedule:</span>
+                <span class="bold el-dropdown-link view_indicator">
+                  {{
+                  currentView
+                  }}
+                </span>
+                <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
-              <i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
-                v-for="view in viewSelectionConfig"
-                :key="view.value"
-                :command="view"
-              >{{ view.name }}</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-col>
-        <el-col :span="4">
-          <el-dropdown @command="displayModals">
-            <el-button type="primary" round>Actions</el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
-                command="add_event"
-              >{{getIsAdmin ? 'Create Event' : 'Create Request' }}</el-dropdown-item>
-              <el-dropdown-item
-                command="edit_event"
-              >{{getIsAdmin ? 'Update / Remove Event' : 'Update / Remove Request'}}</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-col>
-      </el-row>
-      <ScheduleTable :tableData="tableData" />
-    </el-col>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="view in viewSelectionConfig"
+                  :key="view.value"
+                  :command="view"
+                >{{ view.name }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
+          <el-col :span="4">
+            <el-dropdown @command="displayModals">
+              <el-button type="primary" round>Actions</el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  command="add_event"
+                >{{getIsAdmin ? 'Create Event' : 'Create Request' }}</el-dropdown-item>
+                <el-dropdown-item
+                  command="edit_event"
+                >{{getIsAdmin ? 'Update / Remove Event' : 'Update / Remove Request'}}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
+        </el-row>
+        <ScheduleTable :tableData="tableData" />
+        <Staff />
+      </el-col>
 
-    <ScheduleFormDialog
-      @toggle="modals.createEvent = $event"
-      @createEvent="createEvent"
-      :display="modals.createEvent"
-    />
-  </el-row>
+      <ScheduleFormDialog
+        @toggle="modals.createEvent = $event"
+        @createEvent="createEvent"
+        :display="modals.createEvent"
+      />
+    </el-row>
+  </div>
 </template>
 
 <script>
@@ -61,6 +64,7 @@ import "vue-cal/dist/vuecal.css";
 import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters } from "vuex";
 import ScheduleFormDialog from "./components/ScheduleFormDialog";
+import Staff from "./Staff";
 export default {
   name: "Schedule",
   data() {
@@ -198,7 +202,8 @@ export default {
     VueCal,
     Title: () => import("@/components/Title"),
     ScheduleTable: () => import("./components/ScheduleTable"),
-    ScheduleFormDialog
+    ScheduleFormDialog,
+    Staff
   }
 };
 </script>

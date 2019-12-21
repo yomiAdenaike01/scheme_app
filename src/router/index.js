@@ -58,15 +58,6 @@ const routes = [
       title: 'Reports',
       authRequired: true
     }
-  },
-  {
-    path: '/staff',
-    name: 'staff',
-    component: staff,
-    meta: {
-      title: 'Staff',
-      authRequired: true
-    }
   }
 ]
 

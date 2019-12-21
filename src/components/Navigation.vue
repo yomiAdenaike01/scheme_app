@@ -25,10 +25,6 @@ export default {
         {
           name: "Messenger",
           path: "/messenger"
-        },
-        {
-          name: "Staff",
-          path: "/staff"
         }
       ]
     };
