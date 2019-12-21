@@ -84,7 +84,7 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 export default {
-  name: "Staff",
+  name: "ScheduleStaff",
 
   data() {
     return {

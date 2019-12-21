@@ -6,7 +6,6 @@ const dashboard = () => import('@/views/Admin/Dashboard')
 const schedule = () => import('@/views/Admin/Schedule')
 const messenger = () => import('@/views/Comms/Messenger')
 const reports = () => import('@/views/Admin/Reports')
-const staff = () => import('@/views/Admin/Staff')
 
 Vue.use(VueRouter)
 

@@ -46,7 +46,7 @@
           </el-col>
         </el-row>
         <ScheduleTable :tableData="tableData" />
-        <Staff />
+        <ScheduleStaff />
       </el-col>
 
       <ScheduleFormDialog
@@ -64,7 +64,7 @@ import "vue-cal/dist/vuecal.css";
 import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters } from "vuex";
 import ScheduleFormDialog from "./components/ScheduleFormDialog";
-import Staff from "./Staff";
+import ScheduleStaff from "./components/ScheduleStaff";
 export default {
   name: "Schedule",
   data() {
@@ -203,7 +203,7 @@ export default {
     Title: () => import("@/components/Title"),
     ScheduleTable: () => import("./components/ScheduleTable"),
     ScheduleFormDialog,
-    Staff
+    ScheduleStaff
   }
 };
 </script>
