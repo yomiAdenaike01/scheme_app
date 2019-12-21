@@ -65,7 +65,7 @@
         </el-form>
       </el-dialog>
     </el-container>
-    <el-row type="flex" :gutter="9" class="p-4">
+    <el-row type="flex" :gutter="9">
       <el-col v-for="member in returnTeam" :key="member._id">
         <el-card :body-style="{ padding: '0px' }">
           <el-avatar>{{member.name}}</el-avatar>
@@ -78,13 +78,11 @@
         </el-card>
       </el-col>
     </el-row>
-    <!-- <Schedule /> -->
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters } from "vuex";
-// import Schedule from "./Schedule";
 export default {
   name: "Staff",
 
@@ -118,9 +116,6 @@ export default {
       return newTeam;
     },
     ...mapGetters(["getIsAdmin"])
-  },
-  components: {
-    // Schedule
   }
 };
 </script>

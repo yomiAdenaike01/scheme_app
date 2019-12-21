@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row v-loading="loading">
+    <el-row v-loading="loading" type="flex">
       <el-col :span="3">
         <el-menu class="sidebar">
           <el-menu-item v-for="item in filterConfig" :key="item">
@@ -9,7 +9,7 @@
         </el-menu>
       </el-col>
 
-      <el-col :span="20">
+      <el-col :span="20" class="p-3">
         <el-row class="m-4" type="flex" justify="space-between">
           <el-col :span="5" type="flex" align="center">
             <el-dropdown trigger="click">
