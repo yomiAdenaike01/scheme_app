@@ -5,11 +5,16 @@ import Comms from './Comms'
 Vue.use(Vuex)
 axios.defaults.baseURL = 'http://localhost:3000/api'
 const storage = {
+  remove(item) {
+    if (this.get(item)) {
+      localStorage.removeItem(item)
+    }
+  },
   get(item) {
     if (localStorage.getItem(item)) {
       return localStorage.getItem(item)
     } else {
-      return {}
+      return
     }
   },
   set(key, item) {
@@ -22,13 +27,21 @@ const storage = {
 export default new Vuex.Store({
   state: {
     token: storage.get('token'),
-    currentUser: JSON.parse(storage.get('currentUser')),
+    currentUser: storage.get('currentUser')
+      ? JSON.parse(storage.get('currentUser'))
+      : {},
     team: [],
     shifts: [],
     requests: [],
     notifications: []
   },
   mutations: {
+    REMOVE_USER(state) {
+      state.currentUser = {}
+      state.token = {}
+      storage.remove('token')
+      storage.remove('currentUser')
+    },
     UPDATE_USER(state, payload) {
       state.currentUser = payload.user
       state.token = payload.token
@@ -55,15 +68,31 @@ export default new Vuex.Store({
   },
   getters: {
     getContentLoaded(state) {
-      console.log(state)
-      return (
-        state.shifts.length <= 0 &&
-        state.Comms.transcripts.length <= 0 &&
-        state.team.length <= 0
-      )
+      return false
     },
     getIsAdmin(state) {
-      return state.currentUser.employee_type == 1
+      const employee_type = state.currentUser.employee_type
+      return employee_type == 1 || employee_type == 'Admin'
+    },
+    getTeam(state) {
+      return state.team.filter(member => {
+        switch (member.employee_type) {
+          case 1: {
+            member.employee_type = 'Admin'
+            break
+          }
+          case 2: {
+            member.employee_type = 'Staff'
+            break
+          }
+          case 3: {
+            member.employee_type = 'Locumn'
+            break
+          }
+        }
+        console.log(state.currentUser._id, member._id)
+        return member._id != state.currentUser._id
+      })
     }
   },
   actions: {

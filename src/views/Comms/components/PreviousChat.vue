@@ -40,6 +40,9 @@ export default {
   computed: {
     ...mapState("Comms", ["transcripts", "activeTranscript"])
   },
+  created() {
+    this.getTranscripts();
+  },
   methods: {
     ...mapMutations("Comms", [
       "UPDATE_ACTIVE_TRANSCRIPT",
@@ -47,6 +50,7 @@ export default {
       "UPDATE_START_NEW_CHAT"
     ]),
     ...mapActions(["request"]),
+    ...mapActions("Comms", ["getTranscripts"]),
     deleteTranscript(transcript) {
       this.$confirm(
         "This will permanently delete the transcript. Continue?",

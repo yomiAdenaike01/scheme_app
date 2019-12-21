@@ -6,13 +6,21 @@ const dashboard = () => import('@/views/Admin/Dashboard')
 const schedule = () => import('@/views/Admin/Schedule')
 const messenger = () => import('@/views/Comms/Messenger')
 const reports = () => import('@/views/Admin/Reports')
-
+const logout = () => import('@/views/User/Logout')
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     redirect: { name: 'login' }
+  },
+  {
+    path: '/logout',
+    name: 'logout',
+    component: logout,
+    meta: {
+      title: 'logout'
+    }
   },
   {
     path: '/login',

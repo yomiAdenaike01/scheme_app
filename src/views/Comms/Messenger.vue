@@ -1,6 +1,6 @@
 <template>
-  <el-row style="height:100%">
-    <el-col :span="5" class="chatinfo_container">
+  <el-row style="height:100%" type="flex">
+    <el-col class="chatinfo_container">
       <StartNewChat />
       <PreviousChat />
     </el-col>
@@ -28,6 +28,7 @@ export default {
   height: 100%;
   background: #fdfdfd;
   border-right: 1px solid #e6e6e6;
+  flex: 0.5;
 }
 
 .chat_sender_container {

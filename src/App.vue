@@ -1,14 +1,16 @@
 <template>
   <div id="app" v-loading="getContentLoaded">
-    <UserInfoBar />
+    <UserInfoBar v-if="validRoute" />
     <el-row type="flex" style="height:100%">
-      <el-col :span="3">
-        <Navigation v-if="$route.name != 'login' && $route.name != 'register'" />
+      <el-col style="flex:0.2">
+        <Navigation v-if="validRoute" />
       </el-col>
       <el-col>
-        <keep-alive>
-          <router-view></router-view>
-        </keep-alive>
+        <transition name="el-fade-in">
+          <keep-alive>
+            <router-view></router-view>
+          </keep-alive>
+        </transition>
       </el-col>
     </el-row>
   </div>
@@ -22,7 +24,11 @@ export default {
 
   computed: {
     ...mapGetters(["getContentLoaded"]),
-    ...mapState(["notifications"])
+    ...mapState(["notifications"]),
+    validRoute() {
+      let $route = this.$route;
+      return $route.name != "login" && $route.name != "register";
+    }
   },
   created() {
     this.getTeam();

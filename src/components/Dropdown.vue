@@ -1,7 +1,8 @@
 <template>
-  <el-dropdown class="m-3 grey" @command="emitCommand">
-    <span class="el-dropdown-link">
+  <el-dropdown class="grey" @command="emitCommand">
+    <span class="el-dropdown-link dropdown_wrapper">
       <slot></slot>
+      <i v-if="icon" class="el-icon-arrow-down el-icon--right"></i>
     </span>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item
@@ -9,6 +10,7 @@
         :disabled="item.disabled"
         :divided="item.divided"
         :command="item.command"
+        :icon="item.icon"
         :key="index"
       >{{item.name}}</el-dropdown-item>
     </el-dropdown-menu>
@@ -20,6 +22,10 @@ export default {
   name: "Dropdown",
   props: {
     commander: Boolean,
+    icon: {
+      type: Boolean,
+      default: true
+    },
     items: {
       type: Array
     }
@@ -32,5 +38,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.dropdown_wrapper {
+  display: flex;
+  align-items: center;
+}
 </style>

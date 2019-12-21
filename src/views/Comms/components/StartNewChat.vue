@@ -5,7 +5,7 @@
       class="ml-2"
       type="primary"
       round
-      icon="el-icon-chat-round"
+      icon="el-icon-plus"
       @click="UPDATE_START_NEW_CHAT(true)"
     >New Chat</el-button>
     <StartNewChatDialog @newUser="createNewChatTranscript" />

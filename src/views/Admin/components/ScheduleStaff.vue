@@ -1,72 +1,42 @@
 <template>
   <div>
-    <el-container type="vertical">
-      <el-main>
-        <el-row>
-          <el-col :span="15">
-            <h1>
-              Staff
-              <strong class="grey">({{team.length}})</strong>
-            </h1>
-          </el-col>
-          <el-col :span="2">
+    <el-row type="flex" class="mt-4 mb-4">
+      <el-col>
+        <h1>
+          Staff
+          <strong class="grey">({{getTeam.length}})</strong>
+        </h1>
+      </el-col>
+      <el-col>
+        <Popover>
+          <template #content>
+            <el-input placeholder="Search" />
+          </template>
+          <template #trigger>
             <el-button icon="el-icon-search" circle />
-          </el-col>
-          <el-col :span="2">
-            <el-dropdown>
-              <el-button round plain>
-                Export
-                <i class="el-icon-arrow-down el-icon--right"></i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>Export Employees</el-dropdown-item>
-                <el-dropdown-item>Export Shifts</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-col>
-          <el-col :span="2" v-if="getIsAdmin">
-            <el-button round type="primary" @click="employeeDialog = true">Add Employee</el-button>
-          </el-col>
-        </el-row>
-      </el-main>
+          </template>
+        </Popover>
+      </el-col>
+      <el-col>
+        <el-dropdown>
+          <el-button round plain>
+            Export
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>Export Employees</el-dropdown-item>
+            <el-dropdown-item>Export Shifts</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-col>
+      <el-col :span="2" v-if="getIsAdmin">
+        <el-button round type="primary" @click="employeeDialog = true">Add Employee</el-button>
+      </el-col>
+    </el-row>
 
-      <el-dialog :visible.sync="employeeDialog" title="Add Employee">
-        <el-form>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-          <el-form-item>
-            <p>hello</p>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-    </el-container>
+    <StaffAddEmployeeDialog :display="employeeDialog" @toggle="employeeDialog = $event" />
     <el-row type="flex" :gutter="9">
-      <el-col v-for="member in returnTeam" :key="member._id">
+      <el-col v-for="member in getTeam" :key="member._id">
         <el-card :body-style="{ padding: '0px' }">
           <el-avatar>{{member.name}}</el-avatar>
           <div style="padding: 14px;">
@@ -83,6 +53,9 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
+import StaffAddEmployeeDialog from "./StaffAddEmployeeDialog";
+import Popover from "@/components/Popover";
+
 export default {
   name: "ScheduleStaff",
 
@@ -92,30 +65,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(["team"]),
-    returnTeam() {
-      let newTeam = [...this.team];
-      const len = this.team.length;
-      for (let i = 0; i < len; i++) {
-        const member = newTeam[i];
-        switch (member.employee_type) {
-          case 1: {
-            member.employee_type = "Admin";
-            break;
-          }
-          case 2: {
-            member.employee_type = "Staff";
-            break;
-          }
-          case 3: {
-            member.employee_type = "Locumn";
-            break;
-          }
-        }
-      }
-      return newTeam;
-    },
+    ...mapGetters(["getTeam"]),
+
     ...mapGetters(["getIsAdmin"])
+  },
+  components: {
+    StaffAddEmployeeDialog,
+    Popover
   }
 };
 </script>
