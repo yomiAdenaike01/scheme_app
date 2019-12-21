@@ -2,7 +2,7 @@
   <div id="app" v-loading="getContentLoaded">
     <UserInfoBar v-if="validRoute" />
     <el-row type="flex" style="height:100%">
-      <el-col style="flex:0.2">
+      <el-col style="flex:1">
         <Navigation v-if="validRoute" />
       </el-col>
       <el-col>
@@ -88,6 +88,9 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+.primary {
+  color: #2f74eb;
+}
 @import "./assets/spacing";
 @import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d");
 @font-face {
@@ -135,5 +138,8 @@ body {
 }
 a {
   text-decoration: none;
+}
+.member_name {
+  text-transform: capitalize;
 }
 </style>

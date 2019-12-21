@@ -1,5 +1,5 @@
 <template>
-  <el-popover placement="top-start" trigger="hover" :title="title">
+  <el-popover :placement="position" trigger="hover" :title="title">
     <slot name="content"></slot>
     <slot name="trigger" slot="reference"></slot>
   </el-popover>
@@ -9,7 +9,11 @@
 export default {
   name: "Popover",
   props: {
-    title: String
+    title: String,
+    position: {
+      type: String,
+      default: "top-start"
+    }
   }
 };
 </script>

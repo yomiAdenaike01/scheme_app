@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown class="grey" @command="emitCommand">
+  <el-dropdown class="grey" @command="emitCommand" :placement="position">
     <span class="el-dropdown-link dropdown_wrapper">
       <slot></slot>
       <i v-if="icon" class="el-icon-arrow-down el-icon--right"></i>
@@ -22,6 +22,10 @@ export default {
   name: "Dropdown",
   props: {
     commander: Boolean,
+    position: {
+      type: String,
+      default: "bottom-end"
+    },
     icon: {
       type: Boolean,
       default: true

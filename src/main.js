@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Transitions from 'vue2-transitions'
-import './plugins/element.js'
+import './plugins/element'
 Vue.use(Transitions)
 
 new Vue({
