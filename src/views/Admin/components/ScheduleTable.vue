@@ -9,7 +9,6 @@
       hide-view-selector
       :on-event-click="viewShift"
       editable-events
-      @cell-dblclick="displayCreateNewShift"
       @event-duration-change="changeShiftTime"
     />
     <el-dialog :visible.sync="view">
