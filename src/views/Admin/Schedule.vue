@@ -21,7 +21,7 @@
             </Dropdown>
           </el-col>
         </el-row>
-        <ScheduleTable />
+        <ScheduleTable @displayCreateShift="modals.create_event = $event" />
       </el-col>
     </el-row>
 

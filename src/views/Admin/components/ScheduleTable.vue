@@ -1,10 +1,15 @@
 <template>
+  <!-- TODO: EMIT THE TIME AND PLACE IT WITHIN THE CREATE SHIFT -->
   <div>
     <vue-cal
+      v-loading="loading"
       :events="getShifts"
       default-view="day"
       hide-view-selector
       :on-event-click="viewShift"
+      editable-events
+      @cell-dblclick="displayCreateNewShift"
+      @event-duration-change="changeShiftTime"
     />
     <el-dialog :visible.sync="view">
       <Title
@@ -39,7 +44,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import Title from '@/components/Title'
@@ -48,6 +53,7 @@ export default {
   data() {
     return {
       view: false,
+      loading: false,
       shift: {}
     }
   },
@@ -83,15 +89,58 @@ export default {
       return this.shifts.find(shift => {
         return shift.id == this.shift_id
       })
-    },
-    loading() {
-      return
     }
   },
   methods: {
+    ...mapActions(['request']),
+    ...mapMutations(['UPDATE_NOTIFICATIONS']),
     viewShift(shift) {
       this.shift = shift
       this.view = true
+    },
+    displayCreateNewShift(startTime) {
+      // TODO: EMIT THE TIME AND PLACE IT WITHIN THE CREATE SHIFT
+      this.$emit('displayCreateShift', true)
+    },
+    changeShiftTime(shift) {
+      this.$confirm(
+        `Are you sure you would like to change ${shift.assigned_to}'s shift from ${shift.start} to ${shift.end}`,
+        'Confirm',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'info'
+        }
+      ).then(response => {
+        this.loading = true
+        const payload = {
+          shift_id: shift.id,
+          shift_update: {
+            startDate: shift.startDate.toISOString(),
+            endDate: shift.endDate.toISOString()
+          }
+        }
+
+        this.request({
+          url: '/shifts/update',
+          method: 'POST',
+          data: payload
+        })
+          .then(response => {
+            this.loading = false
+            let index = this.shifts.findIndex(shift => {
+              return shift._id == response._id
+            })
+            console.log(index)
+            // Replace the shift that is in the same spot with updates
+            console.log(response)
+          })
+          .catch(error => {
+            this.loading = false
+            console.log(error)
+          })
+      })
+      console.log(shift)
     }
   },
   components: {

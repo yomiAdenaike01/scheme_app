@@ -42,7 +42,7 @@ export default {
     getShifts(state) {
       let shifts = state.shifts
       let len = shifts.length
-      let format = 'YYYY-MM-DD HH:MM'
+      let format = 'YYYY-MM-DD HH:mm'
       let shiftEvents = []
       for (let i = 0; i < len; i++) {
         let shift = shifts[i]
