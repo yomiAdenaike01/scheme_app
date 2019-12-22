@@ -26,7 +26,7 @@
           </el-col>
         </el-row>
         <ScheduleTable :tableData="tableData" />
-        <ScheduleStaff />
+        <ScheduleStaff class="mt-4" />
       </el-col>
     </el-row>
 
@@ -34,6 +34,11 @@
       @toggle="modals.createEvent = $event"
       @createEvent="createEvent"
       :display="modals.createEvent"
+    />
+
+    <ScheduleProfileView
+      @toggle="modals.viewProfile = $event"
+      :display="modals.viewProfile"
     />
   </div>
 </template>
@@ -47,13 +52,13 @@ import ScheduleFormDialog from './components/ScheduleFormDialog'
 import ScheduleStaff from './components/ScheduleStaff'
 import Dropdown from '@/components/Dropdown.vue'
 import Popover from '@/components/Popover'
+import ScheduleProfileView from './components/ScheduleProfileView.vue'
 
 export default {
   name: 'Schedule',
   data() {
     return {
       loading: false,
-
       filters: {
         employee: '',
         abscences: '',
@@ -62,7 +67,8 @@ export default {
       },
       modals: {
         createEvent: false,
-        editEvent: false
+        editEvent: false,
+        viewProfile: false
       },
 
       tableData: [
@@ -225,7 +231,8 @@ export default {
     ScheduleFormDialog,
     ScheduleStaff,
     Dropdown,
-    Popover
+    Popover,
+    ScheduleProfileView
   }
 }
 </script>

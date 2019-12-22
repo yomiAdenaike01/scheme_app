@@ -1,6 +1,6 @@
 export default {
   namespaced: true,
-  state: { team: [], shifts: [], requests: [] },
+  state: { team: [], shifts: [], requests: [], viewUser: '' },
   actions: {
     getShifts(context) {
       const payload = {
@@ -19,6 +19,7 @@ export default {
           url: '/users/all'
         }
         context.dispatch('request', payload, { root: true }).then(response => {
+          console.log(response)
           context.commit('UPDATE_TEAM', response)
         })
       }
@@ -32,27 +33,14 @@ export default {
     UPDATE_REQUESTS(state) {},
     UPDATE_TEAM(state, payload) {
       state.team = payload
+    },
+    UPDATE_VIEW_USER(state, payload) {
+      state.viewUser = payload
     }
   },
   getters: {
-    getTeam(state, getters, rootState) {
-      return state.team.filter(member => {
-        switch (member.employee_type) {
-          case 1: {
-            member.employee_type = 'Admin'
-            break
-          }
-          case 2: {
-            member.employee_type = 'Staff'
-            break
-          }
-          case 3: {
-            member.employee_type = 'Locumn'
-            break
-          }
-        }
-        return member._id != rootState.currentUser._id
-      })
+    getTeam(state) {
+      return state.team
     }
   }
 }

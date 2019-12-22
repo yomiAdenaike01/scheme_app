@@ -5,17 +5,17 @@
     style="border-bottom: solid 1px #e6e6e6; height:5%"
     align="middle"
   >
-    <el-col style="background:#2f74eb; color:white" :style="returnWidth">
+    <el-col style="background:#2f74eb; color:white">
       <h5>Business Name</h5>
       <p>Dock Pharmacy</p>
     </el-col>
     <el-col class="border">
-      <Dropdown :items="items" @method="logOut">
+      <Dropdown :items="items" @method="handleCommands">
         <Avatar :name="currentUser.name"></Avatar>
       </Dropdown>
     </el-col>
     <el-col>
-      <Dropdown :items="notifications" @method="logOut" :icon="false">
+      <Dropdown :items="notifications" :icon="false">
         <el-badge is-dot class="item">
           <i class="el-icon-bell primary"></i>
         </el-badge>
@@ -29,11 +29,11 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import Dropdown from '@/components/Dropdown'
 import UserInfoDrawer from './UserInfoDrawer'
 import Avatar from './Avatar.vue'
-
+import prompts from '@/mixins/prompts'
 export default {
   name: 'UserInfoBar',
   data() {
@@ -75,12 +75,31 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['REMOVE_USER']),
-    logOut(command) {
+    ...mapMutations(['REMOVE_USER', 'UPDATE_GLOBAL_LOADER']),
+    ...mapActions(['request']),
+    handleCommands(command) {
+      console.log(command)
       switch (command) {
         case 'log_out': {
-          this.REMOVE_USER()
-          this.$router.push({ name: 'login' })
+          this.UPDATE_GLOBAL_LOADER(true)
+          this.request({
+            method: 'GET',
+            url: '/users/logout'
+          })
+            .then(response => {
+              this.REMOVE_USER()
+              this.$router.push({ name: 'login' })
+              this.notify('success', 'Logged out successfully', response)
+              this.UPDATE_GLOBAL_LOADER(false)
+            })
+            .catch(error => {
+              this.notify(
+                'error',
+                'Error',
+                'Error when logging out user, please try again later.'
+              )
+              this.UPDATE_GLOBAL_LOADER(false)
+            })
           break
         }
         case 'settings': {
@@ -97,7 +116,8 @@ export default {
     Dropdown,
     UserInfoDrawer,
     Avatar
-  }
+  },
+  mixins: [prompts]
 }
 </script>
 <style lang="scss" scoped>

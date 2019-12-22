@@ -11,7 +11,12 @@
           <div style="padding: 14px;">
             <span>{{ member.employee_type }}</span>
             <div class="bottom clearfix">
-              <el-button type="text" class="button">View Profile</el-button>
+              <el-button
+                type="text"
+                class="button"
+                @click="UPDATE_VIEW_USER(member._id)"
+                >View Profile</el-button
+              >
             </div>
           </div>
         </el-card>
@@ -21,7 +26,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import StaffAddEmployeeDialog from './StaffAddEmployeeDialog'
 
 export default {
@@ -36,6 +41,9 @@ export default {
     ...mapGetters('Admin', ['getTeam']),
 
     ...mapGetters(['getIsAdmin'])
+  },
+  methods: {
+    ...mapMutations('Admin', ['UPDATE_VIEW_USER'])
   },
   components: {
     StaffAddEmployeeDialog,

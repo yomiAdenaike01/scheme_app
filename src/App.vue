@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-loading="getContentLoaded">
+  <div id="app" v-loading="globalLoader">
     <UserInfoBar v-if="validRoute" />
     <el-row type="flex" style="height:100%">
       <el-col style="flex:1">
@@ -23,8 +23,7 @@ export default {
   name: 'app',
 
   computed: {
-    ...mapGetters(['getContentLoaded']),
-    ...mapState(['notifications']),
+    ...mapState(['notifications', 'globalLoader']),
     validRoute() {
       let $route = this.$route
       return $route.name != 'login' && $route.name != 'register'

@@ -1,9 +1,10 @@
 export default {
   methods: {
-    notify(success, title, content) {
-      this.$notify[success]({
+    notify(type, title, content) {
+      this.$notify({
         title: title,
-        message: content
+        message: content,
+        type: type
       })
     },
     alert(title, content) {},

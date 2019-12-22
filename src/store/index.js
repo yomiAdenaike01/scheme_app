@@ -32,10 +32,13 @@ export default new Vuex.Store({
     currentUser: storage.get('currentUser')
       ? JSON.parse(storage.get('currentUser'))
       : {},
-
+    globalLoader: false,
     notifications: []
   },
   mutations: {
+    UPDATE_GLOBAL_LOADER(state, payload) {
+      state.globalLoader = payload
+    },
     REMOVE_USER(state) {
       state.currentUser = {}
       state.token = {}
