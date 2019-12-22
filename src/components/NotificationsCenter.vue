@@ -8,6 +8,7 @@
 import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'NotificationsCenter',
+
   computed: {
     ...mapState(['viewNotificationsCenter', 'notifications']),
     viewNotifications: {
