@@ -35,9 +35,13 @@ export default new Vuex.Store({
     globalLoader: false,
     notifications: [],
     preferences: {},
-    viewNotificationsCenter: false
+    viewNotificationsCenter: false,
+    userNotifications: []
   },
   mutations: {
+    UPDATE_USER_NOTIFICATIONS(state, payload) {
+      state.userNotifications.push(payload)
+    },
     UPDATE_VIEW_NOTIFICATIONS_CENTER(state, payload) {
       state.viewNotificationsCenter = payload
     },
@@ -90,7 +94,7 @@ export default new Vuex.Store({
             return response.content
           } else if (response.hasOwnProperty('error')) {
             context.commit('UPDATE_NOTIFICATIONS', {
-              message: response,
+              message: response.content,
               title: 'Operation Failed',
               type: 'error'
             })

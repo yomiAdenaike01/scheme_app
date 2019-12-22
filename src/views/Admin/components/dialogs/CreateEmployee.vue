@@ -72,7 +72,10 @@ export default {
   },
   computed: {
     genPwd() {
-      return this.name;
+      return this.employeeForm.name
+        .trim()
+        .toLowerCase()
+        .replace(" ", "");
     },
     isoDate() {
       return this.employeeForm.date_of_birth.toISOString();

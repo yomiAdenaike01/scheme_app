@@ -33,7 +33,8 @@
                 <el-button type="primary" plain style="width:100%">Facebook</el-button>
               </el-col>
             </el-row>
-            <el-button class="mt-3" style="width:100%" round @click="validateForm">Login</el-button>
+            <el-divider></el-divider>
+            <el-button style="width:100%" round @click="validateForm">Login</el-button>
           </el-form>
         </el-main>
       </el-container>
@@ -74,7 +75,7 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_USER"]),
+    ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
 
     validateForm() {
       this.$refs.loginForm.validate(valid => {
@@ -99,13 +100,14 @@ export default {
       this.request(payload)
         .then(response => {
           this.UPDATE_USER(response);
-          if (response.admin_gen) {
+          if (response.user.admin_gen == true) {
             this.UPDATE_NOTIFICATIONS({
               type: "warning",
               title: "Insecure Password Detected",
               message:
-                "Your password is insecure, please consider changing it in the user settings"
+                "Your password is insecure, please consider changing it in the user settings."
             });
+            this.$router.push({ name: "dashboard" });
           }
           this.$router.push({ name: "dashboard" });
 
