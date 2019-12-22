@@ -46,14 +46,15 @@ export default {
       let shiftEvents = []
       for (let i = 0; i < len; i++) {
         let shift = shifts[i]
+        let shiftContent = returnShiftContent(state, shift)
         let shiftEvent = {
           id: shift._id,
           start: moment(shift.startDate).format(format),
           end: moment(shift.endDate).format(format),
-          title: returnShiftContent(state, shift).text,
-          content: '',
-          class: '',
-          assigned_to: getName(state, shift.assigned_to)
+          content: shiftContent.text,
+          class: shiftContent.class,
+          assigned_to: shiftContent.name,
+          type: shift.shift_type
         }
         shiftEvents.push(shiftEvent)
       }
@@ -64,10 +65,47 @@ export default {
 function getName(state, id) {
   return state.team.find(member => {
     return member._id == id
-  }).name
+  })
 }
 function returnShiftContent(state, shift) {
   let user = getName(state, shift.assigned_to)
+  let name = user.name
+  let type = shift.shift_type
+  let shiftClass = ''
+  let shiftTitle = ''
+  switch (type) {
+    case 1: {
+      shiftClass = 'normal_staff'
+      shiftTitle = 'Regular shift'
 
-  return { text: `Shift ${user}`, name: user }
+      break
+    }
+    case 2: {
+      shiftClass = 'locumn'
+      shiftTitle = 'Locumn shift'
+
+      break
+    }
+    case 3: {
+      shiftClass = 'holiday'
+      shiftTitle = 'Holiday'
+
+      break
+    }
+    case 4: {
+      shiftClass = 'time_off'
+      shiftTitle = 'Time off'
+
+      break
+    }
+    case 5: {
+      shiftClass = 'sick_leave'
+      shiftTitle = 'Sick leave'
+
+      break
+    }
+    default:
+      break
+  }
+  return { text: `${shiftTitle} ${name}`, name: name, class: shiftClass }
 }

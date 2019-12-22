@@ -32,6 +32,9 @@
             >
           </p>
         </el-form-item>
+        <el-form-item label="Shift Type:">
+          {{ shift.type }}
+        </el-form-item>
         <el-divider><span class="grey">Timing</span></el-divider>
         <el-form-item label="Start Date Time:">
           <span>{{ shift.start }}</span>
@@ -155,9 +158,22 @@ export default {
 .vuecal__now-line {
   color: #2f74eb;
 }
+
 .vuecal__event {
-  background: #ecf5ff;
-  color: #2f74eb;
+  &.normal_staff {
+    background: #ecf5ff;
+    color: #2f74eb;
+  }
+  &.locumn {
+    background: #f0f9eb;
+    color: #67c23a;
+  }
+  &.holiday {
+    background: #fef0f0;
+    color: #f56c6c;
+  }
+  &.sick_leave {
+  }
   padding: 1em;
   text-transform: capitalize;
 }
