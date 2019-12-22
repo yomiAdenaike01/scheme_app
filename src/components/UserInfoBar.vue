@@ -96,6 +96,7 @@ export default {
       switch (command) {
         case 'view_notifications': {
           this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true)
+          break
         }
         case 'log_out': {
           this.UPDATE_GLOBAL_LOADER(true)

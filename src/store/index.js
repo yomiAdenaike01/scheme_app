@@ -61,7 +61,7 @@ export default new Vuex.Store({
     },
 
     UPDATE_NOTIFICATIONS(state, notification) {
-      state.notifications = notification
+      state.notifications.push(notification)
     }
   },
   getters: {

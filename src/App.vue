@@ -17,6 +17,7 @@
 <script>
 import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
 import UserInfoBar from '@/components/UserInfoBar'
+
 export default {
   name: 'app',
 
@@ -41,7 +42,11 @@ export default {
   },
   watch: {
     notifications(val) {
-      this.$notify(val)
+      const len = val.length
+      for (let i = 0; i < len; i++) {
+        const notification = val[i]
+        this.$notify(notification)
+      }
     }
   }
 }
