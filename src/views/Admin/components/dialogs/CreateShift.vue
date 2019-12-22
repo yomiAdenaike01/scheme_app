@@ -9,10 +9,10 @@
           ? 'Fill in the form below to create a request.'
           : 'Fill in the form below to create a shift.'
       "
-      defaultClass="m-0"
       slot="title"
     />
     <el-form
+      class="ml-3 mr-3"
       status-icon
       :rules="validationData"
       label-position="left"
