@@ -1,5 +1,5 @@
 <template>
-  <div style="height:100%;overflow:auto">
+  <div style="height:100%">
     <Title title="Schedule" subtitle="View your calendar" />
     <el-row v-loading="loading" type="flex">
       <el-col class="pl-3 pr-3">
@@ -21,7 +21,10 @@
             </Dropdown>
           </el-col>
         </el-row>
-        <ScheduleTable @displayCreateShift="modals.create_event = $event" />
+        <ScheduleTable
+          @displayCreateShift="modals.create_event = $event"
+          style="height:70%"
+        />
       </el-col>
     </el-row>
 

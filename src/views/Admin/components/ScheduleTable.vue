@@ -2,6 +2,7 @@
   <!-- TODO: EMIT THE TIME AND PLACE IT WITHIN THE CREATE SHIFT -->
   <div>
     <vue-cal
+      small
       v-loading="loading"
       :events="getShifts"
       default-view="day"
