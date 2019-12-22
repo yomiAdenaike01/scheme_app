@@ -7,12 +7,23 @@
     class="pt-3 pb-3"
   >
     <el-col>
-      <el-input v-model="message.content" placeholder="Message Content...." type="textarea" />
+      <el-input
+        @keyup.enter.native="sendMessage"
+        v-model="message.content"
+        placeholder="Message Content...."
+        type="textarea"
+      />
     </el-col>
     <el-col>
       <el-row type="flex">
         <el-col>
-          <el-button type="primary" @click="sendMessage" v-loading="loading" round>Send</el-button>
+          <el-button
+            type="primary"
+            @click="sendMessage"
+            v-loading="loading"
+            round
+            >Send</el-button
+          >
         </el-col>
         <el-col>
           <el-upload
@@ -35,67 +46,66 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations } from 'vuex'
 export default {
-  name: "MessageSender",
+  name: 'MessageSender',
   data() {
     return {
       loading: false,
       message: {
-        content: "",
+        content: '',
         attachments: [],
-        transcript_id: "",
-        reciever_id: ""
+        transcript_id: '',
+        reciever_id: ''
       }
-    };
+    }
   },
 
   computed: {
-    ...mapState("Comms", ["activeTranscript"]),
+    ...mapState('Comms', ['activeTranscript']),
     dropdownConfig() {
       return [
         {
-          name: "Add Attachments",
-          command: "add_attachments"
+          name: 'Add Attachments',
+          command: 'add_attachments'
         }
-      ];
+      ]
     }
   },
   methods: {
-    ...mapActions(["request"]),
-    ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
+    ...mapActions(['request']),
+    ...mapMutations('Comms', ['UPDATE_MESSAGES']),
     handleTools(e) {
-      console.log(e);
+      console.log(e)
     },
     sendMessage() {
-      this.loading = true;
+      this.loading = true
 
-      this.message.transcript_id = this.activeTranscript._id;
-      this.message.reciever_id = this.activeTranscript.user_2;
+      this.message.transcript_id = this.activeTranscript._id
+      this.message.reciever_id = this.activeTranscript.user_2
 
       const payload = {
-        method: "POST",
+        method: 'POST',
         data: this.message,
-        url: "/messenger/send"
-      };
+        url: '/messenger/send'
+      }
 
       this.request(payload)
         .then(response => {
-          this.UPDATE_MESSAGES({ messages: response, event: "push" });
-          this.message.content = "";
-          this.loading = false;
-          this.$emit("scroll");
+          this.UPDATE_MESSAGES({ messages: response, event: 'push' })
+          this.message.content = ''
+          this.loading = false
+          this.$emit('scroll')
         })
         .catch(error => {
           this.$notify.error({
-            title: "Error",
+            title: 'Error',
             message: error
-          });
-        });
-      this.loading = false;
+          })
+        })
+      this.loading = false
     }
   }
-};
+}
 </script>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

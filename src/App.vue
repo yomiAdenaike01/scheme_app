@@ -6,11 +6,9 @@
         <Navigation v-if="validRoute" />
       </el-col>
       <el-col>
-        <transition name="el-fade-in">
-          <keep-alive>
-            <router-view></router-view>
-          </keep-alive>
-        </transition>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </el-col>
     </el-row>
   </div>

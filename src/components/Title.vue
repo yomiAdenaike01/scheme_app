@@ -1,18 +1,18 @@
 <template>
   <div class="title_wrapper m-3">
-    <h1 v-if="title" class="light">{{ title }}</h1>
+    <h1 v-if="title">{{ title }}</h1>
     <span v-if="subtitle" class="grey">{{ subtitle }}</span>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Title",
+  name: 'Title',
   props: {
     title: String,
     subtitle: String
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 span {

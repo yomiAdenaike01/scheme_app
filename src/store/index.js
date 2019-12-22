@@ -33,9 +33,13 @@ export default new Vuex.Store({
       ? JSON.parse(storage.get('currentUser'))
       : {},
     globalLoader: false,
-    notifications: []
+    notifications: [],
+    preferences: {}
   },
   mutations: {
+    UPDATE_PREFERENCES(state, payload) {
+      state.preferences = payload
+    },
     UPDATE_GLOBAL_LOADER(state, payload) {
       state.globalLoader = payload
     },

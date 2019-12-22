@@ -1,31 +1,26 @@
 <template>
   <div>
-    <h1 class="m-4">Schedule</h1>
+    <Title title="Schedule" subtitle="View your calendar" />
     <el-row v-loading="loading" type="flex">
-      <el-col class="p-3">
-        <el-row class="m-4" type="flex" justify="space-between">
+      <el-col class="pl-3 pr-3">
+        <el-row class="mb-4" type="flex" :gutter="10">
           <el-col>
-            <Popover>
-              <template #content>
-                <el-input placeholder="Search" />
-              </template>
-              <template #trigger>
-                <el-button icon="el-icon-search" circle />
-              </template>
-            </Popover>
+            <el-input placeholder="Search" />
+          </el-col>
+          <el-col>
             <Dropdown
               :items="items"
               @method="displayModals"
               :icon="false"
               position="right"
             >
-              <el-button round
+              <el-button round type="primary"
                 >Actions <i class="el-icon-arrow-right "></i
               ></el-button>
             </Dropdown>
           </el-col>
         </el-row>
-        <ScheduleTable :tableData="tableData" />
+        <ScheduleTable />
         <ScheduleStaff class="mt-4" />
       </el-col>
     </el-row>
@@ -71,35 +66,6 @@ export default {
         viewProfile: false
       },
 
-      tableData: [
-        {
-          date: '2016-05-03',
-          name: 'Simon',
-          position: 'Locumn',
-          approved: false
-        },
-        {
-          date: '2016-05-02',
-          name: 'Yomi',
-          position: 'Floor Staff',
-
-          approved: true
-        },
-        {
-          date: '2016-05-04',
-          name: 'Tom',
-          position: 'Locumn',
-          approved: false
-        },
-        {
-          date: '2016-05-01',
-          name: 'Jumoke',
-          position: 'Floor Staff',
-
-          approved: true
-        }
-      ],
-
       currentView: '',
       dateFormat: 'DD MMMM'
     }
@@ -118,15 +84,16 @@ export default {
           name: isAdmin ? 'Create Event' : 'Create Request',
           command: 'add_event'
         },
-        {
-          name: 'Create Employee',
-          command: 'create_employee'
-        },
+
         {
           name: isAdmin ? 'Update / Remove Event' : 'Update / Remove Request',
           command: 'edit_event'
         },
-
+        {
+          name: 'Create Employee',
+          command: 'create_employee',
+          divided: true
+        },
         {
           name: 'Export Employee',
           command: 'export_employee'
@@ -214,7 +181,6 @@ export default {
         })
     },
     displayModals(command) {
-      console.log(command)
       if (command == 'add_event') {
         this.modals.createEvent = true
       } else {
