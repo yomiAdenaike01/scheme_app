@@ -61,7 +61,7 @@ export default new Vuex.Store({
     },
 
     UPDATE_NOTIFICATIONS(state, notification) {
-      state.notifications.push(notification)
+      state.notifications.unshift(notification)
     }
   },
   getters: {
@@ -80,9 +80,20 @@ export default new Vuex.Store({
         .then(response => {
           response = response.data
           if (response.hasOwnProperty('success')) {
+            if (typeof response.content == 'string') {
+              context.commit('UPDATE_NOTIFICATIONS', {
+                message: response.content,
+                title: 'Operation Successful',
+                type: 'success'
+              })
+            }
             return response.content
           } else if (response.hasOwnProperty('error')) {
-            context.commit('UPDATE_NOTIFICATIONS', response)
+            context.commit('UPDATE_NOTIFICATIONS', {
+              message: response,
+              title: 'Operation Failed',
+              type: 'error'
+            })
           }
         })
         .catch(error => {
