@@ -2,6 +2,7 @@
   <div class="title_wrapper" :class="defaultClass">
     <h1 class="m-0 p-0" v-if="title">{{ title }}</h1>
     <span v-if="subtitle" class="grey">{{ subtitle }}</span>
+    <slot></slot>
   </div>
 </template>
 

@@ -55,7 +55,8 @@ export default {
           class: shiftContent.class,
           assigned_to: shiftContent.name,
           type: shiftContent.type,
-          is_pickup: shift.is_pickup
+          is_pickup: shift.is_pickup,
+          shift_type: shift.shift_type
         }
         shiftEvents.push(shiftEvent)
       }

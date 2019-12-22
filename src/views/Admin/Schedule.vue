@@ -5,9 +5,6 @@
       <el-col class="pl-3 pr-3">
         <el-row class="mb-4" type="flex" :gutter="10">
           <el-col>
-            <el-input placeholder="Search" />
-          </el-col>
-          <el-col>
             <Dropdown
               :items="items"
               @method="displayModals"
@@ -22,6 +19,7 @@
           </el-col>
         </el-row>
         <ScheduleCalendar
+          @regetShifts="regetShifts"
           @displayCreateShift="modals.create_event = $event"
           style="height:70%"
         />
@@ -56,6 +54,11 @@ export default {
   data() {
     return {
       loading: false,
+      interval: () => {
+        setInterval(() => {
+          this.getTeam()
+        }, 5000)
+      },
       filters: {
         employee: '',
         abscences: '',
@@ -75,10 +78,15 @@ export default {
       dateFormat: 'DD MMMM'
     }
   },
+  destroyed() {
+    clearInterval(this.interval)
+  },
   created() {
-    // this.getTeam()
     this.getTeam()
     this.getShifts()
+    setInterval(() => {
+      this.getShifts()
+    }, 5000)
   },
 
   computed: {
@@ -149,6 +157,10 @@ export default {
   methods: {
     ...mapActions(['request']),
     ...mapActions('Admin', ['getTeam', 'getShifts']),
+    regetShifts() {
+      this.getShifts()
+      console.log('getting new shifts')
+    },
     createEmployee(employeeData) {},
     createEvent(eventData) {
       this.loading = true
@@ -171,11 +183,8 @@ export default {
 
       this.request(payload)
         .then(response => {
-          const message = this.getIsAdmin
-            ? 'Event successfully created'
-            : 'Request successfully created'
-
           this.loading = false
+          this.getShifts()
         })
         .catch(error => {
           this.loading = false

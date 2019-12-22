@@ -78,6 +78,18 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    getNotifications(context) {
+      context
+        .dispatch('request', {
+          method: '/users/notifications'
+        })
+        .then(response => {
+          this.UPDATE_USER_NOTIFICATIONS(response)
+        })
+        .catch(error => {
+          return error
+        })
+    },
     request(context, payload) {
       payload = sortPayload(context.state, payload)
       return axios(payload)

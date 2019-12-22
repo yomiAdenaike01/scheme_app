@@ -36,16 +36,29 @@
         <span>{{ shift.end }}</span>
       </el-form-item>
       <el-row type="flex" :gutter="5">
-        <el-col v-if="shift.is_pickup">
-          <el-button style="width:100%" type="primary" plain>Pickup</el-button>
+        <el-col v-if="shift.is_pickup && shift.shift_type <= 2">
+          <el-button
+            style="width:100%"
+            type="primary"
+            plain
+            @click="confirm('pickup')"
+            >Pickup</el-button
+          >
         </el-col>
-        <el-col v-if="!shift.is_pickup">
+        <el-col
+          v-if="!shift.is_pickup && shift.shift_type <= 2 && shift.assigned_to"
+        >
           <el-button
             style="width:100%"
             type="danger"
             plain
             @click="confirm('delete')"
             >Drop</el-button
+          >
+        </el-col>
+        <el-col v-if="getIsAdmin || currentUser._id == shift.assigned_to">
+          <el-button style="width:100%" type="danger" @click="confirm('remove')"
+            >Delete</el-button
           >
         </el-col>
       </el-row>
@@ -66,9 +79,27 @@ export default {
   computed: {
     ...mapGetters(['getIsAdmin']),
     ...mapState(['currentUser']),
-    isMine() {
-      return this.shift.assigned_to == this.currentUser._id
+    canPickUp() {
+      /**
+       * Conditions:
+       *  is yours
+       *  can pick up (is not dropped)
+       *  is admin
+       *
+       */
+      let shift = this.shift
+      //   let isShiftYours = shift.assigned_to == this.currentUser._id
+      //   let isDropped = shift.is_pickup
+      //   let isAdmin = this.getIsAdmin
+      let isShift = shift.is_pickup
+      if (shift.is_pickup) {
+        return shift.is_pickup
+      } else if (this.getIsAdmin) {
+        return true
+      }
+      return isShift
     },
+
     returnIcon() {
       let approved = this.returnApproval
       let returnval
@@ -103,6 +134,23 @@ export default {
     ...mapMutations(['UPDATE_NOTIFICATIONS']),
     confirm(question) {
       switch (question) {
+        case 'remove':
+          this.$confirm(
+            `Are you sure you want to remove this event ?`,
+            'Drop Event',
+            {
+              confirmButtonText: 'Ok',
+              cancelButtonText: 'Cancel',
+              type: 'warning'
+            }
+          )
+            .then(response => {
+              this.deleteShift()
+            })
+            .catch(error => {
+              return error
+            })
+          break
         case 'delete':
           this.$confirm(
             `Are you sure you want to drop this event ?`,
@@ -145,9 +193,34 @@ export default {
           break
       }
     },
+    loadingToggle(val, loading) {
+      this.$emit('loading', val)
+      if (!loading) {
+        this.$emit('toggle', val)
+      }
+    },
+    deleteShift() {
+      this.$emit('loading', true)
+      this.request({
+        method: 'DELETE',
+        url: '/shifts/delete',
+        data: {
+          shift_id: this.shift.id
+        }
+      })
+        .then(response => {
+          this.$emit('loading', false)
+          this.$emit('toggle', false)
+          this.$emit('regetShifts', false)
+        })
+        .catch(error => {
+          this.$emit('loading', false)
+          this.$emit('toggle', false)
 
+          return error
+        })
+    },
     updateShift(update) {
-      return console.log(update)
       this.$emit('loading', true)
       this.request({
         method: 'POST',
@@ -160,6 +233,8 @@ export default {
         .then(response => {
           this.$emit('loading', false)
           this.$emit('toggle', false)
+          this.$emit('regetShifts', false)
+
           this.UPDATE_NOTIFICATIONS({
             title: 'Operation successful',
             message: 'Shift successfully updated.',
@@ -168,6 +243,7 @@ export default {
         })
         .catch(error => {
           this.$emit('loading', false)
+          this.$emit('regetShifts', false)
         })
     }
   },
@@ -176,5 +252,3 @@ export default {
   }
 }
 </script>
-
-<style></style>
