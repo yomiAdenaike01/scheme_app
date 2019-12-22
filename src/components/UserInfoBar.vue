@@ -2,25 +2,29 @@
   <el-row
     type="flex"
     :gutter="10"
-    style="border-bottom: solid 1px #e6e6e6; height:5%"
+    style="border-bottom: solid 1px #e6e6e6;"
     align="middle"
   >
-    <el-col style="background:#2f74eb; color:white">
-      <h5>Business Name</h5>
-      <p>Dock Pharmacy</p>
-    </el-col>
-    <el-col class="border">
-      <Dropdown :items="items" @method="handleCommands">
-        <Avatar :name="currentUser.name"></Avatar>
-      </Dropdown>
+    <el-col style="background:#2f74eb; color:white; height:initial">
+      <div class="text_wrapper p-3">
+        <h5>Business Name</h5>
+        <p>Dock Pharmacy</p>
+      </div>
     </el-col>
     <el-col>
+      <div class="profile_container">
+        <Dropdown :items="items" @method="handleCommands">
+          <Avatar :name="currentUser.name"></Avatar>
+        </Dropdown>
+      </div>
+    </el-col>
+    <!-- <el-col>
       <Dropdown :items="notifications" :icon="false">
         <el-badge is-dot class="item">
           <i class="el-icon-bell primary"></i>
         </el-badge>
       </Dropdown>
-    </el-col>
+    </el-col> -->
     <UserInfoDrawer
       :display="displaySettings"
       @toggle="displaySettings = $event"
@@ -62,8 +66,13 @@ export default {
     items() {
       return [
         {
+          name: 'View Notifications',
+          command: 'view_notifications'
+        },
+        {
           name: 'Settings',
-          command: 'settings'
+          command: 'settings',
+          divided: true
         },
         {
           name: 'Log Out',
@@ -75,11 +84,19 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['REMOVE_USER', 'UPDATE_GLOBAL_LOADER']),
+    ...mapMutations([
+      'REMOVE_USER',
+      'UPDATE_GLOBAL_LOADER',
+      'UPDATE_VIEW_NOTIFICATIONS_CENTER'
+    ]),
+
     ...mapActions(['request']),
     handleCommands(command) {
       console.log(command)
       switch (command) {
+        case 'view_notifications': {
+          this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true)
+        }
         case 'log_out': {
           this.UPDATE_GLOBAL_LOADER(true)
           this.request({
@@ -134,5 +151,10 @@ export default {
 }
 .border {
   border-left: 1px solid #e6e6e6;
+}
+.profile_container {
+  display: flex;
+  justify-content: flex-end;
+  width: 95%;
 }
 </style>

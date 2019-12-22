@@ -3,6 +3,9 @@
     <el-row type="flex" style="height:100%">
       <el-col>
         <Title title="Dashboard" subtitle="View your daily summaries here" />
+        <el-card>
+          <h3>Card 1</h3>
+        </el-card>
       </el-col>
       <el-col></el-col>
       <el-col style="flex:0.2;border-left:solid 1px #e6e6e6;">

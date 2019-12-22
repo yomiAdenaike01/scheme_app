@@ -34,9 +34,13 @@ export default new Vuex.Store({
       : {},
     globalLoader: false,
     notifications: [],
-    preferences: {}
+    preferences: {},
+    viewNotificationsCenter: false
   },
   mutations: {
+    UPDATE_VIEW_NOTIFICATIONS_CENTER(state, payload) {
+      state.viewNotificationsCenter = payload
+    },
     UPDATE_PREFERENCES(state, payload) {
       state.preferences = payload
     },
