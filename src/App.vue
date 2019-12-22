@@ -15,13 +15,14 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
 import UserInfoBar from '@/components/UserInfoBar'
 export default {
   name: 'app',
 
   computed: {
     ...mapState(['notifications', 'globalLoader']),
+
     validRoute() {
       let $route = this.$route
       return $route.name != 'login' && $route.name != 'register'
@@ -29,28 +30,18 @@ export default {
   },
   created() {
     this.getTeam()
-    this.getTranscripts()
-    this.getShifts()
   },
   methods: {
-    ...mapActions('Admin', ['getTeam', 'getShifts']),
-    ...mapActions('Comms', ['getTranscripts'])
+    ...mapActions('Admin', ['getTeam']),
+    ...mapMutations(['UPDATE_NOTIFICATIONS'])
   },
   components: {
     Navigation: () => import('@/components/Navigation'),
     UserInfoBar
   },
   watch: {
-    notifications: {
-      immediate: true,
-      handler(val) {
-        if (val.length > 0) {
-          this.$notify.error({
-            message: val,
-            title: 'Error'
-          })
-        }
-      }
+    notifications(val) {
+      this.$notify(val)
     }
   }
 }

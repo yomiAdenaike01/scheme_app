@@ -82,10 +82,12 @@ export default new Vuex.Store({
           }
         })
         .catch(error => {
-          error = error.data
-          console.log(error)
-
-          context.commit('UPDATE_NOTIFICATIONS', error)
+          error = error.data.content
+          context.commit('UPDATE_NOTIFICATIONS', {
+            message: error,
+            title: 'Error when processing request',
+            type: 'error'
+          })
         })
     }
   },

@@ -1,11 +1,10 @@
 <template>
-  <el-table :data="team" border v-loading="team.length <= 0">
+  <el-table :data="shifts" border v-loading="shifts.length <= 0">
     <el-table-column>
       <template slot-scope="scope">
-        <ScheduleTableUnit :data="scope.row" />
+        <TableEmployee :data="scope.row" />
       </template>
     </el-table-column>
-    <el-table-column></el-table-column>
   </el-table>
 </template>
 
@@ -14,10 +13,10 @@ import { mapState } from 'vuex'
 export default {
   name: 'ScheduleTable',
   computed: {
-    ...mapState('Admin', ['team'])
+    ...mapState('Admin', ['shifts'])
   },
   components: {
-    ScheduleTableUnit: () => import('./ScheduleTableUnit')
+    TableEmployee: () => import('./TableEmployee')
   }
 }
 </script>

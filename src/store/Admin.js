@@ -13,16 +13,13 @@ export default {
     },
 
     getTeam(context) {
-      if (context.state.team.length <= 0) {
-        const payload = {
-          method: 'GET',
-          url: '/users/all'
-        }
-        context.dispatch('request', payload, { root: true }).then(response => {
-          console.log(response)
-          context.commit('UPDATE_TEAM', response)
-        })
+      const payload = {
+        method: 'GET',
+        url: '/users/all'
       }
+      context.dispatch('request', payload, { root: true }).then(response => {
+        context.commit('UPDATE_TEAM', response)
+      })
     }
   },
 
@@ -30,17 +27,14 @@ export default {
     UPDATE_SHIFTS(state, payload) {
       state.shifts = payload
     },
-    UPDATE_REQUESTS(state) {},
+    UPDATE_REQUESTS(state, payload) {
+      state.requests = payload
+    },
     UPDATE_TEAM(state, payload) {
       state.team = payload
     },
     UPDATE_VIEW_USER(state, payload) {
       state.viewUser = payload
-    }
-  },
-  getters: {
-    getTeam(state) {
-      return state.team
     }
   }
 }

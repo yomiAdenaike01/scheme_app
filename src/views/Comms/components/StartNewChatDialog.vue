@@ -40,22 +40,6 @@ export default {
       set(display) {
         this.UPDATE_START_NEW_CHAT(display)
       }
-    },
-
-    filteredTeam() {
-      const len = transcripts.length
-      let filterTeam = [...this.team]
-      for (let i = 0; i < len; i++) {
-        const transcript = transcripts[i]
-        const user2 = transcript.user_2
-        const index = team.findIndex(member => {
-          return member.id == user2
-        })
-        if (index >= 0) {
-          filterTeam.splice(index, 1)
-        }
-      }
-      return filterTeam
     }
   },
   methods: {

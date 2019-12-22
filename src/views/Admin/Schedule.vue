@@ -21,7 +21,6 @@
           </el-col>
         </el-row>
         <ScheduleTable />
-        <ScheduleStaff class="mt-4" />
       </el-col>
     </el-row>
 
@@ -30,11 +29,7 @@
       @createEvent="createEvent"
       :display="modals.createEvent"
     />
-
-    <ScheduleProfileView
-      @toggle="modals.viewProfile = $event"
-      :display="modals.viewProfile"
-    />
+    <ScheduleProfileView />
   </div>
 </template>
 
@@ -44,7 +39,6 @@ import 'vue-cal/dist/vuecal.css'
 import dates from '@/mixins/dates'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import ScheduleFormDialog from './components/ScheduleFormDialog'
-import ScheduleStaff from './components/ScheduleStaff'
 import Dropdown from '@/components/Dropdown.vue'
 import Popover from '@/components/Popover'
 import ScheduleProfileView from './components/ScheduleProfileView.vue'
@@ -71,7 +65,9 @@ export default {
     }
   },
   created() {
+    // this.getTeam()
     this.getTeam()
+    this.getShifts()
   },
 
   computed: {
@@ -140,7 +136,7 @@ export default {
   },
   methods: {
     ...mapActions(['request']),
-    ...mapActions('Admin', ['getTeam']),
+    ...mapActions('Admin', ['getTeam', 'getShifts']),
     createEvent(eventData) {
       this.loading = true
       this.modals.createEvent = false
@@ -195,7 +191,6 @@ export default {
     Title: () => import('@/components/Title'),
     ScheduleTable: () => import('./components/ScheduleTable'),
     ScheduleFormDialog,
-    ScheduleStaff,
     Dropdown,
     Popover,
     ScheduleProfileView

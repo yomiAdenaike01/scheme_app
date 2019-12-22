@@ -9,18 +9,23 @@
 </template>
 
 <script>
-import StartNewChat from "./components/StartNewChat";
-import MessengerBody from "./components/MessengerBody";
-import { mapActions, mapState, mapMutations } from "vuex";
+import StartNewChat from './components/StartNewChat'
+import MessengerBody from './components/MessengerBody'
+import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
-  name: "Messenger",
-
+  name: 'Messenger',
+  methods: {
+    ...mapActions('Comms', ['getTranscripts'])
+  },
+  created() {
+    this.getTranscripts()
+  },
   components: {
-    PreviousChat: () => import("./components/PreviousChat"),
+    PreviousChat: () => import('./components/PreviousChat'),
     StartNewChat,
     MessengerBody
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

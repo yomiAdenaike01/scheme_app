@@ -7,7 +7,7 @@
       <el-col></el-col>
       <el-col style="flex:0.2;border-left:solid 1px #e6e6e6;">
         <el-row class="team_container">
-          <el-col v-for="member in getTeam" :key="member._id">
+          <el-col v-for="(member, index) in team" :key="index">
             <Dropdown
               :items="items"
               @method="handleEvents"
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import dates from '@/mixins/dates'
 import Popover from '@/components/Popover.vue'
 import Dropdown from '@/components/Dropdown.vue'
@@ -37,11 +37,14 @@ export default {
       activeName: 'shifts'
     }
   },
+  created() {
+    this.getShifts()
+    this.getTeam()
+  },
   mixins: [dates],
   computed: {
     ...mapState(['requests']),
-    ...mapState('Admin', ['shifts']),
-    ...mapGetters('Admin', ['getTeam']),
+    ...mapState('Admin', ['shifts', 'team']),
     items() {
       return [
         {
@@ -84,6 +87,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('Admin', ['getShifts', 'getTeam']),
     handleEvents(event) {
       switch (event) {
         case 'message': {

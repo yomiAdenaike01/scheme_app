@@ -5,28 +5,30 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'ScheduleProfileView',
   props: {
     display: Boolean
   },
   computed: {
-    ...mapState('Admin', ['viewUser']),
-    ...mapGetters('Admin', ['getTeam']),
+    ...mapState('Admin', ['viewUser', 'team']),
     getUserData() {
-      return this.getTeam.find(member => {
-        return (member._id = this.viewUser)
+      return this.team.find(member => {
+        return (member.email = this.viewUser)
       })
     },
     returnDisplay: {
       get() {
-        return this.display
+        return this.viewUser.length > 0
       },
       set(val) {
-        this.$emit('toggle', val)
+        this.UPDATE_VIEW_USER(null)
       }
     }
+  },
+  methods: {
+    ...mapMutations('Admin', ['UPDATE_VIEW_USER'])
   }
 }
 </script>
