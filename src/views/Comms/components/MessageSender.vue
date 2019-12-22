@@ -12,6 +12,10 @@
         v-model="message.content"
         placeholder="Message Content...."
         type="textarea"
+        clearable
+        maxlength="500"
+        minlength="1"
+        show-word-limit
       />
     </el-col>
     <el-col>
