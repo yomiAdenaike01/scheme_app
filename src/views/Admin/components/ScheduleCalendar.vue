@@ -5,44 +5,18 @@
       small
       v-loading="loading"
       :events="getShifts"
-      default-view="day"
+      default-view="week"
       hide-view-selector
       :on-event-click="viewShift"
       editable-events
       @event-duration-change="changeShiftTime"
     />
-    <el-dialog :visible.sync="view">
-      <Title
-        slot="title"
-        title="Details"
-        subtitle="View and edit the details of the shift/event/request here."
-        defaultClass="m-0"
-      />
-
-      <el-form>
-        <el-form-item label="Assignee:">
-          <p class="member_name">{{ shift.assigned_to }}</p>
-        </el-form-item>
-        <el-form-item label="Approved:">
-          <p class="member_name">
-            <i class="el-icon" :class="returnIcon" style="font-size:1.4em"></i>
-            <el-button class="ml-3" v-if="!getIsAdmin"
-              >Resend Request</el-button
-            >
-          </p>
-        </el-form-item>
-        <el-form-item label="Shift Type:">
-          {{ shift.type }}
-        </el-form-item>
-        <el-divider><span class="grey">Timing</span></el-divider>
-        <el-form-item label="Start Date Time:">
-          <span>{{ shift.start }}</span>
-        </el-form-item>
-        <el-form-item label="End Date Time:">
-          <span>{{ shift.end }}</span>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <ViewShift
+      :display="view"
+      :shift="shift"
+      @toggle="view = $event"
+      @loading="loading = $event"
+    />
   </div>
 </template>
 
@@ -50,9 +24,9 @@
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
-import Title from '@/components/Title'
+import ViewShift from './dialogs/ViewShift'
 export default {
-  name: 'ScheduleTable',
+  name: 'ScheduleCalendar',
   data() {
     return {
       view: false,
@@ -63,31 +37,11 @@ export default {
   computed: {
     ...mapGetters('Admin', ['getShifts']),
     ...mapState('Admin', ['shifts']),
-    ...mapGetters(['getIsAdmin']),
     ...mapState(['currentUser']),
     // isMine() {
     //   return this.returnShiftDetails._id == this.currentUser._id
     // },
-    returnIcon() {
-      let approved = this.returnApproval
-      let returnval
-      if (approved) {
-        returnval = 'el-icon-circle-check'
-      } else {
-        returnval = 'el-icon-circle-close'
-      }
-      return returnval
-    },
-    returnApproval() {
-      if (this.returnShiftDetails) {
-        let approval = this.returnShiftDetails.is_approved
-        let returnval = false
-        if (approval.admin == 1) {
-          returnval = true
-        }
-        return returnval
-      }
-    },
+
     returnShiftDetails() {
       return this.shifts.find(shift => {
         return shift.id == this.shift_id
@@ -151,7 +105,7 @@ export default {
   },
   components: {
     VueCal,
-    Title
+    ViewShift
   }
 }
 </script>

@@ -25,7 +25,6 @@
 
 <script>
 import Title from '@/components/Title'
-import ScheduleTable from '@/views/Admin/components/ScheduleTable'
 import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'StartNewChatDialog',
@@ -46,8 +45,7 @@ export default {
     ...mapMutations('Comms', ['UPDATE_START_NEW_CHAT'])
   },
   components: {
-    Title,
-    ScheduleTable
+    Title
   },
   props: {
     display: {

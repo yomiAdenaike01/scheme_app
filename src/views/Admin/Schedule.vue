@@ -21,7 +21,7 @@
             </Dropdown>
           </el-col>
         </el-row>
-        <ScheduleTable
+        <ScheduleCalendar
           @displayCreateShift="modals.create_event = $event"
           style="height:70%"
         />
@@ -50,7 +50,7 @@ import CreateEmployee from './components/dialogs/CreateEmployee'
 import Dropdown from '@/components/Dropdown.vue'
 import Popover from '@/components/Popover'
 import ScheduleProfileView from './components/ScheduleProfileView.vue'
-
+import ScheduleCalendar from './components/ScheduleCalendar'
 export default {
   name: 'Schedule',
   data() {
@@ -190,7 +190,7 @@ export default {
 
   components: {
     Title: () => import('@/components/Title'),
-    ScheduleTable: () => import('./components/ScheduleTable'),
+    ScheduleCalendar,
     CreateShift,
     Dropdown,
     Popover,

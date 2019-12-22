@@ -54,7 +54,8 @@ export default {
           content: shiftContent.text,
           class: shiftContent.class,
           assigned_to: shiftContent.name,
-          type: shiftContent.type
+          type: shiftContent.type,
+          is_pickup: shift.is_pickup
         }
         shiftEvents.push(shiftEvent)
       }
@@ -68,7 +69,16 @@ function getName(state, id) {
   })
 }
 function returnShiftContent(state, shift) {
-  let user = getName(state, shift.assigned_to)
+  let isPickup = shift.is_pickup
+  let user = !isPickup
+    ? getName(state, shift.assigned_to)
+    : { name: 'Avaliable for pickup' }
+  let returnVal = {
+    text: '',
+    type: '',
+    class: '',
+    name: ''
+  }
   if (user) {
     let name = user.name
     let type = shift.shift_type
@@ -108,11 +118,12 @@ function returnShiftContent(state, shift) {
       default:
         break
     }
-    return {
-      text: `${shiftTitle} ${name}`,
+    returnVal = {
+      text: !isPickup ? `${shiftTitle} ${name}` : name,
       type: shiftTitle,
       class: shiftClass,
       name: name
     }
   }
+  return returnVal
 }
