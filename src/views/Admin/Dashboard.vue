@@ -1,22 +1,26 @@
 <template>
-  <el-row type="flex" style="height:100%">
-    <el-col></el-col>
-    <el-col></el-col>
-    <el-col style="flex:0.2;border-left:solid 1px #e6e6e6;">
-      <el-row class="team_container">
-        <el-col v-for="member in getTeam" :key="member._id">
-          <Dropdown
-            :items="items"
-            @method="handleEvents"
-            position="left"
-            :icon="false"
-          >
-            <Avatar :name="member.name" />
-          </Dropdown>
-        </el-col>
-      </el-row>
-    </el-col>
-  </el-row>
+  <div style="height:100%">
+    <el-row type="flex" style="height:100%">
+      <el-col>
+        <Title title="Dashboard" subtitle="View your daily summaries here" />
+      </el-col>
+      <el-col></el-col>
+      <el-col style="flex:0.2;border-left:solid 1px #e6e6e6;">
+        <el-row class="team_container">
+          <el-col v-for="member in getTeam" :key="member._id">
+            <Dropdown
+              :items="items"
+              @method="handleEvents"
+              position="left"
+              :icon="false"
+            >
+              <Avatar :name="member.name" />
+            </Dropdown>
+          </el-col>
+        </el-row>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>
@@ -98,7 +102,8 @@ export default {
   components: {
     Popover,
     Dropdown,
-    Avatar
+    Avatar,
+    Title: () => import('@/components/Title')
   }
 }
 </script>
