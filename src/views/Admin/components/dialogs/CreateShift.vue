@@ -97,7 +97,10 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button round type="primary" @click="$emit('createEvent', eventData)"
+      <el-button
+        round
+        type="primary"
+        @click="$emit('createEvent', eventData), $emit('toggle', false)"
         >Publish</el-button
       >
       <el-button round @click="$emit('toggle', false)">Cancel</el-button>

@@ -98,6 +98,7 @@ export default {
   methods: {
     ...mapActions(['request']),
     ...mapMutations(['UPDATE_NOTIFICATIONS']),
+
     viewShift(shift) {
       this.shift = shift
       this.view = true
@@ -108,7 +109,9 @@ export default {
     },
     changeShiftTime(shift) {
       this.$confirm(
-        `Are you sure you would like to change ${shift.assigned_to}'s shift from ${shift.start} to ${shift.end}`,
+        `Are you sure you would like to change ${
+          shift.assigned_to
+        }'s ${shift.type.toLowerCase()} from ${shift.start} to ${shift.end}`,
         'Confirm',
         {
           confirmButtonText: 'OK',
@@ -163,16 +166,22 @@ export default {
   &.normal_staff {
     background: #ecf5ff;
     color: #2f74eb;
+    border-top: 2px solid #2f74eb;
   }
   &.locumn {
     background: #f0f9eb;
     color: #67c23a;
+    border-top: 2px solid #67c23a;
   }
   &.holiday {
     background: #fef0f0;
     color: #f56c6c;
+    border-top: 2px solid #f56c6c;
   }
-  &.sick_leave {
+  &.time_off {
+    background: #fdf6ec;
+    color: #f2c678;
+    border-top: 2px solid #f2c678;
   }
   padding: 1em;
   text-transform: capitalize;
@@ -182,5 +191,15 @@ export default {
 }
 .el-icon-circle-check {
   color: green;
+}
+.vuecal__title-bar {
+  font-size: 1.1em;
+  background: none;
+  font-weight: bold;
+  .vuecal__title {
+    button {
+      color: #999;
+    }
+  }
 }
 </style>

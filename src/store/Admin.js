@@ -54,7 +54,7 @@ export default {
           content: shiftContent.text,
           class: shiftContent.class,
           assigned_to: shiftContent.name,
-          type: shift.shift_type
+          type: shiftContent.type
         }
         shiftEvents.push(shiftEvent)
       }
@@ -69,43 +69,50 @@ function getName(state, id) {
 }
 function returnShiftContent(state, shift) {
   let user = getName(state, shift.assigned_to)
-  let name = user.name
-  let type = shift.shift_type
-  let shiftClass = ''
-  let shiftTitle = ''
-  switch (type) {
-    case 1: {
-      shiftClass = 'normal_staff'
-      shiftTitle = 'Regular shift'
+  if (user) {
+    let name = user.name
+    let type = shift.shift_type
+    let shiftClass = ''
+    let shiftTitle = ''
+    let shiftType = ''
+    switch (type) {
+      case 1: {
+        shiftClass = 'normal_staff'
+        shiftTitle = 'Regular shift'
+        break
+      }
+      case 2: {
+        shiftClass = 'locumn'
+        shiftTitle = 'Locumn shift'
 
-      break
-    }
-    case 2: {
-      shiftClass = 'locumn'
-      shiftTitle = 'Locumn shift'
+        break
+      }
+      case 3: {
+        shiftClass = 'holiday'
+        shiftTitle = 'Holiday'
 
-      break
-    }
-    case 3: {
-      shiftClass = 'holiday'
-      shiftTitle = 'Holiday'
+        break
+      }
+      case 4: {
+        shiftClass = 'time_off'
+        shiftTitle = 'Time off'
 
-      break
-    }
-    case 4: {
-      shiftClass = 'time_off'
-      shiftTitle = 'Time off'
+        break
+      }
+      case 5: {
+        shiftClass = 'sick_leave'
+        shiftTitle = 'Sick leave'
 
-      break
+        break
+      }
+      default:
+        break
     }
-    case 5: {
-      shiftClass = 'sick_leave'
-      shiftTitle = 'Sick leave'
-
-      break
+    return {
+      text: `${shiftTitle} ${name}`,
+      type: shiftTitle,
+      class: shiftClass,
+      name: name
     }
-    default:
-      break
   }
-  return { text: `${shiftTitle} ${name}`, name: name, class: shiftClass }
 }
