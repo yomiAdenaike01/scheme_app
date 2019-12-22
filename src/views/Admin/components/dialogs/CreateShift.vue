@@ -1,11 +1,17 @@
 <template>
   <!-- TODO: ADD REASON FOR TIME OFF ADD ATTACHMENT ,FOR SICK NOTES ,ADD VALIDATION -->
 
-  <el-dialog
-    custom-class="event_dialog"
-    :title="getIsAdmin ? 'Create Event' : 'Create Request'"
-    :visible.sync="view"
-  >
+  <el-dialog custom-class="event_dialog" :visible.sync="view">
+    <Title
+      :title="!getIsAdmin ? 'Create Request' : 'Create Shift'"
+      :subtitle="
+        !getIsAdmin
+          ? 'Fill in the form below to create a request.'
+          : 'Fill in the form below to create a shift.'
+      "
+      defaultClass="m-0"
+      slot="title"
+    />
     <el-form
       status-icon
       :rules="validationData"
@@ -102,7 +108,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 export default {
-  name: 'EventFormDialog',
+  name: 'CreateShift',
   data() {
     return {
       repeat_toggle: false,
@@ -153,6 +159,9 @@ export default {
     repeatDaysConfig() {
       return ['Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun']
     }
+  },
+  components: {
+    Title: () => import('@/components/Title')
   }
 }
 </script>

@@ -24,10 +24,14 @@
       </el-col>
     </el-row>
 
-    <ScheduleFormDialog
-      @toggle="modals.createEvent = $event"
+    <CreateShift
+      @toggle="modals.create_event = $event"
       @createEvent="createEvent"
-      :display="modals.createEvent"
+      :display="modals.create_event"
+    />
+    <CreateEmployee
+      @toggle="modals.create_employee = $event"
+      :display="modals.create_employee"
     />
     <ScheduleProfileView />
   </div>
@@ -38,7 +42,9 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import dates from '@/mixins/dates'
 import { mapState, mapActions, mapGetters } from 'vuex'
-import ScheduleFormDialog from './components/ScheduleFormDialog'
+import CreateShift from './components/dialogs/CreateShift'
+import CreateEmployee from './components/dialogs/CreateEmployee'
+
 import Dropdown from '@/components/Dropdown.vue'
 import Popover from '@/components/Popover'
 import ScheduleProfileView from './components/ScheduleProfileView.vue'
@@ -55,9 +61,12 @@ export default {
         late: ''
       },
       modals: {
-        createEvent: false,
-        editEvent: false,
-        viewProfile: false
+        create_event: false,
+        edit_event: false,
+        view_profile: false,
+        export_profile: false,
+        export_schedule: false,
+        create_employee: false
       },
 
       currentView: '',
@@ -78,7 +87,7 @@ export default {
       let items = [
         {
           name: isAdmin ? 'Create Event' : 'Create Request',
-          command: 'add_event'
+          command: 'create_event'
         },
 
         {
@@ -137,6 +146,7 @@ export default {
   methods: {
     ...mapActions(['request']),
     ...mapActions('Admin', ['getTeam', 'getShifts']),
+    createEmployee(employeeData) {},
     createEvent(eventData) {
       this.loading = true
       this.modals.createEvent = false
@@ -177,11 +187,8 @@ export default {
         })
     },
     displayModals(command) {
-      if (command == 'add_event') {
-        this.modals.createEvent = true
-      } else {
-        this.modals.editEvent = true
-      }
+      console.log(command)
+      this.modals[command] = true
     }
   },
   mixins: [dates],
@@ -190,10 +197,11 @@ export default {
     VueCal,
     Title: () => import('@/components/Title'),
     ScheduleTable: () => import('./components/ScheduleTable'),
-    ScheduleFormDialog,
+    CreateShift,
     Dropdown,
     Popover,
-    ScheduleProfileView
+    ScheduleProfileView,
+    CreateEmployee
   }
 }
 </script>
