@@ -2,10 +2,9 @@
   <!-- TODO: EMIT THE TIME AND PLACE IT WITHIN THE CREATE SHIFT -->
   <div>
     <vue-cal
-      small
       v-loading="loading"
       :events="returnShiftEvents"
-      default-view="week"
+      default-view="day"
       hide-view-selector
       :on-event-click="viewShift"
       editable-events
