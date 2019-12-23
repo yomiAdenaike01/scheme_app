@@ -1,5 +1,5 @@
 <template>
-  <el-row style="height:100%" type="flex">
+  <el-row style="height:100%" type="flex" v-loading="team.length <= 0">
     <el-col class="chatinfo_container">
       <StartNewChat />
       <PreviousChat />
@@ -14,7 +14,9 @@ import MessengerBody from './components/MessengerBody'
 import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
   name: 'Messenger',
-
+  computed: {
+    ...mapState('Admin', ['team'])
+  },
   components: {
     PreviousChat: () => import('./components/PreviousChat'),
     StartNewChat,

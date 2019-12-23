@@ -7,14 +7,14 @@
     <Title
       slot="title"
       title="Select a team member"
-      subtitle="Hover over a team members avatar to display their full name."
+      subtitle="Choose a team member to chat with this only includes members that you don't currently have conversations with."
     />
     <div
       style="  overflow: auto;
   height: 5%;"
     >
       <el-card
-        v-for="member in team"
+        v-for="member in filterTeam"
         :key="member._id"
         class="member_card m-4"
         @click.native=";(displayContent = true), (chatMember = member)"
@@ -68,7 +68,6 @@ export default {
     return {
       displayContent: false,
       loading: false,
-      dialogLoading: null,
       chatMember: {},
       message: {
         content: '',
@@ -77,14 +76,24 @@ export default {
       }
     }
   },
-  activated() {
-    this.dialogLoading = this.$loading({
-      target: '.el-dialog'
-    })
-  },
+
   computed: {
     ...mapState('Admin', ['team']),
     ...mapState('Comms', ['transcripts', 'startNewChat']),
+    filterTeam() {
+      let len = this.transcripts.length
+      let newTeam = []
+      for (let i = 0; i < len; i++) {
+        const transcript = this.transcripts[i]
+        let index = this.team.find(member => {
+          return transcript.user_2 != member._id
+        })
+        if (index) {
+          newTeam.push(index)
+        }
+      }
+      return newTeam
+    },
 
     displayModal: {
       get() {
@@ -138,13 +147,6 @@ export default {
     display: {
       type: Boolean,
       default: false
-    }
-  },
-  watch: {
-    team(val) {
-      if (val.length > 0) {
-        this.dialogLoading.close()
-      }
     }
   }
 }

@@ -44,16 +44,20 @@ export default {
   computed: {
     ...mapState('Comms', ['transcripts', 'activeTranscript']),
     ...mapState('Admin', ['team']),
+    ...mapState(['currentUser']),
     findUser() {
-      const user2 = this.activeTranscript.user_2
-      const foundUser = this.team.find(member => {
-        return member._id == user2
-      })
-      if (foundUser) {
-        return foundUser.name
-      } else {
-        return 'John Doe'
+      let transcripts = this.transcripts
+      let len = transcripts.length
+      let user
+      for (let i = 0; i < len; i++) {
+        const transcript = transcripts[i]
+        user = this.team.find(x => {
+          return transcript.user_2 == x._id
+        })
       }
+
+      if (user) return user.name
+      return 'John Doe'
     }
   },
   methods: {
