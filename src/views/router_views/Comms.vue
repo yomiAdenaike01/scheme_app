@@ -20,11 +20,13 @@ export default {
     this.commsInterval = setInterval(() => {
       this.getTranscripts()
       this.getTeam()
+      this.getNotifications()
     }, 5000)
   },
   methods: {
     ...mapActions('Comms', ['getTranscripts']),
-    ...mapActions('Admin', ['getTeam'])
+    ...mapActions('Admin', ['getTeam']),
+    ...mapActions(['getNotifications'])
   }
 }
 </script>

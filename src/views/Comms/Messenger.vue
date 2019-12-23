@@ -1,5 +1,5 @@
 <template>
-  <el-row style="height:100%" type="flex" v-loading="team.length <= 0">
+  <el-row style="height:100%" type="flex" v-loading="loading">
     <el-col class="chatinfo_container">
       <StartNewChat />
       <PreviousChat />
@@ -15,7 +15,13 @@ import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
   name: 'Messenger',
   computed: {
-    ...mapState('Admin', ['team'])
+    ...mapState('Admin', ['team']),
+    ...mapState('Comms', ['transcripts']),
+    loading() {
+      let team = this.team.length <= 0
+      let transcripts = this.transcripts <= 0
+      return team && transcripts
+    }
   },
   components: {
     PreviousChat: () => import('./components/PreviousChat'),

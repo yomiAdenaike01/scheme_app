@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import Comms from './Comms'
 import Admin from './Admin'
+import VuexReset from '@ianwalter/vuex-reset'
 
 Vue.use(Vuex)
 axios.defaults.baseURL = 'http://localhost:3000/api'
@@ -26,6 +27,7 @@ const storage = {
     localStorage.setItem(key, item)
   }
 }
+
 export default new Vuex.Store({
   state: {
     token: storage.get('token'),
@@ -129,7 +131,8 @@ export default new Vuex.Store({
         })
     }
   },
-  modules: { Comms, Admin }
+  modules: { Comms, Admin },
+  plugins: [VuexReset({ trigger: 'REMOVE_USER' })]
 })
 
 const sortPayload = (state, payload) => {

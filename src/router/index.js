@@ -106,16 +106,6 @@ router.beforeEach((to, from, next) => {
   } else {
     next()
   }
-  if (to.name == 'login') {
-    if (isLoggedIn) {
-      next({
-        name: 'dashboard',
-        query: { redirect: to.fullPath }
-      })
-    } else {
-      next()
-    }
-  }
 })
 
 export default router

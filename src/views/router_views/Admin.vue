@@ -19,10 +19,12 @@ export default {
   activated() {
     this.adminInterval = setInterval(() => {
       this.getTeam()
+      this.getNotifications()
     }, 5000)
   },
   methods: {
-    ...mapActions('Admin', ['getTeam'])
+    ...mapActions('Admin', ['getTeam']),
+    ...mapActions(['getNotifications'])
   }
 }
 </script>
