@@ -8,11 +8,23 @@
 import { mapActions } from 'vuex'
 export default {
   name: 'Comms',
-  created() {
-    this.getTranscripts()
+  data() {
+    return {
+      commsInterval: null
+    }
+  },
+  deactivated() {
+    clearInterval(this.commsInterval)
+  },
+  activated() {
+    this.commsInterval = setInterval(() => {
+      this.getTranscripts()
+      this.getTeam()
+    }, 5000)
   },
   methods: {
-    ...mapActions('Comms', ['getTranscripts'])
+    ...mapActions('Comms', ['getTranscripts']),
+    ...mapActions('Admin', ['getTeam'])
   }
 }
 </script>

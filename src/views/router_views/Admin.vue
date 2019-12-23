@@ -8,12 +8,21 @@
 import { mapActions } from 'vuex'
 export default {
   name: 'Admin',
-  created() {
-    this.getTeam()
-    this.getShifts()
+  data() {
+    return {
+      adminInterval: null
+    }
+  },
+  deactivated() {
+    clearInterval(this.adminInterval)
+  },
+  activated() {
+    this.adminInterval = setInterval(() => {
+      this.getTeam()
+    }, 5000)
   },
   methods: {
-    ...mapActions('Admin', ['getTeam', 'getShifts'])
+    ...mapActions('Admin', ['getTeam'])
   }
 }
 </script>

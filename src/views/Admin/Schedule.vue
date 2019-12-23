@@ -25,7 +25,6 @@
           </el-col>
         </el-row>
         <ScheduleCalendar
-          @regetShifts="regetShifts"
           @displayCreateShift="modals.create_event = $event"
           style="height:70%"
         />
@@ -61,11 +60,7 @@ export default {
     return {
       loading: false,
       liveSchedule: false,
-      interval: () => {
-        setInterval(() => {
-          this.getTeam()
-        }, 5000)
-      },
+      scheduleInterval: null,
       filters: {
         employee: '',
         abscences: '',
@@ -84,16 +79,6 @@ export default {
       currentView: '',
       dateFormat: 'DD MMMM'
     }
-  },
-  destroyed() {
-    clearInterval(this.interval)
-  },
-  created() {
-    this.getTeam()
-    this.getShifts()
-    setInterval(() => {
-      this.getShifts()
-    }, 5000)
   },
 
   computed: {
@@ -163,11 +148,7 @@ export default {
   },
   methods: {
     ...mapActions(['request']),
-    ...mapActions('Admin', ['getTeam', 'getShifts']),
-    regetShifts() {
-      this.getShifts()
-      console.log('getting new shifts')
-    },
+
     createEmployee(employeeData) {},
     createEvent(eventData) {
       this.loading = true

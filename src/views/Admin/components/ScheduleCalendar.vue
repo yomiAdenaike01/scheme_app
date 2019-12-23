@@ -212,6 +212,7 @@ export default {
 }
 
 .vuecal__event {
+  font-size: 0.8em;
   &.normal_staff {
     background: #ecf5ff;
     color: #2f74eb;
