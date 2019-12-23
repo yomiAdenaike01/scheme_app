@@ -23,22 +23,22 @@ export default {
       routes: [
         {
           name: 'Dashboard',
-          path: '/dashboard',
+          path: '/admin/dashboard',
           icon: 'el-icon-s-data'
         },
         {
           name: 'Schedule',
-          path: '/schedule',
+          path: '/admin/schedule',
           icon: 'el-icon-time'
         },
         {
           name: 'Reports',
-          path: '/reports',
+          path: '/admin/reports',
           icon: 'el-icon-notebook-1'
         },
         {
           name: 'Messenger',
-          path: '/messenger',
+          path: '/comms/messenger',
           icon: 'el-icon-chat-round'
         }
       ]

@@ -19,8 +19,8 @@
             v-if="!notification.is_read"
             @click="
               updateContent('/notifications/update', {
-                id: notification._id,
-                update: { is_read: true }
+                method: 'POST',
+                update: { is_read: true, id: notification._id }
               })
             "
             >Mark as read</el-button
@@ -70,12 +70,7 @@
             circle
             icon="el-icon-check"
             size="small"
-            @click="
-              updateContent(notification.url, {
-                id: notification.content.id,
-                update: notification.content.update
-              })
-            "
+            @click="updateContent(notification.url, notification.content)"
           ></el-button>
         </div>
       </el-col>
@@ -103,15 +98,7 @@ export default {
       return this.format(this.update.endDate, this.formatString)
     },
     notificationUpdate() {
-      // let update = this.notification.content.update
-      // if (
-      //   update.hasOwnProperty('startDate') &&
-      //   update.hasOwnProperty('endDate')
-      // ) {
-      //   update.startDate = this.startDate
-      //   update.endDate = this.endDate
-      // }
-      return this.notification.content.update
+      return this.notification.content.data
     }
   },
   props: {
@@ -132,12 +119,9 @@ export default {
     },
     updateContent(url, updateContent) {
       let payload = {
-        method: 'POST',
+        method: updateContent.method,
         url: url,
-        data: {
-          id: updateContent.id || this.notification._id,
-          update: updateContent.update
-        }
+        data: updateContent.data || updateContent.update
       }
       this.request(payload)
         .then(response => {

@@ -7,6 +7,10 @@ const schedule = () => import('@/views/Admin/Schedule')
 const messenger = () => import('@/views/Comms/Messenger')
 const reports = () => import('@/views/Admin/Reports')
 const logout = () => import('@/views/User/Logout')
+
+const admin = () => import('@/views/router_views/Admin')
+const comms = () => import('@/views/router_views/Comms')
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -31,40 +35,54 @@ const routes = [
     }
   },
   {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: dashboard,
-    meta: {
-      title: 'Dashboard',
-      authRequired: true
-    }
+    path: '/admin',
+    name: 'admin',
+    component: admin,
+    children: [
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: dashboard,
+        meta: {
+          title: 'Dashboard',
+          authRequired: true
+        }
+      },
+      {
+        path: 'schedule',
+        name: 'schedule',
+        component: schedule,
+        meta: {
+          title: 'Schedule',
+          authRequired: true
+        }
+      },
+      {
+        path: 'reports',
+        name: 'reports',
+        component: reports,
+        meta: {
+          title: 'Reports',
+          authRequired: true
+        }
+      }
+    ]
   },
   {
-    path: '/schedule',
-    name: 'schedule',
-    component: schedule,
-    meta: {
-      title: 'Schedule',
-      authRequired: true
-    }
-  },
-  {
-    path: '/messenger',
-    name: 'messenger',
-    component: messenger,
-    meta: {
-      title: 'Messenger',
-      authRequired: true
-    }
-  },
-  {
-    path: '/reports',
-    name: 'reports',
-    component: reports,
-    meta: {
-      title: 'Reports',
-      authRequired: true
-    }
+    path: '/comms',
+    name: 'comms',
+    component: comms,
+    children: [
+      {
+        path: 'messenger',
+        name: 'messenger',
+        component: messenger,
+        meta: {
+          title: 'Messenger',
+          authRequired: true
+        }
+      }
+    ]
   }
 ]
 
@@ -79,7 +97,7 @@ router.beforeEach((to, from, next) => {
   if (authRequired) {
     if (!isLoggedIn) {
       next({
-        path: '/login',
+        name: 'login',
         query: { redirect: to.fullPath }
       })
     } else {
@@ -91,7 +109,7 @@ router.beforeEach((to, from, next) => {
   if (to.name == 'login') {
     if (isLoggedIn) {
       next({
-        path: '/dashboard',
+        name: 'dashboard',
         query: { redirect: to.fullPath }
       })
     } else {

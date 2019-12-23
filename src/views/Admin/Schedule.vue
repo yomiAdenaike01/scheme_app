@@ -130,8 +130,8 @@ export default {
       if (!isAdmin) {
         items.filter(item => {
           return (
-            item.command == 'export_employee' ||
-            item.command == 'create_employee'
+            item.command != 'export_employee' ||
+            item.command != 'create_employee'
           )
         })
       }
