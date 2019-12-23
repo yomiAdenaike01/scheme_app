@@ -9,7 +9,7 @@
     <el-card
       v-for="member in team"
       :key="member._id"
-      class="member_card"
+      class="member_card m-4"
       @click.native=";(displayContent = true), (chatMember = member)"
       v-loading="loading"
     >
@@ -30,7 +30,7 @@
           v-model="message.content"
           @keyup.enter.native="sendNewChatMessage"
           class="mr-4"
-          placeholder="Type new message content here..."
+          :placeholder="`Send message to ${chatMember.name}`"
         />
         <el-button plain type="primary" @click="sendNewChatMessage"
           >Send Message</el-button
