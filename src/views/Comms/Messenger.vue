@@ -15,10 +15,12 @@ import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
   name: 'Messenger',
   methods: {
-    ...mapActions('Comms', ['getTranscripts'])
+    ...mapActions('Comms', ['getTranscripts']),
+    ...mapActions('Admin', ['getTeam'])
   },
   created() {
     this.getTranscripts()
+    this.getTeam()
   },
   components: {
     PreviousChat: () => import('./components/PreviousChat'),

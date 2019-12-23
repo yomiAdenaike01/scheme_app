@@ -14,20 +14,18 @@
     </el-col>
     <el-col>
       <div class="profile_container">
-        <el-badge :value="userNotifications.length" class="item mr-2 primary">
+        <Dropdown :items="items" @method="handleCommands" :icon="false">
+          <Avatar :name="currentUser.name"></Avatar>
+        </Dropdown>
+        <el-badge :value="userNotifications.length" class="item ml-2 primary">
           <el-button
             size="small"
             @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"
             circle
-            type="primary"
-            plain
             icon="el-icon-bell trigger"
           >
           </el-button>
         </el-badge>
-        <Dropdown :items="items" @method="handleCommands" :icon="false">
-          <Avatar :name="currentUser.name"></Avatar>
-        </Dropdown>
       </div>
     </el-col>
 

@@ -38,7 +38,7 @@ export default {
     }
   },
 
-  mounted() {
+  created() {
     if (this.currentUser && this.userNotifications.length > 0) {
       this.UPDATE_NOTIFICATIONS({
         title: 'You have notifications',
@@ -50,12 +50,17 @@ export default {
       setInterval(() => {
         this.getNotifications()
       }, 5000)
+
+      this.getTeam()
+      this.getTranscripts()
     }
   },
 
   methods: {
     ...mapMutations(['UPDATE_NOTIFICATIONS']),
-    ...mapActions(['getNotifications'])
+    ...mapActions(['getNotifications']),
+    ...mapActions('Comms', ['getTranscripts']),
+    ...mapActions('Admin', ['getTeam'])
   },
   components: {
     Navigation,
