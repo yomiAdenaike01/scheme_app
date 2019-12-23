@@ -36,11 +36,11 @@ export default new Vuex.Store({
     notifications: [],
     preferences: {},
     viewNotificationsCenter: false,
-    userNotifications: []
+    userNotifications: {}
   },
   mutations: {
     UPDATE_USER_NOTIFICATIONS(state, payload) {
-      state.userNotifications.push(payload)
+      state.userNotifications = payload
     },
     UPDATE_VIEW_NOTIFICATIONS_CENTER(state, payload) {
       state.viewNotificationsCenter = payload
@@ -65,6 +65,11 @@ export default new Vuex.Store({
     },
 
     UPDATE_NOTIFICATIONS(state, notification) {
+      if (notification.type == 'success') {
+        notification.title = 'Opeartion Successful'
+      } else if (notification.type == 'error') {
+        notification.title = 'Operation Unsuccessful'
+      }
       state.notifications.unshift(notification)
     }
   },
@@ -81,10 +86,11 @@ export default new Vuex.Store({
     getNotifications(context) {
       context
         .dispatch('request', {
-          method: '/users/notifications'
+          url: '/notifications/all',
+          method: 'GET'
         })
         .then(response => {
-          this.UPDATE_USER_NOTIFICATIONS(response)
+          context.commit('UPDATE_USER_NOTIFICATIONS', response)
         })
         .catch(error => {
           return error

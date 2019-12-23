@@ -205,7 +205,7 @@ export default {
         method: 'DELETE',
         url: '/shifts/delete',
         data: {
-          shift_id: this.shift.id
+          id: this.shift.id
         }
       })
         .then(response => {
@@ -226,8 +226,8 @@ export default {
         method: 'POST',
         url: '/shifts/update',
         data: {
-          shift_id: this.shift.id,
-          shift_update: update
+          id: this.shift.id,
+          update: update
         }
       })
         .then(response => {

@@ -11,6 +11,7 @@
         </keep-alive>
       </el-col>
     </el-row>
+    <NotificationsCenter />
   </div>
 </template>
 
@@ -18,24 +19,48 @@
 import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
 import UserInfoBar from '@/components/UserInfoBar'
 import Navigation from '@/components/Navigation'
+import NotificationsCenter from '@/components/NotificationsCenter'
+
 export default {
   name: 'app',
 
   computed: {
-    ...mapState(['notifications', 'globalLoader']),
+    ...mapState([
+      'notifications',
+      'globalLoader',
+      'currentUser',
+      'userNotifications'
+    ]),
 
     validRoute() {
       let $route = this.$route
       return $route.name != 'login' && $route.name != 'register'
     }
   },
-  created() {},
+
+  mounted() {
+    if (this.currentUser && this.userNotifications.length > 0) {
+      this.UPDATE_NOTIFICATIONS({
+        title: 'You have notifications',
+        message: 'Click to view notifications.',
+        type: 'info',
+        onClick: () => this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true)
+      })
+
+      setInterval(() => {
+        this.getNotifications()
+      }, 5000)
+    }
+  },
+
   methods: {
-    ...mapMutations(['UPDATE_NOTIFICATIONS'])
+    ...mapMutations(['UPDATE_NOTIFICATIONS']),
+    ...mapActions(['getNotifications'])
   },
   components: {
     Navigation,
-    UserInfoBar
+    UserInfoBar,
+    NotificationsCenter
   },
   watch: {
     notifications(val) {
@@ -49,6 +74,9 @@ export default {
 #app {
   height: 100%;
   overflow: hidden;
+}
+.trigger {
+  cursor: pointer;
 }
 html,
 body {

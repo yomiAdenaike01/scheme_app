@@ -3,7 +3,13 @@
     <Title title="Schedule" subtitle="View your calendar" />
     <el-row v-loading="loading" type="flex">
       <el-col class="pl-3 pr-3">
-        <el-row class="mb-4" type="flex" :gutter="10">
+        <el-row class="mb-4" type="flex" :gutter="10" align="middle">
+          <el-col>
+            <el-switch
+              v-model="liveSchedule"
+              active-text="Live Schedule"
+            ></el-switch>
+          </el-col>
           <el-col>
             <Dropdown
               :items="items"
@@ -54,6 +60,7 @@ export default {
   data() {
     return {
       loading: false,
+      liveSchedule: false,
       interval: () => {
         setInterval(() => {
           this.getTeam()

@@ -23,7 +23,6 @@
         </el-row>
       </el-col>
     </el-row>
-    <NotificationsCenter />
   </div>
 </template>
 
@@ -33,7 +32,6 @@ import dates from '@/mixins/dates'
 import Popover from '@/components/Popover.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import Avatar from '../../components/Avatar.vue'
-import NotificationsCenter from '@/components/NotificationsCenter'
 export default {
   name: 'Dashboard',
   data() {
@@ -45,6 +43,9 @@ export default {
         }, 5000)
       }
     }
+  },
+  destroyed() {
+    clearInterval(this.interval)
   },
   created() {
     this.getShifts()
@@ -118,7 +119,6 @@ export default {
     Popover,
     Dropdown,
     Avatar,
-    NotificationsCenter,
     Title: () => import('@/components/Title')
   }
 }

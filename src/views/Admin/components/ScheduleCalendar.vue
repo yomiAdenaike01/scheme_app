@@ -74,8 +74,8 @@ export default {
       ).then(response => {
         this.loading = true
         const payload = {
-          shift_id: shift.id,
-          shift_update: {
+          id: shift.id,
+          update: {
             startDate: shift.startDate.toISOString(),
             endDate: shift.endDate.toISOString()
           }
