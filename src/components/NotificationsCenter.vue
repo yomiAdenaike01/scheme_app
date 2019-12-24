@@ -32,7 +32,7 @@ import Notification from './Notification'
 import Title from '@/components/Title'
 export default {
   name: 'NotificationsCenter',
-  mounted() {},
+
   computed: {
     ...mapState([
       'viewNotificationsCenter',

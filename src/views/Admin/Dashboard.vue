@@ -3,25 +3,11 @@
     <el-row type="flex" style="height:100%">
       <el-col>
         <Title title="Dashboard" subtitle="View your daily summaries here" />
-        <el-card>
-          <h3>Card 1</h3>
-        </el-card>
+        <Shift v-for="(shift, key) in returnShifts" :key="key" :shift="shift" />
       </el-col>
-      <el-col></el-col>
-      <el-col style="flex:0.2;border-left:solid 1px #e6e6e6;">
-        <el-row class="team_container">
-          <el-col v-for="(member, index) in team" :key="index">
-            <Dropdown
-              :items="items"
-              @method="handleEvents"
-              position="left"
-              :icon="false"
-            >
-              <Avatar :name="member.name" />
-            </Dropdown>
-          </el-col>
-        </el-row>
-      </el-col>
+
+      <!-- lAST SIDEBAR -->
+      <Team />
     </el-row>
   </div>
 </template>
@@ -32,16 +18,14 @@ import dates from '@/mixins/dates'
 import Popover from '@/components/Popover.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import Avatar from '../../components/Avatar.vue'
+import Team from './components/Team'
+import employeeMethods from '@/mixins/employeeMethods'
+import Shift from './components/Shift'
 export default {
   name: 'Dashboard',
   data() {
     return {
-      activeName: 'shifts',
-      interval: () => {
-        setInterval(() => {
-          this.getNotifications()
-        }, 5000)
-      }
+      activeName: 'shifts'
     }
   },
   destroyed() {
@@ -52,74 +36,50 @@ export default {
     this.getTeam()
     this.getNotifications()
   },
-  mixins: [dates],
+  mixins: [dates, employeeMethods],
   computed: {
-    ...mapState(['requests']),
+    ...mapState(['currentUser']),
     ...mapState('Admin', ['shifts', 'team']),
-    items() {
-      return [
-        {
-          name: 'Message',
-          command: 'message'
-        },
-        {
-          name: 'View Requests',
-          command: 'requests',
-          divided: true
-        }
-      ]
-    },
+
     returnShifts() {
-      const shifts = this.shifts
-      const len = shifts.length
-      let shiftsDates = {
-        week: [],
-        today: [],
-        upcoming: []
-      }
+      let shifts = this.shifts
+      let _shifts = []
+      let len = shifts.length
+      let format = 'DD MMM YYYY HH:mm '
       for (let i = 0; i < len; i++) {
         const shift = shifts[i]
-        const startDate = shift.startDate
-        if (this.isThisWeek(startDate)) {
-          shiftsDates.week.push(shift)
-        } else if (this.isToday(startDate)) {
-          shiftsDates.today.push(startDate)
-        } else if (this.isFuture(startDate, true, null)) {
-          shiftsDates.upcoming.push(shift)
-        }
+        let newShift = Object.assign({}, shift)
+        let teamMember =
+          this.team.find(x => {
+            return x._id == shift.assigned_to
+          }) || this.currentUser
+        let shiftDetails = this.convertShift(shift.shift_type)
+        newShift.user = teamMember.employee_type
+        newShift.assigned_to = teamMember.name
+        newShift.shift_type = shiftDetails.title
+        newShift.startDate = this.format(newShift.startDate, format)
+        newShift.endDate = this.format(newShift.endDate, format)
+        newShift.isoStart = shift.startDate
+        newShift.isoEnd = shift.endDate
+        newShift.shift_type_num = shift.shift_type
+        newShift.class = shiftDetails.class
+        _shifts.push(newShift)
       }
-      // for (let property in shiftsDates) {
-      //   let arr = shiftsDates[property];
-      //   if (arr.length <= 0) {
-      //     delete shiftsDates[property];
-      //   }
-      // }
-      return shiftsDates
+
+      return _shifts
     }
   },
   methods: {
     ...mapActions('Admin', ['getShifts', 'getTeam']),
-    ...mapActions(['getNotifications']),
-    handleEvents(event) {
-      switch (event) {
-        case 'message': {
-          this.$router.push({ name: 'messenger' })
-          break
-        }
-        case 'view_requests': {
-          break
-        }
-
-        default:
-          break
-      }
-    }
+    ...mapActions(['getNotifications'])
   },
   components: {
     Popover,
     Dropdown,
     Avatar,
-    Title: () => import('@/components/Title')
+    Title: () => import('@/components/Title'),
+    Team,
+    Shift
   }
 }
 </script>
@@ -130,15 +90,5 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 1.3em;
-}
-.team_container {
-  .el-col {
-    padding: 1em;
-    border-bottom: solid 1px #e6e6e6;
-    cursor: pointer;
-    &:hover {
-      background-color: darken($color: #ffff, $amount: 2);
-    }
-  }
 }
 </style>

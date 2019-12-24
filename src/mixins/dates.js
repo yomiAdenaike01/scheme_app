@@ -6,6 +6,10 @@ export default {
     }
   },
   methods: {
+    duration(date, diff) {
+      let _date = moment(date)
+      return moment.duration(_date.diff(diff))
+    },
     isFuture(date, isNow, afterDate) {
       if (isNow) {
         return moment(date).isAfter(this.now)
