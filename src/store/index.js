@@ -38,7 +38,7 @@ export default new Vuex.Store({
     notifications: [],
     preferences: {},
     viewNotificationsCenter: false,
-    userNotifications: {},
+    userNotifications: [],
     currentInterval: ''
   },
   mutations: {

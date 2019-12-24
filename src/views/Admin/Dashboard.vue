@@ -3,17 +3,64 @@
     <el-row type="flex" style="height:100%">
       <el-col>
         <Title title="Dashboard" subtitle="View your daily summaries here" />
-        <Shift v-for="(shift, key) in returnShifts" :key="key" :shift="shift" />
+        <el-row>
+          <el-col v-if="returnShifts.previous.length > 0">
+            <Shift
+              v-for="(shift, key) in returnShifts.previous"
+              :key="key"
+              :shift="shift"
+            />
+          </el-col>
+          <el-col v-else>
+            <p>No shifts today</p>
+          </el-col>
+          <el-col v-if="returnShifts.week.length > 0">
+            <Shift
+              v-for="(shift, key) in returnShifts.week"
+              :key="key"
+              :shift="shift"
+            />
+          </el-col>
+          <el-col v-else>
+            <p>No shifts today</p>
+          </el-col>
+          <el-col v-if="returnShifts.upcoming.length > 0">
+            <Shift
+              v-for="(shift, key) in returnShifts.upcoming"
+              :key="key"
+              :shift="shift"
+            />
+          </el-col>
+          <el-col v-else>
+            <p>No upcoming shifts</p>
+          </el-col>
+        </el-row>
+      </el-col>
+      <el-col>
+        <Title
+          title="Notifications"
+          subtitle="View your notifications a summary of your notifications here."
+        />
+        <div v-if="userNotifications.length > 0">
+          <Notification
+            :notification="notification"
+            v-for="notification in userNotifications"
+            :key="notification._id"
+          />
+        </div>
+        <p style="text-align:center" v-else>
+          No notifications detected. Guess it's a quiet day.
+        </p>
       </el-col>
 
-      <!-- lAST SIDEBAR -->
+      <!-- TEAM SIDEBAR -->
       <Team />
     </el-row>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 import dates from '@/mixins/dates'
 import Popover from '@/components/Popover.vue'
 import Dropdown from '@/components/Dropdown.vue'
@@ -21,6 +68,7 @@ import Avatar from '../../components/Avatar.vue'
 import Team from './components/Team'
 import employeeMethods from '@/mixins/employeeMethods'
 import Shift from './components/Shift'
+import Notification from '@/components/Notification'
 export default {
   name: 'Dashboard',
   data() {
@@ -38,14 +86,26 @@ export default {
   },
   mixins: [dates, employeeMethods],
   computed: {
-    ...mapState(['currentUser']),
+    ...mapState(['currentUser', 'userNotifications']),
     ...mapState('Admin', ['shifts', 'team']),
 
     returnShifts() {
       let shifts = this.shifts
-      let _shifts = []
+      let _shifts = {
+        week: [],
+        today: [],
+        upcoming: [],
+        previous: []
+      }
       let len = shifts.length
       let format = 'DD MMM YYYY HH:mm '
+
+      // Object details
+      let weeks = _shifts.week
+      let today = _shifts.today
+      let upcoming = _shifts.upcoming
+      let previous = _shifts.previous
+
       for (let i = 0; i < len; i++) {
         const shift = shifts[i]
         let newShift = Object.assign({}, shift)
@@ -53,6 +113,8 @@ export default {
           this.team.find(x => {
             return x._id == shift.assigned_to
           }) || this.currentUser
+
+        // Shift conversion
         let shiftDetails = this.convertShift(shift.shift_type)
         newShift.user = teamMember.employee_type
         newShift.assigned_to = teamMember.name
@@ -63,7 +125,22 @@ export default {
         newShift.isoEnd = shift.endDate
         newShift.shift_type_num = shift.shift_type
         newShift.class = shiftDetails.class
-        _shifts.push(newShift)
+        newShift.completed = false
+        // Set whether shift is completd or not
+        if (!this.isFuture(newShift.isoEnd)) {
+          newShift.completed = true
+        }
+
+        // Sort shifts into date categories
+        if (this.isToday(newShift.isoStart)) {
+          today.push(newShift)
+        } else if (this.isThisWeek(newShift.isoStart)) {
+          weeks.push(newShift)
+        } else if (this.isFuture(newShift.isoStart, true)) {
+          upcoming.push(newShift)
+        } else {
+          previous.push(newShift)
+        }
       }
 
       return _shifts
@@ -71,7 +148,8 @@ export default {
   },
   methods: {
     ...mapActions('Admin', ['getShifts', 'getTeam']),
-    ...mapActions(['getNotifications'])
+    ...mapActions(['getNotifications']),
+    ...mapMutations(['UPDATE_VIEW_NOTIFICATIONS_CENTER'])
   },
   components: {
     Popover,
@@ -79,7 +157,8 @@ export default {
     Avatar,
     Title: () => import('@/components/Title'),
     Team,
-    Shift
+    Shift,
+    Notification
   }
 }
 </script>

@@ -1,5 +1,8 @@
 <template>
-  <el-card :body-style="{ padding: '0px' }" class="shift_container">
+  <el-card
+    :body-style="{ padding: '0px' }"
+    class="mb-3 ml-3 mr-3 shift_container"
+  >
     <el-row type="flex">
       <el-col class="shift_details_container unit p-3">
         <h5 class="member_name">{{ shift.shift_type }}</h5>
@@ -28,11 +31,11 @@
           <span class="date">{{ shift.endDate }}</span>
         </div>
       </el-col>
-      <el-col class="p-3 approval_wrapper" v-if="shift.shift_type_num > 2">
+      <el-col class="p-3 approval_wrapper">
         <el-tag
           class="member_name"
-          :type="approved == 'accepted' ? 'success' : 'error'"
-          >{{ approved }}
+          :type="shift.completed ? 'success' : 'danger'"
+          >{{ shift.completed ? 'Finished' : 'Incomplete' }}
         </el-tag>
       </el-col>
     </el-row>
@@ -119,7 +122,6 @@ export default {
 
 <style lang="scss" scoped>
 .shift_container {
-  margin: 3em;
   cursor: pointer;
   font-size: 0.9em;
 }
@@ -163,5 +165,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1;
 }
 </style>
