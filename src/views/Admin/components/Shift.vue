@@ -1,11 +1,7 @@
 <template>
-  <el-card
-    :body-style="{ padding: '0px' }"
-    class="m-4 shift_container"
-    shadow="none"
-  >
+  <el-card :body-style="{ padding: '0px' }" class="shift_container">
     <el-row type="flex">
-      <el-col class="shift_details_container p-3">
+      <el-col class="shift_details_container unit p-3">
         <h5 class="member_name">{{ shift.shift_type }}</h5>
         <p class="member_name mt-1 mb-1">
           {{ shift.assigned_to }}
@@ -14,7 +10,7 @@
           ><i class="el-icon el-icon-user grey"></i> {{ getEmployeeType }}</span
         >
       </el-col>
-      <el-col :class="['shift_footer p-3', shift.class]">
+      <el-col :class="['shift_times unit p-3', shift.class]">
         <div style="display:flex;justify-content:center; align-items:center">
           <span class="date">{{ shift.startDate }}</span>
           <div
@@ -29,6 +25,14 @@
           </div>
           <span class="date">{{ shift.endDate }}</span>
         </div>
+      </el-col>
+      <el-col class="p-3" v-if="shift.shift_type_num > 2">
+        <div class="mt-3"></div>
+        <el-steps :active="approvedStep" finish-status="success" align-center>
+          <el-step :title="`${stepTypeText} created / requested`"></el-step>
+          <el-step :title="`${stepTypeText} delibarated`"></el-step>
+          <el-step :title="`${stepTypeText} ${approved}`"></el-step>
+        </el-steps>
       </el-col>
     </el-row>
   </el-card>
@@ -54,6 +58,46 @@ export default {
   },
   computed: {
     ...mapState(['currentUser']),
+    approvedStep() {
+      // let steps = 3;
+      if (this.approved == 'accepted') return 4
+      return 2
+    },
+    approved() {
+      let result
+      let approval = this.shift.is_approved
+      if (approval.admin == 0) {
+        result = 'declined'
+      } else if (approval.admin == 0 && approval.user == 0) {
+        result = 'undecided'
+      } else if (approval.admin == 1 && approval.user == 1) {
+        result = 'accepted'
+      }
+      return result
+    },
+    stepTypeText() {
+      let step
+      switch (this.shift.shift_type_num) {
+        case 1:
+          step = 'Shift'
+          break
+        case 2:
+          step = 'Shift'
+          break
+        case 3:
+          step = 'Holiday'
+          break
+        case 4:
+          step = 'Time Off'
+          break
+        case 5:
+          step = 'Sick Leave'
+          break
+        default:
+          break
+      }
+      return step
+    },
     diff() {
       let shift = this.shift
       let isoEnd = shift.isoEnd
@@ -78,6 +122,7 @@ export default {
 
 <style lang="scss" scoped>
 .shift_container {
+  margin: 3em;
   cursor: pointer;
 }
 // .normal_staff {
@@ -100,7 +145,7 @@ export default {
 //   color: #f2c678;
 //   // border-top: 2px solid #f2c678;
 // }
-.shift_footer {
+.shift_times {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -108,9 +153,11 @@ export default {
 .arrow {
   font-size: 3em;
 }
+.unit {
+  border-right: 1px solid #e6e6e6;
+}
 .shift_details_container {
   width: 20%;
-  border-right: 1px solid #e6e6e6;
 }
 .employee_type {
   font-size: 0.8em;
