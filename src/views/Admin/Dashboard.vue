@@ -27,9 +27,6 @@
               <el-divider>Previous</el-divider>
               <Shift v-for="(shift, key) in previousShifts" :key="key" :shift="shift" />
             </el-col>
-            <el-col v-if="previousShifts.length <= 0">
-              <p>No Previous Shifts</p>
-            </el-col>
           </el-collapse-transition>
         </el-row>
       </el-col>
@@ -95,10 +92,10 @@ export default {
     ...mapState("Admin", ["shifts", "team"]),
     ...mapGetters(["getIsAdmin"]),
     previousShifts() {
-      return this.returnShifts.prev;
+      return this.returnShifts.previous;
     },
     categoriedShifts() {
-      return this.returnShifts.main_shifts;
+      return this.returnShifts.categories;
     },
     returnShifts() {
       let shifts = this.shifts;
@@ -155,14 +152,17 @@ export default {
           }
         }
       }
-
+      let categories = {};
+      // Dynammically adding and removing from the object
+      for (let property in _shifts) {
+        let categoryArray = _shifts[property];
+        if (categoryArray.length > 0 && property != "previous") {
+          categories[property] = categoryArray;
+        }
+      }
       return {
-        main_shifts: {
-          today: _shifts.today,
-          week: _shifts.week,
-          future: _shifts.future
-        },
-        prev: _shifts.previous
+        categories,
+        previous: _shifts.previous
       };
     }
   },
