@@ -32,8 +32,8 @@
         <el-tag
           class="member_name"
           :type="approved == 'accepted' ? 'success' : 'error'"
-          >{{ approved }}</el-tag
-        >
+          >{{ approved }}
+        </el-tag>
       </el-col>
     </el-row>
   </el-card>
