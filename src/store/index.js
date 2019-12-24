@@ -6,7 +6,7 @@ import Admin from './Admin'
 import VuexReset from '@ianwalter/vuex-reset'
 
 Vue.use(Vuex)
-axios.defaults.baseURL = 'http://localhost:3000/api'
+axios.defaults.baseURL = 'http://localhost:3000/'
 const storage = {
   remove(item) {
     if (this.get(item)) {

@@ -2,12 +2,7 @@
   <el-col style="flex:0.2;border-left:solid 1px #e6e6e6;">
     <el-row class="team_container">
       <el-col v-for="(member, index) in team" :key="index">
-        <Dropdown
-          :items="items"
-          @method="handleEvents"
-          position="left"
-          :icon="false"
-        >
+        <Dropdown :items="items" @method="handleEvents" position="left" :icon="false">
           <Avatar :name="member.name" />
         </Dropdown>
       </el-col>
@@ -16,40 +11,46 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import Dropdown from '@/components/Dropdown.vue'
-import Avatar from '@/components/Avatar.vue'
+import { mapState, mapGetters } from "vuex";
+import Dropdown from "@/components/Dropdown.vue";
+import Avatar from "@/components/Avatar.vue";
 export default {
-  name: 'Team',
+  name: "Team",
   computed: {
-    ...mapState('Admin', ['team']),
+    ...mapState("Admin", ["team"]),
+    ...mapGetters(["getIsAdmin"]),
     items() {
-      return [
+      let items = [
         {
-          name: 'Message',
-          command: 'message'
+          name: "Message",
+          command: "message"
         },
         {
-          name: 'View Requests',
-          command: 'requests',
+          name: "View Requests",
+          command: "requests",
           divided: true
         }
-      ]
+      ];
+
+      if (!this.getIsAdmin) {
+        items.splice(items.findIndex(item => item.command == "requests"), 1);
+      }
+      return items;
     }
   },
   methods: {
     handleEvents(event) {
       switch (event) {
-        case 'message': {
-          this.$router.push({ name: 'messenger' })
-          break
+        case "message": {
+          this.$router.push({ name: "messenger" });
+          break;
         }
-        case 'view_requests': {
-          break
+        case "view_requests": {
+          break;
         }
 
         default:
-          break
+          break;
       }
     }
   },
@@ -57,7 +58,7 @@ export default {
     Dropdown,
     Avatar
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -6,7 +6,7 @@
   >
     <el-row type="flex" style="height:100%">
       <el-col class="p-3" style="height:100%">
-        <Title title="Dashboard" subtitle="View your daily summaries here" />
+        <!-- <Title title="Dashboard" subtitle="View your daily summaries here" /> -->
         <el-checkbox
           class="ml-3"
           v-if="previousShifts.length > 0"
@@ -17,6 +17,22 @@
         ></el-checkbox>
 
         <el-row style="height:80%; overflow:auto">
+          <el-card v-if="!returnAnyShifts">
+            <Title
+              title="No Events"
+              subtitle="You can view or submit new requests here"
+              style="font-size:.8em; text-align:center"
+            >
+              <el-button
+                type="primary"
+                plain
+                size="small"
+                @click="$router.push({name:'schedule'})"
+              >Book time off or holiday</el-button>
+            </Title>
+          </el-card>
+          <!-- SHIFTS IN CATEGORIES -->
+
           <el-col v-for="(prop, key) in categoriedShifts" :key="key">
             <el-divider class="member_name">{{ key }}</el-divider>
             <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
@@ -95,6 +111,12 @@ export default {
     ...mapState(["currentUser", "userNotifications"]),
     ...mapState("Admin", ["shifts", "team"]),
     ...mapGetters(["getIsAdmin"]),
+    returnAnyShifts() {
+      let result =
+        Object.keys(this.categoriedShifts).length > 0 &&
+        this.previousShifts.length > 0;
+      return result;
+    },
     previousShifts() {
       return this.returnShifts.previous;
     },
@@ -164,6 +186,7 @@ export default {
           categories[property] = categoryArray;
         }
       }
+
       return {
         categories,
         previous: _shifts.previous
@@ -203,5 +226,13 @@ export default {
 .shift_overflow {
   max-height: 90%;
   overflow: auto;
+}
+.no_shifts_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  h4 {
+    font-weight: 300;
+  }
 }
 </style>
