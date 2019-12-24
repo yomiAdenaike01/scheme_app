@@ -125,16 +125,7 @@ body {
 .black {
   color: black;
 }
-// .el-dialog__header {
-//   background: #2f74eb;
-//   .el-dialog__title,
-//   .el-dialog__headerbtn .el-dialog__close {
-//     color: white;
-//     &:hover {
-//       color: white;
-//     }
-//   }
-// }
+
 a {
   text-decoration: none;
 }

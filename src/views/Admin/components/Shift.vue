@@ -19,20 +19,21 @@
           >
             <i
               style="font-size:1.3em"
-              class="el-icon el-icon-right p-0 m-0"
+              class="el-icon el-icon-right p-0 m-0 grey"
             ></i>
-            <span>{{ diff }} {{ diffType }}</span>
+            <span class="time_diff grey"
+              >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
+            >
           </div>
           <span class="date">{{ shift.endDate }}</span>
         </div>
       </el-col>
-      <el-col class="p-3" v-if="shift.shift_type_num > 2">
-        <div class="mt-3"></div>
-        <el-steps :active="approvedStep" finish-status="success" align-center>
-          <el-step :title="`${stepTypeText} created / requested`"></el-step>
-          <el-step :title="`${stepTypeText} delibarated`"></el-step>
-          <el-step :title="`${stepTypeText} ${approved}`"></el-step>
-        </el-steps>
+      <el-col class="p-3 approval_wrapper" v-if="shift.shift_type_num > 2">
+        <el-tag
+          class="member_name"
+          :type="approved == 'accepted' ? 'success' : 'error'"
+          >{{ approved }}</el-tag
+        >
       </el-col>
     </el-row>
   </el-card>
@@ -50,7 +51,7 @@ export default {
   data() {
     return {
       viewDetails: false,
-      diffType: 'hours'
+      startEndTimeDiffType: 'hours'
     }
   },
   props: {
@@ -58,11 +59,7 @@ export default {
   },
   computed: {
     ...mapState(['currentUser']),
-    approvedStep() {
-      // let steps = 3;
-      if (this.approved == 'accepted') return 4
-      return 2
-    },
+
     approved() {
       let result
       let approval = this.shift.is_approved
@@ -98,18 +95,18 @@ export default {
       }
       return step
     },
-    diff() {
+    startAndEndTimeDiff() {
       let shift = this.shift
       let isoEnd = shift.isoEnd
       let isoStart = shift.isoStart
       let type = shift.shift_type_num
       let diff = this.duration(isoEnd, isoStart).as('hours')
       if (diff > 23) {
-        this.diffType = 'days'
+        this.startEndTimeDiffType = 'days'
       } else if (diff > 100) {
-        this.diffType = 'weeks'
+        this.startEndTimeDiffType = 'weeks'
       }
-      diff = this.duration(isoEnd, isoStart).as(this.diffType)
+      diff = this.duration(isoEnd, isoStart).as(this.startEndTimeDiffType)
 
       return Math.floor(diff)
     },
@@ -124,6 +121,7 @@ export default {
 .shift_container {
   margin: 3em;
   cursor: pointer;
+  font-size: 0.9em;
 }
 // .normal_staff {
 //   background: #ecf5ff;
@@ -150,9 +148,7 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.arrow {
-  font-size: 3em;
-}
+
 .unit {
   border-right: 1px solid #e6e6e6;
 }
@@ -160,10 +156,12 @@ export default {
   width: 20%;
 }
 .employee_type {
-  font-size: 0.8em;
   text-transform: uppercase;
+  font-size: 0.8em;
 }
-.date {
-  white-space: pre-line;
+.approval_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
