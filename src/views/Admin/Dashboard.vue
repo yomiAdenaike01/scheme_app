@@ -1,5 +1,9 @@
 <template>
-  <div style="height:100%">
+  <transition
+    name="el-fade-in"
+    style="height:100%"
+    v-loading="shifts.length <= 0 && userNotifications.length <= 0 && team.length <= 0"
+  >
     <el-row type="flex" style="height:100%">
       <el-col class="p-3" style="height:100%">
         <Title title="Dashboard" subtitle="View your daily summaries here" />
@@ -58,7 +62,7 @@
       <!-- TEAM SIDEBAR -->
       <Team />
     </el-row>
-  </div>
+  </transition>
 </template>
 
 <script>

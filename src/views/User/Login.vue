@@ -97,8 +97,7 @@ export default {
       let switchObj = {
         title: "Sign In",
         subtitle: "Use your email and password to sign in.",
-        text: "Switch to registration",
-        method: this.loginUser
+        text: "Switch to registration"
       };
 
       if (this.selectedForm == "register") {
@@ -106,7 +105,6 @@ export default {
         switchObj.subtitle =
           "Fill in the following form to successfully register";
         switchObj.text = "Switch to login";
-        switchObj.method = this.registerUser;
       }
       return switchObj;
     },
@@ -195,24 +193,24 @@ export default {
             placeholder: "Date Of Birth",
             model: "date_of_birth"
           },
-          {
-            name: "address_line_1",
-            type: "text",
-            placeholder: "Address line 1",
-            model: "address_line_1"
-          },
-          {
-            name: "address_line_2",
-            type: "text",
-            placeholder: "Address line 2",
-            model: "address_line_2"
-          },
-          {
-            name: "postcode",
-            type: "text",
-            placeholder: "Postcode",
-            model: "postcode"
-          },
+          // {
+          //   name: "address_line_1",
+          //   type: "text",
+          //   placeholder: "Address line 1",
+          //   model: "address_line_1"
+          // },
+          // {
+          //   name: "address_line_2",
+          //   type: "text",
+          //   placeholder: "Address line 2",
+          //   model: "address_line_2"
+          // },
+          // {
+          //   name: "postcode",
+          //   type: "text",
+          //   placeholder: "Postcode",
+          //   model: "postcode"
+          // },
 
           {
             name: "password",
@@ -239,15 +237,15 @@ export default {
     validateForm() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.switchController[method]();
+          this.processUser();
         }
       });
     },
-    registerUser() {},
-    loginUser() {
+
+    processUser() {
       this.loading = true;
 
-      this.request(payload)
+      this.request(this.returnPayload)
         .then(response => {
           this.UPDATE_USER(response);
           if (response.user.admin_gen == true) {
@@ -262,6 +260,7 @@ export default {
           this.$router.push({ name: "dashboard" });
 
           this.loading = false;
+          this.selectedForm = "login";
         })
         .catch(error => {
           console.log(error);
