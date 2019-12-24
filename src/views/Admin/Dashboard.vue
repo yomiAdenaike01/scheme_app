@@ -28,7 +28,7 @@
                 plain
                 size="small"
                 @click="$router.push({name:'schedule'})"
-              >Book time off or holiday</el-button>
+              >{{!getIsAdmin ? 'Request time off or holiday' : 'Book a team members shift or holiday or time off'}}</el-button>
             </Title>
           </el-card>
           <!-- SHIFTS IN CATEGORIES -->
