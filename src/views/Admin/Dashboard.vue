@@ -1,20 +1,18 @@
 <template>
   <div style="height:100%">
     <el-row type="flex" style="height:100%">
-      <el-col>
+      <el-col class="p-3">
         <Title title="Dashboard" subtitle="View your daily summaries here" />
+        <el-switch
+          class="ml-3"
+          v-if="returnShifts.previous.length > 0"
+          v-model="displayPreviousShifts"
+          active-text="View Previous Shifts"
+        ></el-switch>
         <el-row>
-          <el-col v-if="returnShifts.previous.length > 0">
-            <Shift
-              v-for="(shift, key) in returnShifts.previous"
-              :key="key"
-              :shift="shift"
-            />
-          </el-col>
-          <el-col v-else>
-            <p>No shifts today</p>
-          </el-col>
           <el-col v-if="returnShifts.week.length > 0">
+            <el-divider>This Weeks Shifts</el-divider>
+
             <Shift
               v-for="(shift, key) in returnShifts.week"
               :key="key"
@@ -25,6 +23,8 @@
             <p>No shifts today</p>
           </el-col>
           <el-col v-if="returnShifts.upcoming.length > 0">
+            <el-divider>Upcoming Shifts</el-divider>
+
             <Shift
               v-for="(shift, key) in returnShifts.upcoming"
               :key="key"
@@ -34,9 +34,25 @@
           <el-col v-else>
             <p>No upcoming shifts</p>
           </el-col>
+          <el-collapse-transition>
+            <el-col
+              v-if="returnShifts.previous.length > 0 && displayPreviousShifts"
+            >
+              <el-divider>Previous Shifts</el-divider>
+              <Shift
+                v-for="(shift, key) in returnShifts.previous"
+                :key="key"
+                :shift="shift"
+              />
+            </el-col>
+            <!-- <el-col v-else>
+              <p>No previous shifts</p>
+            </el-col> -->
+          </el-collapse-transition>
         </el-row>
       </el-col>
-      <el-col>
+      <!-- NOTIFICATIONS -->
+      <el-col class="p-3">
         <Title
           title="Notifications"
           subtitle="View your notifications a summary of your notifications here."
@@ -80,7 +96,7 @@ export default {
   name: 'Dashboard',
   data() {
     return {
-      activeName: 'shifts'
+      displayPreviousShifts: false
     }
   },
   destroyed() {
@@ -115,38 +131,40 @@ export default {
 
       for (let i = 0; i < len; i++) {
         const shift = shifts[i]
-        let newShift = Object.assign({}, shift)
-        let teamMember =
-          this.team.find(x => {
-            return x._id == shift.assigned_to
-          }) || this.currentUser
+        if (shift.assigned_to == this.currentUser._id) {
+          let newShift = Object.assign({}, shift)
+          let teamMember =
+            this.team.find(x => {
+              return x._id == shift.assigned_to
+            }) || this.currentUser
 
-        // Shift conversion
-        let shiftDetails = this.convertShift(shift.shift_type)
-        newShift.user = teamMember.employee_type
-        newShift.assigned_to = teamMember.name
-        newShift.shift_type = shiftDetails.title
-        newShift.startDate = this.format(newShift.startDate, format)
-        newShift.endDate = this.format(newShift.endDate, format)
-        newShift.isoStart = shift.startDate
-        newShift.isoEnd = shift.endDate
-        newShift.shift_type_num = shift.shift_type
-        newShift.class = shiftDetails.class
-        newShift.completed = false
-        // Set whether shift is completd or not
-        if (!this.isFuture(newShift.isoEnd)) {
-          newShift.completed = true
-        }
+          // Shift conversion
+          let shiftDetails = this.convertShift(shift.shift_type)
+          newShift.user = teamMember.employee_type
+          newShift.assigned_to = teamMember.name
+          newShift.shift_type = shiftDetails.title
+          newShift.startDate = this.format(newShift.startDate, format)
+          newShift.endDate = this.format(newShift.endDate, format)
+          newShift.isoStart = shift.startDate
+          newShift.isoEnd = shift.endDate
+          newShift.shift_type_num = shift.shift_type
+          newShift.class = shiftDetails.class
+          newShift.completed = false
+          // Set whether shift is completd or not
+          if (!this.isFuture(newShift.isoEnd)) {
+            newShift.completed = true
+          }
 
-        // Sort shifts into date categories
-        if (this.isToday(newShift.isoStart)) {
-          today.push(newShift)
-        } else if (this.isThisWeek(newShift.isoStart)) {
-          weeks.push(newShift)
-        } else if (this.isFuture(newShift.isoStart, true)) {
-          upcoming.push(newShift)
-        } else {
-          previous.push(newShift)
+          // Sort shifts into date categories
+          if (this.isToday(newShift.isoStart)) {
+            today.push(newShift)
+          } else if (this.isThisWeek(newShift.isoStart)) {
+            weeks.push(newShift)
+          } else if (this.isFuture(newShift.isoStart, true)) {
+            upcoming.push(newShift)
+          } else {
+            previous.push(newShift)
+          }
         }
       }
 
@@ -182,5 +200,8 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.el-col {
+  // padding: 1rem;
 }
 </style>
