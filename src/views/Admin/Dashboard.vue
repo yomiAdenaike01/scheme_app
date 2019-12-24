@@ -48,9 +48,16 @@
             :key="notification._id"
           />
         </div>
-        <p style="text-align:center" v-else>
-          No notifications detected. Guess it's a quiet day.
-        </p>
+        <div v-else class="no_notitfications_container">
+          <p style="text-align:center">
+            No notifications detected. Guess it's a quiet day.
+          </p>
+          <img
+            src="@/assets/svg/chore_list.svg?data"
+            width="200"
+            height="200"
+          />
+        </div>
       </el-col>
 
       <!-- TEAM SIDEBAR -->
@@ -169,5 +176,11 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 1.3em;
+}
+.no_notitfications_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 </style>

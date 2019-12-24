@@ -34,7 +34,7 @@
       <el-col class="p-3 approval_wrapper">
         <el-tag
           class="member_name"
-          :type="shift.completed ? 'success' : 'danger'"
+          :type="shift.completed ? 'primary' : 'danger'"
           >{{ shift.completed ? 'Finished' : 'Incomplete' }}
         </el-tag>
       </el-col>
