@@ -10,9 +10,9 @@ export default {
       let _date = moment(date)
       return moment.duration(_date.diff(diff))
     },
-    isFuture(date, isNow, afterDate) {
+    isAfter(date, isNow, afterDate) {
       if (isNow) {
-        return moment(date).isAfter(this.now)
+        return moment(date).isAfter()
       } else {
         return moment(date).isAfter(afterDate)
       }

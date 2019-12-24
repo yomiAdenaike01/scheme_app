@@ -136,7 +136,7 @@ export default {
           newShift.class = shiftDetails.class;
           newShift.completed = false;
           // Set whether shift is completd or not
-          if (!this.isFuture(newShift.isoEnd)) {
+          if (!this.isAfter(newShift.isoEnd, true)) {
             newShift.completed = true;
           }
 
@@ -145,7 +145,7 @@ export default {
             today.push(newShift);
           } else if (this.isThisWeek(newShift.isoStart)) {
             weeks.push(newShift);
-          } else if (this.isFuture(newShift.isoStart, true)) {
+          } else if (this.isAfter(newShift.isoStart, true)) {
             future.push(newShift);
           } else {
             previous.push(newShift);
