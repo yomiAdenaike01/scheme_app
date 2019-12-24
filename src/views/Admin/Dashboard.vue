@@ -75,7 +75,7 @@ export default {
   name: "Dashboard",
   data() {
     return {
-      displayPreviousShifts: false
+      displayPreviousShifts: true
     };
   },
   destroyed() {
@@ -102,7 +102,7 @@ export default {
       let _shifts = {
         week: [],
         today: [],
-        future: [],
+        upcoming: [],
         previous: []
       };
       let len = shifts.length;
@@ -111,7 +111,7 @@ export default {
       // Object details
       let weeks = _shifts.week;
       let today = _shifts.today;
-      let future = _shifts.future;
+      let upcoming = _shifts.upcoming;
       let previous = _shifts.previous;
 
       for (let i = 0; i < len; i++) {
@@ -146,7 +146,7 @@ export default {
           } else if (this.isThisWeek(newShift.isoStart)) {
             weeks.push(newShift);
           } else if (this.isAfter(newShift.isoStart, true)) {
-            future.push(newShift);
+            upcoming.push(newShift);
           } else {
             previous.push(newShift);
           }
