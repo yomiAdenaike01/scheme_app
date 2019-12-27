@@ -1,3 +1,5 @@
+import storage from './storage'
+
 export default {
   UPDATE_USER_NOTIFICATIONS(state, payload) {
     state.userNotifications = payload

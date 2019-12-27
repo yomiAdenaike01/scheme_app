@@ -14,21 +14,26 @@ export default {
     };
   },
   computed: {
-    ...mapState(["preferences", "userNotifications"])
+    ...mapState(["localSettings", "userNotifications"])
   },
   deactivated() {
     clearInterval(this.adminInterval);
   },
   activated() {
+    let general = this.localSettings.general;
+    console.log(general.live_dashboard);
     if (Notification.permission != "granted") {
       this.requestNotificationPermission();
     }
     this.genNotifications();
-    this.adminInterval = setInterval(() => {
-      this.getTeam();
-      this.getNotifications();
-      this.getShifts();
-    }, 5000);
+
+    if (general.live_dashbboard) {
+      this.adminInterval = setInterval(() => {
+        this.getTeam();
+        this.getNotifications();
+        this.getShifts();
+      }, 5000);
+    }
   },
   methods: {
     ...mapActions("Admin", ["getTeam", "getShifts"]),

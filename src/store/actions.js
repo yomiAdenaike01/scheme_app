@@ -1,5 +1,9 @@
 import axios from 'axios'
-axios.defaults.baseURL = 'http://localhost:3000/'
+if (process.env.NODE_ENV == 'development') {
+  axios.defaults.baseURL = 'http://localhost:5000/'
+} else {
+  axios.defaults.baseURL = 'https://schemeapi.now.sh/'
+}
 
 const sortPayload = (state, payload) => {
   const token = state.token

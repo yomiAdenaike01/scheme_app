@@ -75,6 +75,8 @@ export default {
       this.updateSettings()
         .then(response => (this.loading = false))
         .catch(err => (this.loading = false));
+
+      this.$forceUpdate();
     }
   },
   components: {
