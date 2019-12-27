@@ -6,17 +6,17 @@
   >
     <el-row type="flex" style="height:100%">
       <el-col class="p-3" style="height:100%">
-        <!-- <Title title="Dashboard" subtitle="View your daily summaries here" /> -->
+        <!-- PREVIOUS SHIFTS SELECTION -->
         <el-checkbox
           class="ml-3"
           v-if="previousShifts.length > 0"
           v-model="displayPreviousShifts"
-          label="View Previous Shifts"
+          label="View Previous Events / Shifts"
           border
           size="small"
         ></el-checkbox>
 
-        <el-row style="height:80%; overflow:auto">
+        <el-row style="height:98%; overflow:auto">
           <el-card class="mt-3" v-if="!returnAnyShifts">
             <Title
               :title="noShiftsContent.title"
@@ -95,7 +95,7 @@ export default {
   name: "Dashboard",
   data() {
     return {
-      displayPreviousShifts: true
+      displayPreviousShifts: false
     };
   },
   destroyed() {
@@ -115,12 +115,12 @@ export default {
       let noShifts = {
         title: "No Current Events.",
         subtitle: "You can view or create new requests here",
-        buttonText: "Book a team members shift / holiday or time off"
+        buttonText: "Book an team members shift / holiday or time off"
       };
 
       if (this.getIsAdmin) {
         noShifts.subtitle = "You can view or create new shifts here";
-        noShifts.buttonText = "Book a team members shift / holiday or time off";
+        noShifts.buttonText = "Book an employee's / holiday or time off";
       }
       return noShifts;
     },
