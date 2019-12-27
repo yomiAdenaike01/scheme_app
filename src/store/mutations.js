@@ -5,8 +5,8 @@ export default {
   UPDATE_VIEW_NOTIFICATIONS_CENTER(state, payload) {
     state.viewNotificationsCenter = payload
   },
-  UPDATE_PREFERENCES(state, payload) {
-    state.preferences = payload
+  UPDATE_SETTINGS(state, { category, key, value }) {
+    state.localSettings[category][key] = value
   },
   UPDATE_GLOBAL_LOADER(state, payload) {
     state.globalLoader = payload

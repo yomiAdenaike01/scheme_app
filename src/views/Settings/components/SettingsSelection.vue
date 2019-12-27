@@ -1,5 +1,5 @@
 <template>
-  <el-radio-group v-model="preferences">
+  <el-radio-group v-model="settings" size="small">
     <el-radio-button label="General"></el-radio-button>
     <el-radio-button label="Security"></el-radio-button>
   </el-radio-group>
@@ -7,14 +7,17 @@
 
 <script>
 export default {
-  name: "PreferencesSelection",
+  name: "SettingsSelection",
+  props: {
+    active: String
+  },
   data() {
     return {
-      preferences: "Security"
+      settings: "General"
     };
   },
   watch: {
-    preferences(val) {
+    settings(val) {
       this.$emit("prefChange", val);
     }
   }

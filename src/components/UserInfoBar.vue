@@ -10,7 +10,7 @@
         <Dropdown :items="items" @method="handleCommands" :icon="false">
           <Avatar :name="currentUser.name"></Avatar>
         </Dropdown>
-        <el-badge :value="userNotifications.length" class="item ml-2 primary">
+        <el-badge :value="userNotifications.length" class="item ml-2 mt-1 primary">
           <el-button
             size="small"
             @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"

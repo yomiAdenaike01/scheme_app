@@ -14,6 +14,24 @@ const sortPayload = (state, payload) => {
 }
 
 export default {
+  updateSettings(context) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch('request', {
+          method: 'POST',
+          url: 'settings/update',
+          data: context.state.localSettings
+        })
+        .then(response => {
+          context.commit('UPDATE_NOTIFICATIONS', response)
+          resolve(response)
+        })
+        .catch(error => {
+          context.commit('UPDATE_NOTIFICATIONS', error)
+          reject(error)
+        })
+    })
+  },
   getNotifications(context) {
     context
       .dispatch('request', {

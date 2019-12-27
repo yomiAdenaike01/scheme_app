@@ -11,19 +11,27 @@
           <SettingsSelection @prefChange="view = $event" />
 
           <el-col v-if="settingsView == 'security'">
-            <SecuritySettings />
+            <SecuritySettings active />
           </el-col>
           <el-col v-else-if="settingsView =='general'">
             <GeneralSettings />
           </el-col>
         </el-row>
       </el-main>
+      <el-footer class="settings_footer">
+        <el-button
+          @click="update"
+          v-loading="loading"
+          v-if="settingsUpdated"
+          size="small"
+        >Save Settings</el-button>
+      </el-footer>
     </el-container>
   </el-drawer>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import Title from "@/components/Title";
 import SettingsSelection from "./components/SettingsSelection";
 import SecuritySettings from "./components/SecuritySettings";
@@ -33,14 +41,17 @@ export default {
   name: "Settings",
   data() {
     return {
-      view: "security"
+      view: "general",
+      settingsUpdated: false,
+      loading: false
     };
   },
+
   props: {
     display: Boolean
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["currentUser", "localSettings"]),
     currentUserViewConfig() {
       let cUser = this.currentUser;
       let arr = [];
@@ -58,11 +69,27 @@ export default {
       }
     }
   },
+  methods: {
+    ...mapActions(["updateSettings"]),
+    update() {
+      this.updateSettings()
+        .then(response => (this.loading = false))
+        .catch(err => (this.loading = false));
+    }
+  },
   components: {
     Title,
     SettingsSelection,
     SecuritySettings,
     GeneralSettings
+  },
+  watch: {
+    localSettings: {
+      deep: true,
+      handler(val) {
+        this.settingsUpdated = true;
+      }
+    }
   }
 };
 </script>
@@ -70,5 +97,10 @@ export default {
 <style lang="scss" scoped>
 .el-col {
   margin-top: 2em;
+}
+.settings_footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 </style>

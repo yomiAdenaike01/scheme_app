@@ -25,7 +25,15 @@ export default {
     : {},
   globalLoader: false,
   notifications: [],
-  preferences: {},
+  localSettings: {
+    general: {
+      live_schedule: false,
+      live_notifications: false,
+      live_dashboard: false,
+      notifications: false
+    },
+    security: {}
+  },
   viewNotificationsCenter: false,
   userNotifications: [],
   currentInterval: ''
