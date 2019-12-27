@@ -1,18 +1,12 @@
 <template>
-  <el-dialog
-    :visible.sync="displayModal"
-    class="newchat_dialog"
-    style="height:100%"
-  >
+  <el-dialog :visible.sync="displayModal" class="newchat_dialog" style="height:100%">
     <Title
       slot="title"
       title="Select a team member"
       subtitle="Choose a team member to chat with this only includes members that you don't currently have conversations with."
     />
-    <div
-      style="  overflow: auto;
-  height: 5%;"
-    >
+    <div style="  overflow: auto;
+  height: 5%;">
       <el-card
         v-for="member in filterTeam"
         :key="member._id"
@@ -32,9 +26,7 @@
 
         <Popover>
           <template #content>
-            <p class="member_name grey ml-3 mr-3 mb-2">
-              Send message to {{ member.name }}
-            </p>
+            <p class="member_name grey ml-3 mr-3 mb-2">Send message to {{ member.name }}</p>
           </template>
           <template #trigger>
             <Avatar :name="member.name" />
@@ -57,84 +49,84 @@
 </template>
 
 <script>
-import Title from '@/components/Title'
-import Avatar from '@/components/Avatar'
-import Popover from '@/components/Popover'
+import Title from "@/components/Title";
+import Avatar from "@/components/Avatar";
+import Popover from "@/components/Popover";
 
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions } from "vuex";
 export default {
-  name: 'StartNewChatDialog',
+  name: "StartNewChatDialog",
   data() {
     return {
       displayContent: false,
       loading: false,
       chatMember: {},
       message: {
-        content: '',
-        reciever_id: '',
-        attachments: ''
+        content: "",
+        reciever_id: "",
+        attachments: ""
       }
-    }
+    };
   },
 
   computed: {
-    ...mapState('Admin', ['team']),
-    ...mapState('Comms', ['transcripts', 'startNewChat']),
+    ...mapState("Admin", ["team"]),
+    ...mapState("Comms", ["transcripts", "startNewChat"]),
     filterTeam() {
-      let len = this.transcripts.length
-      let newTeam = []
+      let len = this.transcripts.length;
+      let newTeam = [];
       for (let i = 0; i < len; i++) {
-        const transcript = this.transcripts[i]
+        const transcript = this.transcripts[i];
         let index = this.team.find(member => {
-          return transcript.user_2 != member._id
-        })
+          return transcript.user_1 != member._id;
+        });
         if (index) {
-          newTeam.push(index)
+          newTeam.push(index);
         }
       }
-      return newTeam
+      return newTeam;
     },
 
     displayModal: {
       get() {
-        return this.startNewChat
+        return this.startNewChat;
       },
       set(display) {
-        this.UPDATE_START_NEW_CHAT(display)
+        this.UPDATE_START_NEW_CHAT(display);
       }
     }
   },
   methods: {
-    ...mapMutations('Comms', ['UPDATE_START_NEW_CHAT']),
-    ...mapActions(['request']),
+    ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"]),
+    ...mapActions(["request"]),
     sendNewChatMessage() {
-      let member = this.chatMember
+      let member = this.chatMember;
       if (this.message.content.length <= 0) {
         this.$notify({
-          title: 'Failed to send',
-          type: 'error',
-          message: 'Please enter text to send a messsage.',
+          title: "Failed to send",
+          type: "error",
+          message: "Please enter text to send a messsage.",
           onclick: () => {
-            this.message.content = 'Hello!'
-            this.sendNewChatMessage()
+            this.message.content = "Hello!";
+            this.sendNewChatMessage();
           }
-        })
+        });
       } else {
-        this.message.reciever_id = member._id
+        this.message.reciever_id = member._id;
         let payload = {
-          url: '/messenger/start',
-          method: 'POST',
+          url: "/messenger/start",
+          method: "POST",
           data: this.message
-        }
+        };
         this.request(payload)
           .then(response => {
-            this.UPDATE_START_NEW_CHAT(false)
-            this.loading = false
+            this.UPDATE_START_NEW_CHAT(false);
+            this.loading = false;
           })
           .catch(error => {
-            this.UPDATE_START_NEW_CHAT(false)
-            this.loading = false
-          })
+            this.UPDATE_START_NEW_CHAT(false);
+            this.loading = false;
+          });
       }
     }
   },
@@ -149,7 +141,7 @@ export default {
       default: false
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

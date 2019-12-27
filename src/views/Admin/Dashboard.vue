@@ -17,10 +17,10 @@
         ></el-checkbox>
 
         <el-row style="height:80%; overflow:auto">
-          <el-card v-if="!returnAnyShifts">
+          <el-card class="mt-3" v-if="!returnAnyShifts">
             <Title
-              title="No Events"
-              subtitle="You can view or submit new requests here"
+              :title="noShiftsContent.title"
+              :subtitle="noShiftsContent.subtitle"
               style="font-size:.8em; text-align:center"
             >
               <el-button
@@ -28,7 +28,7 @@
                 plain
                 size="small"
                 @click="$router.push({name:'schedule'})"
-              >{{!getIsAdmin ? 'Request time off or holiday' : 'Book a team members shift or holiday or time off'}}</el-button>
+              >{{noShiftsContent.buttonText}}</el-button>
             </Title>
           </el-card>
           <!-- SHIFTS IN CATEGORIES -->
@@ -111,6 +111,19 @@ export default {
     ...mapState(["currentUser", "userNotifications"]),
     ...mapState("Admin", ["shifts", "team"]),
     ...mapGetters(["getIsAdmin"]),
+    noShiftsContent() {
+      let noShifts = {
+        title: "No Current Events.",
+        subtitle: "You can view or create new requests here",
+        buttonText: "Book a team members shift / holiday or time off"
+      };
+
+      if (this.getIsAdmin) {
+        noShifts.subtitle = "You can view or create new shifts here";
+        noShifts.buttonText = "Book a team members shift / holiday or time off";
+      }
+      return noShifts;
+    },
     returnAnyShifts() {
       let result =
         Object.keys(this.categoriedShifts).length > 0 &&

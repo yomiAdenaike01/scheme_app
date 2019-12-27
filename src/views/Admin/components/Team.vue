@@ -22,8 +22,12 @@ export default {
     items() {
       let items = [
         {
-          name: "Message",
+          name: "Message Team Member",
           command: "message"
+        },
+        {
+          name: "View Team Member",
+          command: "view_member"
         },
         {
           name: "View Requests",

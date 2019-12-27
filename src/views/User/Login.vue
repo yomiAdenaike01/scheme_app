@@ -85,6 +85,7 @@ export default {
       payload: {}
     };
   },
+
   computed: {
     returnPayload() {
       return {
@@ -190,32 +191,31 @@ export default {
           {
             name: "date_of_birth",
             type: "date",
-            placeholder: "Date Of Birth",
+            placeholder: "Date of birth",
             model: "date_of_birth"
           },
-          // {
-          //   name: "address_line_1",
-          //   type: "text",
-          //   placeholder: "Address line 1",
-          //   model: "address_line_1"
-          // },
-          // {
-          //   name: "address_line_2",
-          //   type: "text",
-          //   placeholder: "Address line 2",
-          //   model: "address_line_2"
-          // },
-          // {
-          //   name: "postcode",
-          //   type: "text",
-          //   placeholder: "Postcode",
-          //   model: "postcode"
-          // },
+
+          {
+            name: "locumn",
+            type: "select",
+            placeholder: "Are you a locumn ?",
+            model: "employee_type",
+            options: [
+              {
+                text: "Yes",
+                value: "Yes"
+              },
+              {
+                text: "No",
+                value: "No"
+              }
+            ]
+          },
 
           {
             name: "password",
             type: "password",
-            placeholder: "Desired Password",
+            placeholder: "New password",
             model: "password"
           }
         ]
@@ -243,6 +243,10 @@ export default {
     },
 
     processUser() {
+      //Change employee type
+      this.formModel.login.employee_type == "Yes"
+        ? this.$set(this.formModel.login, "employee_type", 3)
+        : this.$set(this.formModel.login, "employee_type", 2);
       this.loading = true;
 
       this.request(this.returnPayload)

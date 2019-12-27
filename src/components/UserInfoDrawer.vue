@@ -2,6 +2,8 @@
   <el-drawer :visible.sync="returnDisplay" direction="rtl">
     <el-container>
       <el-main>
+        <Title title="Preferences" subtitle="Change all aspects of your settings here." />
+
         <el-row>
           <el-col>
             <h1>User Details</h1>
@@ -19,6 +21,7 @@
 
 <script>
 import { mapState } from "vuex";
+import Title from "@/components/Title";
 export default {
   name: "UserInfoDrawer",
   props: {
@@ -41,6 +44,9 @@ export default {
         this.$emit("toggle", val);
       }
     }
+  },
+  components: {
+    Title
   }
 };
 </script>
