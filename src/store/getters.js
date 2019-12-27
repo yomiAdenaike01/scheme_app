@@ -1,4 +1,7 @@
 export default {
+  getPreferences(state) {
+    return state.currentUser.preferences
+  },
   getContentLoaded(state) {
     return false
   },
