@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 import Transitions from 'vue2-transitions'
 import './plugins/element'
+import './plugins/mobile'
+
 Vue.use(Transitions)
 
 new Vue({

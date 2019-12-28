@@ -2,13 +2,14 @@
   <transition
     name="el-fade-in"
     style="height:100%"
-    v-loading="shifts.length <= 0 && userNotifications.length <= 0 && team.length <= 0"
+    v-loading="
+      shifts.length <= 0 && userNotifications.length <= 0 && team.length <= 0
+    "
   >
-    <el-row type="flex" style="height:100%">
-      <el-col class="p-3" style="height:100%">
+    <el-row :type="$mq == 'lg' ? 'flex' : null" style="height:100%">
+      <el-col class="p-3">
         <!-- PREVIOUS SHIFTS SELECTION -->
         <el-checkbox
-          class="ml-3"
           v-if="previousShifts.length > 0"
           v-model="displayPreviousShifts"
           label="View Previous Events / Shifts"
@@ -27,15 +28,20 @@
                 type="primary"
                 plain
                 size="small"
-                @click="$router.push({name:'schedule'})"
-              >{{noShiftsContent.buttonText}}</el-button>
+                @click="$router.push({ name: 'schedule' })"
+                >{{ noShiftsContent.buttonText }}</el-button
+              >
             </Title>
           </el-card>
           <!-- SHIFTS IN CATEGORIES -->
 
           <el-col v-for="(prop, key) in categoriedShifts" :key="key">
             <el-divider class="member_name">{{ key }}</el-divider>
-            <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
+            <Shift
+              v-for="(shift, key) in categoriedShifts[key]"
+              :key="key"
+              :shift="shift"
+            />
           </el-col>
 
           <!-- PREVIOUS SHIFTS -->
@@ -45,22 +51,29 @@
               v-if="previousShifts.length > 0 && displayPreviousShifts"
             >
               <el-divider>Previous</el-divider>
-              <Shift v-for="(shift, key) in previousShifts" :key="key" :shift="shift" />
+              <Shift
+                v-for="(shift, key) in previousShifts"
+                :key="key"
+                :shift="shift"
+              />
             </el-col>
           </el-collapse-transition>
         </el-row>
       </el-col>
       <!-- NOTIFICATIONS -->
-      <el-col class="p-3">
+      <!-- <el-col class="p-3">
         <Title
           title="Notifications"
           subtitle="View your notifications a summary of your notifications here."
         />
-        <div v-if="userNotifications.length > 0" class="notifications_text_container">
+        <div
+          v-if="userNotifications.length > 0"
+          class="notifications_text_container"
+        >
           <p>
             You have {{ userNotifications.length }}
             {{
-            userNotifications.length > 1 ? 'notifications' : 'notification'
+              userNotifications.length > 1 ? 'notifications' : 'notification'
             }}
             press the button to view them.
           </p>
@@ -68,12 +81,15 @@
             class="mt-3"
             size="small"
             @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"
-          >View Notifications</el-button>
+            >View Notifications</el-button
+          >
         </div>
         <div v-else class="notifications_text_container">
-          <p style="text-align:center">No notifications detected. Guess it's a quiet day.</p>
+          <p style="text-align:center">
+            No notifications detected. Guess it's a quiet day.
+          </p>
         </div>
-      </el-col>
+      </el-col> -->
 
       <!-- TEAM SIDEBAR -->
       <Team />
@@ -82,145 +98,145 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
-import dates from "@/mixins/dates";
-import Popover from "@/components/Popover.vue";
-import Dropdown from "@/components/Dropdown.vue";
-import Avatar from "../../components/Avatar.vue";
-import Team from "./components/Team";
-import employeeMethods from "@/mixins/employeeMethods";
-import Shift from "./components/Shift";
-import Notification from "@/components/Notification";
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+import dates from '@/mixins/dates'
+import Popover from '@/components/Popover.vue'
+import Dropdown from '@/components/Dropdown.vue'
+import Avatar from '../../components/Avatar.vue'
+import Team from './components/Team'
+import employeeMethods from '@/mixins/employeeMethods'
+import Shift from './components/Shift'
+import Notification from '@/components/Notification'
 export default {
-  name: "Dashboard",
+  name: 'Dashboard',
   data() {
     return {
       displayPreviousShifts: false
-    };
+    }
   },
   destroyed() {
-    clearInterval(this.interval);
+    clearInterval(this.interval)
   },
   created() {
-    this.getShifts();
-    this.getTeam();
-    this.getNotifications();
+    this.getShifts()
+    this.getTeam()
+    this.getNotifications()
   },
   mixins: [dates, employeeMethods],
   computed: {
-    ...mapState(["currentUser", "userNotifications"]),
-    ...mapState("Admin", ["shifts", "team"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapState(['currentUser', 'userNotifications']),
+    ...mapState('Admin', ['shifts', 'team']),
+    ...mapGetters(['getIsAdmin']),
     noShiftsContent() {
       let noShifts = {
-        title: "No Current Events.",
-        subtitle: "You can view or create new requests here",
-        buttonText: "Book an team members shift / holiday or time off"
-      };
+        title: 'No Current Events.',
+        subtitle: 'You can view or create new requests here',
+        buttonText: 'Book an team members shift / holiday or time off'
+      }
 
       if (this.getIsAdmin) {
-        noShifts.subtitle = "You can view or create new shifts here";
-        noShifts.buttonText = "Book an employee's / holiday or time off";
+        noShifts.subtitle = 'You can view or create new shifts here'
+        noShifts.buttonText = "Book an employee's / holiday or time off"
       }
-      return noShifts;
+      return noShifts
     },
     returnAnyShifts() {
       let result =
         Object.keys(this.categoriedShifts).length > 0 &&
-        this.previousShifts.length > 0;
-      return result;
+        this.previousShifts.length > 0
+      return result
     },
     previousShifts() {
-      return this.returnShifts.previous;
+      return this.returnShifts.previous
     },
     categoriedShifts() {
-      return this.returnShifts.categories;
+      return this.returnShifts.categories
     },
     returnShifts() {
-      let shifts = this.shifts;
+      let shifts = this.shifts
       let _shifts = {
         week: [],
         today: [],
         upcoming: [],
         previous: []
-      };
-      let len = shifts.length;
-      let format = "DD MMM YYYY HH:mm ";
+      }
+      let len = shifts.length
+      let format = 'DD MMM YYYY HH:mm '
 
       // Object details
-      let weeks = _shifts.week;
-      let today = _shifts.today;
-      let upcoming = _shifts.upcoming;
-      let previous = _shifts.previous;
+      let weeks = _shifts.week
+      let today = _shifts.today
+      let upcoming = _shifts.upcoming
+      let previous = _shifts.previous
 
       for (let i = 0; i < len; i++) {
-        const shift = shifts[i];
+        const shift = shifts[i]
         if (this.getIsAdmin || shift.assigned_to == this.currentUser._id) {
-          let newShift = Object.assign({}, shift);
+          let newShift = Object.assign({}, shift)
           let teamMember =
             this.team.find(x => {
-              return x._id == shift.assigned_to;
-            }) || this.currentUser;
+              return x._id == shift.assigned_to
+            }) || this.currentUser
 
           // Shift conversion
-          let shiftDetails = this.convertShift(shift.shift_type);
-          newShift.user = teamMember.employee_type;
-          newShift.assigned_to = teamMember.name;
-          newShift.shift_type = shiftDetails.title;
-          newShift.startDate = this.format(newShift.startDate, format);
-          newShift.endDate = this.format(newShift.endDate, format);
-          newShift.isoStart = shift.startDate;
-          newShift.isoEnd = shift.endDate;
-          newShift.shift_type_num = shift.shift_type;
-          newShift.class = shiftDetails.class;
-          newShift.completed = false;
+          let shiftDetails = this.convertShift(shift.shift_type)
+          newShift.user = teamMember.employee_type
+          newShift.assigned_to = teamMember.name
+          newShift.shift_type = shiftDetails.title
+          newShift.startDate = this.format(newShift.startDate, format)
+          newShift.endDate = this.format(newShift.endDate, format)
+          newShift.isoStart = shift.startDate
+          newShift.isoEnd = shift.endDate
+          newShift.shift_type_num = shift.shift_type
+          newShift.class = shiftDetails.class
+          newShift.completed = false
           // Set whether shift is completd or not
           if (!this.isAfter(newShift.isoEnd, true)) {
-            newShift.completed = true;
+            newShift.completed = true
           }
 
           // Sort shifts into date categories
           if (this.isToday(newShift.isoStart)) {
-            today.push(newShift);
+            today.push(newShift)
           } else if (this.isThisWeek(newShift.isoStart)) {
-            weeks.push(newShift);
+            weeks.push(newShift)
           } else if (this.isAfter(newShift.isoStart, true)) {
-            upcoming.push(newShift);
+            upcoming.push(newShift)
           } else {
-            previous.push(newShift);
+            previous.push(newShift)
           }
         }
       }
-      let categories = {};
+      let categories = {}
       // Dynammically adding and removing from the object
       for (let property in _shifts) {
-        let categoryArray = _shifts[property];
-        if (categoryArray.length > 0 && property != "previous") {
-          categories[property] = categoryArray;
+        let categoryArray = _shifts[property]
+        if (categoryArray.length > 0 && property != 'previous') {
+          categories[property] = categoryArray
         }
       }
 
       return {
         categories,
         previous: _shifts.previous
-      };
+      }
     }
   },
   methods: {
-    ...mapActions("Admin", ["getShifts", "getTeam"]),
-    ...mapActions(["getNotifications"]),
-    ...mapMutations(["UPDATE_VIEW_NOTIFICATIONS_CENTER"])
+    ...mapActions('Admin', ['getShifts', 'getTeam']),
+    ...mapActions(['getNotifications']),
+    ...mapMutations(['UPDATE_VIEW_NOTIFICATIONS_CENTER'])
   },
   components: {
     Popover,
     Dropdown,
     Avatar,
-    Title: () => import("@/components/Title"),
+    Title: () => import('@/components/Title'),
     Team,
     Shift,
     Notification
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

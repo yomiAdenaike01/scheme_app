@@ -1,14 +1,9 @@
 <template>
-  <el-row
-    type="flex"
-    :gutter="10"
-    style="border-bottom: solid 1px #e6e6e6;"
-    align="middle"
-  >
+  <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
     <el-col
       style="background:#2f74eb; color:white; height:initial; max-width:7.4%"
     >
-      <div class="text_wrapper p-3">
+      <div class="text_wrapper p-3" v-if="$mq == 'lg'">
         <p>Dock Pharmacy</p>
       </div>
     </el-col>
@@ -137,6 +132,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.infobar_wrapper {
+  border-bottom: solid 1px #e6e6e6;
+}
 .el-col {
   height: 100%;
 }
@@ -159,5 +157,11 @@ export default {
 }
 .text_wrapper {
   font-size: 0.9em;
+}
+
+.mobile {
+  .infobar_wrapper {
+    padding: 0.6rem;
+  }
 }
 </style>

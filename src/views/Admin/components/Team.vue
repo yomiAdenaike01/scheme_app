@@ -1,7 +1,13 @@
 <template>
   <el-col class="team_wrapper">
     <el-row class="team_container">
-      <el-col v-for="(member, index) in team" :key="index">
+      <Title
+        style="text-align:center"
+        v-if="$mq != 'lg'"
+        title="Team"
+        subtitle="View and interact with your team members here"
+      />
+      <el-col v-for="(member, index) in team" :key="index" class="member">
         <Dropdown
           :items="items"
           @method="handleEvents"
@@ -26,6 +32,7 @@
 import { mapState, mapGetters } from 'vuex'
 import Dropdown from '@/components/Dropdown.vue'
 import Avatar from '@/components/Avatar.vue'
+import Title from '@/components/Title'
 export default {
   name: 'Team',
   computed: {
@@ -80,14 +87,15 @@ export default {
   },
   components: {
     Dropdown,
-    Avatar
+    Avatar,
+    Title
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .team_wrapper {
-  width: 9.5%;
+  width: 5%;
   border-left: solid 1px #e6e6e6;
   height: 100%;
   overflow-y: scroll;
@@ -100,6 +108,20 @@ export default {
     &:hover {
       background-color: darken($color: #ffff, $amount: 2);
     }
+  }
+}
+.mobile {
+  .member {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+  .team_container {
+    border-top: 1px solid #e6e6e6;
+  }
+  .team_wrapper {
+    width: 100%;
   }
 }
 </style>

@@ -64,6 +64,12 @@ export default {
           }
           return response.content
         } else if (response.hasOwnProperty('error')) {
+          // if(response.content.hasOwnProperty('tokenExpired')){
+          //   context.commit('UPDATE_NOTIFICATION',{
+          //     message:'Token expired',
+          //     type:'error'
+          //   })
+          // }
           context.commit('UPDATE_NOTIFICATIONS', {
             message: response.content,
             title: 'Operation Failed',

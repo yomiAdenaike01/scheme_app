@@ -5,6 +5,7 @@
     :default-active="$route.path"
     :router="true"
     mode="vertical"
+    :collapse="$mq != 'lg'"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
       <i :class="route.icon"></i>
