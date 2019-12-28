@@ -129,7 +129,7 @@ export default {
     ...mapGetters(['getIsAdmin']),
     noShiftsContent() {
       let noShifts = {
-        title: 'No Current Events.',
+        title: 'No current events.',
         subtitle: 'You can view or create new requests here',
         buttonText: 'Book an team members shift / holiday or time off'
       }
