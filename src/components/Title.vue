@@ -8,17 +8,19 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
-  name: "Title",
+  name: 'Title',
   props: {
     defaultClass: {
       type: String,
-      default: "m-3"
+      default: 'm-3'
     },
     title: String,
     subtitle: String
-  }
-};
+  },
+  computed: { ...mapState(['defaultSize']) }
+}
 </script>
 <style lang="scss" scoped>
 p {

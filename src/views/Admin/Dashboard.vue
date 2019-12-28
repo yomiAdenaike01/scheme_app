@@ -161,7 +161,7 @@ export default {
         previous: []
       }
       let len = shifts.length
-      let format = 'DD MMM YYYY HH:mm '
+      let format = this.$mq == 'lg' ? 'DD MMM YYYY HH:mm ' : 'DD MMM HH:mm'
 
       // Object details
       let weeks = _shifts.week

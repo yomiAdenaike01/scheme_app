@@ -110,6 +110,13 @@ export default {
     }
   }
 }
+/**
+ _   _  _  ___ _  _    ___ 
+| \_/ |/ \| o ) || |  | __|
+| \_/ ( o ) o \ || |_ | _| 
+|_| |_|\_/|___/_||___||___|
+                                                                                    
+ */
 .mobile {
   .member {
     display: flex;
@@ -122,6 +129,7 @@ export default {
   }
   .team_wrapper {
     width: 100%;
+    border-left: none;
   }
 }
 </style>

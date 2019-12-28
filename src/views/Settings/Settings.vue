@@ -1,5 +1,5 @@
 <template>
-  <el-drawer :visible.sync="returnDisplay" direction="rtl">
+  <el-drawer :visible.sync="returnDisplay" :direction="this.settings.drawer">
     <el-container>
       <el-main>
         <el-row>
@@ -44,6 +44,7 @@ import SettingsSelection from './components/SettingsSelection'
 import SecuritySettings from './components/SecuritySettings'
 import GeneralSettings from './components/GeneralSettings'
 import ProfileSettings from './components/ProfileSettings'
+import responsive from '@/mixins/responsiveProperties'
 
 export default {
   name: 'Settings',
@@ -110,6 +111,8 @@ export default {
     GeneralSettings,
     ProfileSettings
   },
+  mixins: [responsive],
+
   watch: {
     localSettings: {
       deep: true,

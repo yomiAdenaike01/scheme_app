@@ -6,6 +6,13 @@
       <div class="text_wrapper p-3" v-if="$mq == 'lg'">
         <p>Dock Pharmacy</p>
       </div>
+      <div
+        v-else
+        class="nav_toggle"
+        @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
+      >
+        <i class="el-icon el-icon-s-fold"></i>
+      </div>
     </el-col>
     <el-col>
       <div class="profile_container">
@@ -44,7 +51,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentUser', 'userNotifications']),
+    ...mapState(['currentUser', 'userNotifications', 'viewMobileMenu']),
 
     navWidth() {
       let styleWidth = { width: `${150}px` }
@@ -86,7 +93,8 @@ export default {
     ...mapMutations([
       'REMOVE_USER',
       'UPDATE_GLOBAL_LOADER',
-      'UPDATE_VIEW_NOTIFICATIONS_CENTER'
+      'UPDATE_VIEW_NOTIFICATIONS_CENTER',
+      'UPDATE_TOGGLE_MOBILE_MENU'
     ]),
 
     ...mapActions(['request']),
@@ -135,6 +143,10 @@ export default {
 .infobar_wrapper {
   border-bottom: solid 1px #e6e6e6;
 }
+.nav_toggle {
+  cursor: pointer;
+  background: transparent;
+}
 .el-col {
   height: 100%;
 }
@@ -158,7 +170,13 @@ export default {
 .text_wrapper {
   font-size: 0.9em;
 }
-
+/**
+ _   _  _  ___ _  _    ___ 
+| \_/ |/ \| o ) || |  | __|
+| \_/ ( o ) o \ || |_ | _| 
+|_| |_|\_/|___/_||___||___|
+                                                                                    
+ */
 .mobile {
   .infobar_wrapper {
     padding: 0.6rem;

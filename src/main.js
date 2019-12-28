@@ -2,11 +2,10 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import Transitions from 'vue2-transitions'
+// Plugins
 import './plugins/element'
 import './plugins/mobile'
-
-Vue.use(Transitions)
+import './plugins/resizeText'
 
 new Vue({
   router,

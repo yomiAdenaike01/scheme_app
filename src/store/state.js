@@ -17,5 +17,7 @@ export default {
   },
   viewNotificationsCenter: false,
   userNotifications: [],
-  currentInterval: ''
+  currentInterval: '',
+  viewMobileMenu: false,
+  defaultSize: { minFontSize: '10px', maxFontSize: '16px' }
 }

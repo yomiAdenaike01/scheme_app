@@ -1,9 +1,11 @@
 <template>
-  <el-drawer :visible.sync="viewNotifications">
+  <el-drawer
+    :visible.sync="viewNotifications"
+    :direction="this.settings.drawer"
+  >
     <Title
       title="Notifications Centre"
       subtitle="View and interact will notifications here."
-      slot="title"
     />
     <transition name="el-fade-in">
       <el-row v-if="userNotifications.length > 0">
@@ -30,6 +32,7 @@
 import { mapState, mapMutations } from 'vuex'
 import Notification from './Notification'
 import Title from '@/components/Title'
+import responsive from '@/mixins/responsiveProperties'
 export default {
   name: 'NotificationsCenter',
 
@@ -54,7 +57,8 @@ export default {
   components: {
     Notification,
     Title
-  }
+  },
+  mixins: [responsive]
 }
 </script>
 

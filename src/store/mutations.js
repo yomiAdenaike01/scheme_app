@@ -1,6 +1,12 @@
 import storage from './storage'
 
 export default {
+  UPDATE_DEFAULT_FONT(state, payload) {
+    state.defaultSize = { minFontSize: payload.min, maxFontSize: payload.max }
+  },
+  UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
+    state.viewMobileMenu = payload
+  },
   UPDATE_USER_NOTIFICATIONS(state, payload) {
     state.userNotifications = payload
   },

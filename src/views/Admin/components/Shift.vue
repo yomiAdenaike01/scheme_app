@@ -125,6 +125,7 @@ export default {
   cursor: pointer;
   font-size: 0.9em;
 }
+
 // .normal_staff {
 //   background: #ecf5ff;
 //   color: #2f74eb;
