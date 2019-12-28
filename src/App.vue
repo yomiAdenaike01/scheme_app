@@ -5,7 +5,7 @@
     v-loading="globalLoader"
     :class="{ mobile: $mq != 'lg' }"
   >
-    <UserInfoBar v-if="validRoute" />
+    <AppBar v-if="validRoute" />
     <el-row type="flex" style="height:100%">
       <el-col style="flex:1">
         <Navigation v-if="(validRoute && $mq == 'lg') || viewMobileMenu" />
@@ -22,7 +22,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
-import UserInfoBar from '@/components/UserInfoBar'
+import AppBar from '@/components/AppBar'
 import Navigation from '@/components/Navigation'
 import NotificationsCenter from '@/components/NotificationsCenter'
 
@@ -58,7 +58,7 @@ export default {
   },
   components: {
     Navigation,
-    UserInfoBar,
+    AppBar,
     NotificationsCenter
   },
   watch: {

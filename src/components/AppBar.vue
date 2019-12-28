@@ -1,8 +1,6 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col
-      style="background:#2f74eb; color:white; height:initial; max-width:7.4%"
-    >
+    <el-col class="client_indicator">
       <div class="text_wrapper p-3" v-if="$mq == 'lg'">
         <p>Dock Pharmacy</p>
       </div>
@@ -11,7 +9,7 @@
         class="nav_toggle"
         @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
       >
-        <i class="el-icon el-icon-s-fold"></i>
+        <i class="el-icon el-icon-menu"></i>
       </div>
     </el-col>
     <el-col>
@@ -44,7 +42,7 @@ import Settings from '@/views/Settings/Settings'
 import Avatar from './Avatar.vue'
 import prompts from '@/mixins/prompts'
 export default {
-  name: 'UserInfoBar',
+  name: 'AppBar',
   data() {
     return {
       displaySettings: false
@@ -140,6 +138,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.client_indicator {
+  background: #2f74eb;
+  color: white;
+  height: initial;
+  max-width: 7.4%;
+}
 .infobar_wrapper {
   border-bottom: solid 1px #e6e6e6;
 }
@@ -180,6 +184,11 @@ export default {
 .mobile {
   .infobar_wrapper {
     padding: 0.6rem;
+  }
+  .client_indicator {
+    background: none;
+    color: #cacaca;
+    font-size: 1.4em;
   }
 }
 </style>
