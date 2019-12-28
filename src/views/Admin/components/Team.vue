@@ -98,7 +98,7 @@ export default {
   width: 5%;
   border-left: solid 1px #e6e6e6;
   height: 100%;
-  overflow-y: scroll;
+  overflow-x: hidden;
 }
 .team_container {
   .el-col {
