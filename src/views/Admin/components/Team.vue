@@ -1,9 +1,21 @@
 <template>
-  <el-col style="flex:0.2;border-left:solid 1px #e6e6e6;">
+  <el-col class="team_wrapper">
     <el-row class="team_container">
       <el-col v-for="(member, index) in team" :key="index">
-        <Dropdown :items="items" @method="handleEvents" position="left" :icon="false">
-          <Avatar :name="member.name" />
+        <Dropdown
+          :items="items"
+          @method="handleEvents"
+          position="left"
+          :icon="false"
+        >
+          <el-badge
+            is-dot
+            type="success"
+            :hidden="member.is_online"
+            class="item"
+          >
+            <Avatar :name="member.name" />
+          </el-badge>
         </Dropdown>
       </el-col>
     </el-row>
@@ -11,50 +23,58 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import Dropdown from "@/components/Dropdown.vue";
-import Avatar from "@/components/Avatar.vue";
+import { mapState, mapGetters } from 'vuex'
+import Dropdown from '@/components/Dropdown.vue'
+import Avatar from '@/components/Avatar.vue'
 export default {
-  name: "Team",
+  name: 'Team',
   computed: {
-    ...mapState("Admin", ["team"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapState('Admin', ['team']),
+    ...mapGetters(['getIsAdmin', 'getOnlineTeam']),
+    onlineTeam() {
+      return this.team.filter(member => {
+        return member.is_online
+      })
+    },
     items() {
       let items = [
         {
-          name: "Message Team Member",
-          command: "message"
+          name: 'Message Team Member',
+          command: 'message'
         },
         {
-          name: "View Team Member",
-          command: "view_member"
+          name: 'View Team Member',
+          command: 'view_member'
         },
         {
-          name: "View Requests",
-          command: "requests",
+          name: 'View Requests',
+          command: 'requests',
           divided: true
         }
-      ];
+      ]
 
       if (!this.getIsAdmin) {
-        items.splice(items.findIndex(item => item.command == "requests"), 1);
+        items.splice(
+          items.findIndex(item => item.command == 'requests'),
+          1
+        )
       }
-      return items;
+      return items
     }
   },
   methods: {
     handleEvents(event) {
       switch (event) {
-        case "message": {
-          this.$router.push({ name: "messenger" });
-          break;
+        case 'message': {
+          this.$router.push({ name: 'messenger' })
+          break
         }
-        case "view_requests": {
-          break;
+        case 'view_requests': {
+          break
         }
 
         default:
-          break;
+          break
       }
     }
   },
@@ -62,10 +82,16 @@ export default {
     Dropdown,
     Avatar
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
+.team_wrapper {
+  width: 9.5%;
+  border-left: solid 1px #e6e6e6;
+  height: 100%;
+  overflow-y: scroll;
+}
 .team_container {
   .el-col {
     padding: 1em;
