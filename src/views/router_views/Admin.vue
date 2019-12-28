@@ -23,9 +23,9 @@ export default {
     let isVerified = this.currentUser.verified
     if (!isVerified) {
       this.UPDATE_NOTIFICATIONS({
-        title: 'Unverified email account',
+        title: 'Activate account',
         type: 'info',
-        message: 'Open settings to verify email account.'
+        message: 'Open settings to activate account.'
       })
     }
     let general = this.localSettings.general

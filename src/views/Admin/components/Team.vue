@@ -16,8 +16,7 @@
         >
           <el-badge
             is-dot
-            type="success"
-            :hidden="member.is_online"
+            :type="member.is_online ? 'success' : 'danger'"
             class="item"
           >
             <Avatar :name="member.name" />

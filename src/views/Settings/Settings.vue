@@ -8,11 +8,23 @@
             title="Settings"
             subtitle="Change all aspects of your settings here."
           />
+
           <SettingsSelection
             @prefChange="view = $event"
             :selection="returnSettings"
           />
-
+          <div @click="verifyEmail" v-loading="loading">
+            <el-alert
+              class="mt-4 activate_account_alert"
+              v-if="!currentUser.verified"
+              title="Account not activated."
+              :type="type"
+              description="Click verify to complete activation"
+              show-icon
+              close-text="Activate"
+              :closable="false"
+            />
+          </div>
           <el-col v-if="settingsView == 'security'">
             <SecuritySettings active />
           </el-col>
@@ -64,6 +76,7 @@ export default {
   },
   computed: {
     ...mapState(['currentUser', 'localSettings']),
+
     returnSettings() {
       return [
         {
@@ -95,7 +108,24 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['updateSettings']),
+    ...mapActions(['updateSettings', 'request']),
+    verifyEmail() {
+      this.loading = true
+      this.request({
+        method: 'POST',
+        url: 'users/verify'
+      })
+        .then(response => {
+          this.loading = false
+
+          return response
+        })
+        .catch(err => {
+          this.loading = false
+
+          return err
+        })
+    },
     update() {
       this.updateSettings()
         .then(response => (this.loading = false))
@@ -132,5 +162,8 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
+.activate_account_alert {
+  cursor: pointer;
 }
 </style>
