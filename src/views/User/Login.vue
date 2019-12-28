@@ -306,12 +306,9 @@ export default {
           .then(response => {
             this.loading = false
             this.selectedForm = 'login'
-            return response
           })
           .catch(error => {
             this.loading = false
-
-            return error
           })
       }
     },
