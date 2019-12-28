@@ -8,13 +8,19 @@
             title="Settings"
             subtitle="Change all aspects of your settings here."
           />
-          <SettingsSelection @prefChange="view = $event" />
+          <SettingsSelection
+            @prefChange="view = $event"
+            :selection="returnSettings"
+          />
 
           <el-col v-if="settingsView == 'security'">
             <SecuritySettings active />
           </el-col>
-          <el-col v-else-if="settingsView =='general'">
+          <el-col v-else-if="settingsView == 'general'">
             <GeneralSettings />
+          </el-col>
+          <el-col v-else-if="settingsView == 'profile'">
+            <ProfileSettings />
           </el-col>
         </el-row>
       </el-main>
@@ -24,76 +30,95 @@
           v-loading="loading"
           v-if="settingsUpdated"
           size="small"
-        >Save Settings</el-button>
+          >Save Settings</el-button
+        >
       </el-footer>
     </el-container>
   </el-drawer>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-import Title from "@/components/Title";
-import SettingsSelection from "./components/SettingsSelection";
-import SecuritySettings from "./components/SecuritySettings";
-import GeneralSettings from "./components/GeneralSettings";
+import { mapState, mapActions } from 'vuex'
+import Title from '@/components/Title'
+import SettingsSelection from './components/SettingsSelection'
+import SecuritySettings from './components/SecuritySettings'
+import GeneralSettings from './components/GeneralSettings'
+import ProfileSettings from './components/ProfileSettings'
 
 export default {
-  name: "Settings",
+  name: 'Settings',
   data() {
     return {
-      view: "general",
+      view: '',
       settingsUpdated: false,
       loading: false
-    };
+    }
   },
 
   props: {
     display: Boolean
   },
+  mounted() {
+    this.view = this.returnSettings[0].label
+  },
   computed: {
-    ...mapState(["currentUser", "localSettings"]),
+    ...mapState(['currentUser', 'localSettings']),
+    returnSettings() {
+      return [
+        {
+          label: 'General'
+        },
+        {
+          label: 'Security'
+        },
+        {
+          label: 'Profile'
+        }
+      ]
+    },
     currentUserViewConfig() {
-      let cUser = this.currentUser;
-      let arr = [];
-      return arr;
+      let cUser = this.currentUser
+      let arr = []
+      return arr
     },
     settingsView() {
-      return this.view.toLowerCase();
+      return this.view.toLowerCase()
     },
     returnDisplay: {
       get() {
-        return this.display;
+        return this.display
       },
       set(val) {
-        this.$emit("toggle", val);
+        this.$emit('toggle', val)
       }
     }
   },
   methods: {
-    ...mapActions(["updateSettings"]),
+    ...mapActions(['updateSettings']),
     update() {
       this.updateSettings()
         .then(response => (this.loading = false))
-        .catch(err => (this.loading = false));
+        .catch(err => (this.loading = false))
 
-      this.$forceUpdate();
+      this.$forceUpdate()
     }
   },
   components: {
     Title,
     SettingsSelection,
     SecuritySettings,
-    GeneralSettings
+    GeneralSettings,
+    ProfileSettings
   },
   watch: {
     localSettings: {
       deep: true,
       handler(val) {
-        this.settingsUpdated = true;
+        this.settingsUpdated = true
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
