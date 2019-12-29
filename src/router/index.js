@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './../store/index'
+const mainApp = () => import('@/views/router_views/Main')
 const login = () => import('@/views/User/Login')
 const dashboard = () => import('@/views/Admin/Dashboard')
 const schedule = () => import('@/views/Admin/Schedule')
@@ -17,7 +18,63 @@ const routes = [
     path: '/',
     redirect: { name: 'login' }
   },
-
+  {
+    path: '/main',
+    name: 'main',
+    component: mainApp,
+    children: [
+      {
+        path: '/admin',
+        name: 'admin',
+        component: admin,
+        children: [
+          {
+            path: 'dashboard',
+            name: 'dashboard',
+            component: dashboard,
+            meta: {
+              title: 'Dashboard',
+              authRequired: true
+            }
+          },
+          {
+            path: 'schedule',
+            name: 'schedule',
+            component: schedule,
+            meta: {
+              title: 'Schedule',
+              authRequired: true
+            }
+          },
+          {
+            path: 'reports',
+            name: 'reports',
+            component: reports,
+            meta: {
+              title: 'Reports',
+              authRequired: true
+            }
+          }
+        ]
+      },
+      {
+        path: '/comms',
+        name: 'comms',
+        component: comms,
+        children: [
+          {
+            path: 'messenger',
+            name: 'messenger',
+            component: messenger,
+            meta: {
+              title: 'Messenger',
+              authRequired: true
+            }
+          }
+        ]
+      }
+    ]
+  },
   {
     path: '/login',
     name: 'login',
@@ -25,56 +82,6 @@ const routes = [
     meta: {
       title: 'Login'
     }
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    component: admin,
-    children: [
-      {
-        path: 'dashboard',
-        name: 'dashboard',
-        component: dashboard,
-        meta: {
-          title: 'Dashboard',
-          authRequired: true
-        }
-      },
-      {
-        path: 'schedule',
-        name: 'schedule',
-        component: schedule,
-        meta: {
-          title: 'Schedule',
-          authRequired: true
-        }
-      },
-      {
-        path: 'reports',
-        name: 'reports',
-        component: reports,
-        meta: {
-          title: 'Reports',
-          authRequired: true
-        }
-      }
-    ]
-  },
-  {
-    path: '/comms',
-    name: 'comms',
-    component: comms,
-    children: [
-      {
-        path: 'messenger',
-        name: 'messenger',
-        component: messenger,
-        meta: {
-          title: 'Messenger',
-          authRequired: true
-        }
-      }
-    ]
   }
 ]
 

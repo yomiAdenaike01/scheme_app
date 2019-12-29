@@ -58,26 +58,20 @@ export default {
           if (typeof response.content == 'string') {
             context.commit('UPDATE_NOTIFICATIONS', {
               message: response.content,
-              title: 'Operation Successful',
               type: 'success'
             })
           }
           return response.content
         } else if (response.hasOwnProperty('error')) {
-          context.commit('UPDATE_NOTIFICATIONS', {
-            message: response.content,
-            title: 'Operation Failed',
-            type: 'error'
-          })
           return Promise.reject(response.content)
         }
       })
       .catch(error => {
-        error = error.data
-        console.error(error)
+        if (error.hasOwnProperty('data')) {
+          error = error.data.content
+        }
         context.commit('UPDATE_NOTIFICATIONS', {
           message: error,
-          title: 'Error when processing request',
           type: 'error'
         })
       })

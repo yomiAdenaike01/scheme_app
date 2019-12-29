@@ -5,62 +5,22 @@
     v-loading="globalLoader"
     :class="{ mobile: $mq != 'lg' }"
   >
-    <AppBar v-if="validRoute" />
-    <el-row type="flex" style="height:100%">
-      <el-col style="flex:1">
-        <Navigation v-if="(validRoute && $mq == 'lg') || viewMobileMenu" />
-      </el-col>
-      <el-col>
-        <keep-alive>
-          <router-view></router-view>
-        </keep-alive>
-      </el-col>
-    </el-row>
-    <NotificationsCenter />
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
-import AppBar from '@/components/AppBar'
-import Navigation from '@/components/Navigation'
-import NotificationsCenter from '@/components/NotificationsCenter'
+import { mapState } from 'vuex'
 
 export default {
   name: 'app',
 
   computed: {
-    ...mapState([
-      'notifications',
-      'globalLoader',
-      'currentUser',
-      'userNotifications',
-      'viewMobileMenu',
-      'defaultSize'
-    ]),
+    ...mapState(['notifications', 'defaultSize'])
+  },
 
-    validRoute() {
-      let $route = this.$route
-      return $route.name != 'login' && $route.name != 'register'
-    }
-  },
-  // activated() {
-  //   if (this.$mq == 'lg') {
-  //     this.UPDATE_DEFAULT_FONT({ min: '12px', max: '16px' })
-  //   }
-  // },
-  methods: {
-    ...mapMutations(['UPDATE_NOTIFICATIONS', 'UPDATE_DEFAULT_FONT']),
-    ...mapActions(['getNotifications']),
-    viewMenu() {
-      console.log('Sometihgn')
-    }
-  },
-  components: {
-    Navigation,
-    AppBar,
-    NotificationsCenter
-  },
   watch: {
     notifications(val) {
       this.$notify(val[0])

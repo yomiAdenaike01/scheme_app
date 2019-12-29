@@ -14,7 +14,7 @@
             :selection="returnSettings"
           />
           <div
-            @click="type == 'info' ? verifyEmail : null"
+            @click="verifyEmail"
             v-loading="loading"
             v-if="!currentUser.verified"
           >
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import Title from '@/components/Title'
 import SettingsSelection from './components/SettingsSelection'
 import SecuritySettings from './components/SecuritySettings'
@@ -82,14 +82,19 @@ export default {
     ...mapState(['currentUser', 'localSettings']),
     returnAlert() {
       let alert = {
-        desc: 'Click verify to complete activation',
+        desc:
+          'Click this message to complete activation. Upon activation you will be logged out.',
         title: 'Account not activated.'
       }
       let type = this.type
       if (type == 'error') {
         alert.desc = 'Error activated account. Your email may be invalid'
-        alert.title = 'Error when activating account.'
+        alert.title = 'Unsucessful activation.'
+      } else if (type == 'success') {
+        alert.desc = 'This alert will be removed on the next time you login. '
+        alert.title = 'Account activated successfully.'
       }
+
       return alert
     },
     returnSettings() {
@@ -121,6 +126,7 @@ export default {
   },
   methods: {
     ...mapActions(['updateSettings', 'request']),
+    ...mapMutations(['UPDATE_NOTIFICATIONS', 'REMOVE_USER']),
     verifyEmail() {
       this.loading = true
       this.request({
@@ -129,7 +135,15 @@ export default {
       })
         .then(response => {
           this.loading = false
-
+          this.type = 'success'
+          this.REMOVE_USER()
+          this.UPDATE_NOTIFICATIONS({
+            type: 'info',
+            title: 'You have been logged out',
+            message:
+              'Your account has been activated you will need to log back in to renew your session.'
+          })
+          this.$router.push({ name: 'login' })
           return response
         })
         .catch(err => {
