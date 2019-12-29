@@ -1,9 +1,9 @@
 <template>
   <div class="main_wrapper">
-    <AppBar v-if="validRoute" />
+    <AppBar />
     <el-row type="flex" style="height:100%">
       <el-col style="flex:1">
-        <Navigation v-if="(validRoute && $mq == 'lg') || viewMobileMenu" />
+        <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </el-col>
       <el-col>
         <keep-alive>
@@ -30,12 +30,7 @@ export default {
       'userNotifications',
       'viewMobileMenu',
       'defaultSize'
-    ]),
-
-    validRoute() {
-      let $route = this.$route
-      return $route.name != 'login' && $route.name != 'register'
-    }
+    ])
   },
   components: {
     Navigation,

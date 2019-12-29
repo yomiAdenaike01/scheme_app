@@ -33,14 +33,12 @@ export default {
       this.requestNotificationPermission()
     }
     this.genNotifications()
-
-    if (general.live_dashbboard) {
-      this.adminInterval = setInterval(() => {
-        this.getTeam()
-        this.getNotifications()
-        this.getShifts()
-      }, 5000)
-    }
+    // Starting interval
+    this.adminInterval = setInterval(() => {
+      this.getTeam()
+      this.getNotifications()
+      this.getShifts()
+    }, 5000)
   },
   methods: {
     ...mapActions('Admin', ['getTeam', 'getShifts']),
