@@ -97,7 +97,6 @@ export default {
 
     ...mapActions(['request']),
     handleCommands(command) {
-      console.log(command)
       switch (command) {
         case 'view_notifications': {
           this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true)
@@ -112,7 +111,6 @@ export default {
             .then(response => {
               this.REMOVE_USER()
               this.$router.push({ name: 'login' })
-              this.UPDATE_GLOBAL_LOADER(false)
             })
             .catch(error => {
               this.UPDATE_GLOBAL_LOADER(false)

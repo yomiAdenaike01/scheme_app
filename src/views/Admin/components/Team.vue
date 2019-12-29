@@ -1,5 +1,5 @@
 <template>
-  <el-col class="team_wrapper" v-if="team.length > 0">
+  <el-col class="team_wrapper" v-loading="team.length <= 0">
     <el-row class="team_container">
       <Title
         style="text-align:center"
