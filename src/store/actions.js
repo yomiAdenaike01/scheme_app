@@ -73,7 +73,7 @@ export default {
         }
       })
       .catch(error => {
-        error = error.data.content
+        error = error.data
         console.error(error)
         context.commit('UPDATE_NOTIFICATIONS', {
           message: error,

@@ -1,5 +1,5 @@
 <template>
-  <el-col class="team_wrapper">
+  <el-col class="team_wrapper" v-if="team.length > 0">
     <el-row class="team_container">
       <Title
         style="text-align:center"
@@ -7,6 +7,7 @@
         title="Team"
         subtitle="View and interact with your team members here"
       />
+
       <el-col v-for="(member, index) in team" :key="index" class="member">
         <Dropdown
           :items="items"
@@ -109,12 +110,13 @@ export default {
     }
   }
 }
+
 /**
- _   _  _  ___ _  _    ___ 
+ _   _  _  ___ _  _    ___
 | \_/ |/ \| o ) || |  | __|
-| \_/ ( o ) o \ || |_ | _| 
+| \_/ ( o ) o \ || |_ | _|
 |_| |_|\_/|___/_||___||___|
-                                                                                    
+
  */
 .mobile {
   .member {
