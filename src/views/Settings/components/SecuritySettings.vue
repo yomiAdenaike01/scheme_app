@@ -7,6 +7,9 @@
         >
           Change Email Address
           <span style="color:#999">{{ currentUser.email }}</span>
+          <el-tag :type="currentUser.verified ? 'success' : 'warning'">{{
+            currentUser.verified ? 'Activated' : 'Not Activated'
+          }}</el-tag>
         </div>
       </template>
       <el-form>
