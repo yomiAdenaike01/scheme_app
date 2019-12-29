@@ -13,15 +13,18 @@
             @prefChange="view = $event"
             :selection="returnSettings"
           />
-          <div @click="verifyEmail" v-loading="loading">
+          <div
+            @click="type == 'info' ? verifyEmail : null"
+            v-loading="loading"
+            v-if="!currentUser.verified"
+          >
             <el-alert
               class="mt-4 activate_account_alert"
-              v-if="!currentUser.verified"
-              title="Account not activated."
+              :class="{ disabled: type == 'error' }"
+              :title="returnAlert.title"
               :type="type"
-              description="Click verify to complete activation"
+              :description="returnAlert.desc"
               show-icon
-              close-text="Activate"
               :closable="false"
             />
           </div>
@@ -64,7 +67,8 @@ export default {
     return {
       view: '',
       settingsUpdated: false,
-      loading: false
+      loading: false,
+      type: 'info'
     }
   },
 
@@ -76,7 +80,18 @@ export default {
   },
   computed: {
     ...mapState(['currentUser', 'localSettings']),
-
+    returnAlert() {
+      let alert = {
+        desc: 'Click verify to complete activation',
+        title: 'Account not activated.'
+      }
+      let type = this.type
+      if (type == 'error') {
+        alert.desc = 'Error activated account. Your email may be invalid'
+        alert.title = 'Error when activating account.'
+      }
+      return alert
+    },
     returnSettings() {
       return [
         {
@@ -84,9 +99,6 @@ export default {
         },
         {
           label: 'Security'
-        },
-        {
-          label: 'Profile'
         }
       ]
     },
@@ -122,7 +134,7 @@ export default {
         })
         .catch(err => {
           this.loading = false
-
+          this.type = 'error'
           return err
         })
     },
@@ -165,5 +177,8 @@ export default {
 }
 .activate_account_alert {
   cursor: pointer;
+  &.disabled {
+    cursor: not-allowed;
+  }
 }
 </style>

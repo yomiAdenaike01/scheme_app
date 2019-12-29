@@ -247,11 +247,11 @@ export default {
             options: [
               {
                 text: 'Yes',
-                value: 'Yes'
+                value: 3
               },
               {
                 text: 'No',
-                value: 'No'
+                value: 2
               }
             ]
           },
