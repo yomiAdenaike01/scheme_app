@@ -1,10 +1,5 @@
 <template>
-  <div
-    id="app"
-    v-resize-text="defaultSize"
-    v-loading="globalLoader"
-    :class="{ mobile: $mq != 'lg' }"
-  >
+  <div id="app" v-resize-text="defaultSize" :class="{ mobile: $mq != 'lg' }">
     <keep-alive>
       <router-view></router-view>
     </keep-alive>

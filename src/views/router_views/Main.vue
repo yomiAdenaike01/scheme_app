@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main_wrapper">
     <AppBar v-if="validRoute" />
     <el-row type="flex" style="height:100%">
       <el-col style="flex:1">
@@ -45,4 +45,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.main_wrapper {
+  height: 100%;
+}
+</style>
