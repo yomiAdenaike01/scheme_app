@@ -9,17 +9,8 @@
       />
 
       <el-col v-for="(member, index) in team" :key="index" class="member">
-        <Dropdown
-          :items="items"
-          @method="handleEvents"
-          position="left"
-          :icon="false"
-        >
-          <el-badge
-            is-dot
-            :type="member.is_online ? 'success' : 'danger'"
-            class="item"
-          >
+        <Dropdown :items="items" @method="handleEvents" position="left" :icon="false">
+          <el-badge is-dot :type="member.is_online ? 'success' : 'danger'" class="item">
             <Avatar :name="member.name" />
           </el-badge>
         </Dropdown>
@@ -29,59 +20,57 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
-import Dropdown from '@/components/Dropdown.vue'
-import Avatar from '@/components/Avatar.vue'
-import Title from '@/components/Title'
+import { mapState, mapGetters } from "vuex";
+import Dropdown from "@/components/Dropdown.vue";
+import Avatar from "@/components/Avatar.vue";
+import Title from "@/components/Title";
 export default {
-  name: 'Team',
+  name: "Team",
   computed: {
-    ...mapState('Admin', ['team']),
-    ...mapGetters(['getIsAdmin', 'getOnlineTeam']),
+    ...mapState("Admin", ["team"]),
+    ...mapGetters(["getIsAdmin", "getOnlineTeam"]),
     onlineTeam() {
       return this.team.filter(member => {
-        return member.is_online
-      })
+        return member.is_online;
+      });
     },
     items() {
       let items = [
         {
-          name: 'Message Team Member',
-          command: 'message'
-        },
-        {
-          name: 'View Team Member',
-          command: 'view_member'
-        },
-        {
-          name: 'View Requests',
-          command: 'requests',
-          divided: true
+          name: "Message Team Member",
+          command: "message"
         }
-      ]
+      ];
 
-      if (!this.getIsAdmin) {
-        items.splice(
-          items.findIndex(item => item.command == 'requests'),
-          1
-        )
+      if (this.getIsAdmin) {
+        items.push(
+          {
+            name: "View Team Member",
+            command: "view_member"
+          },
+          {
+            name: "View Requests",
+            command: "requests",
+            divided: true
+          }
+        );
       }
-      return items
+      return items;
     }
   },
   methods: {
     handleEvents(event) {
       switch (event) {
-        case 'message': {
-          this.$router.push({ name: 'messenger' })
-          break
+        case "message": {
+          this.$router.push({ name: "messenger" });
+          break;
         }
-        case 'view_requests': {
-          break
+        case "view_requests": {
+          break;
         }
 
         default:
-          break
+          break;
       }
     }
   },
@@ -90,7 +79,7 @@ export default {
     Avatar,
     Title
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
