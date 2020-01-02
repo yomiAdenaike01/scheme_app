@@ -1,18 +1,9 @@
 <template>
-  <el-drawer
-    :visible.sync="viewNotifications"
-    :direction="this.settings.drawer"
-  >
-    <Title
-      title="Notifications Centre"
-      subtitle="View and interact will notifications here."
-    />
+  <el-drawer :visible.sync="viewNotifications" :direction="this.settings.drawer">
+    <Title title="Notifications centre" subtitle="View and interact will notifications here." />
     <transition name="el-fade-in">
       <el-row v-if="userNotifications.length > 0">
-        <el-col
-          v-for="notification in userNotifications"
-          :key="notification._id"
-        >
+        <el-col v-for="notification in userNotifications" :key="notification._id">
           <Notification :notification="notification" />
         </el-col>
       </el-row>
@@ -29,37 +20,37 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
-import Notification from './Notification'
-import Title from '@/components/Title'
-import responsive from '@/mixins/responsiveProperties'
+import { mapState, mapMutations } from "vuex";
+import Notification from "./Notification";
+import Title from "@/components/Title";
+import responsive from "@/mixins/responsiveProperties";
 export default {
-  name: 'NotificationsCenter',
+  name: "NotificationsCenter",
 
   computed: {
     ...mapState([
-      'viewNotificationsCenter',
-      'userNotifications',
-      'currentUser'
+      "viewNotificationsCenter",
+      "userNotifications",
+      "currentUser"
     ]),
     viewNotifications: {
       get() {
-        return this.viewNotificationsCenter
+        return this.viewNotificationsCenter;
       },
       set(val) {
-        this.UPDATE_VIEW_NOTIFICATIONS_CENTER(val)
+        this.UPDATE_VIEW_NOTIFICATIONS_CENTER(val);
       }
     }
   },
   methods: {
-    ...mapMutations(['UPDATE_VIEW_NOTIFICATIONS_CENTER'])
+    ...mapMutations(["UPDATE_VIEW_NOTIFICATIONS_CENTER"])
   },
   components: {
     Notification,
     Title
   },
   mixins: [responsive]
-}
+};
 </script>
 
 <style lang="scss" scoped></style>
