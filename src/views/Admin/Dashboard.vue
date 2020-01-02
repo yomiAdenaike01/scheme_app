@@ -33,12 +33,12 @@
             </Title>
           </el-card>
           <!-- SHIFTS IN CATEGORIES -->
-
-          <el-col v-for="(prop, key) in categoriedShifts" :key="key">
-            <el-divider class="member_name">{{ key }}</el-divider>
-            <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
-          </el-col>
-
+          <transition name="el-fade-in">
+            <el-col v-for="(prop, key) in categoriedShifts" :key="key">
+              <el-divider class="member_name">{{ key }}</el-divider>
+              <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
+            </el-col>
+          </transition>
           <!-- PREVIOUS SHIFTS -->
           <el-collapse-transition>
             <el-col
