@@ -2,7 +2,7 @@
   <div ref="notification" v-loading="globalLoader">
     <el-row class="p-3 m-1" style="width:100%;border-left:2px solid rgb(220,220,220);">
       <el-col style="width:100%; ">
-        <el-row type="flex" align="middle">
+        <el-row type="flex" align="middle" v-if="notification.status !='complete'">
           <el-col>
             <span style="font-size:.8em">{{ `${notification.message}.` }}</span>
           </el-col>
@@ -40,9 +40,20 @@
             >Toggle view details</el-button>
           </el-col>
         </el-row>
+        <!-- NOTIFICATION ACTION IS COMPLETE -->
+        <el-row v-else type="flex" align="center">
+          <el-col style="display:flex; justify-content:space-between; align-items:center">
+            <span style="font-size:.8em">{{ `${notification.message}.` }}</span>
+            <el-button disabled size="small" icon="el-icon-check" type="success" circle></el-button>
+          </el-col>
+        </el-row>
       </el-col>
       <el-collapse-transition>
-        <el-col v-if="viewDetails" class="p-3 mt-3" style=" color:#444">
+        <el-col
+          v-if="viewDetails && notification.status !='complete'"
+          class="p-3 mt-3"
+          style=" color:#444"
+        >
           <p
             style="text-align:center; font-size:.8em"
           >Please confirm that you want to approve these changes</p>
@@ -110,6 +121,18 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER_NOTIFICATIONS"]),
+    changeNotificationActionToComplete() {
+      this.request({
+        method: "POST",
+        url: "/notifications/update",
+        data: {
+          id: this.notification._id,
+          update: { status: "complete" }
+        }
+      })
+        .then(response => console.log(response))
+        .catch(error => console.log(error));
+    },
     deleteNotifcation() {
       this.globalLoader = true;
       this.request({
@@ -126,13 +149,13 @@ export default {
           this.globalLoader = false;
         });
     },
-    updateContent() {
+    async updateContent() {
+      this.globalLoader = true;
       this.request(this.notificationRequestBody)
-        .then(response => {
-          this.UPDATE_NOTIFICATIONS({ message: "", type: "success" });
-          this.deleteNotifcation();
-        })
-        .catch(error => {});
+        .then(response => console.log(response))
+        .catch(error => console.log(error));
+      this.changeNotificationActionToComplete();
+      this.globalLoader = false;
     }
   }
 };
