@@ -18,10 +18,8 @@
         <p class="member_name">{{ shift.assigned_to }}</p>
       </el-form-item>
       <el-form-item label="Approved:">
-        <p class="member_name">
-          <i class="el-icon" :class="returnIcon" style="font-size:1.4em"></i>
-          <el-button class="ml-3" v-if="!getIsAdmin">Resend Request</el-button>
-        </p>
+        <el-button :icon="returnIcon" :type="returnApproval ? 'success' : 'warning'" circle></el-button>
+        <el-button class="ml-3" v-if="!getIsAdmin">Resend Request</el-button>
       </el-form-item>
       <el-form-item label="Shift Type:">{{ shift.type }}</el-form-item>
       <el-divider>
@@ -86,9 +84,9 @@ export default {
       let approved = this.returnApproval;
       let returnval;
       if (approved) {
-        returnval = "el-icon-circle-check";
+        returnval = "el-icon-check";
       } else {
-        returnval = "el-icon-circle-close";
+        returnval = "el-icon-close";
       }
       return returnval;
     },
