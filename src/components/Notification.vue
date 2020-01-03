@@ -11,17 +11,6 @@
             style="flex:1;display:flex; justify-content:center; align-items:center; flex-direction:column"
           >
             <el-button
-              size="small"
-              style="width:100%"
-              v-if="!notification.is_read"
-              @click="
-              updateContent('/notifications/update', {
-                method: 'POST',
-                update: { is_read: true, id: notification._id }
-              })
-            "
-            >Mark as read</el-button>
-            <el-button
               plain
               type="danger"
               size="small"
@@ -37,7 +26,7 @@
               plain
               v-if="notification.type == 'approve'"
               @click="viewDetails = !viewDetails"
-            >Toggle view details</el-button>
+            >Approve / Reject</el-button>
           </el-col>
         </el-row>
         <!-- NOTIFICATION ACTION IS COMPLETE -->

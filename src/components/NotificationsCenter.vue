@@ -4,6 +4,13 @@
       <Title title="Notifications centre" subtitle="View and interact will notifications here." />
       <transition name="el-fade-in">
         <el-row v-if="userNotifications.length > 0">
+          <el-button
+            style="width:100%"
+            @click="clearAllNotifications"
+            size="small"
+            type="danger"
+          >Clear Notifications</el-button>
+
           <el-col v-for="notification in userNotifications" :key="notification._id">
             <Notification :notification="notification" />
           </el-col>
@@ -17,8 +24,6 @@
           <h1 class="grey light">No notifications found.</h1>
         </el-main>
       </el-container>
-
-      <el-button @click="clearAllNotifications" size="small">Clear Notifications</el-button>
     </el-drawer>
   </div>
 </template>

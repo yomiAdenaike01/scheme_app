@@ -1,37 +1,35 @@
 <template>
-  <transition name="el-fade-in">
-    <el-card v-if="shift" :body-style="{ padding: '0px' }" class="mb-3 ml-3 mr-3 shift_container">
-      <el-row type="flex">
-        <el-col class="shift_details_container unit p-3">
-          <h5 class="member_name">{{ shift.shift_type }}</h5>
-          <p class="member_name mt-1 mb-1">{{ shift.assigned_to }}</p>
-          <span class="grey employee_type">
-            <i class="el-icon el-icon-user grey"></i>
-            {{ getEmployeeType }}
-          </span>
-        </el-col>
-        <el-col :class="['shift_times unit p-3', shift.class]">
-          <div style="display:flex;justify-content:center; align-items:center">
-            <span class="date">{{ shift.startDate }}</span>
-            <div
-              class="ml-3 mr-3"
-              style="display:flex; justify-content:center; align-items:center; flex-direction:column"
-            >
-              <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
-              <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
-            </div>
-            <span class="date">{{ shift.endDate }}</span>
+  <el-card :body-style="{ padding: '0px' }" class="mb-3 ml-3 mr-3 shift_container">
+    <el-row type="flex">
+      <el-col class="shift_details_container unit p-3">
+        <h5 class="member_name">{{ shift.shift_type }}</h5>
+        <p class="member_name mt-1 mb-1">{{ shift.assigned_to }}</p>
+        <span class="grey employee_type">
+          <i class="el-icon el-icon-user grey"></i>
+          {{ getEmployeeType }}
+        </span>
+      </el-col>
+      <el-col :class="['shift_times unit p-3', shift.class]">
+        <div style="display:flex;justify-content:center; align-items:center">
+          <span class="date">{{ shift.startDate }}</span>
+          <div
+            class="ml-3 mr-3"
+            style="display:flex; justify-content:center; align-items:center; flex-direction:column"
+          >
+            <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
+            <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
           </div>
-        </el-col>
-        <el-col class="p-3 approval_wrapper">
-          <el-tag
-            class="member_name"
-            :type="shift.completed ? 'primary' : 'danger'"
-          >{{ shift.completed ? 'Finished' : 'Incomplete' }}</el-tag>
-        </el-col>
-      </el-row>
-    </el-card>
-  </transition>
+          <span class="date">{{ shift.endDate }}</span>
+        </div>
+      </el-col>
+      <el-col class="p-3 approval_wrapper">
+        <el-tag
+          class="member_name"
+          :type="shift.completed ? 'primary' : 'danger'"
+        >{{ shift.completed ? 'Finished' : 'Incomplete' }}</el-tag>
+      </el-col>
+    </el-row>
+  </el-card>
 </template>
 
 <script>

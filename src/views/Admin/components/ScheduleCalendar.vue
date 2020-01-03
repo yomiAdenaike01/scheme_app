@@ -10,63 +10,58 @@
       editable-events
       @event-duration-change="changeShiftTime"
     />
-    <ViewShift
-      :display="view"
-      :shift="shift"
-      @toggle="view = $event"
-      @loading="loading = $event"
-    />
+    <ViewShift :display="view" :shift="shift" @toggle="view = $event" @loading="loading = $event" />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
-import VueCal from 'vue-cal'
-import 'vue-cal/dist/vuecal.css'
-import ViewShift from './dialogs/ViewShift'
-import dates from '@/mixins/dates'
+import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+import VueCal from "vue-cal";
+import "vue-cal/dist/vuecal.css";
+import ViewShift from "./dialogs/ViewShift";
+import dates from "@/mixins/dates";
 export default {
-  name: 'ScheduleCalendar',
+  name: "ScheduleCalendar",
   data() {
     return {
       view: false,
       loading: false,
       shift: {}
-    }
+    };
   },
   created() {
-    this.getShifts()
+    this.getShifts();
   },
   mixins: [dates],
   computed: {
-    ...mapState('Admin', ['shifts', 'team']),
-    ...mapState(['currentUser']),
-    ...mapGetters(['getIsAdmin']),
+    ...mapState("Admin", ["shifts", "team"]),
+    ...mapState(["currentUser"]),
+    ...mapGetters(["getIsAdmin"]),
     // isMine() {
     //   return this.returnShiftDetails._id == this.currentUser._id
     // },
 
     returnShiftEvents() {
-      let shifts = this.shifts
-      let len = shifts.length
-      let format = 'YYYY-MM-DD HH:mm'
-      let shiftEvents = []
+      let shifts = this.shifts;
+      let len = shifts.length;
+      let format = "YYYY-MM-DD HH:mm";
+      let shiftEvents = [];
       for (let i = 0; i < len; i++) {
-        let shift = shifts[i]
+        let shift = shifts[i];
 
         let index = this.team.findIndex(x => {
-          return shift.assigned_to == x._id
-        })
-        let name
+          return shift.assigned_to == x._id;
+        });
+        let name;
         if (this.team[index]) {
-          name = this.team[index].name
+          name = this.team[index].name;
         } else if (this.currentUser._id == shift.assigned_to) {
-          name = this.currentUser.name
+          name = this.currentUser.name;
         } else {
-          name = 'John Doe'
+          name = "John Doe";
         }
 
-        let shiftContent = this.returnShiftType(name, shift.shift_type)
+        let shiftContent = this.returnShiftType(name, shift.shift_type);
 
         let shiftEvent = {
           id: shift._id,
@@ -77,132 +72,134 @@ export default {
           assigned_to: shiftContent.name || shift.assigned_to,
           type: shiftContent.type,
           is_pickup: shift.is_pickup,
-          shift_type: shift.shift_type
-        }
-        shiftEvents.push(shiftEvent)
+          shift_type: shift.shift_type,
+          is_approved: shift.is_approved
+        };
+        shiftEvents.push(shiftEvent);
       }
-      return shiftEvents
+      return shiftEvents;
     },
 
     returnShiftDetails() {
       return this.shifts.find(shift => {
-        return shift.id == this.shift_id
-      })
+        return shift.id == this.shift_id;
+      });
     }
   },
   methods: {
-    ...mapActions(['request']),
-    ...mapMutations(['UPDATE_NOTIFICATIONS']),
-    ...mapActions('Admin', ['getShifts']),
+    ...mapActions(["request"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapActions("Admin", ["getShifts"]),
     returnShiftType(name, type) {
-      let shiftTitle, shiftClass
+      let shiftTitle, shiftClass;
       switch (type) {
         case 1: {
-          shiftClass = 'normal_staff'
-          shiftTitle = 'Regular shift'
-          break
+          shiftClass = "normal_staff";
+          shiftTitle = "Regular shift";
+          break;
         }
         case 2: {
-          shiftClass = 'locumn'
-          shiftTitle = 'Locumn shift'
+          shiftClass = "locumn";
+          shiftTitle = "Locumn shift";
 
-          break
+          break;
         }
         case 3: {
-          shiftClass = 'holiday'
-          shiftTitle = 'Holiday'
+          shiftClass = "holiday";
+          shiftTitle = "Holiday";
 
-          break
+          break;
         }
         case 4: {
-          shiftClass = 'time_off'
-          shiftTitle = 'Time off'
+          shiftClass = "time_off";
+          shiftTitle = "Time off";
 
-          break
+          break;
         }
         case 5: {
-          shiftClass = 'sick_leave'
-          shiftTitle = 'Sick leave'
+          shiftClass = "sick_leave";
+          shiftTitle = "Sick leave";
 
-          break
+          break;
         }
         default:
-          break
+          break;
       }
       return {
         text: `${name}'s ${shiftTitle}`,
         type: shiftTitle,
         eventClass: shiftClass
-      }
+      };
     },
     viewShift(shift) {
-      this.shift = shift
-      this.view = true
+      this.shift = shift;
+      this.view = true;
     },
     displayCreateNewShift(startTime) {
       // TODO: EMIT THE TIME AND PLACE IT WITHIN THE CREATE SHIFT
-      this.$emit('displayCreateShift', true)
+      this.$emit("displayCreateShift", true);
     },
     changeShiftTime(shift) {
       // Check are you admin or is this shift yours
-      let canEdit = shift.assigned_to == this.currentUser._id || this.getIsAdmin
+      let canEdit =
+        shift.assigned_to == this.currentUser._id || this.getIsAdmin;
       if (canEdit) {
         this.$confirm(
           `Are you sure you would like to change ${
             shift.assigned_to
           }'s ${shift.type.toLowerCase()} from ${shift.start} to ${shift.end}`,
-          'Confirm',
+          "Confirm",
           {
-            confirmButtonText: 'OK',
-            cancelButtonText: 'Cancel',
-            type: 'info'
+            confirmButtonText: "OK",
+            cancelButtonText: "Cancel",
+            type: "info"
           }
         ).then(response => {
-          this.loading = true
+          this.loading = true;
           const payload = {
             id: shift.id,
             update: {
               startDate: shift.startDate.toISOString(),
               endDate: shift.endDate.toISOString()
             }
-          }
+          };
 
           this.request({
-            url: '/shifts/update',
-            method: 'POST',
+            url: "/shifts/update",
+            method: "POST",
             data: payload
           })
             .then(response => {
-              this.loading = false
+              this.loading = false;
               let index = this.shifts.findIndex(shift => {
-                return shift._id == response._id
-              })
-              console.log(index)
+                return shift._id == response._id;
+              });
+              console.log(index);
               // Replace the shift that is in the same spot with updates
-              console.log(response)
+              console.log(response);
             })
             .catch(error => {
-              this.loading = false
-              console.log(error)
-            })
-        })
+              this.loading = false;
+              console.log(error);
+            });
+        });
       } else {
         this.$notify({
-          title: 'Error',
-          type: 'error',
+          title: "Error",
+          type: "error",
           message:
-            'You cannot edit this shift because you are not an admin or this shift is not yours.'
-        })
-        this.$forceUpdate()
+            "You cannot edit this shift because you are not an admin or this shift is not yours."
+        });
+        this.$forceUpdate();
       }
-      console.log(shift)
+      console.log(shift);
     }
   },
   components: {
     VueCal,
     ViewShift
   }
-}
+};
 </script>
 
 <style lang="scss">
