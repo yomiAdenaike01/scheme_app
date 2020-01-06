@@ -11,6 +11,7 @@
     />
 
     <el-form
+      v-loading="processingTimeSheet"
       class="ml-3 mr-3"
       status-icon
       label-position="left"
@@ -19,17 +20,21 @@
     >
       <!-- Timesheet -->
       <el-form-item class="extra_form_item">
-        <el-form-item class="extra_form_item">
-          <p @click="uploadTimeSheetDisplay = !uploadTimeSheetDisplay">
-            Upload Timesheet
-          </p>
-          <el-collapse-transition>
-            <div class="mt-3" v-if="uploadTimeSheetDisplay">
-              <input type="file" @change="timeSheetManagement" />
-            </div>
-          </el-collapse-transition>
-        </el-form-item>
+        <p @click="uploadTimeSheetDisplay = !uploadTimeSheetDisplay">
+          Upload Timesheet
+        </p>
+        <el-collapse-transition>
+          <div class="mt-3" v-if="uploadTimeSheetDisplay">
+            <!-- Input for the timesheet -->
+            <input
+              type="file"
+              @change="timeSheetManagement"
+              id="upload_timesheet"
+            />
+          </div>
+        </el-collapse-transition>
       </el-form-item>
+
       <!-- Create for multiple employees -->
       <el-form-item class="extra_form_item">
         <p @click="selectMultipleEmployees = !selectMultipleEmployees">
@@ -100,7 +105,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions } from "vuex";
+import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 export default {
   name: "CreateShift",
 
@@ -111,6 +116,9 @@ export default {
       selectMultipleEmployees: false,
       uploadTimeSheetDisplay: false,
       isValidCSV: false,
+      validFile: null,
+      processingTimeSheet: false,
+      csvErrorContents: [],
       eventData: {
         date: {},
         assigned_to: "",
@@ -233,40 +241,60 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     validateCSVData(fileData) {
-      let validateData = {
-        assigned_to: null,
-        date_created: null,
-        startDate: null,
-        endDate: null,
-        shift_type: null
-      };
-      const len = fileData.length;
-      for (let i = 0; i < len; i++) {
-        const eventElement = fileData[i];
-        const eventKeys = Object.keys(eventElement);
-        const validationKeys = Object.keys(validateData);
-        const eventKeysLen = eventKeys.length;
+      return new Promise((resolve, reject) => {
+        let validateData = {
+          assigned_to: null,
+          date_created: null,
+          startDate: null,
+          endDate: null,
+          shift_type: null
+        };
+        const len = fileData.length;
+        for (let i = 0; i < len; i++) {
+          const eventElement = fileData[i];
+          const eventKeys = Object.keys(eventElement);
+          const validationKeys = Object.keys(validateData);
+          const eventKeysLen = eventKeys.length;
 
-        for (let j = 0; j < eventKeysLen; j++) {
-          const eventKey = eventKeys[j];
-          const validationKey = validationKeys[j];
-          if (!validationKey || validationKey != eventKey) {
-            this.isValidCSV = false;
+          for (let j = 0; j < eventKeysLen; j++) {
+            const eventKey = eventKeys[j];
+            const validationKey = validationKeys[j];
+            if (!validationKey || validationKey != eventKey) {
+              // Error found
+              this.csvErrorContents.push(validationKey);
+              reject(false);
+              break;
+            } else {
+              resolve(fileData);
+              this.validFile = fileData;
+              break;
+            }
           }
         }
-      }
+      });
     },
     timeSheetManagement(e) {
       const csvtojson = require("csvtojson");
       const fileReader = new FileReader();
       e = e.target.files[0];
+      this.processingTimeSheet = true;
 
-      fileReader.onload = () => {
-        csvtojson()
-          .fromString(fileReader.result)
-          .then(response => this.validateCSVData(response))
-          .catch(error => console.error(error)); //
+      fileReader.onload = async () => {
+        try {
+          let fileContent = await csvtojson().fromString(fileReader.result);
+          let validationResult = await this.validateCSVData(fileContent);
+          this.uploadTimeSheet(validationResult);
+        } catch (e) {
+          this.processingTimeSheet = false;
+          // Create dialog with error processing csv file
+          this.UPDATE_NOTIFICATIONS({
+            type: "error",
+            message:
+              "Failed when processing the csv file, please check the csv file and upload it again"
+          });
+        }
       };
       fileReader.readAsBinaryString(e);
     },
