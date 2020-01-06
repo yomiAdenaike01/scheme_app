@@ -91,15 +91,7 @@ export default {
       return returnval;
     },
     returnApproval() {
-      let isApproved = this.shift.is_approved;
-      if (this.shift) {
-        let approval = isApproved;
-        let returnval = false;
-        if (approval.admin == 1) {
-          returnval = true;
-        }
-        return returnval;
-      }
+      return this.shift.is_approved.admin == 1;
     },
     view: {
       get() {

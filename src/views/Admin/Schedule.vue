@@ -5,12 +5,7 @@
       <el-col class="pl-3 pr-3">
         <el-row class="mb-4" type="flex" :gutter="10" align="middle">
           <el-col>
-            <Dropdown
-              :items="items"
-              @method="displayModals"
-              :icon="false"
-              position="right"
-            >
+            <Dropdown :items="items" @method="displayModals" :icon="false" position="right">
               <el-button round type="primary">
                 Actions
                 <i class="el-icon-arrow-right"></i>
@@ -18,10 +13,7 @@
             </Dropdown>
           </el-col>
         </el-row>
-        <ScheduleCalendar
-          @displayCreateShift="modals.create_event = $event"
-          style="height:70%"
-        />
+        <ScheduleCalendar @displayCreateShift="modals.create_event = $event" style="height:70%" />
       </el-col>
     </el-row>
 
@@ -30,36 +22,33 @@
       @createEvent="createEvent"
       :display="modals.create_event"
     />
-    <CreateEmployee
-      @toggle="modals.create_employee = $event"
-      :display="modals.create_employee"
-    />
+    <CreateEmployee @toggle="modals.create_employee = $event" :display="modals.create_employee" />
     <ScheduleProfileView />
   </div>
 </template>
 
 <script>
-import dates from '@/mixins/dates'
-import { mapState, mapActions, mapGetters } from 'vuex'
-import CreateShift from './components/dialogs/CreateShift'
-import CreateEmployee from './components/dialogs/CreateEmployee'
+import dates from "@/mixins/dates";
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
+import CreateShift from "./components/dialogs/CreateShift";
+import CreateEmployee from "./components/dialogs/CreateEmployee";
 
-import Dropdown from '@/components/Dropdown.vue'
-import Popover from '@/components/Popover'
-import ScheduleProfileView from './components/ScheduleProfileView.vue'
-import ScheduleCalendar from './components/ScheduleCalendar'
+import Dropdown from "@/components/Dropdown.vue";
+import Popover from "@/components/Popover";
+import ScheduleProfileView from "./components/ScheduleProfileView.vue";
+import ScheduleCalendar from "./components/ScheduleCalendar";
 export default {
-  name: 'Schedule',
+  name: "Schedule",
   data() {
     return {
       loading: false,
       liveSchedule: false,
       scheduleInterval: null,
       filters: {
-        employee: '',
-        abscences: '',
-        holidays: '',
-        late: ''
+        employee: "",
+        abscences: "",
+        holidays: "",
+        late: ""
       },
       modals: {
         create_event: false,
@@ -70,114 +59,120 @@ export default {
         create_employee: false
       },
 
-      currentView: '',
-      dateFormat: 'DD MMMM'
-    }
+      currentView: "",
+      dateFormat: "DD MMMM"
+    };
   },
 
   computed: {
-    ...mapState('Admin', ['team']),
-    ...mapGetters(['getIsAdmin']),
+    ...mapState("Admin", ["team"]),
+    ...mapGetters(["getIsAdmin"]),
 
     items() {
-      const isAdmin = this.getIsAdmin
+      const isAdmin = this.getIsAdmin;
       let items = [
         {
-          name: isAdmin ? 'Create Event' : 'Create Request',
-          command: 'create_event'
+          name: isAdmin ? "Create Event" : "Create Request",
+          command: "create_event"
         },
 
         {
-          name: isAdmin ? 'Update / Remove Event' : 'Update / Remove Request',
-          command: 'edit_event'
+          name: isAdmin ? "Update / Remove Event" : "Update / Remove Request",
+          command: "edit_event"
         },
         {
-          name: 'Create Employee',
-          command: 'create_employee',
+          name: "Create Employee",
+          command: "create_employee",
           divided: true
         },
         {
-          name: 'Export Employee',
-          command: 'export_employee'
+          name: "Export Employee",
+          command: "export_employee"
         },
         {
-          name: 'Export Schedule',
-          command: 'export_schedule'
+          name: "Export Schedule",
+          command: "export_schedule"
         }
-      ]
+      ];
       // if(this.getIsAdmin){
       //      items = items.mp(item=>{
       //        let command = item.command;
       //       command == 'Create Employee' || command == 'Export Employee'
       //      })
       // }
-      return items
+      return items;
     },
 
     viewSelectionConfig() {
       return [
-        { name: 'Month', value: 'month' },
-        { name: 'Week', value: 'week' },
-        { name: 'Day', value: 'day' }
-      ]
+        { name: "Month", value: "month" },
+        { name: "Week", value: "week" },
+        { name: "Day", value: "day" }
+      ];
     },
     filterConfig() {
-      let filters = []
+      let filters = [];
       for (let filter in this.filters) {
-        filters.push(filter)
+        filters.push(filter);
       }
-      return filters
+      return filters;
     },
     formConfig() {
       return [
         {
-          label: 'Assign To and Date',
-          items: { name: '', model: '', component: '' }
+          label: "Assign To and Date",
+          items: { name: "", model: "", component: "" }
         }
-      ]
+      ];
     }
   },
   methods: {
-    ...mapActions(['request']),
+    ...mapActions(["request"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
     createEmployee(employeeData) {},
     createEvent(eventData) {
-      this.loading = true
-      this.modals.createEvent = false
+      this.loading = true;
+      this.modals.createEvent = false;
       const date = {
         start: new Date(eventData.date[0]).toISOString(),
         end: new Date(eventData.date[1]).toISOString()
-      }
+      };
 
       const payload = {
-        url: '/shifts/create',
-        method: 'POST',
+        url: "/shifts/create",
+        method: "POST",
         data: {
           startDate: date.start,
           endDate: date.end,
-          shift_type: eventData.eventType,
-          assigned_to: eventData.assignTo
+          shift_type: eventData.shift_type,
+          assigned_to: eventData.assigned_to
         }
-      }
+      };
 
       this.request(payload)
         .then(response => {
-          this.loading = false
-          this.getShifts()
+          this.loading = false;
+          this.UPDATE_NOTIFICATIONS({
+            type: "success",
+            message:
+              "Event successfully created, it will appear in your dashboard and schedule shortly."
+          });
+          this.getShifts();
         })
         .catch(error => {
-          this.loading = false
-        })
+          this.loading = false;
+        });
     },
     displayModals(command) {
-      console.log(command)
-      this.modals[command] = true
+      console.log(command);
+      this.modals[command] = true;
     }
   },
   mixins: [dates],
 
   components: {
-    Title: () => import('@/components/Title'),
+    Title: () => import("@/components/Title"),
     ScheduleCalendar,
     CreateShift,
     Dropdown,
@@ -185,7 +180,7 @@ export default {
     ScheduleProfileView,
     CreateEmployee
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

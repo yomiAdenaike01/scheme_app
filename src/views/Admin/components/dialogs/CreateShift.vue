@@ -1,6 +1,5 @@
 <template>
-  <!-- TODO: ADD REASON FOR TIME OFF ADD ATTACHMENT ,FOR SICK NOTES ,ADD VALIDATION -->
-
+  <!-- TODO ASSIGN TO MULTIPLE EMPLOYEES -->
   <el-dialog custom-class="event_dialog" :visible.sync="view">
     <Title
       :title="!getIsAdmin ? 'Create Request' : 'Create Shift'"
@@ -11,88 +10,57 @@
       "
       slot="title"
     />
-    <el-form
-      class="ml-3 mr-3"
-      status-icon
-      :rules="validationData"
-      label-position="left"
-      :model="eventData"
-    >
-      <el-form-item label="Employee" v-if="getIsAdmin">
-        <el-select
-          v-model="eventData.assignTo"
-          placeholder="Please select a team member you want to assign this to"
-        >
-          <el-option
-            v-for="member in team"
-            :key="member._id"
-            :label="member.name"
-            :value="member._id"
-          ></el-option>
-        </el-select>
-      </el-form-item>
 
-      <el-form-item label="Request Type">
-        <el-select
-          v-model="eventData.eventType"
-          :placeholder="getIsAdmin ? '' : 'Holiday'"
-        >
-          <el-option label="Shift" value="1" v-if="getIsAdmin" />
-          <el-option label="Time-Off" value="4" />
-          <el-option label="Holiday" value="3" />
-          <el-option label="Sick Leave" value="5" />
-        </el-select>
-      </el-form-item>
-
-      <el-form-item prop="date1" label="Start & End Time ">
-        <el-date-picker
-          start-placeholder="Start date & time"
-          end-placeholder="End date & time"
-          type="datetimerange"
-          placeholder="Pick a date"
-          v-model="eventData.date"
-        ></el-date-picker>
-      </el-form-item>
-
-      <el-form-item
-        label="Repeat Days"
-        class="p-4"
-        style="background:rgb(250,250,250); border-radius:10px"
-      >
-        <el-switch v-model="repeat_toggle" />
+    <el-form class="ml-3 mr-3" status-icon label-position="left" :model="eventData">
+      <!-- Create for multiple employees -->
+      <el-form-item class="extra_form_item">
+        <p @click=" selectMultipleEmployees = !selectMultipleEmployees">Multi Employees</p>
         <el-collapse-transition>
-          <div v-if="repeat_toggle">
-            <Title
-              subtitle="Select the days of week that you wish to repeat this event for."
-            />
-            <el-checkbox-group v-model="eventData.repeat_days">
+          <div class="mt-3" v-if="selectMultipleEmployees">
+            <el-checkbox-group v-model="multi_employee">
               <el-checkbox-button
-                v-for="(btn, index) in repeatDaysConfig"
-                :key="btn"
-                :label="index"
-                >{{ btn }}</el-checkbox-button
-              >
+                v-for="(member,index) in returnTeam"
+                :key="index"
+                :value="member.value"
+                :label="member.label"
+              >{{member.label}}</el-checkbox-button>
             </el-checkbox-group>
           </div>
         </el-collapse-transition>
       </el-form-item>
 
       <el-form-item
-        label="Save As Template"
-        class="p-4"
-        style="background:rgb(250,250,250); border-radius:10px"
+        :required="item.required"
+        v-for="item in returnCreateShiftConfig"
+        :key="item.id"
+        :label="item.name"
       >
-        <el-switch v-model="save_as_template" />
-        <el-collapse-transition>
-          <div v-if="save_as_template">
-            <Title
-              subtitle="Your templates will be stored so that you can use them later."
-            />
+        <component
+          :is="item.type == 'select' ? 'el-select' : 'el-date-picker'"
+          type="datetimerange"
+          v-model="eventData[item.id]"
+          :start-placeholder="item.start_placeholder ? item.start_placeholder : null"
+          :end-placeholder="item.end_placeholder ? item.end_placeholder : null"
+          :placeholder="item.placeholder"
+          :disabled="item.disabled"
+        >
+          <el-option
+            v-for="(option,index) in item.options"
+            :key="index"
+            :value="option.value"
+            :label="option.label"
+          ></el-option>
+        </component>
+        <el-collapse-transition v-if="isNotShiftOrHoliday">
+          <el-form-item class="extra_form_item">
             <el-input
-              placeholder="E.g Yearly Time Off"
-              v-model="eventData.template_name"
+              type="textarea"
+              :placeholder="`Please input reasons for ${eventData.shift_type}` "
+              v-model="textarea"
+              maxlength="250"
+              show-word-limit
             />
-          </div>
+          </el-form-item>
         </el-collapse-transition>
       </el-form-item>
     </el-form>
@@ -101,77 +69,147 @@
         round
         type="primary"
         @click="$emit('createEvent', eventData), $emit('toggle', false)"
-        >Publish</el-button
-      >
+      >Publish</el-button>
       <el-button round @click="$emit('toggle', false)">Cancel</el-button>
     </span>
   </el-dialog>
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState } from "vuex";
 export default {
-  name: 'CreateShift',
+  name: "CreateShift",
   data() {
     return {
       repeat_toggle: false,
       save_as_template: false,
+      selectMultipleEmployees: false,
       eventData: {
         date: {},
-        assignTo: '',
-
+        assigned_to: "",
         loading: false,
-        eventType: '3',
-        repeat_days: [0]
+        shift_type: null,
+        repeat_days: [0],
+        reasons: ""
       },
+      multi_employee: [],
       validationData: {
         startDate: [
           {
-            type: 'date',
+            type: "date",
             required: true,
-            message: 'Please pick a date',
-            trigger: 'change'
+            message: "Please pick a date",
+            trigger: "change"
           }
         ],
         endDate: [
           {
-            type: 'date',
+            type: "date",
             required: true,
-            message: 'Please pick a date',
-            trigger: 'change'
+            message: "Please pick a date",
+            trigger: "change"
           }
         ]
       },
       success: false
-    }
+    };
   },
   props: {
     display: Boolean
   },
   computed: {
-    ...mapGetters(['getIsAdmin']),
-    ...mapState('Admin', ['team']),
+    ...mapGetters(["getIsAdmin"]),
+    ...mapState("Admin", ["team", "shiftTypes"]),
+    returnIsMultiEmployeesSelected() {
+      return this.selectMultipleEmployees || this.multi_employee.length > 0;
+    },
+    returnShiftTypes() {
+      let shiftTypes = this.shiftTypes;
+      let newShiftTypes = [];
+      for (let property in shiftTypes) {
+        newShiftTypes.push({
+          label: shiftTypes[property],
+          value: parseInt(property)
+        });
+      }
+      return newShiftTypes;
+    },
+
+    isNotShiftOrHoliday() {
+      let shiftType = this.eventData.shift_type;
+      const isAdmin = this.getIsAdmin;
+      return !isAdmin && shiftType > 3;
+    },
+
+    returnCreateShiftConfig() {
+      let team = this.returnTeam;
+
+      let createShiftConfig = [
+        {
+          name: "Request type",
+          id: "shift_type",
+          type: "select",
+          placeholder: "Select event type",
+          options: this.returnShiftTypes,
+          required: true
+        },
+        {
+          name: "Timings",
+          id: "date",
+          type: "date",
+          start_placeholder: "Start date & time",
+          end_placeholder: "End date & time",
+          required: true
+        }
+      ];
+
+      // Check if it is an admin or not
+      let isAdmin = this.getIsAdmin;
+      if (isAdmin) {
+        createShiftConfig.unshift({
+          name: "Employee",
+          placeholder: "Select Team Member",
+          id: "assigned_to",
+          type: "select",
+          options: this.returnTeam,
+          required: !this.returnIsMultiEmployeesSelected,
+          disabled: this.returnIsMultiEmployeesSelected
+        });
+      }
+
+      return createShiftConfig;
+    },
     returnTeam() {
-      return this.team.filter(member => {
-        return member.employee_type != 1
-      })
+      return this.team.map(member => {
+        return {
+          label: member.name,
+          value: member._id
+        };
+      });
     },
     view: {
       get() {
-        return this.display
+        return this.display;
       },
       set(toggle) {
-        this.$emit('toggle', toggle)
+        this.$emit("toggle", toggle);
       }
     },
     repeatDaysConfig() {
-      return ['Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun']
+      return ["Mon", "Tue", "Wed", "Thurs", "Fri", "Sat", "Sun"];
     }
   },
   components: {
-    Title: () => import('@/components/Title')
+    Title: () => import("@/components/Title")
   }
-}
+};
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.extra_form_item {
+  background: rgb(250, 250, 250);
+  padding: 2em;
+  border-radius: 10px;
+  cursor: pointer;
+}
+</style>

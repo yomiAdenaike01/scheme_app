@@ -1,8 +1,8 @@
-import storage from './storage'
+import storage from "./storage";
 export default {
-  token: storage.get('token'),
-  currentUser: storage.get('currentUser')
-    ? JSON.parse(storage.get('currentUser'))
+  token: storage.get("token"),
+  currentUser: storage.get("currentUser")
+    ? JSON.parse(storage.get("currentUser"))
     : {},
   globalLoader: false,
   notifications: [],
@@ -17,7 +17,10 @@ export default {
   },
   viewNotificationsCenter: false,
   userNotifications: [],
-  currentInterval: '',
+  currentInterval: "",
   viewMobileMenu: false,
-  defaultSize: { minFontSize: '10px', maxFontSize: '16px' }
-}
+  defaultSize: { minFontSize: "10px", maxFontSize: "16px" },
+  localSettings: {
+    sounds: false
+  }
+};

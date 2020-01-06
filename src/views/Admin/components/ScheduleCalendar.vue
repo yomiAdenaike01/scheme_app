@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: EMIT THE TIME AND PLACE IT WITHIN THE CREATE SHIFT -->
   <div>
     <vue-cal
       v-loading="loading"
@@ -136,7 +135,6 @@ export default {
       this.view = true;
     },
     displayCreateNewShift(startTime) {
-      // TODO: EMIT THE TIME AND PLACE IT WITHIN THE CREATE SHIFT
       this.$emit("displayCreateShift", true);
     },
     changeShiftTime(shift) {

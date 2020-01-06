@@ -5,73 +5,74 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from 'vuex'
+import { mapActions, mapState, mapMutations } from "vuex";
+
 export default {
-  name: 'Admin',
+  name: "Admin",
   data() {
     return {
       adminInterval: null
-    }
+    };
   },
   computed: {
-    ...mapState(['localSettings', 'userNotifications', 'currentUser'])
+    ...mapState(["localSettings", "userNotifications", "currentUser"])
   },
   deactivated() {
-    clearInterval(this.adminInterval)
+    clearInterval(this.adminInterval);
   },
   activated() {
-    let isVerified = this.currentUser.verified
+    let isVerified = this.currentUser.verified;
     if (!isVerified) {
       this.UPDATE_NOTIFICATIONS({
-        title: 'Activate account',
-        type: 'info',
-        message: 'Open settings to activate account.'
-      })
+        title: "Activate account",
+        type: "info",
+        message: "Open settings to activate account."
+      });
     }
-    let general = this.localSettings.general
-    if (Notification.permission != 'granted') {
-      this.requestNotificationPermission()
+    let general = this.localSettings.general;
+    if (Notification.permission != "granted") {
+      this.requestNotificationPermission();
     }
-    this.genNotifications()
+    this.genNotifications();
     // Starting interval
     this.adminInterval = setInterval(() => {
-      this.getTeam()
-      this.getNotifications()
-      this.getShifts()
-    }, 5000)
+      this.getTeam();
+      this.getNotifications();
+      this.getShifts();
+    }, 5000);
   },
   methods: {
-    ...mapActions('Admin', ['getTeam', 'getShifts']),
-    ...mapActions(['getNotifications', 'request']),
-    ...mapMutations(['UPDATE_NOTIFICATIONS']),
+    ...mapActions("Admin", ["getTeam", "getShifts"]),
+    ...mapActions(["getNotifications", "request"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
     genNotifications() {
-      let notifications = this.userNotifications
-      let len = notifications.length
+      let notifications = this.userNotifications;
+      let len = notifications.length;
       for (let i = 0; i < len; i++) {
-        const notification = notifications[i]
-        new Notification(notification.message)
+        const notification = notifications[i];
+        new Notification(notification.message);
       }
     },
     requestNotificationPermission() {
       if (!window.Notification) {
-        console.log('Browser does not support notifications.')
+        console.log("Browser does not support notifications.");
       } else {
         Notification.requestPermission()
           .then(p => {
-            if (p === 'granted') {
+            if (p === "granted") {
               // show notification here
             } else {
-              console.log('User blocked notifications.')
+              console.log("User blocked notifications.");
             }
           })
           .catch(function(err) {
-            console.error(err)
-          })
+            console.error(err);
+          });
       }
     }
   }
-}
+};
 </script>
 
 <style></style>
