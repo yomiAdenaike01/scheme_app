@@ -6,6 +6,7 @@ export default {
     : {},
   globalLoader: false,
   notifications: [],
+  critical_network_error: false,
   localSettings: {
     general: {
       live_schedule: false,

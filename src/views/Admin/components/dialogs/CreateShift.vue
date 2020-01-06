@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO ASSIGN TO MULTIPLE EMPLOYEES -->
   <el-dialog custom-class="event_dialog" :visible.sync="view">
     <Title
       :title="!getIsAdmin ? 'Create Request' : 'Create Shift'"
@@ -11,19 +10,40 @@
       slot="title"
     />
 
-    <el-form class="ml-3 mr-3" status-icon label-position="left" :model="eventData">
+    <el-form
+      class="ml-3 mr-3"
+      status-icon
+      label-position="left"
+      :model="eventData"
+    >
+      <!-- Timesheet -->
+      <el-form-item class="extra_form_item">
+        <el-form-item class="extra_form_item">
+          <p @click="uploadTimeSheetDisplay = !uploadTimeSheetDisplay">
+            Upload Timesheet
+          </p>
+          <el-collapse-transition>
+            <div class="mt-3" v-if="uploadTimeSheetDisplay">
+              <input type="file" @change="timeSheetManagement" />
+            </div>
+          </el-collapse-transition>
+        </el-form-item>
+      </el-form-item>
       <!-- Create for multiple employees -->
       <el-form-item class="extra_form_item">
-        <p @click=" selectMultipleEmployees = !selectMultipleEmployees">Multi Employees</p>
+        <p @click="selectMultipleEmployees = !selectMultipleEmployees">
+          Assign Shift To Multiple Employees
+        </p>
         <el-collapse-transition>
           <div class="mt-3" v-if="selectMultipleEmployees">
             <el-checkbox-group v-model="multi_employee">
               <el-checkbox-button
-                v-for="(member,index) in returnTeam"
+                v-for="(member, index) in returnTeam"
                 :key="index"
                 :value="member.value"
                 :label="member.label"
-              >{{member.label}}</el-checkbox-button>
+                >{{ member.label }}</el-checkbox-button
+              >
             </el-checkbox-group>
           </div>
         </el-collapse-transition>
@@ -39,13 +59,15 @@
           :is="item.type == 'select' ? 'el-select' : 'el-date-picker'"
           type="datetimerange"
           v-model="eventData[item.id]"
-          :start-placeholder="item.start_placeholder ? item.start_placeholder : null"
+          :start-placeholder="
+            item.start_placeholder ? item.start_placeholder : null
+          "
           :end-placeholder="item.end_placeholder ? item.end_placeholder : null"
           :placeholder="item.placeholder"
           :disabled="item.disabled"
         >
           <el-option
-            v-for="(option,index) in item.options"
+            v-for="(option, index) in item.options"
             :key="index"
             :value="option.value"
             :label="option.label"
@@ -55,7 +77,7 @@
           <el-form-item class="extra_form_item">
             <el-input
               type="textarea"
-              :placeholder="`Please input reasons for ${eventData.shift_type}` "
+              :placeholder="`Please input reasons for ${eventData.shift_type}`"
               v-model="textarea"
               maxlength="250"
               show-word-limit
@@ -69,21 +91,24 @@
         round
         type="primary"
         @click="$emit('createEvent', eventData), $emit('toggle', false)"
-      >Publish</el-button>
+        >Publish</el-button
+      >
       <el-button round @click="$emit('toggle', false)">Cancel</el-button>
     </span>
   </el-dialog>
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
 export default {
   name: "CreateShift",
+
   data() {
     return {
       repeat_toggle: false,
       save_as_template: false,
       selectMultipleEmployees: false,
+      uploadTimeSheetDisplay: false,
       eventData: {
         date: {},
         assigned_to: "",
@@ -120,6 +145,8 @@ export default {
   computed: {
     ...mapGetters(["getIsAdmin"]),
     ...mapState("Admin", ["team", "shiftTypes"]),
+    ...mapState(["token"]),
+
     returnIsMultiEmployeesSelected() {
       return this.selectMultipleEmployees || this.multi_employee.length > 0;
     },
@@ -199,6 +226,35 @@ export default {
       return ["Mon", "Tue", "Wed", "Thurs", "Fri", "Sat", "Sun"];
     }
   },
+  methods: {
+    ...mapActions(["request"]),
+    validateCSVData(fileData) {},
+    timeSheetManagement(e) {
+      const csvtojson = require("csvtojson");
+      const fileReader = new FileReader();
+      e = e.target.files[0];
+
+      fileReader.onload = () => {
+        csvtojson()
+          .fromString(fileReader.result)
+          .then(response => this.validateCSVData(response));
+      };
+      fileReader.readAsBinaryString(e);
+    },
+    uploadTimeSheet(file) {
+      this.request({
+        method: "POST",
+        url: "shifts/timesheet",
+        data: { timesheet: file }
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  },
   components: {
     Title: () => import("@/components/Title")
   }
@@ -208,7 +264,7 @@ export default {
 <style lang="scss" scoped>
 .extra_form_item {
   background: rgb(250, 250, 250);
-  padding: 2em;
+  padding: 1em;
   border-radius: 10px;
   cursor: pointer;
 }

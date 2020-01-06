@@ -1,6 +1,6 @@
 import storage from "./storage";
-import notificationSounds from "@/mixins/playSound";
-import notificationSound from "@/assets/Sounds/notification.mp3";
+import sounds from "@/mixins/playSound";
+
 export default {
   UPDATE_DEFAULT_FONT(state, payload) {
     state.defaultSize = { minFontSize: payload.min, maxFontSize: payload.max };
@@ -36,10 +36,15 @@ export default {
   UPDATE_NOTIFICATIONS(state, notification) {
     if (notification.type == "success") {
       notification.title = "Opeartion Successful";
+      sounds.methods.playSuccessSound();
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
+      sounds.methods.playErrorSound();
+    }
+    if (notification.message.toLowerCase() == "network error") {
+      sounds.methods.playErrorSound();
+      state.critical_network_error = true;
     }
     state.notifications.unshift(notification);
-    notificationSounds.methods.playSound(notificationSound);
   }
 };

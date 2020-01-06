@@ -1,7 +1,12 @@
+import notificationSuccessSound from "@/assets/Sounds/successSound.mp3";
+import notificationErrorSound from "@/assets/Sounds/errorSound.mp3";
 export default {
   methods: {
-    playSound(audioFile) {
-      new Audio(audioFile).play();
+    playSuccessSound() {
+      new Audio(notificationSuccessSound).play();
+    },
+    playErrorSound() {
+      new Audio(notificationErrorSound).play();
     }
   }
 };
