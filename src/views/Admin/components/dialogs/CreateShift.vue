@@ -15,6 +15,7 @@
       status-icon
       label-position="left"
       :model="eventData"
+      :disabled="returnInvalidateForm"
     >
       <!-- Timesheet -->
       <el-form-item class="extra_form_item">
@@ -109,6 +110,7 @@ export default {
       save_as_template: false,
       selectMultipleEmployees: false,
       uploadTimeSheetDisplay: false,
+      isValidCSV: false,
       eventData: {
         date: {},
         assigned_to: "",
@@ -146,7 +148,10 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token"]),
-
+    returnInvalidateForm() {
+      // If the upload timesheet is enabled or there is a file make the entire form invalid
+      return this.uploadTimeSheetDisplay;
+    },
     returnIsMultiEmployeesSelected() {
       return this.selectMultipleEmployees || this.multi_employee.length > 0;
     },
@@ -228,7 +233,30 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    validateCSVData(fileData) {},
+    validateCSVData(fileData) {
+      let validateData = {
+        assigned_to: null,
+        date_created: null,
+        startDate: null,
+        endDate: null,
+        shift_type: null
+      };
+      const len = fileData.length;
+      for (let i = 0; i < len; i++) {
+        const eventElement = fileData[i];
+        const eventKeys = Object.keys(eventElement);
+        const validationKeys = Object.keys(validateData);
+        const eventKeysLen = eventKeys.length;
+
+        for (let j = 0; j < eventKeysLen; j++) {
+          const eventKey = eventKeys[j];
+          const validationKey = validationKeys[j];
+          if (!validationKey || validationKey != eventKey) {
+            this.isValidCSV = false;
+          }
+        }
+      }
+    },
     timeSheetManagement(e) {
       const csvtojson = require("csvtojson");
       const fileReader = new FileReader();
@@ -237,7 +265,8 @@ export default {
       fileReader.onload = () => {
         csvtojson()
           .fromString(fileReader.result)
-          .then(response => this.validateCSVData(response));
+          .then(response => this.validateCSVData(response))
+          .catch(error => console.error(error)); //
       };
       fileReader.readAsBinaryString(e);
     },
