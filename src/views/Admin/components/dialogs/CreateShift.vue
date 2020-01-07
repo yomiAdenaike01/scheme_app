@@ -106,9 +106,10 @@
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+import dates from "@/mixins/dates";
 export default {
   name: "CreateShift",
-
+  mixins: [dates],
   data() {
     return {
       repeat_toggle: false,
@@ -243,6 +244,7 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     validateCSVData(fileData) {
+      const format = "DD/MM/YYYY";
       return new Promise((resolve, reject) => {
         let validateData = {
           assigned_to: null,
@@ -253,11 +255,18 @@ export default {
         };
         const len = fileData.length;
         for (let i = 0; i < len; i++) {
-          const eventElement = fileData[i];
+          let eventElement = fileData[i];
           const eventKeys = Object.keys(eventElement);
           const validationKeys = Object.keys(validateData);
           const eventKeysLen = eventKeys.length;
-
+          if (eventElement.startDate) {
+            let startDate = eventElement.startDate;
+            startDate = this.toISO(this.format(startDate, format));
+          }
+          if (eventElement.endDate) {
+            let endDate = eventElement.endDate;
+            endDate = this.toISO(this.format(endDate, format));
+          }
           for (let j = 0; j < eventKeysLen; j++) {
             const eventKey = eventKeys[j];
             const validationKey = validationKeys[j];
@@ -267,6 +276,7 @@ export default {
               reject(false);
               break;
             } else {
+              // No error found
               resolve(fileData);
               this.validFile = fileData;
               break;

@@ -1,15 +1,32 @@
 <template>
   <div>
+    <!-- <el-select v-model="default_view">
+      <el-option
+        v-for="(option, index) in returnCalendarOptions"
+        :key="index"
+        :label="option.label"
+        :value="option.value"
+        >{{ option.label }}</el-option
+      >
+    </el-select> -->
     <vue-cal
       v-loading="loading"
       :events="returnShiftEvents"
-      default-view="day"
+      :default-view="default_view"
       hide-view-selector
       :on-event-click="viewShift"
       editable-events
       @event-duration-change="changeShiftTime"
+      :cell-click-hold="false"
     />
-    <ViewShift :display="view" :shift="shift" @toggle="view = $event" @loading="loading = $event" />
+
+    <ViewShift
+      v-if="view"
+      :display="view"
+      :shift="shift"
+      @toggle="view = $event"
+      @loading="loading = $event"
+    />
   </div>
 </template>
 
@@ -25,6 +42,7 @@ export default {
     return {
       view: false,
       loading: false,
+      default_view: "week",
       shift: {}
     };
   },
@@ -39,7 +57,26 @@ export default {
     // isMine() {
     //   return this.returnShiftDetails._id == this.currentUser._id
     // },
-
+    returnCalendarOptions() {
+      return [
+        {
+          label: "Days",
+          value: "day"
+        },
+        {
+          label: "Weeks",
+          value: "week"
+        },
+        {
+          label: "Month",
+          value: "month"
+        },
+        {
+          label: "Year",
+          value: "year"
+        }
+      ];
+    },
     returnShiftEvents() {
       let shifts = this.shifts;
       let len = shifts.length;
