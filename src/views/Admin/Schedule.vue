@@ -179,7 +179,7 @@ export default {
           this.loading = false;
           return this.UPDATE_NOTIFICATIONS({
             type: "error",
-            message: "Events cannot be scheduled before today"
+            message: "Events cannot be scheduled before now."
           });
           break;
         }
@@ -199,11 +199,13 @@ export default {
       this.request(payload)
         .then(response => {
           this.loading = false;
-          this.UPDATE_NOTIFICATIONS({
-            type: "success",
-            message:
-              "Event successfully created, it will appear in your dashboard and schedule shortly."
-          });
+          if (this.getIsAdmin) {
+            this.UPDATE_NOTIFICATIONS({
+              type: "success",
+              message:
+                "Event successfully created, it will appear in your dashboard and schedule shortly."
+            });
+          }
           this.getShifts();
         })
         .catch(error => {

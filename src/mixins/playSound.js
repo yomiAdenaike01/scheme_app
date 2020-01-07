@@ -3,10 +3,13 @@ import notificationErrorSound from "@/assets/Sounds/errorSound.mp3";
 export default {
   methods: {
     playSuccessSound() {
-      new Audio(notificationSuccessSound).play();
+      let audio = new Audio(notificationSuccessSound);
+      audio.play();
     },
     playErrorSound() {
-      new Audio(notificationErrorSound).play();
+      let audio = new Audio(notificationErrorSound);
+
+      audio.play();
     }
   }
 };

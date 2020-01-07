@@ -2,6 +2,9 @@ import storage from "./storage";
 import sounds from "@/mixins/playSound";
 
 export default {
+  UPDATE_UPLOAD_TIMESHEET(state, payload) {
+    state.weeklyTimesheetUploaded = payload;
+  },
   UPDATE_DEFAULT_FONT(state, payload) {
     state.defaultSize = { minFontSize: payload.min, maxFontSize: payload.max };
   },
@@ -32,7 +35,9 @@ export default {
     storage.set("token", payload.token);
     storage.set("currentUser", payload.user);
   },
-
+  UPDATE_HAS_SEEN_NOTIFICATIONS(state, payload) {
+    state.hasSeenNotifications = payload;
+  },
   UPDATE_NOTIFICATIONS(state, notification) {
     if (notification.type == "success") {
       notification.title = "Opeartion Successful";
@@ -40,9 +45,7 @@ export default {
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
       sounds.methods.playErrorSound();
-    }
-    if (notification.message.toLowerCase() == "network error") {
-      sounds.methods.playErrorSound();
+    } else if (notification.message == "network error") {
       state.critical_network_error = true;
     }
     state.notifications.unshift(notification);

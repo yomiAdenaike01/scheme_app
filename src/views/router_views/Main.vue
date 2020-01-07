@@ -18,8 +18,25 @@ import { mapState, mapMutations } from "vuex";
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
 import NotificationsCenter from "@/components/NotificationsCenter";
+import moment from "moment";
 export default {
   name: "Main",
+  activated() {
+    let isVerified = this.currentUser.verified;
+    if (!isVerified) {
+      this.UPDATE_NOTIFICATIONS({
+        title: "Activate account",
+        type: "info",
+        message: "Open settings to activate account."
+      });
+    }
+    let general = this.localSettings.general;
+    if (Notification.permission != "granted") {
+      this.requestNotificationPermission();
+    }
+
+    this.displayWeeklyTimesheetNotification();
+  },
   computed: {
     ...mapState([
       "notifications",
@@ -28,12 +45,51 @@ export default {
       "userNotifications",
       "viewMobileMenu",
       "defaultSize",
-      "critical_network_error"
-    ])
+      "critical_network_error",
+      "weeklyTimesheetUploaded",
+      "localSettings"
+    ]),
+    returnIsStartOfWeek() {
+      return moment().get("day") <= 1;
+    }
   },
 
   methods: {
-    ...mapMutations(["REMOVE_USER"]),
+    ...mapMutations([
+      "REMOVE_USER",
+      "UPDATE_NOTIFICATIONS",
+      "UPDATE_VIEW_NOTIFICATIONS_CENTER"
+    ]),
+
+    requestNotificationPermission() {
+      if (!window.Notification) {
+        console.log("Browser does not support notifications.");
+      } else {
+        Notification.requestPermission()
+          .then(p => {
+            if (p === "granted") {
+              // show notification here
+            } else {
+              console.log("User blocked notifications.");
+            }
+          })
+          .catch(function(err) {
+            console.error(err);
+          });
+      }
+    },
+
+    /**
+     * Create notification at the start of the week asking them to upload a timesheet
+     */
+    displayWeeklyTimesheetNotification() {
+      if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek)
+        this.UPDATE_NOTIFICATIONS({
+          type: "info",
+          message: "Start the new week off by uploading a new weekly timesheet",
+          title: "Upload Timesheet"
+        });
+    },
     displayRedirectBox() {
       // Redirect to login;
       let msg = "A critical network error has occured.",

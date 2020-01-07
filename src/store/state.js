@@ -7,6 +7,9 @@ export default {
   globalLoader: false,
   notifications: [],
   critical_network_error: false,
+  weeklyTimesheetUploaded: false,
+  hasSeenNotifications: false,
+
   localSettings: {
     general: {
       live_schedule: true,

@@ -55,6 +55,7 @@ export default {
     ...mapState("Admin", ["shifts", "team"]),
     ...mapState(["currentUser"]),
     ...mapGetters(["getIsAdmin"]),
+    ...mapGetters("Admin", ["getTeamMember"]),
     // isMine() {
     //   return this.returnShiftDetails._id == this.currentUser._id
     // },
@@ -175,29 +176,17 @@ export default {
     displayCreateNewShift(startTime) {
       this.$emit("displayCreateShift", true);
     },
-    findTeamMemberName(id) {
-      let teamMember = this.team.find(x => {
-        return x._id == id;
-      });
-      if (!teamMember) {
-        if (id == this.currentUser._id) {
-          return this.currentUser.name;
-        } else {
-          return null;
-        }
-      } else {
-        return teamMember.name;
-      }
-    },
+
     changeShiftTime(shift) {
       // Check are you admin or is this shift yours
       let canEdit =
         shift.assigned_to == this.currentUser._id || this.getIsAdmin;
       if (canEdit) {
+        let teamMember = this.getTeamMember(shift.assigned_to, "_id").name;
         this.$confirm(
-          `Are you sure you would like to change ${this.findTeamMemberName(
-            shift.assigned_to
-          )}'s ${shift.type.toLowerCase()} from ${shift.start} to ${shift.end}`,
+          `Are you sure you would like to change ${teamMember}'s ${shift.type.toLowerCase()} from ${
+            shift.start
+          } to ${shift.end}`,
           "Confirm",
           {
             confirmButtonText: "OK",

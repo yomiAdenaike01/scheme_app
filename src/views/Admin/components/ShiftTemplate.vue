@@ -3,6 +3,7 @@
     <el-collapse-transition>
       <div class="template_details" @click="toggleTemplate">
         <strong class="template_name">{{ data.name }}</strong>
+        <p>Timesheet date range: {{ returnWeekRange }}</p>
         <p class="date_created">
           {{ format(data.date_created, "DD/MM/YYYY") }}
         </p>
@@ -23,6 +24,7 @@
 
 <script>
 import dates from "@/mixins/dates";
+import moment from "moment";
 export default {
   name: "Shift_Template",
   data() {
@@ -38,6 +40,19 @@ export default {
     }
   },
   mixins: [dates],
+  computed: {
+    returnWeekRange() {
+      let startDate = this.data.content[0].startDate;
+      let endDate = this.data.content[0].endDate;
+      let momentStartDate = moment(moment(startDate).startOf("week")).format(
+        "DD/MM/YYYY"
+      );
+      let momentEndDate = moment(moment(endDate).endOf("week")).format(
+        "DD/MM/YYYY"
+      );
+      return `${momentStartDate} - ${momentEndDate}`;
+    }
+  },
   methods: {
     toggleTemplate() {
       if (!this.selected) {
