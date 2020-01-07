@@ -5,7 +5,12 @@
       <el-col class="pl-3 pr-3">
         <el-row class="mb-4" type="flex" :gutter="10" align="middle">
           <el-col>
-            <Dropdown :items="items" @method="displayModals" :icon="false" position="right">
+            <Dropdown
+              :items="items"
+              @method="displayModals"
+              :icon="false"
+              position="right"
+            >
               <el-button round type="primary">
                 Actions
                 <i class="el-icon-arrow-right"></i>
@@ -13,7 +18,10 @@
             </Dropdown>
           </el-col>
         </el-row>
-        <ScheduleCalendar @displayCreateShift="modals.create_event = $event" style="height:70%" />
+        <ScheduleCalendar
+          @displayCreateShift="modals.create_event = $event"
+          style="height:70%"
+        />
       </el-col>
     </el-row>
 
@@ -22,7 +30,10 @@
       @createEvent="createEvent"
       :display="modals.create_event"
     />
-    <CreateEmployee @toggle="modals.create_employee = $event" :display="modals.create_employee" />
+    <CreateEmployee
+      @toggle="modals.create_employee = $event"
+      :display="modals.create_employee"
+    />
     <ScheduleProfileView />
   </div>
 </template>
@@ -134,10 +145,23 @@ export default {
     createEvent(eventData) {
       this.loading = true;
       this.modals.createEvent = false;
+
       const date = {
         start: new Date(eventData.date[0]).toISOString(),
         end: new Date(eventData.date[1]).toISOString()
       };
+
+      // check the dates if before today
+      for (let property in date) {
+        if (this.isBefore(date[property], true, null)) {
+          this.loading = false;
+          return this.UPDATE_NOTIFICATIONS({
+            type: "error",
+            message: "Events cannot be scheduled before today"
+          });
+          break;
+        }
+      }
 
       const payload = {
         url: "/shifts/create",
