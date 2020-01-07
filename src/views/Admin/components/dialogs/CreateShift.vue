@@ -19,13 +19,35 @@
       :model="eventData"
       :disabled="returnInvalidateForm"
     >
+      <!-- Displaying templates -->
+      <el-form-item
+        class="custom_form_item shift_templates_container"
+        v-if="templates.length > 0"
+        v-loading="loadingTemplates"
+        @click="displayTemplates = !displayTemplates"
+      >
+        <p>Previously Saved Templates</p>
+        <el-collapse-transition>
+          <div>
+            <ShiftTemplate
+              @selectedTemplate="selectedTemplate = $event"
+              v-for="template in templates"
+              :data="template"
+              :key="template._id"
+            />
+            <div v-if="Object.keys(selectedTemplate).length > 0">
+              <el-button size="small" round type="primary">Publish</el-button>
+            </div>
+          </div>
+        </el-collapse-transition>
+      </el-form-item>
       <!-- Timesheet -->
-      <el-form-item class="extra_form_item">
-        <p @click="uploadTimeSheetDisplay = !uploadTimeSheetDisplay">
+      <el-form-item class="custom_form_item">
+        <p @click="uploadTimesheetToggle = !uploadTimesheetToggle">
           Upload Timesheet
         </p>
         <el-collapse-transition>
-          <div class="mt-3" v-if="uploadTimeSheetDisplay">
+          <div class="mt-3" v-if="uploadTimesheetToggle">
             <!-- Input for the timesheet -->
             <input
               type="file"
@@ -37,7 +59,7 @@
       </el-form-item>
 
       <!-- Create for multiple employees -->
-      <el-form-item class="extra_form_item">
+      <el-form-item class="custom_form_item">
         <p @click="selectMultipleEmployees = !selectMultipleEmployees">
           Assign Shift To Multiple Employees
         </p>
@@ -82,7 +104,7 @@
           ></el-option>
         </component>
         <el-collapse-transition v-if="isNotShiftOrHoliday">
-          <el-form-item class="extra_form_item">
+          <el-form-item class="custom_form_item">
             <el-input
               type="textarea"
               :placeholder="`Please input reasons for ${eventData.shift_type}`"
@@ -94,7 +116,8 @@
         </el-collapse-transition>
       </el-form-item>
     </el-form>
-    <span slot="footer" class="dialog-footer">
+    <!-- Footer -->
+    <span slot="footer" class="dialog-footer" v-if="!returnInvalidateForm">
       <el-button
         round
         type="primary"
@@ -109,6 +132,7 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import dates from "@/mixins/dates";
+import ShiftTemplate from "./../ShiftTemplate";
 import moment from "moment";
 export default {
   name: "CreateShift",
@@ -116,13 +140,15 @@ export default {
   data() {
     return {
       repeat_toggle: false,
-      save_as_template: false,
       selectMultipleEmployees: false,
-      uploadTimeSheetDisplay: false,
+      uploadTimesheetToggle: false,
       isValidCSV: false,
       validFile: null,
       processingTimeSheet: false,
-      csvErrorContents: [],
+      selectedTemplate: {},
+      templates: [],
+      loadingTemplates: false,
+      displayTemplates: false,
       eventData: {
         date: {},
         assigned_to: "",
@@ -132,6 +158,11 @@ export default {
         reasons: ""
       },
       multi_employee: [],
+
+      templateData: {
+        name: "",
+        content: ""
+      },
       validationData: {
         startDate: [
           {
@@ -156,13 +187,32 @@ export default {
   props: {
     display: Boolean
   },
+  mounted() {
+    this.loadingTemplates = true;
+    this.request({
+      method: "GET",
+      url: "shifts/templates"
+    })
+      .then(response => {
+        this.templates = response;
+        this.loadingTemplates = false;
+      })
+      .catch(error => {
+        this.loadingTemplates = false;
+        return error;
+      });
+    // this.loadingTemplates = false;
+  },
   computed: {
     ...mapGetters(["getIsAdmin"]),
     ...mapState("Admin", ["team", "shiftTypes"]),
-    ...mapState(["token"]),
+    ...mapState(["token", "currentUser"]),
+
     returnInvalidateForm() {
-      // If the upload timesheet is enabled or there is a file make the entire form invalid
-      return this.uploadTimeSheetDisplay;
+      return (
+        this.uploadTimesheetToggle ||
+        Object.keys(this.selectedTemplate).length > 0
+      );
     },
     returnIsMultiEmployeesSelected() {
       return this.selectMultipleEmployees || this.multi_employee.length > 0;
@@ -250,11 +300,16 @@ export default {
      * @params Team members fullname
      */
     findTeamMember(memberName) {
-      return this.team.find(member => {
-        member.name = member.name.trim().toLowerCase();
-        memberName = memberName.trim().toLowerCase();
-        return member.name == memberName;
-      });
+      if (memberName == this.currentUser.name) {
+        return this.currentUser;
+      } else {
+        return this.team.find(member => {
+          member.name = member.name.trim().toLowerCase();
+          memberName = memberName.trim().toLowerCase();
+          return member.name == memberName;
+        });
+      }
+
       return foundTeamMember;
     },
     validateKeys(eventKey, validationKey) {
@@ -292,6 +347,13 @@ export default {
           const eventKeys = Object.keys(eventElement);
           const validationKeys = Object.keys(validateData);
           const eventKeysLen = eventKeys.length;
+
+          // Check none of them are null if they are remove them
+          for (let property in eventElement) {
+            if (eventElement[property].length <= 0) {
+              fileData.splice(i, 1);
+            }
+          }
 
           // Checking the keys against the validation schema
           for (let j = 0; j < eventKeysLen; j++) {
@@ -346,7 +408,8 @@ export default {
         try {
           let fileContent = await csvtojson().fromString(fileReader.result);
           let validationResult = await this.validateCSVData(fileContent);
-          this.uploadTimeSheet(validationResult);
+          if (!this.selectedTemplate)
+            this.uploadTimeSheetAndTemplate(validationResult);
         } catch (e) {
           console.error(e);
           this.processingTimeSheet = false;
@@ -360,32 +423,81 @@ export default {
       };
       fileReader.readAsBinaryString(e);
     },
-    uploadTimeSheet(file) {
-      return console.log(file);
-      this.request({
+    /**
+     *  Adds one week to the content
+     */
+    addOneWeekData(data) {
+      return data.map(elem => {
+        return {
+          ...elem,
+          startDate: moment(
+            moment(elem.startDate).add(1, "week")
+          ).toISOString(),
+          endDate: moment(moment(elem.endDate).add(1, "week")).toISOString()
+        };
+      });
+    },
+    /**
+     * Upload time sheet
+     */
+    uploadTimeSheet(data) {
+      let payload = {
         method: "POST",
         url: "shifts/timesheet",
-        data: { timesheet: file }
-      })
-        .then(response => {
-          console.log(response);
-        })
+        data
+      };
+      this.request(payload)
+        .then(response => this.$emit("toggle", false))
         .catch(error => {
-          console.error(error);
+          return error;
         });
       this.processingTimeSheet = false;
-      this.$emit("toggle", false);
+    },
+
+    uploadTimeSheetAndTemplate(file) {
+      this.processingTimeSheet = false;
+      // Prompt to enter a template name
+      this.$prompt(
+        "Please input your new template name if you want to save this timesheet as a template",
+        "Save Template",
+        {
+          confirmButtonText: "Save",
+          cancelButtonText: "Cancel",
+          inputPlaceholder: `schedule_created ${new Date()}`,
+          roundButton: true
+        }
+      ).then(({ value }) => {
+        this.processingTimeSheet = true;
+        // Set the template data fields
+        this.templateData.content = this.addOneWeekData(file);
+        this.templateData.name = value;
+
+        if (!this.templateData.name) {
+          this.UPDATE_NOTIFICATIONS({
+            type: "error",
+            message: "Please fill in the correct fields for your new template"
+          });
+        }
+
+        // Run request for template and timesheet
+        this.uploadTimeSheet({ timesheet: file, template: this.templateData });
+      });
     }
   },
   components: {
-    Title: () => import("@/components/Title")
+    Title: () => import("@/components/Title"),
+    ShiftTemplate
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.extra_form_item {
-  background: rgb(250, 250, 250);
+.shift_templates_container {
+  height: 40%;
+  overflow: auto;
+}
+.custom_form_item {
+  background: rgb(253, 253, 253);
   padding: 1em;
   border-radius: 10px;
   cursor: pointer;

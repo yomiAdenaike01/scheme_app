@@ -38,6 +38,7 @@ import ViewShift from "./dialogs/ViewShift";
 import dates from "@/mixins/dates";
 export default {
   name: "ScheduleCalendar",
+
   data() {
     return {
       view: false,

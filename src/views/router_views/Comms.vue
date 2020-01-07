@@ -1,34 +1,32 @@
 <template>
-  <keep-alive>
-    <router-view></router-view>
-  </keep-alive>
+  <router-view></router-view>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 export default {
-  name: 'Comms',
+  name: "Comms",
   data() {
     return {
       commsInterval: null
-    }
+    };
   },
   deactivated() {
-    clearInterval(this.commsInterval)
+    clearInterval(this.commsInterval);
   },
   activated() {
     this.commsInterval = setInterval(() => {
-      this.getTranscripts()
-      this.getTeam()
-      this.getNotifications()
-    }, 5000)
+      this.getTranscripts();
+      this.getTeam();
+      this.getNotifications();
+    }, 5000);
   },
   methods: {
-    ...mapActions('Comms', ['getTranscripts']),
-    ...mapActions('Admin', ['getTeam']),
-    ...mapActions(['getNotifications'])
+    ...mapActions("Comms", ["getTranscripts"]),
+    ...mapActions("Admin", ["getTeam"]),
+    ...mapActions(["getNotifications"])
   }
-}
+};
 </script>
 
 <style></style>

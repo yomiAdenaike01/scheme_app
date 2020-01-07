@@ -30,9 +30,8 @@
           <span class="date">{{ shift.endDate }}</span>
         </div>
       </el-col>
-      <el-col class="p-3 approval_wrapper">
+      <el-col class="p-3 approval_wrapper unit">
         <el-tag
-          @click="deleteShift"
           class="member_name"
           :type="shift.completed ? 'primary' : 'danger'"
           >{{
@@ -40,15 +39,25 @@
           }}</el-tag
         >
       </el-col>
+      <el-col class="p-3 approval_wrapper">
+        <Dropdown :items="shiftActionItems" @method="handleShiftActions" />
+        <!-- <el-tag
+          @click="deleteShift"
+          class="member_name"
+          :type="shift.completed ? 'primary' : 'danger'"
+          >{{
+            shift.completed ? "Finished/ Ready to delete" : "Incomplete"
+          }}</el-tag -->
+      </el-col>
     </el-row>
   </el-card>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import employeeMethods from "@/mixins/employeeMethods";
 import dates from "@/mixins/dates";
-
+import Dropdown from "@/components/Dropdown";
 export default {
   name: "Shift",
   mixins: [employeeMethods, dates],
@@ -64,7 +73,28 @@ export default {
   },
   computed: {
     ...mapState(["currentUser"]),
-
+    ...mapGetters(["getIsAdmin"]),
+    shiftActionItems() {
+      let actions = [];
+      if (this.shift.assigned_to == this.currentUser._id || this.getIsAdmin) {
+        actions.push(
+          {
+            name: "Delete Shift",
+            command: "delete_shift"
+          },
+          {
+            name: "Update Shift",
+            command: "update_shift"
+          }
+        );
+      } else {
+        actions.push({
+          name: "View Shift",
+          command: "view_shift"
+        });
+      }
+      return actions;
+    },
     approved() {
       let result;
       let approval = this.shift.is_approved;
@@ -124,6 +154,26 @@ export default {
     confirmDeleteShift() {
       return this.$confirm("Are you sure you want to delete this shift ? ");
     },
+    handleShiftActions(command) {
+      switch (command) {
+        case "delete_shift": {
+          this.deleteShift();
+          break;
+        }
+
+        case "view_shift": {
+          this.$router.push({ name: "schedule" });
+          break;
+        }
+        case "update_shift": {
+          this.$router.push({ name: "schedule" });
+          break;
+        }
+
+        default:
+          break;
+      }
+    },
     async deleteShift() {
       try {
         let confirmShift = await this.confirmDeleteShift();
@@ -137,6 +187,9 @@ export default {
         return error;
       }
     }
+  },
+  components: {
+    Dropdown
   }
 };
 </script>
