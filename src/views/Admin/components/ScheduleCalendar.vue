@@ -175,15 +175,29 @@ export default {
     displayCreateNewShift(startTime) {
       this.$emit("displayCreateShift", true);
     },
+    findTeamMemberName(id) {
+      let teamMember = this.team.find(x => {
+        return x._id == id;
+      });
+      if (!teamMember) {
+        if (id == this.currentUser._id) {
+          return this.currentUser.name;
+        } else {
+          return null;
+        }
+      } else {
+        return teamMember.name;
+      }
+    },
     changeShiftTime(shift) {
       // Check are you admin or is this shift yours
       let canEdit =
         shift.assigned_to == this.currentUser._id || this.getIsAdmin;
       if (canEdit) {
         this.$confirm(
-          `Are you sure you would like to change ${
+          `Are you sure you would like to change ${this.findTeamMemberName(
             shift.assigned_to
-          }'s ${shift.type.toLowerCase()} from ${shift.start} to ${shift.end}`,
+          )}'s ${shift.type.toLowerCase()} from ${shift.start} to ${shift.end}`,
           "Confirm",
           {
             confirmButtonText: "OK",
