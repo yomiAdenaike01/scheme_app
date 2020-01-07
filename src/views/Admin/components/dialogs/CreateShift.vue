@@ -1,6 +1,7 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
     <Title
+      defaultClass="mb-0"
       :title="!getIsAdmin ? 'Create Request' : 'Create Shift'"
       :subtitle="
         !getIsAdmin
@@ -12,7 +13,7 @@
 
     <el-form
       v-loading="processingTimeSheet"
-      class="ml-3 mr-3"
+      class="ml-3 mr-3 mt-0 pt-0"
       status-icon
       label-position="left"
       :model="eventData"
@@ -62,6 +63,7 @@
         :label="item.name"
       >
         <component
+          class="form_item"
           :is="item.type == 'select' ? 'el-select' : 'el-date-picker'"
           type="datetimerange"
           v-model="eventData[item.id]"
@@ -107,6 +109,7 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import dates from "@/mixins/dates";
+import moment from "moment";
 export default {
   name: "CreateShift",
   mixins: [dates],
@@ -243,15 +246,45 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    /**
+     * @params Team members fullname
+     */
+    findTeamMember(memberName) {
+      return this.team.find(member => {
+        member.name = member.name.trim().toLowerCase();
+        memberName = memberName.trim().toLowerCase();
+        return member.name == memberName;
+      });
+      return foundTeamMember;
+    },
+    validateKeys(eventKey, validationKey) {
+      let isValid;
+      if (!validationKey || validationKey != eventKey) {
+        // Error found
+        isValid = false;
+      } else {
+        isValid = true;
+      }
+      return isValid;
+    },
+    formatEventDates({ startDate, endDate }) {
+      const format = "DD/MM/YYYY HH:mm:ss";
+      startDate = moment(moment(startDate).format(format)).toISOString();
+      endDate = moment(moment(endDate).format(format)).toISOString();
+      return {
+        startDate,
+        endDate
+      };
+    },
+    /**
+     * @params {Array} converted csv file
+     */
     validateCSVData(fileData) {
-      const format = "DD/MM/YYYY";
       return new Promise((resolve, reject) => {
         let validateData = {
           assigned_to: null,
-          date_created: null,
           startDate: null,
-          endDate: null,
-          shift_type: null
+          endDate: null
         };
         const len = fileData.length;
         for (let i = 0; i < len; i++) {
@@ -259,32 +292,50 @@ export default {
           const eventKeys = Object.keys(eventElement);
           const validationKeys = Object.keys(validateData);
           const eventKeysLen = eventKeys.length;
-          if (eventElement.startDate) {
-            let startDate = eventElement.startDate;
-            startDate = this.toISO(this.format(startDate, format));
-          }
-          if (eventElement.endDate) {
-            let endDate = eventElement.endDate;
-            endDate = this.toISO(this.format(endDate, format));
-          }
+
+          // Checking the keys against the validation schema
           for (let j = 0; j < eventKeysLen; j++) {
             const eventKey = eventKeys[j];
             const validationKey = validationKeys[j];
-            if (!validationKey || validationKey != eventKey) {
-              // Error found
-              this.csvErrorContents.push(validationKey);
-              reject(false);
-              break;
-            } else {
-              // No error found
+            let finalValidation = this.validateKeys(eventKey, validationKey);
+            if (finalValidation) {
               resolve(fileData);
-              this.validFile = fileData;
-              break;
+            } else {
+              reject(finalValidation);
             }
           }
+
+          // Changed the assigned to
+          let foundTeamMember = this.findTeamMember(eventElement.assigned_to);
+
+          if (!foundTeamMember) {
+            reject(false);
+            this.UPDATE_NOTIFICATIONS({
+              type: "error",
+              message: `${eventElement.assigned_to} could not be found as a team member`
+            });
+          }
+
+          eventElement.assigned_to = foundTeamMember._id;
+          this.processingTimeSheet = false;
+
+          // assign the shift type if there isn't one
+
+          if (!eventElement.shift_type) {
+            eventElement.shift_type = foundTeamMember.employee_type;
+          }
+
+          // Format the dates
+          let startDate = eventElement.startDate,
+            endDate = eventElement.endDate;
+
+          let formattedDates = this.formatEventDates({ startDate, endDate });
+          eventElement.startDate = formattedDates.startDate;
+          eventElement.endDate = formattedDates.endDate;
         }
       });
     },
+
     timeSheetManagement(e) {
       const csvtojson = require("csvtojson");
       const fileReader = new FileReader();
@@ -297,6 +348,7 @@ export default {
           let validationResult = await this.validateCSVData(fileContent);
           this.uploadTimeSheet(validationResult);
         } catch (e) {
+          console.error(e);
           this.processingTimeSheet = false;
           // Create dialog with error processing csv file
           this.UPDATE_NOTIFICATIONS({
@@ -309,6 +361,7 @@ export default {
       fileReader.readAsBinaryString(e);
     },
     uploadTimeSheet(file) {
+      return console.log(file);
       this.request({
         method: "POST",
         url: "shifts/timesheet",
@@ -320,6 +373,8 @@ export default {
         .catch(error => {
           console.error(error);
         });
+      this.processingTimeSheet = false;
+      this.$emit("toggle", false);
     }
   },
   components: {
@@ -334,5 +389,8 @@ export default {
   padding: 1em;
   border-radius: 10px;
   cursor: pointer;
+}
+.form_item {
+  width: 100%;
 }
 </style>

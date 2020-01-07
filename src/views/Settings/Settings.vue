@@ -29,7 +29,7 @@
             />
           </div>
           <el-col v-if="settingsView == 'security'">
-            <SecuritySettings active />
+            <SecuritySettings />
           </el-col>
           <el-col v-else-if="settingsView == 'general'">
             <GeneralSettings />
@@ -53,111 +53,111 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
-import Title from '@/components/Title'
-import SettingsSelection from './components/SettingsSelection'
-import SecuritySettings from './components/SecuritySettings'
-import GeneralSettings from './components/GeneralSettings'
-import ProfileSettings from './components/ProfileSettings'
-import responsive from '@/mixins/responsiveProperties'
+import { mapState, mapActions, mapMutations } from "vuex";
+import Title from "@/components/Title";
+import SettingsSelection from "./components/SettingsSelection";
+import SecuritySettings from "./components/SecuritySettings";
+import GeneralSettings from "./components/GeneralSettings";
+import ProfileSettings from "./components/ProfileSettings";
+import responsive from "@/mixins/responsiveProperties";
 
 export default {
-  name: 'Settings',
+  name: "Settings",
   data() {
     return {
-      view: '',
+      view: "",
       settingsUpdated: false,
       loading: false,
-      type: 'info'
-    }
+      type: "info"
+    };
   },
 
   props: {
     display: Boolean
   },
   mounted() {
-    this.view = this.returnSettings[0].label
+    this.view = this.returnSettings[0].label;
   },
   computed: {
-    ...mapState(['currentUser', 'localSettings']),
+    ...mapState(["currentUser", "localSettings"]),
     returnAlert() {
       let alert = {
         desc:
-          'Click this message to complete activation. Upon activation you will be logged out.',
-        title: 'Account not activated.'
-      }
-      let type = this.type
-      if (type == 'error') {
-        alert.desc = 'Error activated account. Your email may be invalid'
-        alert.title = 'Unsucessful activation.'
-      } else if (type == 'success') {
-        alert.desc = 'This alert will be removed on the next time you login. '
-        alert.title = 'Account activated successfully.'
+          "Click this message to complete activation. Upon activation you will be logged out.",
+        title: "Account not activated."
+      };
+      let type = this.type;
+      if (type == "error") {
+        alert.desc = "Error activated account. Your email may be invalid";
+        alert.title = "Unsucessful activation.";
+      } else if (type == "success") {
+        alert.desc = "This alert will be removed on the next time you login. ";
+        alert.title = "Account activated successfully.";
       }
 
-      return alert
+      return alert;
     },
     returnSettings() {
       return [
         {
-          label: 'General'
+          label: "General"
         },
         {
-          label: 'Security'
+          label: "Security"
         }
-      ]
+      ];
     },
     currentUserViewConfig() {
-      let cUser = this.currentUser
-      let arr = []
-      return arr
+      let cUser = this.currentUser;
+      let arr = [];
+      return arr;
     },
     settingsView() {
-      return this.view.toLowerCase()
+      return this.view.toLowerCase();
     },
     returnDisplay: {
       get() {
-        return this.display
+        return this.display;
       },
       set(val) {
-        this.$emit('toggle', val)
+        this.$emit("toggle", val);
       }
     }
   },
   methods: {
-    ...mapActions(['updateSettings', 'request']),
-    ...mapMutations(['UPDATE_NOTIFICATIONS', 'REMOVE_USER']),
+    ...mapActions(["updateSettings", "request"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS", "REMOVE_USER"]),
     verifyEmail() {
-      this.loading = true
+      this.loading = true;
       this.request({
-        method: 'POST',
-        url: 'users/verify'
+        method: "POST",
+        url: "users/verify"
       })
         .then(response => {
-          this.loading = false
-          this.type = 'success'
-          this.REMOVE_USER()
+          this.loading = false;
+          this.type = "success";
+          this.REMOVE_USER();
           this.UPDATE_NOTIFICATIONS({
-            type: 'info',
-            title: 'You have been logged out',
+            type: "info",
+            title: "You have been logged out",
             message:
-              'Your account has been activated you will need to log back in to renew your session.'
-          })
-          this.$router.push({ name: 'login' })
-          return response
+              "Your account has been activated you will need to log back in to renew your session."
+          });
+          this.$router.push({ name: "login" });
+          return response;
         })
         .catch(err => {
-          this.loading = false
-          this.type = 'error'
-          return err
-        })
+          this.loading = false;
+          this.type = "error";
+          return err;
+        });
     },
     update() {
       this.updateSettings()
         .then(response => (this.loading = false))
-        .catch(err => (this.loading = false))
+        .catch(err => (this.loading = false));
 
-      this.$forceUpdate()
+      this.$forceUpdate();
     }
   },
   components: {
@@ -173,11 +173,11 @@ export default {
     localSettings: {
       deep: true,
       handler(val) {
-        this.settingsUpdated = true
+        this.settingsUpdated = true;
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

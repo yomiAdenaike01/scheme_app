@@ -1,26 +1,31 @@
 <template>
-  <div style="height:100%">
+  <div style="height:100%;" v-loading="team.length <= 0">
     <Title title="Schedule" subtitle="View your calendar" />
     <el-row v-loading="loading" type="flex">
       <el-col class="pl-3 pr-3">
         <el-row class="mb-4" type="flex" :gutter="10" align="middle">
           <el-col>
-            <Dropdown
-              :items="items"
-              @method="displayModals"
-              :icon="false"
-              position="right"
-            >
-              <el-button round type="primary">
-                Actions
-                <i class="el-icon-arrow-right"></i>
-              </el-button>
-            </Dropdown>
+            <el-button
+              @click="modals.create_event = true"
+              round
+              type="primary"
+              size="small"
+              >{{ getIsAdmin ? "Create Event" : "Create Request" }}
+              <i class="el-icon-plus"></i
+            ></el-button>
+            <el-button
+              v-if="getIsAdmin"
+              round
+              type="primary"
+              size="small"
+              @click="modals.create_employee = true"
+              >Create Employee <i class="el-icon-plus"></i
+            ></el-button>
           </el-col>
         </el-row>
         <ScheduleCalendar
           @displayCreateShift="modals.create_event = $event"
-          style="height:70%"
+          style="height:60%"
         />
       </el-col>
     </el-row>
@@ -151,7 +156,7 @@ export default {
         end: new Date(eventData.date[1]).toISOString()
       };
 
-      // check the dates if before today
+      // check the dates if before today and create errors
       for (let property in date) {
         if (this.isBefore(date[property], true, null)) {
           this.loading = false;

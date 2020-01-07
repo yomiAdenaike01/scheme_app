@@ -9,10 +9,10 @@ export default {
   critical_network_error: false,
   localSettings: {
     general: {
-      live_schedule: false,
-      live_notifications: false,
-      live_dashboard: false,
-      notifications: false
+      live_schedule: true,
+      live_notifications: true,
+      live_dashboard: true,
+      notifications: true
     },
     security: {}
   },
@@ -20,8 +20,5 @@ export default {
   userNotifications: [],
   currentInterval: "",
   viewMobileMenu: false,
-  defaultSize: { minFontSize: "10px", maxFontSize: "16px" },
-  localSettings: {
-    sounds: false
-  }
+  defaultSize: { minFontSize: "10px", maxFontSize: "16px" }
 };

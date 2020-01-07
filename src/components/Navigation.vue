@@ -17,35 +17,35 @@
 
 <script>
 export default {
-  name: 'Navigation',
+  name: "Navigation",
   data() {
     return {
       isCollapse: true,
       routes: [
         {
-          name: 'Dashboard',
-          path: '/admin/dashboard',
-          icon: 'el-icon-s-data'
+          name: "Dashboard",
+          path: "/admin/dashboard",
+          icon: "el-icon-s-data"
         },
         {
-          name: 'Schedule',
-          path: '/admin/schedule',
-          icon: 'el-icon-time'
+          name: "Schedule",
+          path: "/admin/schedule",
+          icon: "el-icon-time"
         },
+        // {
+        //   name: 'Reports',
+        //   path: '/admin/reports',
+        //   icon: 'el-icon-notebook-1'
+        // },
         {
-          name: 'Reports',
-          path: '/admin/reports',
-          icon: 'el-icon-notebook-1'
-        },
-        {
-          name: 'Messenger',
-          path: '/comms/messenger',
-          icon: 'el-icon-chat-round'
+          name: "Messenger",
+          path: "/comms/messenger",
+          icon: "el-icon-chat-round"
         }
       ]
-    }
+    };
   }
-}
+};
 </script>
 
 <style></style>

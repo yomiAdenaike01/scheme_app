@@ -1,5 +1,8 @@
 <template>
-  <el-card :body-style="{ padding: '0px' }" class="mb-3 ml-3 mr-3 shift_container">
+  <el-card
+    :body-style="{ padding: '0px' }"
+    class="mb-3 ml-3 mr-3 shift_container"
+  >
     <el-row type="flex">
       <el-col class="shift_details_container unit p-3">
         <h5 class="member_name">{{ shift.shift_type }}</h5>
@@ -16,24 +19,33 @@
             class="ml-3 mr-3"
             style="display:flex; justify-content:center; align-items:center; flex-direction:column"
           >
-            <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
-            <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
+            <i
+              style="font-size:1.3em"
+              class="el-icon el-icon-right p-0 m-0 grey"
+            ></i>
+            <span class="time_diff grey"
+              >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
+            >
           </div>
           <span class="date">{{ shift.endDate }}</span>
         </div>
       </el-col>
       <el-col class="p-3 approval_wrapper">
         <el-tag
+          @click="deleteShift"
           class="member_name"
           :type="shift.completed ? 'primary' : 'danger'"
-        >{{ shift.completed ? 'Finished' : 'Incomplete' }}</el-tag>
+          >{{
+            shift.completed ? "Finished/ Ready to delete" : "Incomplete"
+          }}</el-tag
+        >
       </el-col>
     </el-row>
   </el-card>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import employeeMethods from "@/mixins/employeeMethods";
 import dates from "@/mixins/dates";
 
@@ -105,6 +117,25 @@ export default {
     },
     getEmployeeType() {
       return this.convertEmployeeType(this.shift.user);
+    }
+  },
+  methods: {
+    ...mapActions(["request"]),
+    confirmDeleteShift() {
+      return this.$confirm("Are you sure you want to delete this shift ? ");
+    },
+    async deleteShift() {
+      try {
+        let confirmShift = await this.confirmDeleteShift();
+        let deleteRequest = await this.request({
+          method: "DELETE",
+          url: "shifts/delete",
+          data: { id: this.shift._id }
+        });
+        await Promise.all([confirmShift, deleteRequest]);
+      } catch (error) {
+        return error;
+      }
     }
   }
 };
