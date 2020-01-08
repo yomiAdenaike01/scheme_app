@@ -9,22 +9,24 @@
         />
       </el-col>
       <el-col style="display:flex; justify-content:flex-end">
-        <el-tag class="mt-4 mr-4" v-if="shift.is_pickup"
-          >Avaliable For Pickup</el-tag
-        >
+        <el-tag class="mt-4 mr-4" v-if="shift.is_pickup">Avaliable For Pickup</el-tag>
       </el-col>
     </el-row>
 
     <el-form>
       <el-form-item label="Assignee:">
-        <p class="member_name">{{ returnTeamMember }}</p>
+        <p class="member_name">
+          {{ returnTeamMember }}
+          <el-button
+            @click="toggleViewTeamMember"
+            class="ml-3"
+            v-if="getIsAdmin"
+            size="mini"
+          >View Team Member</el-button>
+        </p>
       </el-form-item>
       <el-form-item label="Approved:">
-        <el-button
-          :icon="returnIcon"
-          :type="returnApproval ? 'success' : 'warning'"
-          circle
-        ></el-button>
+        <el-button :icon="returnIcon" :type="returnApproval ? 'success' : 'warning'" circle></el-button>
       </el-form-item>
       <el-form-item label="Shift Type:">{{ shift.type }}</el-form-item>
       <el-divider>
@@ -38,29 +40,13 @@
       </el-form-item>
       <el-row type="flex" :gutter="5">
         <el-col v-if="shift.is_pickup && shift.shift_type <= 2">
-          <el-button
-            style="width:100%"
-            type="primary"
-            plain
-            @click="confirm('pickup')"
-            >Pickup</el-button
-          >
+          <el-button style="width:100%" type="primary" plain @click="confirm('pickup')">Pickup</el-button>
         </el-col>
-        <el-col
-          v-if="!shift.is_pickup && shift.shift_type <= 2 && shift.assigned_to"
-        >
-          <el-button
-            style="width:100%"
-            type="danger"
-            plain
-            @click="confirm('delete')"
-            >Drop</el-button
-          >
+        <el-col v-if="!shift.is_pickup && shift.shift_type <= 2 && shift.assigned_to">
+          <el-button style="width:100%" type="danger" plain @click="confirm('delete')">Drop</el-button>
         </el-col>
         <el-col v-if="getIsAdmin || currentUser._id == shift.assigned_to">
-          <el-button style="width:100%" type="danger" @click="confirm('remove')"
-            >Delete</el-button
-          >
+          <el-button style="width:100%" type="danger" @click="confirm('remove')">Delete</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -130,6 +116,11 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
+
+    toggleViewTeamMember() {
+      this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assigned_to });
+    },
     confirm(question) {
       switch (question) {
         case "remove":

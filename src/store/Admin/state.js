@@ -2,7 +2,7 @@ export default {
   team: [],
   shifts: [],
   requests: [],
-  viewUser: "",
+  viewTeamMember: { view: false, id: null },
   shiftTypes: {
     1: "Normal",
     2: "Locumn",

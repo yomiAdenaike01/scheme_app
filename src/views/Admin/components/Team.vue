@@ -9,7 +9,13 @@
       />
 
       <el-col v-for="(member, index) in team" :key="index" class="member">
-        <Dropdown :items="items" @method="handleEvents" position="left" :icon="false">
+        <Dropdown
+          @click.native="hoveredTeamMember = member._id"
+          :items="items"
+          @method="handleEvents"
+          position="left"
+          :icon="false"
+        >
           <el-badge is-dot :type="member.is_online ? 'success' : 'danger'" class="item">
             <Avatar :name="member.name" />
           </el-badge>
@@ -20,12 +26,17 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 import Title from "@/components/Title";
 export default {
   name: "Team",
+  data() {
+    return {
+      hoveredTeamMember: null
+    };
+  },
   computed: {
     ...mapState("Admin", ["team"]),
     ...mapGetters(["getIsAdmin", "getOnlineTeam"]),
@@ -43,29 +54,27 @@ export default {
       ];
 
       if (this.getIsAdmin) {
-        items.push(
-          {
-            name: "View Team Member",
-            command: "view_member"
-          },
-          {
-            name: "View Requests",
-            command: "requests",
-            divided: true
-          }
-        );
+        items.push({
+          name: "View Team Member",
+          command: "view_team_member"
+        });
       }
       return items;
     }
   },
   methods: {
+    ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
     handleEvents(event) {
       switch (event) {
         case "message": {
           this.$router.push({ name: "messenger" });
           break;
         }
-        case "view_requests": {
+        case "view_team_member": {
+          this.UPDATE_VIEW_TEAM_MEMBER({
+            view: true,
+            id: this.hoveredTeamMember
+          });
           break;
         }
 

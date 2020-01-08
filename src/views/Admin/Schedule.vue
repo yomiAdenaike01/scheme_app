@@ -15,30 +15,25 @@
               size="small"
               v-model="searchedTeamMember"
             ></el-input>
-          </el-col> -->
+          </el-col>-->
           <el-col>
-            <el-button
-              @click="modals.create_event = true"
-              round
-              type="primary"
-              size="small"
-              >{{ getIsAdmin ? "Create Event" : "Create Request" }}
-              <i class="el-icon-plus"></i
-            ></el-button>
+            <el-button @click="modals.create_event = true" round type="primary" size="small">
+              {{ getIsAdmin ? "Create Event" : "Create Request" }}
+              <i class="el-icon-plus"></i>
+            </el-button>
             <el-button
               v-if="getIsAdmin"
               round
               type="primary"
               size="small"
               @click="modals.create_employee = true"
-              >Create Employee <i class="el-icon-plus"></i
-            ></el-button>
+            >
+              Create Employee
+              <i class="el-icon-plus"></i>
+            </el-button>
           </el-col>
         </el-row>
-        <ScheduleCalendar
-          @displayCreateShift="modals.create_event = $event"
-          style="height:60%"
-        />
+        <ScheduleCalendar @displayCreateShift="modals.create_event = $event" style="height:60%" />
       </el-col>
     </el-row>
 
@@ -47,11 +42,7 @@
       @createEvent="createEvent"
       :display="modals.create_event"
     />
-    <CreateEmployee
-      @toggle="modals.create_employee = $event"
-      :display="modals.create_employee"
-    />
-    <ScheduleProfileView />
+    <CreateEmployee @toggle="modals.create_employee = $event" :display="modals.create_employee" />
   </div>
 </template>
 
@@ -63,7 +54,6 @@ import CreateEmployee from "./components/dialogs/CreateEmployee";
 
 import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";
-import ScheduleProfileView from "./components/ScheduleProfileView.vue";
 import ScheduleCalendar from "./components/ScheduleCalendar";
 export default {
   name: "Schedule",
@@ -225,7 +215,6 @@ export default {
     CreateShift,
     Dropdown,
     Popover,
-    ScheduleProfileView,
     CreateEmployee
   }
 };

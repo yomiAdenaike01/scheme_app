@@ -1,10 +1,13 @@
 <template>
-  <router-view></router-view>
+  <div style="height:100%">
+    <router-view></router-view>
+    <TeamMember />
+  </div>
 </template>
 
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
-
+import TeamMember from "@/views/Admin/components/dialogs/TeamMember";
 export default {
   name: "Admin",
   data() {
@@ -40,6 +43,9 @@ export default {
         title: "New Request"
       });
     }
+  },
+  components: {
+    TeamMember
   }
 };
 </script>

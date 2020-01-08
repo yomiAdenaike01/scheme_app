@@ -1,5 +1,10 @@
 <template>
-  <el-dropdown class="grey" @command="emitCommand" :placement="position">
+  <el-dropdown
+    trigger="click"
+    class="dropdown_container"
+    @command="emitCommand"
+    :placement="position"
+  >
     <span class="el-dropdown-link dropdown_wrapper">
       <slot></slot>
       <i v-if="icon" class="el-icon-arrow-down el-icon--right"></i>
@@ -43,6 +48,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dropdown_container {
+  cursor: pointer;
+}
 .dropdown_wrapper {
   display: flex;
   align-items: center;
