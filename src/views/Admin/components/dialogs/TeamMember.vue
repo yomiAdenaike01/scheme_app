@@ -1,5 +1,17 @@
 <template>
-  <el-dialog :visible.sync="toggleView">{{teamMember}}</el-dialog>
+  <el-dialog :visible.sync="toggleView">
+    <el-row type="flex">
+      <el-col>
+        <el-tabs tab-position="left">
+          <el-tab-pane
+            :key="index"
+            v-for="(tab,index) in tabItems"
+            :label="tab.label"
+          >{{self[tab.content]}}</el-tab-pane>
+        </el-tabs>
+      </el-col>
+    </el-row>
+  </el-dialog>
 </template>
 
 <script>
@@ -8,7 +20,8 @@ export default {
   name: "TeamMember",
   data() {
     return {
-      documentation: []
+      documentation: [],
+      self: this
     };
   },
 
@@ -27,8 +40,8 @@ export default {
         this.UPDATE_VIEW_TEAM_MEMBER(val);
       }
     },
-    returnAllUserInfo() {
-      return this.getTeamMember(teamMember, "_id");
+    getUserInfo() {
+      return this.getTeamMember(this.teamMember, "_id");
     },
     getTeamMemberShifts() {
       return this.shifts.filter(shift => {
@@ -37,10 +50,22 @@ export default {
     },
     getSimilarTeamMembers() {
       return this.team.filter(member => {
-        return member.employee_type == this.returnAllUserInfo.employee_type;
+        return member.employee_type == this.getUserInfo.employee_type;
       });
     },
-    dropdownItems() {}
+    tabItems() {
+      // Each tab item will return a computed with all the information required
+      return [
+        {
+          label: "Basic Info",
+          content: "getUserInfo"
+        },
+        {
+          label: "Shifts",
+          content: "getTeamMemberShifts"
+        }
+      ];
+    }
   },
   methods: {
     ...mapActions(["request"]),
