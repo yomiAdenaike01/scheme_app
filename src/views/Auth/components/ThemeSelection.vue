@@ -60,10 +60,11 @@ export default {
   align-items: center;
 }
 .theme_selection_unit {
-  padding: 2em 3em;
+  min-width: 50px;
+  min-height: 50px;
   border-radius: 50%;
   flex: 1;
-  min-height: 30px;
+  margin: 10px 30px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 .theme_selection_label {

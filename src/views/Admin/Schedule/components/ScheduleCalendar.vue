@@ -34,7 +34,7 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import ViewShift from "./dialogs/ViewShift";
+import ViewShift from "./ViewShift";
 import dates from "@/mixins/dates";
 export default {
   name: "ScheduleCalendar",

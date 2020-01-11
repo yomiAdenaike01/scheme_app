@@ -1,17 +1,24 @@
 <template>
-  <el-dialog :visible.sync="toggleView" v-if="getUserInfo" custom-class="teamMemberDialogContainer">
+  <el-dialog
+    :visible.sync="toggleView"
+    v-if="getUserInfo"
+    custom-class="teamMemberDialogContainer"
+  >
     <el-row type="flex">
       <el-col>
-        <TeamMemberSidebar
+        <Sidebar
           v-if="getUserInfo.name"
           :teamMemberData="getUserInfo"
           @changedTab="selectedTab = $event"
           :tabItems="tabItems"
         >
           <div class="content_body">
-            <component :is="returnCorrectData.component" :data="returnCorrectData.props" />
+            <component
+              :is="returnCorrectData.component"
+              :data="returnCorrectData.props"
+            />
           </div>
-        </TeamMemberSidebar>
+        </Sidebar>
       </el-col>
     </el-row>
   </el-dialog>
@@ -19,9 +26,9 @@
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
-import TeamUserInfo from "../TeamUserInfo.vue";
-import TeamMemberSidebar from "./../TeamMemberSidebar";
-import Shift from "./../Shift";
+import TeamUserInfo from "./components/UserInfo.vue";
+import Sidebar from "./components/Sidebar";
+import Shift from "../Dashboard/components/Shift";
 export default {
   name: "TeamMember",
   data() {
@@ -124,13 +131,13 @@ export default {
   },
   components: {
     TeamUserInfo,
-    TeamMemberSidebar,
+    Sidebar,
     Shift
   }
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 .teamMemberDialogContainer {
   .el-dialog__body {
     padding: 0;
@@ -138,5 +145,4 @@ export default {
   }
 }
 </style>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

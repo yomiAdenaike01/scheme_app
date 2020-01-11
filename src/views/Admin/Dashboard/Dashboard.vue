@@ -1,11 +1,15 @@
-<template>
+#<template>
   <el-row :type="$mq == 'lg' ? 'flex' : null" style="height:100%">
     <el-col class="p-3">
       <!-- PREVIOUS SHIFTS SELECTION -->
       <el-checkbox
         :disabled="previousShifts.length <= 0"
         v-model="displayPreviousShifts"
-        :label="previousShifts.length <= 0 ? 'No shifts / events to display' : 'View previous events / shifts'"
+        :label="
+          previousShifts.length <= 0
+            ? 'No shifts / events to display'
+            : 'View previous events / shifts'
+        "
         border
         size="small"
       ></el-checkbox>
@@ -22,58 +26,39 @@
               plain
               size="small"
               @click="$router.push({ name: 'schedule' })"
-            >{{ noShiftsContent.buttonText }}</el-button>
+              >{{ noShiftsContent.buttonText }}</el-button
+            >
           </Title>
         </el-card>
         <!-- SHIFTS IN CATEGORIES -->
         <transition name="el-fade-in">
           <el-col v-for="(prop, key) in categoriedShifts" :key="key">
             <el-divider class="member_name">{{ key }}</el-divider>
-            <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
+            <Shift
+              v-for="(shift, key) in categoriedShifts[key]"
+              :key="key"
+              :shift="shift"
+            />
           </el-col>
         </transition>
         <!-- PREVIOUS SHIFTS -->
         <el-collapse-transition>
-          <el-col class="shift_overflow" v-if="previousShifts.length > 0 && displayPreviousShifts">
+          <el-col
+            class="shift_overflow"
+            v-if="previousShifts.length > 0 && displayPreviousShifts"
+          >
             <el-divider>Previous</el-divider>
-            <Shift v-for="(shift, key) in previousShifts" :key="key" :shift="shift" />
+            <Shift
+              v-for="(shift, key) in previousShifts"
+              :key="key"
+              :shift="shift"
+            />
           </el-col>
         </el-collapse-transition>
       </el-row>
     </el-col>
-    <!-- NOTIFICATIONS -->
-    <!-- <el-col class="p-3">
-        <Title
-          title="Notifications"
-          subtitle="View your notifications a summary of your notifications here."
-        />
-        <div
-          v-if="userNotifications.length > 0"
-          class="notifications_text_container"
-        >
-          <p>
-            You have {{ userNotifications.length }}
-            {{
-              userNotifications.length > 1 ? 'notifications' : 'notification'
-            }}
-            press the button to view them.
-          </p>
-          <el-button
-            class="mt-3"
-            size="small"
-            @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"
-            >View Notifications</el-button
-          >
-        </div>
-        <div v-else class="notifications_text_container">
-          <p style="text-align:center">
-            No notifications detected. Guess it's a quiet day.
-          </p>
-        </div>
-    </el-col>-->
-
     <!-- TEAM SIDEBAR -->
-    <Team />
+    <TeamView />
   </el-row>
 </template>
 
@@ -82,8 +67,8 @@ import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import dates from "@/mixins/dates";
 import Popover from "@/components/Popover.vue";
 import Dropdown from "@/components/Dropdown.vue";
-import Avatar from "../../components/Avatar.vue";
-import Team from "./components/Team";
+import Avatar from "@/components/Avatar.vue";
+import TeamView from "../Team/TeamView";
 import employeeMethods from "@/mixins/employeeMethods";
 import Shift from "./components/Shift";
 import Notification from "@/components/Notification";
@@ -212,7 +197,7 @@ export default {
     Dropdown,
     Avatar,
     Title: () => import("@/components/Title"),
-    Team,
+    TeamView,
     Shift,
     Notification
   }

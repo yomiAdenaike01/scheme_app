@@ -2,10 +2,10 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "./../store/index";
 
-const login = () => import("@/views/User/Login");
-const register = () => import("@/views/Client/Register");
-const dashboard = () => import("@/views/Admin/Dashboard");
-const schedule = () => import("@/views/Admin/Schedule");
+const UserAuth = () => import("@/views/Auth/UserAuth");
+const ClientAuth = () => import("@/views/Auth/ClientAuth");
+const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
+const schedule = () => import("@/views/Admin/Schedule/Schedule");
 const messenger = () => import("@/views/Comms/Messenger");
 const reports = () => import("@/views/Admin/Reports");
 
@@ -81,7 +81,7 @@ const routes = [
   {
     path: "/login",
     name: "login",
-    component: login,
+    component: UserAuth,
     meta: {
       title: "Login"
     }
@@ -89,7 +89,7 @@ const routes = [
   {
     path: "/register",
     name: "register",
-    component: register,
+    component: ClientAuth,
     meta: {
       title: "Register"
     }

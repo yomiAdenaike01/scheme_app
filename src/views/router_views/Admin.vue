@@ -7,7 +7,7 @@
 
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
-import TeamMember from "@/views/Admin/components/dialogs/TeamMember";
+import TeamMember from "@/views/Admin/Team/TeamMember";
 export default {
   name: "Admin",
   data() {

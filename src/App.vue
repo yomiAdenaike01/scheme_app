@@ -11,7 +11,6 @@ import { mapState } from "vuex";
 
 export default {
   name: "app",
-
   computed: {
     ...mapState(["notifications", "defaultSize"])
   },
@@ -29,12 +28,12 @@ export default {
   height: 100%;
   overflow: hidden;
   /**
- _   _  _  ___ _  _    ___ 
-| \_/ |/ \| o ) || |  | __|
-| \_/ ( o ) o \ || |_ | _| 
-|_| |_|\_/|___/_||___||___|
+  _   _  _  ___ _  _    ___ 
+  | \_/ |/ \| o ) || |  | __|
+  | \_/ ( o ) o \ || |_ | _| 
+  |_| |_|\_/|___/_||___||___|
                                                                                     
- */
+*/
   &.mobile {
     overflow: scroll;
     .el-drawer__body {

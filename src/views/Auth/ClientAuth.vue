@@ -60,7 +60,7 @@
               <div>
                 <input type="file" @change="handleImageChange" />
                 <el-collapse-transition>
-                  <div v-if="accent_colour">
+                  <div v-if="Object.keys(colourPreferences).length > 0">
                     <p class="el-upload__tip" style="color:green">
                       <i class="el-icon el-icon-check"></i> Colour scheme
                       generated based on the logo provided.
@@ -74,7 +74,7 @@
           <!-- Personlisation Tab -->
         </el-tab-pane>
         <el-tab-pane label="Personalisation">
-          <div class="theme_wrapper">
+          <div class="theme_wrapper" v-if="logo">
             <!-- Title -->
             <h5>These are your theme settings</h5>
             <p class="instructions">
@@ -82,7 +82,9 @@
               within your settings. Hover over a colour that you want to change
               to change it.
             </p>
-            <img :src="logo" width="320" height="200" class="logo" />
+            <div class="logo_container">
+              <img :src="logo" class="logo" />
+            </div>
             <!-- Theme selection unit -->
             <ThemeSelectionUnit
               v-for="(themeItem, index) in colourPreferences"
@@ -93,6 +95,13 @@
               v-model="colourPreferences[index].colour"
             />
           </div>
+          <div v-else class="empty_logo_container">
+            <h5>No Logo Detected</h5>
+            <p class="instructions">
+              Please select your logo so that a recommended colour scheme can be
+              generated for you.
+            </p>
+          </div>
         </el-tab-pane>
       </el-tabs>
       <div class="buttons_container">
@@ -100,6 +109,7 @@
           round
           type="primary"
           size="mini"
+          :disbaled="currentStep == '1' && !logo"
           @click="currentStep == '0' ? (currentStep = '1') : registerNewClient"
           >{{
             currentStep == "0" ? "Go To Personalisation" : "Finalize Account"
@@ -117,7 +127,7 @@ import ThemeSelectionUnit from "./components/ThemeSelection";
 import * as Vibrant from "node-vibrant";
 
 export default {
-  name: "ClientRegister",
+  name: "ClientAuth",
   created() {
     let allForms = this.returnRegisterForm.concat(this.returnClientForm);
     allForms.map(form => {
@@ -211,13 +221,6 @@ export default {
             }
           ]
         },
-        // {
-        //   name: "date_of_birth",
-        //   type: "date",
-        //   placeholder: "Date of birth",
-        //   model: "date_of_birth"
-        // },
-
         {
           name: "password",
           type: "password",
@@ -244,12 +247,18 @@ export default {
         Vibrant.from(this.logo).getPalette((err, palette) => {
           if (!err) {
             this.loading = false;
-            console.log(palette);
             for (let property in palette) {
-              this.colourPreferences.push({
-                label: property,
-                colour: palette[property].hex
-              });
+              if (!property.toLowerCase().includes("muted")) {
+                this.colourPreferences.push({
+                  label:
+                    property == "Vibrant"
+                      ? "Primary"
+                      : "LightVibrant"
+                      ? "Secondary"
+                      : "Tertiary",
+                  colour: palette[property].hex
+                });
+              }
             }
           }
         });
@@ -326,19 +335,21 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.upload_btn {
-  background: #ffffff;
-  border-color: $red;
-  color: $primary_colour;
-  outline: none;
-}
+
 .el-divider__text {
   color: #888;
 }
 .logo {
   border-radius: 50%;
-  max-width: 200px;
-  max-height: 130px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  max-width: 100px;
+  max-height: 100px;
+  box-shadow: $box_shadow;
+}
+.empty_logo_container {
+  margin-top: 2em;
+}
+.logo_container {
+  display: flex;
+  justify-content: center;
 }
 </style>

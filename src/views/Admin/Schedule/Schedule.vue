@@ -60,8 +60,8 @@
 <script>
 import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
-import CreateShift from "./components/dialogs/CreateShift";
-import CreateEmployee from "./components/dialogs/CreateEmployee";
+import CreateShift from "./components/CreateShift";
+import CreateEmployee from "./components/CreateEmployee";
 
 import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";

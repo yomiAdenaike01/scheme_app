@@ -1,100 +1,28 @@
 <template>
   <div class="login_container">
     <div class="flex_container">
-      <el-card v-loading="loading" class="form_container">
+      <el-card class="form_container">
         <el-container style="height:100%">
           <el-main class="login_wrapper">
-            <Title
-              :title="switchController.title"
-              :subtitle="switchController.subtitle"
-              defaultClass="m-0 mb-3"
-            />
-
-            <el-button
-              class="mb-4 switch_button"
-              style="width:100%"
-              plain
-              type="text"
-              size="mini"
-              @click="switchForms"
-              >{{ switchController.text }}</el-button
+            <!-- Auth Register &  Login -->
+            <AuthFormContainer
+              v-loading="loading"
+              :tabs="returnTabs"
+              :submitText="selectedForm"
+              v-model="selectedForm"
+              @val="
+                formModel[selectedForm] = $event;
+                processUser();
+              "
             >
-
-            <el-form
-              :inline="selectedForm == 'login'"
-              :model="formModel[selectedForm]"
-              ref="loginForm"
-            >
-              <el-form-item
-                v-for="(input, index) in returnForm"
-                :key="index"
-                :prop="input.name"
-              >
-                <component
-                  :is="
-                    input.type == 'text' || input.type == 'password'
-                      ? 'el-input'
-                      : input.type == 'select'
-                      ? 'el-select'
-                      : 'el-date-picker'
-                  "
-                  :placeholder="input.placeholder"
-                  v-model="formModel[selectedForm][input.model]"
-                  clearable
-                  :show-password="input.type == 'password'"
-                  :type="input.type == 'date' ? 'date' : null"
-                >
-                  <el-option
-                    v-for="(option, index) in input.options"
-                    :key="index"
-                    :value="option.value"
-                    >{{ option.text }}</el-option
-                  >
-                </component>
-              </el-form-item>
-              <!-- Forgot password or credentials -->
-              <el-divider>
-                <span class="grey">Problems logging in ?</span>
-              </el-divider>
-
-              <el-row type="flex" class="mt-4" :gutter="8">
-                <el-col>
-                  <el-button
-                    size="small"
-                    type="danger"
-                    plain
-                    style="width:100%"
-                    @click="selectedForm = 'forgotPassword'"
-                    >Forgot Password</el-button
-                  >
-                </el-col>
-                <el-col>
-                  <el-button
-                    size="small"
-                    type="primary"
-                    plain
-                    style="width:100%"
-                    >Forgot Email</el-button
-                  >
-                </el-col>
-              </el-row>
-              <el-divider></el-divider>
-              <router-link :to="{ name: 'register' }"
-                >Want to register with scheme cloud ? Click Here.</router-link
-              >
-              <el-divider></el-divider>
-              <!-- Final Submission -->
-              <el-button
-                style="width:100%"
-                round
-                size="small"
-                @click="validateForm"
-                class="member_name"
-                >{{
-                  selectedForm != "forgotPassword" ? selectedForm : "Submit"
-                }}</el-button
-              >
-            </el-form>
+              <template #header_content>
+                <Title
+                  :title="switchController.title"
+                  :subtitle="switchController.subtitle"
+                />
+              </template>
+            </AuthFormContainer>
+            <!-- End of auth form contatiner -->
           </el-main>
         </el-container>
       </el-card>
@@ -106,8 +34,9 @@
 import { mapActions, mapMutations } from "vuex";
 import prompts from "@/mixins/prompts";
 import Title from "@/components/Title";
+import AuthFormContainer from "./components/AuthFormContainer";
 export default {
-  name: "Login",
+  name: "UserAuth",
   data() {
     return {
       newUser: false,
@@ -124,6 +53,19 @@ export default {
   },
 
   computed: {
+    returnTabs() {
+      // loop the types of forms and create a label
+      return [
+        {
+          label: "Login",
+          formContent: this.formConfig["login"]
+        },
+        {
+          label: "Register",
+          formContent: this.formConfig["register"]
+        }
+      ];
+    },
     returnPayload() {
       return {
         method: "POST",
@@ -138,7 +80,7 @@ export default {
         text: "Switch to registration"
       };
 
-      if (this.selectedForm == "register") {
+      if (this.selectedForm == "Register") {
         switchObj.title = "Sign Up";
         switchObj.subtitle =
           "Fill in the following form to successfully register";
@@ -225,6 +167,13 @@ export default {
           },
 
           {
+            name: "password",
+            type: "password",
+            placeholder: "New password",
+            model: "password"
+          },
+
+          {
             name: "gender",
             type: "select",
             placeholder: "Gender",
@@ -259,20 +208,13 @@ export default {
             options: [
               {
                 text: "Yes",
-                value: 3
+                value: "Yes"
               },
               {
                 text: "No",
-                value: 2
+                value: "No"
               }
             ]
-          },
-
-          {
-            name: "password",
-            type: "password",
-            placeholder: "New password",
-            model: "password"
           }
         ]
       };
@@ -283,20 +225,6 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
-    switchForms() {
-      if (this.selectedForm == "login") {
-        this.selectedForm = "register";
-      } else {
-        this.selectedForm = "login";
-      }
-    },
-    validateForm() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.processUser();
-        }
-      });
-    },
 
     forgotPassword() {
       let forgotPwdForm = this.formModel[this.selectedForm];
@@ -327,11 +255,12 @@ export default {
     processUser() {
       if (this.selectedForm == "forgotPassword") {
         this.forgotPassword();
+      } else if (this.selectedForm == "register") {
+        //Change employee type
+        this.formModel.login.employee_type == "Yes"
+          ? this.$set(this.formModel.register, "employee_type", 3)
+          : this.$set(this.formModel.register, "employee_type", 2);
       }
-      //Change employee type
-      this.formModel.login.employee_type == "Yes"
-        ? this.$set(this.formModel.login, "employee_type", 3)
-        : this.$set(this.formModel.login, "employee_type", 2);
       this.loading = true;
 
       this.request(this.returnPayload)
@@ -358,7 +287,8 @@ export default {
     }
   },
   components: {
-    Title
+    Title,
+    AuthFormContainer
   }
 };
 </script>

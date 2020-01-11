@@ -147,7 +147,7 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import dates from "@/mixins/dates";
-import ShiftTemplate from "./../ShiftTemplate";
+import ShiftTemplate from "./ShiftTemplate";
 import moment from "moment";
 export default {
   name: "CreateShift",

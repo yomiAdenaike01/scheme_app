@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "TeamUserInfo",
+  name: "UserInfo",
   props: {
     data: {
       type: Object,
