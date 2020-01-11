@@ -202,8 +202,8 @@ export default {
 
 // .normal_staff {
 //   background: #ecf5ff;
-//   color: #2f74eb;
-//   // border-top: 2px solid #2f74eb;
+//   color: $primary_colour;
+//   // border-top: 2px solid $primary_colour;
 // }
 // .locumn {
 //   background: #f0f9eb;

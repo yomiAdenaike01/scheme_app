@@ -36,94 +36,94 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-import Dropdown from '@/components/Dropdown'
-import Settings from '@/views/Settings/Settings'
-import Avatar from './Avatar.vue'
-import prompts from '@/mixins/prompts'
+import { mapState, mapMutations, mapActions } from "vuex";
+import Dropdown from "@/components/Dropdown";
+import Settings from "@/views/Settings/Settings";
+import Avatar from "./Avatar.vue";
+import prompts from "@/mixins/prompts";
 export default {
-  name: 'AppBar',
+  name: "AppBar",
   data() {
     return {
       displaySettings: false
-    }
+    };
   },
   computed: {
-    ...mapState(['currentUser', 'userNotifications', 'viewMobileMenu']),
+    ...mapState(["currentUser", "userNotifications", "viewMobileMenu"]),
 
     navWidth() {
-      let styleWidth = { width: `${150}px` }
-      const navElem = document.getElementById('main_nav')
+      let styleWidth = { width: `${150}px` };
+      const navElem = document.getElementById("main_nav");
       if (navElem) {
-        const width = navElem.offsetWidth
-        styleWidth.width = `${width}px`
+        const width = navElem.offsetWidth;
+        styleWidth.width = `${width}px`;
       }
-      return styleWidth
+      return styleWidth;
     },
     notifications() {
       return [
         {
-          name: 'You have a new message'
+          name: "You have a new message"
         }
-      ]
+      ];
     },
     items() {
       return [
         {
-          name: 'View Notifications',
-          command: 'view_notifications'
+          name: "View Notifications",
+          command: "view_notifications"
         },
         {
-          name: 'Settings',
-          command: 'settings',
+          name: "Settings",
+          command: "settings",
           divided: true
         },
         {
-          name: 'Log Out',
-          command: 'log_out',
+          name: "Log Out",
+          command: "log_out",
           divided: true,
-          icon: 'el-icon-switch-button'
+          icon: "el-icon-switch-button"
         }
-      ]
+      ];
     }
   },
   methods: {
     ...mapMutations([
-      'REMOVE_USER',
-      'UPDATE_GLOBAL_LOADER',
-      'UPDATE_VIEW_NOTIFICATIONS_CENTER',
-      'UPDATE_TOGGLE_MOBILE_MENU'
+      "REMOVE_USER",
+      "UPDATE_GLOBAL_LOADER",
+      "UPDATE_VIEW_NOTIFICATIONS_CENTER",
+      "UPDATE_TOGGLE_MOBILE_MENU"
     ]),
 
-    ...mapActions(['request']),
+    ...mapActions(["request"]),
     handleCommands(command) {
       switch (command) {
-        case 'view_notifications': {
-          this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true)
-          break
+        case "view_notifications": {
+          this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true);
+          break;
         }
-        case 'log_out': {
-          this.UPDATE_GLOBAL_LOADER(true)
+        case "log_out": {
+          this.UPDATE_GLOBAL_LOADER(true);
           this.request({
-            method: 'GET',
-            url: 'users/logout'
+            method: "GET",
+            url: "users/logout"
           })
             .then(response => {
-              this.REMOVE_USER()
-              this.$router.push({ name: 'login' })
+              this.REMOVE_USER();
+              this.$router.push({ name: "login" });
             })
             .catch(error => {
-              this.UPDATE_GLOBAL_LOADER(false)
-            })
-          break
+              this.UPDATE_GLOBAL_LOADER(false);
+            });
+          break;
         }
-        case 'settings': {
-          this.displaySettings = true
-          break
+        case "settings": {
+          this.displaySettings = true;
+          break;
         }
 
         default:
-          break
+          break;
       }
     }
   },
@@ -133,11 +133,11 @@ export default {
     Avatar
   },
   mixins: [prompts]
-}
+};
 </script>
 <style lang="scss" scoped>
 .client_indicator {
-  background: #2f74eb;
+  background: $primary_colour;
   color: white;
   height: initial;
   max-width: 7.4%;
@@ -154,7 +154,7 @@ export default {
 }
 .client_container {
   //   flex: 0.1;
-  background: #2f74eb;
+  background: $primary_colour;
   color: white;
 }
 .username {

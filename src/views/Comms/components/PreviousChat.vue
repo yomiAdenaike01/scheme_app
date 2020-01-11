@@ -129,7 +129,7 @@ export default {
   font-size: 0.8em;
 }
 .chat_indicator {
-  color: #2f74eb;
+  color: $primary_colour;
   font-size: 1.3em;
 }
 .icon_container {

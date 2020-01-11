@@ -2,8 +2,10 @@
   <el-row class="message">
     <el-col :style="stylePositions">
       <div class="m-2">
-        <p style="color:#999; font-size:0.7em;">{{format(message.time,"DD/MM/YYYY hh:mm a")}}</p>
-        <p class="p-3" :style="colors">{{message.content}}</p>
+        <p style="color:#999; font-size:0.7em;">
+          {{ format(message.time, "DD/MM/YYYY hh:mm a") }}
+        </p>
+        <p class="p-3" :style="colors">{{ message.content }}</p>
       </div>
     </el-col>
   </el-row>
@@ -39,7 +41,7 @@ export default {
       };
       if (this.isUserTheSender == "user") {
         styleObj.borderRadius = "10px 10px 0px 10px";
-        styleObj.backgroundColor = "#2f74eb";
+        styleObj.backgroundColor = "$primary_colour";
       }
       return styleObj;
     },

@@ -52,7 +52,7 @@
                   >
                 </component>
               </el-form-item>
-
+              <!-- Forgot password or credentials -->
               <el-divider>
                 <span class="grey">Problems logging in ?</span>
               </el-divider>
@@ -79,6 +79,11 @@
                 </el-col>
               </el-row>
               <el-divider></el-divider>
+              <router-link :to="{ name: 'register' }"
+                >Want to register with scheme cloud ? Click Here.</router-link
+              >
+              <el-divider></el-divider>
+              <!-- Final Submission -->
               <el-button
                 style="width:100%"
                 round
@@ -382,6 +387,6 @@ export default {
   min-width: 25%;
 }
 .switch_button {
-  border: 1px solid #2f74eb;
+  border: 1px solid $primary_colour;
 }
 </style>

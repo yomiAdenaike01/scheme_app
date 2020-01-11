@@ -1,14 +1,17 @@
 <template>
-  <el-dialog :visible.sync="toggleView">
+  <el-dialog :visible.sync="toggleView" v-if="getUserInfo" custom-class="teamMemberDialogContainer">
     <el-row type="flex">
       <el-col>
-        <el-tabs tab-position="left">
-          <el-tab-pane
-            :key="index"
-            v-for="(tab,index) in tabItems"
-            :label="tab.label"
-          >{{self[tab.content]}}</el-tab-pane>
-        </el-tabs>
+        <TeamMemberSidebar
+          v-if="getUserInfo.name"
+          :teamMemberData="getUserInfo"
+          @changedTab="selectedTab = $event"
+          :tabItems="tabItems"
+        >
+          <div class="content_body">
+            <component :is="returnCorrectData.component" :data="returnCorrectData.props" />
+          </div>
+        </TeamMemberSidebar>
       </el-col>
     </el-row>
   </el-dialog>
@@ -16,12 +19,16 @@
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
+import TeamUserInfo from "../TeamUserInfo.vue";
+import TeamMemberSidebar from "./../TeamMemberSidebar";
+import Shift from "./../Shift";
 export default {
   name: "TeamMember",
   data() {
     return {
       documentation: [],
-      self: this
+      self: this,
+      selectedTab: null
     };
   },
 
@@ -29,6 +36,49 @@ export default {
     ...mapState("Admin", ["shifts", "team", "requests", "viewTeamMember"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getTeamMember"]),
+    returnCorrectData() {
+      let selectedTab = this.selectedTab;
+      let component, props;
+      switch (selectedTab) {
+        // Display user personal details
+        case "0": {
+          component = TeamUserInfo;
+          props = this.getUserInfo;
+          break;
+        }
+        // Display user shifts
+        case "1": {
+          break;
+        }
+
+        default:
+          break;
+      }
+      return {
+        component,
+        props
+      };
+    },
+    tabItems() {
+      // Each tab item will return a computed with all the information required
+      return [
+        {
+          label: "Personal Details"
+        },
+        {
+          label: "Shifts"
+        },
+        {
+          label: "Timesheets"
+        },
+        {
+          label: "Leave/Holiday"
+        },
+        {
+          label: "Notes"
+        }
+      ];
+    },
     teamMember() {
       return this.viewTeamMember.id;
     },
@@ -52,19 +102,6 @@ export default {
       return this.team.filter(member => {
         return member.employee_type == this.getUserInfo.employee_type;
       });
-    },
-    tabItems() {
-      // Each tab item will return a computed with all the information required
-      return [
-        {
-          label: "Basic Info",
-          content: "getUserInfo"
-        },
-        {
-          label: "Shifts",
-          content: "getTeamMemberShifts"
-        }
-      ];
     }
   },
   methods: {
@@ -84,9 +121,22 @@ export default {
           return error;
         });
     }
+  },
+  components: {
+    TeamUserInfo,
+    TeamMemberSidebar,
+    Shift
   }
 };
 </script>
 
-<style>
+<style lang="scss" >
+.teamMemberDialogContainer {
+  .el-dialog__body {
+    padding: 0;
+    margin: 0;
+  }
+}
+</style>
+<style lang="scss" scoped>
 </style>

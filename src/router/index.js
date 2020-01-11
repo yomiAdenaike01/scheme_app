@@ -1,15 +1,19 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "./../store/index";
-const mainApp = () => import("@/views/router_views/Main");
+
 const login = () => import("@/views/User/Login");
+const register = () => import("@/views/Client/Register");
 const dashboard = () => import("@/views/Admin/Dashboard");
 const schedule = () => import("@/views/Admin/Schedule");
 const messenger = () => import("@/views/Comms/Messenger");
 const reports = () => import("@/views/Admin/Reports");
 
+// Router views
+const mainApp = () => import("@/views/router_views/Main");
 const admin = () => import("@/views/router_views/Admin");
 const comms = () => import("@/views/router_views/Comms");
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -80,6 +84,14 @@ const routes = [
     component: login,
     meta: {
       title: "Login"
+    }
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: register,
+    meta: {
+      title: "Register"
     }
   }
 ];

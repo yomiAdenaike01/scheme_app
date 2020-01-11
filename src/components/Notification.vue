@@ -194,9 +194,9 @@ export default {
   font-size: 0.8em;
 }
 .check_button {
-  border: 1px solid #2f74eb;
+  border: 1px solid $primary_colour;
   .el-icon-check {
-    color: #2f74eb;
+    color: $primary_colour;
   }
 }
 </style>

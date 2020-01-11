@@ -17,7 +17,12 @@
             ></el-input>
           </el-col>-->
           <el-col>
-            <el-button @click="modals.create_event = true" round type="primary" size="small">
+            <el-button
+              @click="modals.create_event = true"
+              round
+              type="primary"
+              size="small"
+            >
               {{ getIsAdmin ? "Create Event" : "Create Request" }}
               <i class="el-icon-plus"></i>
             </el-button>
@@ -33,7 +38,10 @@
             </el-button>
           </el-col>
         </el-row>
-        <ScheduleCalendar @displayCreateShift="modals.create_event = $event" style="height:60%" />
+        <ScheduleCalendar
+          @displayCreateShift="modals.create_event = $event"
+          style="height:60%"
+        />
       </el-col>
     </el-row>
 
@@ -42,7 +50,10 @@
       @createEvent="createEvent"
       :display="modals.create_event"
     />
-    <CreateEmployee @toggle="modals.create_employee = $event" :display="modals.create_employee" />
+    <CreateEmployee
+      @toggle="modals.create_employee = $event"
+      :display="modals.create_employee"
+    />
   </div>
 </template>
 
@@ -238,7 +249,7 @@ span {
   text-transform: capitalize;
 }
 .view_indicator {
-  color: #2f74eb;
+  color: $primary_colour;
 }
 .time_wrapper {
   background: rgb(253, 253, 253);
