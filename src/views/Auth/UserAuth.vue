@@ -19,7 +19,23 @@
                 <Title
                   :title="switchController.title"
                   :subtitle="switchController.subtitle"
+                  defaultClass="m-0"
                 />
+
+                <!-- New client registration -->
+                <div
+                  class="new_client_button_container mb-4 mt-4"
+                  v-if="selectedForm == 'register'"
+                >
+                  <el-button
+                    @click="$router.push({ name: 'register' })"
+                    round
+                    size="small"
+                    type="primary"
+                    >Registering a new company ? Click here to register.
+                  </el-button>
+                </div>
+                <!-- New client registration -->
               </template>
             </AuthFormContainer>
             <!-- End of auth form contatiner -->
@@ -75,13 +91,13 @@ export default {
     },
     switchController() {
       let switchObj = {
-        title: "Sign In",
+        title: "User sign in",
         subtitle: "Use your email and password to sign in.",
         text: "Switch to registration"
       };
 
-      if (this.selectedForm == "Register") {
-        switchObj.title = "Sign Up";
+      if (this.selectedForm == "register") {
+        switchObj.title = "User sign up";
         switchObj.subtitle =
           "Fill in the following form to successfully register";
         switchObj.text = "Switch to login";
@@ -318,5 +334,10 @@ export default {
 }
 .switch_button {
   border: 1px solid $primary_colour;
+}
+.new_client_button_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

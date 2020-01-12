@@ -52,12 +52,15 @@ export default {
 </script>
 <style lang="scss" scoped>
 .sidebar_avatar {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   font-size: 30px;
   text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.avatar_info_container {
+  padding: 1em;
 }
 </style>

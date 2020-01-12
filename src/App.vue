@@ -1,5 +1,34 @@
 <template>
-  <div id="app" v-resize-text="defaultSize" :class="{ mobile: $mq != 'lg' }">
+  <div
+    id="app"
+    v-resize-text="defaultSize"
+    :class="{ mobile: $mq != 'lg' }"
+    v-loading="resolving"
+  >
+    <el-dialog center :visible.sync="error" width="800px">
+      <div class="client_error_dialog">
+        <Title
+          title="Error when getting data."
+          subtitle="Re-enter your company name to restart the process."
+        />
+        <el-input
+          class="client_name"
+          placeholder="Company Name"
+          v-model="clientname"
+        >
+          <template slot="append">.schemeapp.cloud</template>
+        </el-input>
+        <div class="button_container m-4">
+          <el-button round type="primary" @click="getClient">Retry</el-button>
+          <el-button
+            round
+            plain
+            @click="$router.push({ name: 'register' }), (error = false)"
+            >Register with scheme cloud</el-button
+          >
+        </div>
+      </div>
+    </el-dialog>
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -7,12 +36,57 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-
+import { mapState, mapActions } from "vuex";
+import Title from "@/components/Title";
 export default {
   name: "app",
+  data() {
+    return {
+      resolving: true,
+      error: false,
+      clientname: "",
+      url: window.location.host.split(".")
+    };
+  },
+  created() {
+    this.getClient();
+  },
   computed: {
     ...mapState(["notifications", "defaultSize"])
+  },
+  methods: {
+    ...mapActions(["request"]),
+    getClient() {
+      let currentHostname = window.location.hostname.split(".");
+      if (this.clientname.length <= 0) {
+        let client = window.location.hostname.toString().split(".");
+        let subdomain = client[0];
+        let domain = client[1];
+
+        this.request({
+          method: "GET",
+          params: { client_name: subdomain },
+          url: "clients/one"
+        })
+          .then(response => {
+            console.log(response);
+            this.resolving = false;
+          })
+          .catch(error => {
+            this.resolving = false;
+            this.error = true;
+          });
+      } else {
+        window.location.replace(
+          `${window.location.protocol}//${
+            this.clientname
+          }.${window.location.host.replace(`${this.url[0]}.`, "")}`
+        );
+      }
+    }
+  },
+  components: {
+    Title
   },
 
   watch: {
@@ -84,19 +158,6 @@ body {
       format("truetype");
 }
 
-@font-face {
-  font-family: "Tw Cen MT W01 Light";
-  src: url("./assets/Fonts/52a3cf55-5046-4363-af0a-a8831748f1ab.eot?#iefix");
-  src: url("./assets/Fonts/52a3cf55-5046-4363-af0a-a8831748f1ab.eot?#iefix")
-      format("eot"),
-    url("./assets/Fonts/33b518fd-1640-44a6-8544-977f3f878471.woff2")
-      format("woff2"),
-    url("./assets/Fonts/9a0194a4-ab74-415d-bb64-ffb9df6a8f9c.woff")
-      format("woff"),
-    url("./assets/Fonts/c37166d3-5187-4a9b-9482-b0a8102f5f69.ttf")
-      format("truetype");
-}
-
 * {
   font-family: "AvenirNextLTW01-Regular";
   -webkit-font-smoothing: antialiased;
@@ -123,5 +184,18 @@ a {
 }
 .member_name {
   text-transform: capitalize;
+}
+.client_error_dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .button_container {
+    display: flex;
+    justify-content: space-between;
+  }
+  .client_name {
+    width: 80%;
+  }
 }
 </style>

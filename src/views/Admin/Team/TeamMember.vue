@@ -28,7 +28,6 @@
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import TeamUserInfo from "./components/UserInfo.vue";
 import Sidebar from "./components/Sidebar";
-import Shift from "../Dashboard/components/Shift";
 export default {
   name: "TeamMember",
   data() {
@@ -55,6 +54,7 @@ export default {
         }
         // Display user shifts
         case "1": {
+          component;
           break;
         }
 
@@ -131,8 +131,7 @@ export default {
   },
   components: {
     TeamUserInfo,
-    Sidebar,
-    Shift
+    Sidebar
   }
 };
 </script>
@@ -145,4 +144,8 @@ export default {
   }
 }
 </style>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.content_body {
+  padding: 1.1em;
+}
+</style>

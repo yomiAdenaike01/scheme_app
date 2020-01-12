@@ -1,6 +1,17 @@
 <template>
   <div class="reg_wrapper">
     <el-card class="reg_card_container" :v-loading="loading">
+      <div class="goback_to_login mt-4 mb-4">
+        <el-button
+          type="primary"
+          round
+          size="small"
+          icon="el-icon-arrow-left"
+          @click="$router.push({ name: 'login' })"
+          >Go to login</el-button
+        >
+      </div>
+
       <el-tabs
         type="card"
         :closable="false"
@@ -108,7 +119,7 @@
         <el-button
           round
           type="primary"
-          size="mini"
+          size="small"
           :disbaled="currentStep == '1' && !logo"
           @click="currentStep == '0' ? (currentStep = '1') : registerNewClient"
           >{{
@@ -203,7 +214,12 @@ export default {
           placeholder: "Email",
           model: "email"
         },
-
+        {
+          name: "password",
+          type: "password",
+          placeholder: "New password",
+          model: "password"
+        },
         {
           name: "gender",
           type: "select",
@@ -220,12 +236,6 @@ export default {
               text: "Other"
             }
           ]
-        },
-        {
-          name: "password",
-          type: "password",
-          placeholder: "New password",
-          model: "password"
         }
       ];
       return registerForm;
@@ -289,7 +299,8 @@ export default {
     }
   },
   components: {
-    ThemeSelectionUnit
+    ThemeSelectionUnit,
+    Title
   },
   watch: {
     logo(val) {

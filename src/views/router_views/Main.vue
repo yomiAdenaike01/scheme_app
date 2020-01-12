@@ -36,6 +36,7 @@ export default {
     }
 
     this.displayWeeklyTimesheetNotification();
+    this.checkIsLocumnWorking();
   },
   computed: {
     ...mapState([
@@ -49,6 +50,7 @@ export default {
       "weeklyTimesheetUploaded",
       "localSettings"
     ]),
+    ...mapState("Admin", ["shifts", "team"]),
     returnIsStartOfWeek() {
       return moment().get("day") <= 1;
     }
@@ -79,6 +81,28 @@ export default {
       }
     },
 
+    checkIsLocumnWorking() {
+      let moment = moment();
+      this.shifts(shift => {
+        // Is Today
+        let shiftStartTime = shift.startDate;
+        let shiftType = shift.shift_type;
+        if (
+          shiftStartTime == moment(shiftStartTime).isSame(new Date(), "day")
+        ) {
+          if (shiftType == 2) {
+            this.UPDATE_NOTIFICATIONS({
+              title: "No locumn shift detected.",
+              message: "Please go to schedule to book a new locumn shift.",
+              type: "warning",
+              onClick: () => {
+                this.$router.push({ name: "schedule" });
+              }
+            });
+          }
+        }
+      });
+    },
     /**
      * Create notification at the start of the week asking them to upload a timesheet
      */
