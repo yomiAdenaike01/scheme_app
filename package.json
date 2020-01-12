@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --host scheme.localhost",
+    "serve": "vue-cli-service serve --host demo.localhost",
     "build": "vue-cli-service build"
   },
   "dependencies": {

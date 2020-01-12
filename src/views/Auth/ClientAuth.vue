@@ -26,6 +26,31 @@
             v-if="currentStep <= 0"
             label-position="top"
           >
+            <!-- More inforation button -->
+            <el-button
+              class="m-4"
+              round
+              type="primary"
+              size="small"
+              icon="el-icon-warning-outline"
+              v-if="false"
+              @click="moreInformation = !moreInformation"
+              >More information</el-button
+            >
+            <el-collapse-transition>
+              <div
+                class="more_information_container mb-4"
+                v-if="moreInformation"
+              >
+                <h3 class="mb-4">How to login</h3>
+                <p style="font-size:.9em">
+                  Each company uses scheme cloud using their name. In the event
+                  that you do signup your link to schemeapp would be
+                  <strong>companyname.schemeapp.cloud</strong>.
+                </p>
+              </div>
+            </el-collapse-transition>
+            <!-- FORM  -->
             <el-form-item v-for="item in returnClientForm" :key="item.model">
               <el-input
                 :placeholder="item.placeholder"
@@ -34,6 +59,8 @@
               />
             </el-form-item>
 
+            <!-- Client Details end -->
+            <!-- User Details -->
             <el-divider>User Details</el-divider>
             <el-form-item
               :prop="item.name"
@@ -66,7 +93,7 @@
             </el-form-item>
 
             <!-- Image upload -->
-            <el-divider>Company Logo Selection</el-divider>
+            <el-divider>Company logo Selection</el-divider>
             <el-form-item v-loading="this.loading">
               <div>
                 <input type="file" @change="handleImageChange" />
@@ -74,7 +101,7 @@
                   <div v-if="Object.keys(colourPreferences).length > 0">
                     <p class="el-upload__tip" style="color:green">
                       <i class="el-icon el-icon-check"></i> Colour scheme
-                      generated based on the logo provided.
+                      generated based on the imageFileContent provided.
                     </p>
                   </div>
                 </el-collapse-transition>
@@ -85,7 +112,7 @@
           <!-- Personlisation Tab -->
         </el-tab-pane>
         <el-tab-pane label="Personalisation">
-          <div class="theme_wrapper" v-if="logo">
+          <div class="theme_wrapper" v-if="imageFileContent">
             <!-- Title -->
             <h5>These are your theme settings</h5>
             <p class="instructions">
@@ -93,8 +120,8 @@
               within your settings. Hover over a colour that you want to change
               to change it.
             </p>
-            <div class="logo_container">
-              <img :src="logo" class="logo" />
+            <div class="imageFileContent_container">
+              <img :src="imageFileContent" class="imageFileContent" />
             </div>
             <!-- Theme selection unit -->
             <ThemeSelectionUnit
@@ -106,11 +133,11 @@
               v-model="colourPreferences[index].colour"
             />
           </div>
-          <div v-else class="empty_logo_container">
-            <h5>No Logo Detected</h5>
+          <div v-else class="empty_imageFileContent_container">
+            <h5>No logo Detected</h5>
             <p class="instructions">
-              Please select your logo so that a recommended colour scheme can be
-              generated for you.
+              Please select your imageFileContent so that a recommended colour
+              scheme can be generated for you.
             </p>
           </div>
         </el-tab-pane>
@@ -120,8 +147,10 @@
           round
           type="primary"
           size="small"
-          :disbaled="currentStep == '1' && !logo"
-          @click="currentStep == '0' ? (currentStep = '1') : registerNewClient"
+          :disbaled="currentStep == '1' && !imageFileContent"
+          @click="
+            currentStep == '0' ? (currentStep = '1') : registerNewClient()
+          "
           >{{
             currentStep == "0" ? "Go To Personalisation" : "Finalize Account"
           }}</el-button
@@ -151,20 +180,19 @@ export default {
   },
   data() {
     return {
-      logo: "",
+      imageFileContent: "",
       formInput: {},
-      image_upload: [],
-      accent_colour: null,
       colourOptions: {},
       currentStep: "0",
       loading: false,
-      colourPreferences: []
+      colourPreferences: [],
+      moreInformation: false,
+      imageFile: ""
     };
   },
   computed: {
-    returnIsFileValid() {
-      let file = this.image_upload;
-    },
+    ...mapState(["environmentURL"]),
+
     returnIsFormValid() {
       let capNum =
         this.returnClientForm.length + this.returnRegisterForm.length;
@@ -243,18 +271,24 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
+    uploadImage(e) {
+      let formData = new FormData();
+      formData.append("company_image", e.target.files[0]);
+    },
     handleImageChange(e) {
       this.loading = true;
-      let file = e.target.files[0];
+      this.imageFile = e.target.files[0];
       let fileReader = new FileReader();
+
       fileReader.onload = () => {
-        this.logo = fileReader.result;
+        this.imageFileContent = fileReader.result;
       };
-      let url = fileReader.readAsDataURL(file);
+      fileReader.readAsDataURL(this.imageFile);
     },
+
     genAccentColour() {
-      if (this.logo.length > 0) {
-        Vibrant.from(this.logo).getPalette((err, palette) => {
+      if (this.imageFileContent.length > 0) {
+        Vibrant.from(this.imageFileContent).getPalette((err, palette) => {
           if (!err) {
             this.loading = false;
             for (let property in palette) {
@@ -274,25 +308,57 @@ export default {
         });
       }
     },
+    uploadImage() {
+      return new Promise((resolve, reject) => {
+        let formData = new FormData();
+        formData.append("company_image", this.imageFile);
+        let response = this.request({
+          method: "POST",
+          url: "clients/uploadlogo",
+          headers: { "content-type": "multipart/form-data" },
+          data: formData
+        })
+          .then(response => {
+            resolve(response.path);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
 
-    uploadImage(file) {},
     registerNewClient() {
       this.loading = true;
       let clientRegisterData = this.formInput;
-      this.request({
-        method: "POST",
-        data: this.clientRegisterData
-      })
+      clientRegisterData.company_name = clientRegisterData.company_name
+        .replace(" ", "")
+        .toLowerCase();
+      clientRegisterData.company_colours = this.colourPreferences;
+
+      this.uploadImage()
         .then(response => {
-          if (response) {
-            console.log(response);
-            this.loading = false;
-          }
+          clientRegisterData.company_image = response;
+          this.request({
+            method: "POST",
+            url: "clients/create",
+            data: clientRegisterData
+          })
+            .then(response => {
+              this.loading = false;
+              // log them in
+              this.processNewClient(response);
+            })
+            .catch(error => {
+              this.loading = false;
+              console.error(error);
+            });
         })
         .catch(error => {
           console.error(error);
-          this.loading = false;
         });
+    },
+    processNewClient(response) {
+      this.$router.push({ name: "login" });
     },
     checkIfTabIsValid(tab) {
       console.log(tab);
@@ -303,7 +369,7 @@ export default {
     Title
   },
   watch: {
-    logo(val) {
+    imageFileContent(val) {
       this.genAccentColour();
     }
   }
@@ -350,16 +416,16 @@ export default {
 .el-divider__text {
   color: #888;
 }
-.logo {
+.imageFileContent {
   border-radius: 50%;
   max-width: 100px;
   max-height: 100px;
   box-shadow: $box_shadow;
 }
-.empty_logo_container {
+.empty_imageFileContent_container {
   margin-top: 2em;
 }
-.logo_container {
+.imageFileContent_container {
   display: flex;
   justify-content: center;
 }

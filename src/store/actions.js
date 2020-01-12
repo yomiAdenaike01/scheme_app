@@ -11,8 +11,10 @@ const sortPayload = (state, payload) => {
   if (token) {
     payload.headers = { authorisation: token };
   }
-  if (clientID) {
+  if (clientID && payload.method == "POST") {
     payload.data.clientID = clientID;
+  } else if (clientID && payload.method == "GET") {
+    payload.params.clientID = clientID;
   }
   return payload;
 };
@@ -62,7 +64,7 @@ export default {
               type: "success"
             });
           }
-          resolve(response.content);
+          return Promise.resolve(response.content);
         } else if (response.hasOwnProperty("error")) {
           return Promise.reject(response.content);
         }

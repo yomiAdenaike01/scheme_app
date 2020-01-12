@@ -5,6 +5,8 @@
     :class="{ mobile: $mq != 'lg' }"
     v-loading="resolving"
   >
+    <img :src="companyImage" v-if="companyImage" />
+    <!-- Error dialog -->
     <el-dialog center :visible.sync="error" width="800px">
       <div class="client_error_dialog">
         <Title
@@ -14,12 +16,18 @@
         <el-input
           class="client_name"
           placeholder="Company Name"
-          v-model="clientname"
+          v-model="companyName"
         >
           <template slot="append">.schemeapp.cloud</template>
         </el-input>
         <div class="button_container m-4">
-          <el-button round type="primary" @click="getClient">Retry</el-button>
+          <el-button
+            round
+            type="primary"
+            :disabled="companyName.length <= 0"
+            @click="getClient"
+            >Retry</el-button
+          >
           <el-button
             round
             plain
@@ -29,6 +37,8 @@
         </div>
       </div>
     </el-dialog>
+    <!-- Error dialog -->
+
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -38,50 +48,54 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import Title from "@/components/Title";
+import refactorLocation from "@/mixins/refactorLocation";
 export default {
   name: "app",
   data() {
     return {
       resolving: true,
       error: false,
-      clientname: "",
-      url: window.location.host.split(".")
+      companyName: "",
+      companyImage: ""
     };
   },
   created() {
+    // If there is no client id
     this.getClient();
   },
   computed: {
     ...mapState(["notifications", "defaultSize"])
   },
+  mixins: [refactorLocation],
   methods: {
     ...mapActions(["request"]),
     getClient() {
       let currentHostname = window.location.hostname.split(".");
-      if (this.clientname.length <= 0) {
+      if (this.companyName.length <= 0) {
         let client = window.location.hostname.toString().split(".");
         let subdomain = client[0];
         let domain = client[1];
 
         this.request({
           method: "GET",
-          params: { client_name: subdomain },
-          url: "clients/one"
+          url: "clients/one",
+
+          params: { client_name: subdomain }
         })
           .then(response => {
-            console.log(response);
             this.resolving = false;
+            let client = response.client;
+            let team = response.team;
+            this.companyImage = client.company_image;
+
+            // Set the current client and team
           })
           .catch(error => {
             this.resolving = false;
             this.error = true;
           });
       } else {
-        window.location.replace(
-          `${window.location.protocol}//${
-            this.clientname
-          }.${window.location.host.replace(`${this.url[0]}.`, "")}`
-        );
+        this.refactorWindowLocation(this.companyName);
       }
     }
   },

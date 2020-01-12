@@ -1,5 +1,9 @@
 import storage from "./storage";
 export default {
+  environmentURL:
+    process.env.NODE_ENV == "development"
+      ? "http://localhost:7070/"
+      : "https://schemeapi.now.sh/",
   token: storage.get("token"),
   currentUser: storage.get("currentUser")
     ? JSON.parse(storage.get("currentUser"))
