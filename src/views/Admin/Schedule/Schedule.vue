@@ -1,21 +1,14 @@
 <template>
   <div
     style="height:100%;"
-    v-loading="team.length <= 0"
+    v-loading="false"
     element-loading-text="Loading team members please wait..."
   >
     <Title title="Schedule" subtitle="View your calendar" />
     <el-row v-loading="loading" type="flex">
       <el-col class="pl-3 pr-3">
         <el-row class="mb-4" type="flex" :gutter="10" align="middle">
-          <!-- <el-col>
-            <el-input
-              style="border-radius:40px"
-              placeholder="Search Team Member"
-              size="small"
-              v-model="searchedTeamMember"
-            ></el-input>
-          </el-col>-->
+         
           <el-col>
             <el-button
               @click="modals.create_event = true"

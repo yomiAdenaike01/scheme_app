@@ -1,6 +1,6 @@
 <template>
   <div class="reg_wrapper">
-    <el-card class="reg_card_container" :v-loading="loading">
+    <el-card class="reg_card_container" v-loading="pageLoading">
       <div class="goback_to_login mt-4 mb-4">
         <el-button
           type="primary"
@@ -94,7 +94,7 @@
 
             <!-- Image upload -->
             <el-divider>Company logo Selection</el-divider>
-            <el-form-item v-loading="this.loading">
+            <el-form-item>
               <div>
                 <input type="file" @change="handleImageChange" />
                 <el-collapse-transition>
@@ -166,6 +166,9 @@ import Title from "@/components/Title";
 import ThemeSelectionUnit from "./components/ThemeSelection";
 import * as Vibrant from "node-vibrant";
 import refactorLocation from "@/mixins/refactorLocation";
+import firebase from "firebase";
+import uuid from "uuid";
+import mime from "mime-type";
 export default {
   name: "ClientAuth",
   created() {
@@ -185,7 +188,7 @@ export default {
       formInput: {},
       colourOptions: {},
       currentStep: "0",
-      loading: false,
+      pageLoading: false,
       colourPreferences: [],
       moreInformation: false,
       imageFile: ""
@@ -272,12 +275,8 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    uploadImage(e) {
-      let formData = new FormData();
-      formData.append("company_image", e.target.files[0]);
-    },
+
     handleImageChange(e) {
-      this.loading = true;
       this.imageFile = e.target.files[0];
       let fileReader = new FileReader();
 
@@ -291,7 +290,7 @@ export default {
       if (this.imageFileContent.length > 0) {
         Vibrant.from(this.imageFileContent).getPalette((err, palette) => {
           if (!err) {
-            this.loading = false;
+            this.pageLoading = false;
             for (let property in palette) {
               if (!property.toLowerCase().includes("muted")) {
                 this.colourPreferences.push({
@@ -310,17 +309,19 @@ export default {
       }
     },
     uploadImage() {
+      this.pageLoading = true;
+
+      // Upload to firebase;
+      const storage = firebase.storage().ref();
+
       return new Promise((resolve, reject) => {
-        let formData = new FormData();
-        formData.append("company_image", this.imageFile);
-        let response = this.request({
-          method: "POST",
-          url: "clients/uploadlogo",
-          headers: { "content-type": "multipart/form-data" },
-          data: formData
-        })
-          .then(response => {
-            resolve(response.path);
+        let ext = this.imageFileContent.split(";")[0].split("/")[1];
+        const storageRef = storage.child(`clients/${uuid()}.${ext}`);
+
+        storageRef
+          .putString(this.imageFileContent, "data_url")
+          .then(snapshot => {
+            resolve(snapshot);
           })
           .catch(error => {
             reject(error);
@@ -329,7 +330,7 @@ export default {
     },
 
     registerNewClient() {
-      this.loading = true;
+      this.pageLoading = true;
       let clientRegisterData = this.formInput;
       clientRegisterData.company_name = clientRegisterData.company_name
         .replace(" ", "")
@@ -338,19 +339,20 @@ export default {
 
       this.uploadImage()
         .then(response => {
-          clientRegisterData.company_image = response;
+          clientRegisterData.company_image = response.metadata.fullPath;
+          console.log(clientRegisterData.company_image);
           this.request({
             method: "POST",
             url: "clients/create",
             data: clientRegisterData
           })
             .then(response => {
-              this.loading = false;
               // log them in
+              this.pageLoading = false;
               this.processNewClient(response);
             })
             .catch(error => {
-              this.loading = false;
+              this.pageLoading = false;
               console.error(error);
             });
         })

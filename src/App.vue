@@ -5,8 +5,9 @@
     :class="{ mobile: $mq != 'lg' }"
     v-loading="resolving"
   >
+    <img :src="companyImage" />
     <!-- Error dialog -->
-    <el-dialog center :visible.sync="error" width="800px">
+    <el-dialog center :visible.sync="error" width="700px">
       <div class="client_error_dialog">
         <Title
           title="Error when getting data."
@@ -48,6 +49,7 @@
 import { mapState, mapActions, mapMutations } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
+import firebase, { storage } from "firebase";
 export default {
   name: "app",
   data() {
@@ -85,8 +87,20 @@ export default {
         })
           .then(response => {
             this.resolving = false;
+            let { company_image } = response;
+
             this.UPDATE_CLIENT(response);
-            this.companyImage = response.company_image;
+            firebase
+              .storage()
+              .ref(company_image)
+              .getDownloadURL()
+              .then(url => {
+                response.company_image = url;
+                this.UPDATE_CLIENT(response);
+              })
+              .catch(error => {
+                console.error(error);
+              });
           })
           .catch(error => {
             this.resolving = false;
