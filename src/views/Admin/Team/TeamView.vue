@@ -1,5 +1,5 @@
 <template>
-  <el-col class="team_wrapper" v-loading="team.length <= 0">
+  <el-col class="team_wrapper" v-loading="loadingTeam">
     <el-row class="team_container">
       <Title
         style="text-align:center"
@@ -16,7 +16,11 @@
           position="left"
           :icon="false"
         >
-          <el-badge is-dot :type="member.is_online ? 'success' : 'danger'" class="item">
+          <el-badge
+            is-dot
+            :type="member.is_online ? 'success' : 'danger'"
+            class="item"
+          >
             <Avatar :name="member.name" />
           </el-badge>
         </Dropdown>
@@ -32,9 +36,14 @@ import Avatar from "@/components/Avatar.vue";
 import Title from "@/components/Title";
 export default {
   name: "Team",
+  created() {
+    this.teamLoaderManager();
+  },
   data() {
     return {
-      hoveredTeamMember: null
+      hoveredTeamMember: null,
+      loaderTimeout: null,
+      loadingTeam: true
     };
   },
   computed: {
@@ -64,6 +73,14 @@ export default {
   },
   methods: {
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
+    teamLoaderManager() {
+      this.loaderTimeout = setTimeout(() => {
+        if (this.team.length <= 0) {
+          this.loadingTeam = false;
+          this.noTeam = true;
+        }
+      }, 5000);
+    },
     handleEvents(event) {
       switch (event) {
         case "message": {

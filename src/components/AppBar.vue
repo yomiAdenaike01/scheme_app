@@ -1,8 +1,11 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col class="client_indicator">
+    <el-col
+      class="client_indicator"
+      :style="{ backgroundColor: getPrimaryColour }"
+    >
       <div class="text_wrapper p-3" v-if="$mq == 'lg'">
-        <p>Dock Pharmacy</p>
+        <p>{{ client.company_name }}</p>
       </div>
       <div
         v-else
@@ -36,7 +39,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Dropdown from "@/components/Dropdown";
 import Settings from "@/views/Settings/Settings";
 import Avatar from "./Avatar.vue";
@@ -49,8 +52,18 @@ export default {
     };
   },
   computed: {
-    ...mapState(["currentUser", "userNotifications", "viewMobileMenu"]),
-
+    ...mapState([
+      "currentUser",
+      "userNotifications",
+      "viewMobileMenu",
+      "client"
+    ]),
+    ...mapGetters(["getCompanyColours"]),
+    getPrimaryColour() {
+      return this.getCompanyColours.find(colour => {
+        return colour.label == "Primary";
+      }).colour;
+    },
     navWidth() {
       let styleWidth = { width: `${150}px` };
       const navElem = document.getElementById("main_nav");
@@ -137,9 +150,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 .client_indicator {
-  background: $primary_colour;
   color: white;
   height: initial;
+  text-transform: capitalize;
   max-width: 7.4%;
 }
 .infobar_wrapper {

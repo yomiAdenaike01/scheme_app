@@ -2,6 +2,9 @@ import storage from "./storage";
 import sounds from "@/mixins/playSound";
 
 export default {
+  UPDATE_CLIENT(state, payload) {
+    state.client = payload;
+  },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
     state.weeklyTimesheetUploaded = payload;
   },

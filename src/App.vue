@@ -5,7 +5,6 @@
     :class="{ mobile: $mq != 'lg' }"
     v-loading="resolving"
   >
-    <img :src="companyImage" v-if="companyImage" />
     <!-- Error dialog -->
     <el-dialog center :visible.sync="error" width="800px">
       <div class="client_error_dialog">
@@ -46,7 +45,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
 export default {
@@ -69,6 +68,8 @@ export default {
   mixins: [refactorLocation],
   methods: {
     ...mapActions(["request"]),
+    ...mapMutations(["UPDATE_CLIENT"]),
+
     getClient() {
       let currentHostname = window.location.hostname.split(".");
       if (this.companyName.length <= 0) {
@@ -84,11 +85,8 @@ export default {
         })
           .then(response => {
             this.resolving = false;
-            let client = response.client;
-            let team = response.team;
-            this.companyImage = client.company_image;
-
-            // Set the current client and team
+            this.UPDATE_CLIENT(response);
+            this.companyImage = response.company_image;
           })
           .catch(error => {
             this.resolving = false;

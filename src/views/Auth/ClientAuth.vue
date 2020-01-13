@@ -165,7 +165,7 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import Title from "@/components/Title";
 import ThemeSelectionUnit from "./components/ThemeSelection";
 import * as Vibrant from "node-vibrant";
-
+import refactorLocation from "@/mixins/refactorLocation";
 export default {
   name: "ClientAuth",
   created() {
@@ -178,6 +178,7 @@ export default {
       }
     });
   },
+  mixins: [refactorLocation],
   data() {
     return {
       imageFileContent: "",
@@ -358,7 +359,9 @@ export default {
         });
     },
     processNewClient(response) {
-      this.$router.push({ name: "login" });
+      this.refactorWindowLocation(
+        this.formInput.company_name.replace(" ", "").toLowerCase()
+      );
     },
     checkIfTabIsValid(tab) {
       console.log(tab);

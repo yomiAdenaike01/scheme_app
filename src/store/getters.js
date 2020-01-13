@@ -1,12 +1,15 @@
 export default {
   getPreferences(state) {
-    return state.currentUser.preferences
+    return state.currentUser.preferences;
   },
   getContentLoaded(state) {
-    return false
+    return false;
   },
   getIsAdmin(state) {
-    const employee_type = state.currentUser.employee_type
-    return employee_type == 1 || employee_type == 'Admin'
+    const employee_type = state.currentUser.employee_type;
+    return employee_type == 1 || employee_type == "Admin";
+  },
+  getCompanyColours(state) {
+    return state.client.company_colours;
   }
-}
+};

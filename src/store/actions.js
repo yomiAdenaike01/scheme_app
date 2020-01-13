@@ -7,15 +7,16 @@ if (process.env.NODE_ENV == "development") {
 
 const sortPayload = (state, payload) => {
   const token = state.token;
-  const clientID = state.clientID;
+  const clientID = state.client ? state.client._id : "";
   if (token) {
     payload.headers = { authorisation: token };
   }
   if (clientID && payload.method == "POST") {
     payload.data.clientID = clientID;
-  } else if (clientID && payload.method == "GET") {
-    payload.params.clientID = clientID;
   }
+  // } else if (clientID && payload.method == "GET") {
+  //   payload.params.clientID = clientID;
+  // }
   return payload;
 };
 
