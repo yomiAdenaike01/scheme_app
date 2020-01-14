@@ -116,22 +116,15 @@
             <!-- Title -->
             <h5>Logo & Personalisation Guide</h5>
             <p class="instructions">
-              These can be changed once you have logged in. They are located
-              within your settings. Hover over a colour that you want to change
-              to change it.
+              Colour suggestions are within the colour selection box. The
+              recommended colours are within the bottom row. Select them to see
+              the results. These can be changed later.
             </p>
-            <div class="imageFileContent_container">
-              <img :src="imageFileContent" class="imageFileContent" />
+            <div class="image_container">
+              <el-image :src="imageFileContent" fit="cover"></el-image>
             </div>
             <!-- Theme selection unit -->
-            <ThemeSelectionUnit
-              v-for="(themeItem, index) in colourPreferences"
-              :key="index"
-              :label="themeItem.label"
-              :colour="themeItem.colour"
-              :index="index"
-              v-model="colourPreferences[index].colour"
-            />
+            <ThemeSelectionUnit :colours="colourPreferences" />
           </div>
           <div v-else class="empty_imageFileContent_container">
             <h5>No logo Detected</h5>
@@ -293,15 +286,7 @@ export default {
             this.pageLoading = false;
             for (let property in palette) {
               if (!property.toLowerCase().includes("muted")) {
-                this.colourPreferences.push({
-                  label:
-                    property == "Vibrant"
-                      ? "Primary"
-                      : "LightVibrant"
-                      ? "Secondary"
-                      : "Tertiary",
-                  colour: palette[property].hex
-                });
+                this.colourPreferences.push(palette[property].hex);
               }
             }
           }
@@ -433,5 +418,15 @@ export default {
 .imageFileContent_container {
   display: flex;
   justify-content: center;
+}
+.image_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .el-image {
+    border-radius: 50%;
+    max-width: 200px;
+    max-height: 200px;
+  }
 }
 </style>

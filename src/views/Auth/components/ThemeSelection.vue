@@ -1,19 +1,22 @@
 <template>
-  <el-color-picker
-    v-model="theme"
-    :predefine="[
-      '#409EFF',
-      '#1890ff',
-      '#304156',
-      '#212121',
-      '#11a983',
-      '#13c2c2',
-      '#6959CD',
-      '#f5222d'
-    ]"
-    class="theme-picker"
-    popper-class="theme-picker-dropdown"
-  />
+  <div class="colour_picker_wrapper">
+    <el-color-picker
+      v-model="theme"
+      :predefine="colours"
+      class="theme-picker"
+      popper-class="theme-picker-dropdown"
+      size="medium"
+    />
+    <!-- <div class="predefined_colours_container">
+      <div
+        @click.native="theme = colour"
+        class="colour_unit"
+        v-for="(colour, index) in colours"
+        :style="{ backgroundColor: colour }"
+        :key="index"
+      ></div>
+    </div> -->
+  </div>
 </template>
 
 <script>
@@ -26,6 +29,24 @@ export default {
       chalk: "", // content of theme-chalk css
       theme: ""
     };
+  },
+  props: {
+    colours: {
+      type: Array,
+      default: () => {
+        return;
+        [
+          "#409EFF",
+          "#1890ff",
+          "#304156",
+          "#212121",
+          "#11a983",
+          "#13c2c2",
+          "#6959CD",
+          "#f5222d"
+        ];
+      }
+    }
   },
   computed: {
     defaultTheme() {
@@ -151,16 +172,33 @@ export default {
 </script>
 
 <style>
+.colour_picker_wrapper {
+  text-align: center;
+}
 .theme-message,
 .theme-picker-dropdown {
   z-index: 99999 !important;
 }
 .theme-picker .el-color-picker__trigger {
-  height: 26px !important;
-  width: 26px !important;
-  padding: 2px;
+  width: 100px;
+  height: 100px;
+  margin: 30px;
 }
 .theme-picker-dropdown .el-color-dropdown__link-btn {
   display: none;
+}
+.colour_unit {
+  padding: 1em;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.predefined_colours_container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  cursor: pointer;
 }
 </style>
