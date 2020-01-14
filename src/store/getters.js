@@ -1,4 +1,11 @@
 export default {
+  getClient(state) {
+    let client;
+    if (Object.keys(state.client).length > 0) {
+      client = state.client;
+    }
+    return client;
+  },
   getPreferences(state) {
     return state.currentUser.preferences;
   },

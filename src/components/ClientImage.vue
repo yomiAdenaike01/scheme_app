@@ -1,18 +1,26 @@
 <template>
   <div :class="['image_wrapper mt-4 mb-4', { flex_center: center }]">
-    <img
-      :src="client.company_image"
-      v-if="isValid"
-      :alt="client.company_name"
-    />
-    <div v-else class="pending_image" v-loading="true"></div>
+    <transition name="el-fade-in">
+      <img
+        v-loading="true"
+        v-if="getClient"
+        :src="getClient.company_image"
+        @load="imagePresent = true"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "ClientImage",
+  data() {
+    return {
+      imageLoading: true,
+      imagePresent: false
+    };
+  },
   props: {
     center: {
       type: Boolean,
@@ -20,10 +28,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["client"]),
-    isValid() {
-      return Object.keys(this.client).length > 0;
-    }
+    ...mapGetters(["getClient"])
   }
 };
 </script>

@@ -24,6 +24,7 @@
                   v-if="selectedForm == 'register'"
                 >
                   <el-button
+                    v-if="!getClient"
                     @click="$router.push({ name: 'register' })"
                     round
                     size="small"
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import prompts from "@/mixins/prompts";
 import Title from "@/components/Title";
 import AuthFormContainer from "./components/AuthFormContainer";
@@ -66,7 +67,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["client"]),
+    ...mapGetters(["getClient"]),
     returnTabs() {
       // loop the types of forms and create a label
       return [

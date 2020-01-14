@@ -93,7 +93,7 @@
             </el-form-item>
 
             <!-- Image upload -->
-            <el-divider>Company logo Selection</el-divider>
+            <el-divider>Logo Selection</el-divider>
             <el-form-item>
               <div>
                 <input type="file" @change="handleImageChange" />
@@ -114,7 +114,7 @@
         <el-tab-pane label="Personalisation">
           <div class="theme_wrapper" v-if="imageFileContent">
             <!-- Title -->
-            <h5>These are your theme settings</h5>
+            <h5>Logo & Personalisation Guide</h5>
             <p class="instructions">
               These can be changed once you have logged in. They are located
               within your settings. Hover over a colour that you want to change
