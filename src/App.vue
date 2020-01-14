@@ -5,7 +5,6 @@
     :class="{ mobile: $mq != 'lg' }"
     v-loading="resolving"
   >
-    <img :src="companyImage" />
     <!-- Error dialog -->
     <el-dialog center :visible.sync="error" width="700px">
       <div class="client_error_dialog">
@@ -128,11 +127,11 @@ export default {
   height: 100%;
   overflow: hidden;
   /**
-  _   _  _  ___ _  _    ___ 
+  _   _  _  ___ _  _    ___
   | \_/ |/ \| o ) || |  | __|
-  | \_/ ( o ) o \ || |_ | _| 
+  | \_/ ( o ) o \ || |_ | _|
   |_| |_|\_/|___/_||___||___|
-                                                                                    
+
 */
   &.mobile {
     overflow: scroll;
@@ -223,5 +222,8 @@ a {
   .client_name {
     width: 80%;
   }
+}
+.rounded_image {
+  border-radius: 10px;
 }
 </style>

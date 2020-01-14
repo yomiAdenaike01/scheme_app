@@ -4,6 +4,8 @@
       <el-card class="form_container">
         <el-container style="height:100%">
           <el-main class="login_wrapper">
+            <!-- Display the clients image -->
+            <ClientImage :center="true" class="rounded_image" />
             <!-- Auth Register &  Login -->
             <AuthFormContainer
               v-loading="loading"
@@ -47,10 +49,11 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import prompts from "@/mixins/prompts";
 import Title from "@/components/Title";
 import AuthFormContainer from "./components/AuthFormContainer";
+import ClientImage from "@/components/ClientImage";
 export default {
   name: "UserAuth",
   data() {
@@ -69,6 +72,7 @@ export default {
   },
 
   computed: {
+    ...mapState(["client"]),
     returnTabs() {
       // loop the types of forms and create a label
       return [
@@ -304,7 +308,8 @@ export default {
   },
   components: {
     Title,
-    AuthFormContainer
+    AuthFormContainer,
+    ClientImage
   }
 };
 </script>
