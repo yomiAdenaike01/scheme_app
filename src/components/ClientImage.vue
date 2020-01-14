@@ -1,7 +1,7 @@
 <template>
   <div :class="['image_wrapper m-2', { flex_center: center }]">
     <transition name="el-fade-in">
-      <el-image :src="getClient.company_image">
+      <el-image v-if="getClient" :src="getClient.company_image">
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline"></i>
         </div>

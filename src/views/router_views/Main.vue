@@ -18,7 +18,8 @@ import { mapState, mapMutations } from "vuex";
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
 import NotificationsCenter from "@/components/NotificationsCenter";
-import moment from "moment";
+import moment, * as moments from "moment";
+
 export default {
   name: "Main",
   activated() {
@@ -82,8 +83,7 @@ export default {
     },
 
     checkIsLocumnWorking() {
-      let moment = moment();
-      this.shifts(shift => {
+      this.shifts.map(shift => {
         // Is Today
         let shiftStartTime = shift.startDate;
         let shiftType = shift.shift_type;
