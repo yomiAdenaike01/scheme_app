@@ -1,6 +1,6 @@
 import storage from "./storage";
 export default {
-  client: null,
+  client: {},
   environmentURL:
     process.env.NODE_ENV == "development"
       ? "http://localhost:7070/"

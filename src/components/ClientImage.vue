@@ -1,6 +1,11 @@
 <template>
   <div :class="['image_wrapper mt-4 mb-4', { flex_center: center }]">
-    <img :src="client.company_image" />
+    <img
+      :src="client.company_image"
+      v-if="isValid"
+      :alt="client.company_name"
+    />
+    <div v-else class="pending_image" v-loading="true"></div>
   </div>
 </template>
 
@@ -15,7 +20,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(["client"])
+    ...mapState(["client"]),
+    isValid() {
+      return Object.keys(this.client).length > 0;
+    }
   }
 };
 </script>
@@ -31,5 +39,9 @@ export default {
 img {
   max-width: 30%;
   max-height: 30%;
+}
+.pending_image {
+  height: 100px;
+  width: 100px;
 }
 </style>

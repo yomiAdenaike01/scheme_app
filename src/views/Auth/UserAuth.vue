@@ -18,12 +18,6 @@
               "
             >
               <template #header_content>
-                <Title
-                  :title="switchController.title"
-                  :subtitle="switchController.subtitle"
-                  defaultClass="m-0"
-                />
-
                 <!-- New client registration -->
                 <div
                   class="new_client_button_container mb-4 mt-4"
