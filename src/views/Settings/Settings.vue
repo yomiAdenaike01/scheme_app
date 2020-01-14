@@ -37,6 +37,9 @@
           <el-col v-else-if="settingsView == 'profile'">
             <ProfileSettings />
           </el-col>
+          <el-col v-else-if="settingsView == 'customisation'">
+            <ThemeSelection />
+          </el-col>
         </el-row>
       </el-main>
       <el-footer class="settings_footer">
@@ -60,7 +63,7 @@ import SecuritySettings from "./components/SecuritySettings";
 import GeneralSettings from "./components/GeneralSettings";
 import ProfileSettings from "./components/ProfileSettings";
 import responsive from "@/mixins/responsiveProperties";
-
+import ThemeSelection from "@/views/Auth/components/ThemeSelection";
 export default {
   name: "Settings",
   data() {
@@ -104,6 +107,9 @@ export default {
         },
         {
           label: "Security"
+        },
+        {
+          label: "Customisation"
         }
       ];
     },
@@ -165,7 +171,8 @@ export default {
     SettingsSelection,
     SecuritySettings,
     GeneralSettings,
-    ProfileSettings
+    ProfileSettings,
+    ThemeSelection
   },
   mixins: [responsive],
 

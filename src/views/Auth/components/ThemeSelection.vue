@@ -2,7 +2,7 @@
   <div class="colour_picker_wrapper">
     <el-color-picker
       v-model="theme"
-      :predefine="colours"
+      :predefine="returnColours"
       class="theme-picker"
       popper-class="theme-picker-dropdown"
       size="medium"
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 const version = require("element-ui/package.json").version; // element-ui version from node_modules
 const ORIGINAL_THEME = "#409EFF"; // default color
 export default {
@@ -49,6 +49,25 @@ export default {
     }
   },
   computed: {
+    ...mapState(["client"]),
+    returnColours() {
+      if (this.client) {
+        return this.client.company_colours;
+      } else if (!this.client && !this.colours) {
+        return [
+          "#409EFF",
+          "#1890ff",
+          "#304156",
+          "#212121",
+          "#11a983",
+          "#13c2c2",
+          "#6959CD",
+          "#f5222d"
+        ];
+      } else if (this.colours) {
+        return this.colours;
+      }
+    },
     defaultTheme() {
       return this.$store.state.settings.theme;
     }
@@ -104,7 +123,6 @@ export default {
           themeCluster
         );
       });
-      this.$emit("change", val);
     }
   },
   methods: {
