@@ -1,12 +1,7 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col
-      class="client_indicator"
-      :style="{ backgroundColor: getPrimaryColour }"
-    >
-      <div class="text_wrapper p-3" v-if="$mq == 'lg'">
-        <p>{{ client.company_name }}</p>
-      </div>
+    <el-col class="client_indicator">
+      <ClientImage class="p-2" :responsive="false" v-if="$mq == 'lg'" />
       <div
         v-else
         class="nav_toggle"
@@ -44,6 +39,7 @@ import Dropdown from "@/components/Dropdown";
 import Settings from "@/views/Settings/Settings";
 import Avatar from "./Avatar.vue";
 import prompts from "@/mixins/prompts";
+import ClientImage from "@/components/ClientImage";
 export default {
   name: "AppBar",
   data() {
@@ -58,7 +54,8 @@ export default {
       "viewMobileMenu",
       "client"
     ]),
-    ...mapGetters(["getCompanyColours"]),
+
+    ...mapGetters(["getCompanyColours", "getClient"]),
     getPrimaryColour() {
       return this.getCompanyColours.find(colour => {
         return colour.label == "Primary";
@@ -143,7 +140,8 @@ export default {
   components: {
     Dropdown,
     Settings,
-    Avatar
+    Avatar,
+    ClientImage
   },
   mixins: [prompts]
 };
