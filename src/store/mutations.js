@@ -2,6 +2,19 @@ import storage from "./storage";
 import sounds from "@/mixins/playSound";
 
 export default {
+  SET_THEME(state) {
+    let id = "chalk-style";
+    let styleTag = document.getElementById(id);
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.setAttribute("id", id);
+      document.head.appendChild(styleTag);
+      styleTag.innerText = state.theme;
+    }
+  },
+  UPDATE_THEME(state, payload) {
+    localStorage.setItem("cssText", payload);
+  },
   UPDATE_CLIENT(state, payload) {
     state.client = payload;
   },

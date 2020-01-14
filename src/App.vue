@@ -60,7 +60,8 @@ export default {
     };
   },
   created() {
-    // If there is no client id
+    // If there is
+    this.SET_THEME();
     this.getClient();
   },
   computed: {
@@ -69,7 +70,7 @@ export default {
   mixins: [refactorLocation],
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_CLIENT"]),
+    ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
 
     getClient() {
       let currentHostname = window.location.hostname.split(".");

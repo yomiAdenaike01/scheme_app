@@ -8,7 +8,7 @@ import "./plugins/mobile";
 import "./plugins/resizeText";
 
 import Element from "element-ui";
-import "./element-variables.scss";
+import "@/assets/element-variables.scss";
 import locale from "element-ui/lib/locale/lang/en";
 
 try {

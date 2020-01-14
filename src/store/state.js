@@ -1,5 +1,7 @@
 import storage from "./storage";
+import vars from "@/assets/element-variables.scss";
 export default {
+  theme: localStorage.getItem("cssText"),
   client: {},
   environmentURL:
     process.env.NODE_ENV == "development"
