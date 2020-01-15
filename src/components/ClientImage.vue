@@ -1,5 +1,5 @@
 <template>
-  <div :class="['image_wrapper ', { flex_center: center }]">
+  <div :class="['image_wrapper ', { flex_center: center },{response:responsive}]">
     <transition name="el-fade-in">
       <el-image :src="showClient ? getClient.company_image : image" fit="cover">
         <div slot="error" class="error_image_slot">
@@ -61,8 +61,8 @@ export default {
   }
 }
 .response {
-  max-width: 30%;
-  max-height: 30%;
+  max-width: 50%;
+  max-height: 50%;
 }
 .pending_image {
   height: 100px;

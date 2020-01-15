@@ -6,7 +6,9 @@
     :router="true"
     mode="vertical"
     :collapse="true"
-    :style="{backgroundColor:'#0d243f'}"
+    background-color="#0d243f"
+    text-color="#fff"
+    active-text-color="#ffd04b"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
       <i :class="route.icon" class="home_icon"></i>

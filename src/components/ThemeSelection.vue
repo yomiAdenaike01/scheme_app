@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapGetters } from "vuex";
+import { mapMutations, mapState, mapGetters, mapActions } from "vuex";
 const version = require("element-ui/package.json").version; // element-ui version from node_modules
 const ORIGINAL_THEME = "#409EFF"; // default color
 export default {
@@ -48,9 +48,7 @@ export default {
   },
 
   methods: {
-    method() {
-      console.log("Hello");
-    },
+    ...mapActions(["updateTheme"]),
     updateStyle(style, oldCluster, newCluster) {
       let newStyle = style;
       oldCluster.forEach((color, index) => {
@@ -140,6 +138,9 @@ export default {
           }
           localStorage.setItem("cssText", newStyle);
           styleTag.innerText = newStyle;
+          if (this.isValidClient) {
+            this.updateTheme(val);
+          }
         };
       };
       if (!this.chalk) {

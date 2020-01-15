@@ -1,12 +1,10 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
     <el-col class="client_indicator">
-      <ClientImage class="p-2" :responsive="false" v-if="$mq == 'lg'" />
-      <div
-        v-else
-        class="nav_toggle"
-        @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
-      >
+      <div class="client_image_wrapper flex_center" v-if="$mq == 'lg'">
+        <ClientImage :responsive="true" />
+      </div>
+      <div v-else class="nav_toggle" @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)">
         <i class="el-icon el-icon-menu"></i>
       </div>
     </el-col>
@@ -15,10 +13,7 @@
         <Dropdown :items="items" @method="handleCommands" :icon="false">
           <Avatar :name="currentUser.name"></Avatar>
         </Dropdown>
-        <el-badge
-          :value="userNotifications.length"
-          class="item ml-2 mt-1 primary"
-        >
+        <el-badge :value="userNotifications.length" class="item ml-2 mt-1 primary">
           <el-button
             size="small"
             @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"
@@ -152,6 +147,7 @@ export default {
   height: initial;
   text-transform: capitalize;
   max-width: 7.4%;
+  border-right: 1.5px solid #efefef;
 }
 .infobar_wrapper {
   border-bottom: solid 1px #e6e6e6;
