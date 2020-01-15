@@ -5,7 +5,6 @@
       :predefine="colours"
       class="theme-picker"
       popper-class="theme-picker-dropdown"
-      size="medium"
     />
     <div class="flex_center">
       <slot></slot>
@@ -14,7 +13,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapMutations, mapState, mapGetters } from "vuex";
 const version = require("element-ui/package.json").version; // element-ui version from node_modules
 const ORIGINAL_THEME = "#409EFF"; // default color
 export default {
@@ -44,12 +43,22 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters(["isValidClient"])
+  },
   watch: {
+    defaultTheme: {
+      handler: function(val, oldVal) {
+        this.theme = val;
+      },
+      immediate: true
+    },
     async theme(val) {
       const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
       if (typeof val !== "string") return;
       const themeCluster = this.getThemeCluster(val.replace("#", ""));
       const originalCluster = this.getThemeCluster(oldVal.replace("#", ""));
+
       const getHandler = (variable, id) => {
         return () => {
           const originalCluster = this.getThemeCluster(
@@ -60,11 +69,16 @@ export default {
             originalCluster,
             themeCluster
           );
-          if (!this.newScheme) {
-            this.UPDATE_THEME(newStyle);
-          } else {
-            this.$emit("newTheme", { style: newStyle, theme: this.theme });
+          let styleTag = document.getElementById(id);
+          if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.setAttribute("id", id);
+            document.head.appendChild(styleTag);
           }
+          if (this.isValidClient) {
+            localStorage.setItem("cssText", newStyle);
+          }
+          styleTag.innerText = newStyle;
         };
       };
       if (!this.chalk) {
@@ -93,8 +107,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["UPDATE_THEME"]),
-
     updateStyle(style, oldCluster, newCluster) {
       let newStyle = style;
       oldCluster.forEach((color, index) => {
@@ -114,24 +126,66 @@ export default {
         xhr.open("GET", url);
         xhr.send();
       });
+    },
+    getThemeCluster(theme) {
+      const tintColor = (color, tint) => {
+        let red = parseInt(color.slice(0, 2), 16);
+        let green = parseInt(color.slice(2, 4), 16);
+        let blue = parseInt(color.slice(4, 6), 16);
+        if (tint === 0) {
+          // when primary color is in its rgb space
+          return [red, green, blue].join(",");
+        } else {
+          red += Math.round(tint * (255 - red));
+          green += Math.round(tint * (255 - green));
+          blue += Math.round(tint * (255 - blue));
+          red = red.toString(16);
+          green = green.toString(16);
+          blue = blue.toString(16);
+          return `#${red}${green}${blue}`;
+        }
+      };
+      const shadeColor = (color, shade) => {
+        let red = parseInt(color.slice(0, 2), 16);
+        let green = parseInt(color.slice(2, 4), 16);
+        let blue = parseInt(color.slice(4, 6), 16);
+        red = Math.round((1 - shade) * red);
+        green = Math.round((1 - shade) * green);
+        blue = Math.round((1 - shade) * blue);
+        red = red.toString(16);
+        green = green.toString(16);
+        blue = blue.toString(16);
+        return `#${red}${green}${blue}`;
+      };
+      const clusters = [theme];
+      for (let i = 0; i <= 9; i++) {
+        clusters.push(tintColor(theme, Number((i / 10).toFixed(2))));
+      }
+      clusters.push(shadeColor(theme, 0.1));
+      return clusters;
     }
   }
 };
 </script>
 
-<style>
+
+<style lang="scss" scoped>
 .colour_picker_wrapper {
   text-align: center;
+
+  .theme-picker {
+    .el-color-picker__trigger {
+      width: 500px;
+      height: 500px;
+    }
+  }
 }
+
 .theme-message,
 .theme-picker-dropdown {
   z-index: 99999 !important;
 }
-.theme-picker .el-color-picker__trigger {
-  width: 100px;
-  height: 100px;
-  margin: 30px;
-}
+
 .theme-picker-dropdown .el-color-dropdown__link-btn {
   display: none;
 }

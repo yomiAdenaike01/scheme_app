@@ -1,147 +1,23 @@
 <template>
   <div class="reg_wrapper">
-    <el-card class="reg_card_container" v-loading="pageLoading">
-      <div class="goback_to_login mt-4 mb-4">
-        <el-button
-          type="primary"
-          round
-          size="small"
-          icon="el-icon-arrow-left"
-          @click="$router.push({ name: 'login' })"
-        >Go to login</el-button>
-      </div>
-
-      <el-tabs type="card" :closable="false" :addable="false" stretch v-model="currentStep">
-        <!-- Client Details Tab -->
-        <el-tab-pane label="Company & User Details">
-          <el-form class="form_container" v-if="currentStep <= 0" label-position="top">
-            <!-- More inforation button -->
-            <el-button
-              class="m-4"
-              round
-              type="primary"
-              size="small"
-              icon="el-icon-warning-outline"
-              v-if="false"
-              @click="moreInformation = !moreInformation"
-            >More information</el-button>
-            <el-collapse-transition>
-              <div class="more_information_container mb-4" v-if="moreInformation">
-                <h3 class="mb-4">How to login</h3>
-                <p style="font-size:.9em">
-                  Each company uses scheme cloud using their name. In the event
-                  that you do signup your link to schemeapp would be
-                  <strong>companyname.schemeapp.cloud</strong>.
-                </p>
-              </div>
-            </el-collapse-transition>
-            <!-- FORM  -->
-            <el-form-item v-for="item in returnClientForm" :key="item.model">
-              <el-input :placeholder="item.placeholder" v-model="formInput[item.model]" clearable />
-            </el-form-item>
-
-            <!-- Client Details end -->
-            <!-- User Details -->
-            <el-divider>User Details</el-divider>
-            <el-form-item
-              :prop="item.name"
-              v-for="(item, index) in returnRegisterForm"
-              :key="index"
-            >
-              <component
-                :placeholder="item.placeholder"
-                :start-placeholder="item.start_placeholder"
-                :end-placeholder="item.end_placeholder"
-                :type="item.type == 'password' ? item.type : ''"
-                v-model="formInput[item.model]"
-                clearable
-                :show-password="item.type == 'password'"
-                :is="
-                  item.type == 'text' || item.type == 'password'
-                    ? 'el-input'
-                    : item.type == 'select'
-                    ? 'el-select'
-                    : 'el-date-picker'
-                "
-              >
-                <el-option
-                  v-for="(option, index) in item.options"
-                  :key="index"
-                  :value="option.text"
-                >{{ option.text }}</el-option>
-              </component>
-            </el-form-item>
-
-            <!-- Image upload -->
-            <el-divider>Logo Selection</el-divider>
-            <el-form-item>
-              <div>
-                <input type="file" @change="handleImageChange" />
-                <el-collapse-transition>
-                  <div v-if="Object.keys(colourOptions).length > 0">
-                    <p class="el-upload__tip" style="color:green">
-                      <i class="el-icon el-icon-check"></i> Colour scheme
-                      generated based on the imageFileContent provided.
-                    </p>
-                  </div>
-                </el-collapse-transition>
-              </div>
-            </el-form-item>
-          </el-form>
-
-          <!-- Personlisation Tab -->
-        </el-tab-pane>
-
-        <el-tab-pane label="Personalisation">
-          <div class="theme_wrapper" v-if="imageFileContent">
-            <!-- Title -->
-            <h5>Logo & Personalisation Guide</h5>
-            <p class="instructions">
-              Colour suggestions are within the colour selection box. The
-              recommended colours are within the bottom row. Select them to see
-              the results. These can be changed later.
-            </p>
-            <div class="image_container">
-              <el-image :src="imageFileContent" fit="cover" />
-            </div>
-
-            <!-- Theme selection unit -->
-            <ThemeSelection
-              :colours="colourOptions"
-              :newScheme="true"
-              @newTheme="colourOptions = $event.theme"
-            >
-              <div
-                class="colour_unit"
-                :name="colourOptions[0]"
-                :style="{backgroundColor:colourOptions[0]}"
-              ></div>
-            </ThemeSelection>
-          </div>
-          <div v-else class="empty_imageFileContent_container">
-            <h5>No logo Detected</h5>
-            <p class="instructions">
-              Please select your imageFileContent so that a recommended colour
-              scheme can be generated for you.
-            </p>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
-      <div class="buttons_container">
-        <el-button
-          round
-          type="primary"
-          size="small"
-          :disbaled="currentStep == '1' && !imageFileContent"
-          @click="
-            currentStep == '0' ? (currentStep = '1') : registerNewClient()
-          "
-        >
-          {{
-          currentStep == "0" ? "Go To Personalisation" : "Finalize Account"
-          }}
-        </el-button>
-      </div>
+    <el-card>
+      <ClientImage class="m-4" :image="imageFileContent" :center="true" :showClient="false" />
+      <Tabs
+        :tabs="returnTabs"
+        v-model="selectedTab"
+        @formContent="formInput = $event; selectedTab ='scheme personalisation'"
+        :customMethod="registerNewClient"
+        :submitText="returnIsFormValid ? 'Register' : 'Next'"
+      >
+        <!-- Upload Image -->
+        <template #footer_content v-if="selectedTab == 'company & user details'">
+          <el-divider>
+            <strong>Logo Selection</strong>
+          </el-divider>
+          <UploadFile @fileContent="imageFileContent = $event" />
+        </template>
+        <!-- Upload Image -->
+      </Tabs>
     </el-card>
   </div>
 </template>
@@ -155,6 +31,10 @@ import refactorLocation from "@/mixins/refactorLocation";
 import firebase from "firebase";
 import uuid from "uuid";
 import mime from "mime-type";
+import Tabs from "@/components/Tabs";
+import CompanyPersonlisation from "./components/CompanyPersonlisation";
+import UploadFile from "@/components/UploadFile";
+import ClientImage from "@/components/ClientImage";
 export default {
   name: "ClientAuth",
   created() {
@@ -170,6 +50,7 @@ export default {
   mixins: [refactorLocation],
   data() {
     return {
+      selectedTab: "company & user details",
       imageFileContent: "",
       formInput: {},
       colourOptions: "",
@@ -200,7 +81,23 @@ export default {
       }
       return isValid;
     },
-
+    returnTabs() {
+      return [
+        {
+          label: "Company & User Details",
+          formContent: this.returnClientForm.concat(this.returnRegisterForm)
+        },
+        {
+          label: "Scheme Personalisation",
+          view: {
+            component: CompanyPersonlisation,
+            props: {
+              predefinedColours: [this.colourOptions]
+            }
+          }
+        }
+      ];
+    },
     returnClientForm() {
       return [
         {
@@ -217,7 +114,7 @@ export default {
     },
 
     returnRegisterForm() {
-      let registerForm = [
+      return [
         {
           name: "name",
           type: "text",
@@ -255,7 +152,6 @@ export default {
           ]
         }
       ];
-      return registerForm;
     }
   },
   methods: {
@@ -343,7 +239,11 @@ export default {
   },
   components: {
     ThemeSelection,
-    Title
+    Title,
+    Tabs,
+    CompanyPersonlisation,
+    UploadFile,
+    ClientImage
   },
   watch: {
     imageFileContent(val) {
@@ -360,64 +260,8 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-}
-.reg_card_container {
-  width: 30%;
-  height: 80%;
-}
-.buttons_container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-.form_container {
-  padding: 1em;
-}
-.theme_wrapper {
-  padding: 1em;
-  line-height: 1.5em;
-  height: 100%;
-  overflow-x: hidden;
-}
-.instructions {
-  color: #999;
-  font-size: 0.8em;
-  margin-bottom: 5%;
-}
-.upload_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.el-divider__text {
-  color: #888;
-}
-.imageFileContent {
-  border-radius: 50%;
-  max-width: 100px;
-  max-height: 100px;
-  box-shadow: $box_shadow;
-}
-.empty_imageFileContent_container {
-  margin-top: 2em;
-}
-.imageFileContent_container {
-  display: flex;
-  justify-content: center;
-}
-.image_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .el-image {
-    max-width: 200px;
-    max-height: 200px;
+  .el-card {
+    width: 40%;
   }
-}
-.colour_unit {
-  border-radius: 50%;
-  padding: 2em;
-  cursor: pointer;
 }
 </style>

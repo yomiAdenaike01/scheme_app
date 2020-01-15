@@ -9,12 +9,8 @@
       :addable="false"
     >
       <el-tab-pane v-for="(tab, index) in tabs" :label="tab.label" :key="index">
-        <el-form style="padding-top:1em">
-          <el-form-item
-            v-for="(input, index) in tab.formContent"
-            :key="index"
-            :prop="input.name"
-          >
+        <el-form style="padding-top:1em" v-if="tab.hasOwnProperty('formContent')">
+          <el-form-item v-for="(input, index) in tab.formContent" :key="index" :prop="input.name">
             <component
               :is="
                 input.type == 'text' || input.type == 'password'
@@ -32,12 +28,14 @@
               <el-option
                 v-for="(option, index) in input.options"
                 :key="index"
-                :value="option.value"
-                >{{ option.text }}</el-option
-              >
+                :value="option.value ? option.value : option.text"
+              >{{ option.text }}</el-option>
             </component>
           </el-form-item>
         </el-form>
+        <div v-else>
+          <component :is="tab.view.component" v-bind="tab.view.props" />
+        </div>
         <!--  Footer -->
         <slot name="footer_content"></slot>
         <!-- Submit button -->
@@ -47,9 +45,8 @@
             type="primary"
             class="button_text"
             round
-            @click="submitForm"
-            >{{ submitText }}</el-button
-          >
+            @click="tab.formContent ? submitForm() : customMethod()"
+          >{{ submitText }}</el-button>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -58,13 +55,16 @@
 
 <script>
 export default {
-  name: "AuthFormContainer",
+  name: "Tabs",
   data() {
     return {
       formContent: {}
     };
   },
   props: {
+    customMethod: {
+      type: Function
+    },
     submitText: {
       type: String,
       default: "Submit"

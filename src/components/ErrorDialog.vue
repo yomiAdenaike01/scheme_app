@@ -5,24 +5,17 @@
         title="Invalid domain detected."
         subtitle="Re-enter your company name to restart the process."
       />
-      <el-input
-        class="client_name"
-        placeholder="Company Name"
-        v-model="companyName"
-      >
+      <el-input class="client_name" placeholder="Company Name" v-model="companyName">
         <template slot="append">.schemeapp.cloud</template>
       </el-input>
       <div class="button_container m-4">
+        <el-button round type="primary" :disabled="companyName.length <= 0" @click="getClient">Retry</el-button>
+
         <el-button
           round
-          type="primary"
-          :disabled="companyName.length <= 0"
-          @click="getClient"
-          >Retry</el-button
-        >
-        <el-button round plain @click="navigateToRegister"
-          >Register with scheme cloud</el-button
-        >
+          plain
+          @click="alreadyAtRegistration ? $emit('displayChange', false) : navigateToRegister"
+        >{{alreadyAtRegistration ? 'Close' : 'Register with scheme cloud' }}</el-button>
       </div>
     </div>
   </el-dialog>
@@ -62,6 +55,9 @@ export default {
         console.log(val);
         this.$emit("displayChange", val);
       }
+    },
+    alreadyAtRegistration() {
+      return this.$route.name == "register";
     }
   },
   watch: {

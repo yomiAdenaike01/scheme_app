@@ -7,7 +7,7 @@
             <!-- Display the clients image -->
             <ClientImage :center="true" class="mb-4" />
             <!-- Auth Register &  Login -->
-            <AuthFormContainer
+            <Tabs
               v-loading="loading"
               :tabs="returnTabs"
               :submitText="selectedForm"
@@ -33,7 +33,7 @@
                 </div>
                 <!-- New client registration -->
               </template>
-            </AuthFormContainer>
+            </Tabs>
             <!-- End of auth form contatiner -->
           </el-main>
         </el-container>
@@ -46,7 +46,7 @@
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import prompts from "@/mixins/prompts";
 import Title from "@/components/Title";
-import AuthFormContainer from "./components/AuthFormContainer";
+import Tabs from "@/components/Tabs";
 import ClientImage from "@/components/ClientImage";
 export default {
   name: "UserAuth",
@@ -301,7 +301,7 @@ export default {
   },
   components: {
     Title,
-    AuthFormContainer,
+    Tabs,
     ClientImage
   }
 };

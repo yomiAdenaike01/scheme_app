@@ -1,4 +1,7 @@
 export default {
+  isValidClient(state, getters) {
+    return Object.keys(state.client).length > 0;
+  },
   getClient(state) {
     let client;
     if (Object.keys(state.client).length > 0) {

@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
 import firebase, { storage } from "firebase";
@@ -43,13 +43,17 @@ export default {
     };
   },
   created() {
+    if (this.isValidClient) {
+      this.SET_THEME();
+    }
+
     this.clientInterval = setInterval(() => {
       this.getClient()
         .then(response => {
           if (Object.keys(this.client).length <= 0) {
             this.resolving = false;
             this.UPDATE_CLIENT(response);
-            this.UPDATE_THEME(response.company_colours);
+            this.SET_THEME(response.company_colours);
           } else {
             this.resolving = false;
           }
@@ -67,12 +71,13 @@ export default {
     clearInterval(this.clientInterval);
   },
   computed: {
-    ...mapState(["notifications", "defaultSize", "client"])
+    ...mapState(["notifications", "defaultSize", "client"]),
+    ...mapGetters(["isValidClient"])
   },
   mixins: [refactorLocation],
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_CLIENT", "UPDATE_THEME"]),
+    ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
 
     getClient() {
       return new Promise((resolve, reject) => {
@@ -189,7 +194,11 @@ body {
   margin: 0;
   padding: 0;
 }
-
+.desc {
+  font-size: 12px;
+  color: #606266;
+  margin-top: 7px;
+}
 .light {
   font-weight: 300;
 }
