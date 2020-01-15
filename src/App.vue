@@ -151,26 +151,6 @@ html,
 body {
   height: 100%;
 }
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 20px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #999;
-}
 
 @import "./assets/spacing";
 @import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d");
@@ -193,45 +173,5 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
-}
-.desc {
-  font-size: 12px;
-  color: #606266;
-  margin-top: 7px;
-}
-.light {
-  font-weight: 300;
-}
-.bold {
-  font-weight: bold;
-}
-.grey {
-  color: #999;
-}
-.black {
-  color: black;
-}
-
-a {
-  text-decoration: none;
-}
-.member_name {
-  text-transform: capitalize;
-}
-.client_error_dialog {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  .button_container {
-    display: flex;
-    justify-content: space-between;
-  }
-  .client_name {
-    width: 80%;
-  }
-}
-.rounded_image {
-  border-radius: 10px;
 }
 </style>

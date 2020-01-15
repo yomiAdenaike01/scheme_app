@@ -12,7 +12,7 @@
         <!-- Upload Image -->
         <template #footer_content v-if="selectedTab == 'company & user details'">
           <el-divider>
-            <strong>Logo Selection</strong>
+            <span>Logo Selection</span>
           </el-divider>
           <UploadFile @fileContent="imageFileContent = $event" />
         </template>
@@ -261,7 +261,7 @@ export default {
   align-items: center;
   height: 100%;
   .el-card {
-    width: 40%;
+    width: 30%;
   }
 }
 </style>

@@ -1,5 +1,112 @@
 $primary_colour: #2a68d4;
 $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+#app {
+  height: 100%;
+  overflow: hidden;
+  /**
+  _   _  _  ___ _  _    ___
+  | \_/ |/ \| o ) || |  | __|
+  | \_/ ( o ) o \ || |_ | _|
+  |_| |_|\_/|___/_||___||___|
+
+*/
+  &.mobile {
+    overflow: scroll;
+    .el-drawer__body {
+      overflow-y: scroll;
+    }
+  }
+}
+.trigger {
+  cursor: pointer;
+}
+html,
+body {
+  height: 100%;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+@import "./spacing";
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.desc {
+  font-size: 12px;
+  color: #606266;
+  margin-top: 7px;
+}
+.light {
+  font-weight: 300;
+}
+.bold {
+  font-weight: bold;
+}
+.grey {
+  color: #999;
+}
+.black {
+  color: black;
+}
+
+a {
+  text-decoration: none;
+}
+.member_name {
+  text-transform: capitalize;
+}
+.client_error_dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .button_container {
+    display: flex;
+    justify-content: space-between;
+  }
+  .client_name {
+    width: 80%;
+  }
+}
+.rounded_image {
+  border-radius: 10px;
+}
 .flex {
   display: flex;
 }
