@@ -1,2 +1,37 @@
 $primary_colour: #2a68d4;
 $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+.flex {
+  display: flex;
+}
+.flex--center {
+  justify-content: center;
+}
+.align-center {
+  align-items: center;
+}
+.flex--between {
+  justify-content: space-between;
+}
+.flex--start {
+  justify-content: flex-start;
+}
+.flex--end {
+  justify-content: flex-end;
+}
+.align-end {
+  align-items: flex-end;
+}
+.align-start {
+  align-items: flex-start;
+}
+.flex_center {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+.posr {
+  position: relative;
+}
+.posa {
+  position: absolute;
+}

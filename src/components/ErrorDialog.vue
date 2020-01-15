@@ -2,19 +2,27 @@
   <el-dialog center :visible.sync="error" width="700px">
     <div class="client_error_dialog">
       <Title
-        title="Error when getting data."
+        title="Invalid domain detected."
         subtitle="Re-enter your company name to restart the process."
       />
-      <el-input class="client_name" placeholder="Company Name" v-model="companyName">
+      <el-input
+        class="client_name"
+        placeholder="Company Name"
+        v-model="companyName"
+      >
         <template slot="append">.schemeapp.cloud</template>
       </el-input>
       <div class="button_container m-4">
-        <el-button round type="primary" :disabled="companyName.length <= 0" @click="getClient">Retry</el-button>
         <el-button
           round
-          plain
-          @click="$router.push({ name: 'register' }), (error = false)"
-        >Register with scheme cloud</el-button>
+          type="primary"
+          :disabled="companyName.length <= 0"
+          @click="getClient"
+          >Retry</el-button
+        >
+        <el-button round plain @click="navigateToRegister"
+          >Register with scheme cloud</el-button
+        >
       </div>
     </div>
   </el-dialog>
@@ -22,6 +30,7 @@
 
 <script>
 import { mapState } from "vuex";
+import Title from "@/components/Title";
 export default {
   name: "ErrorDialog",
   data() {
@@ -36,6 +45,10 @@ export default {
     }
   },
   methods: {
+    navigateToRegister() {
+      this.$router.push({ name: "register" });
+      this.$emit("displayChange", false);
+    },
     getClient() {
       this.$emit("getClient");
     }
@@ -46,6 +59,7 @@ export default {
         return this.display;
       },
       set(val) {
+        console.log(val);
         this.$emit("displayChange", val);
       }
     }
@@ -54,9 +68,11 @@ export default {
     companyName(val) {
       this.$emit("companyNameChange", val);
     }
+  },
+  components: {
+    Title
   }
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -6,7 +6,9 @@
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </el-col>
       <el-col>
-        <router-view></router-view>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </el-col>
     </el-row>
     <NotificationsCenter />

@@ -1,9 +1,19 @@
 <template>
-  <div id="app" v-resize-text="defaultSize" :class="{ mobile: $mq != 'lg' }" v-loading="resolving">
+  <div
+    id="app"
+    v-resize-text="defaultSize"
+    :class="{ mobile: $mq != 'lg' }"
+    v-loading="resolving"
+    element-loading-background="rgba(255, 255, 255, 1)"
+    :element-loading-text="
+      `Loading
+    scheme cloud....`
+    "
+  >
     <ErrorDialog
-      @dialogChange="error = $event"
+      @displayChange="error = $event"
       :display="error"
-      @companyNameChange="companyName=$event"
+      @companyNameChange="companyName = $event"
       @getClient="getClient"
     />
 
@@ -27,23 +37,27 @@ export default {
       error: false,
       companyName: "",
       companyImage: "",
-      clientInterval: null
+      clientInterval: null,
+      subdomain: "",
+      windowClient: window.location.hostname.toString().split(".")
     };
   },
   created() {
-    // If there is
-    this.SET_THEME();
     this.clientInterval = setInterval(() => {
       this.getClient()
         .then(response => {
           if (Object.keys(this.client).length <= 0) {
             this.resolving = false;
             this.UPDATE_CLIENT(response);
+            this.UPDATE_THEME(response.company_colours);
           } else {
             this.resolving = false;
           }
         })
         .catch(error => {
+          // Stop the interval
+          clearInterval(this.clientInterval);
+          this.clientInterval = null;
           this.error = true;
           this.resolving = false;
         });
@@ -58,15 +72,14 @@ export default {
   mixins: [refactorLocation],
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
+    ...mapMutations(["UPDATE_CLIENT", "UPDATE_THEME"]),
 
     getClient() {
       return new Promise((resolve, reject) => {
         let currentHostname = window.location.hostname.split(".");
         if (this.companyName.length <= 0) {
-          let client = window.location.hostname.toString().split(".");
-          let subdomain = client[0];
-          let domain = client[1];
+          let subdomain = this.windowClient[0];
+          let domain = this.windowClient[1];
           this.request({
             method: "GET",
             url: "clients/one",

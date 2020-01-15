@@ -78,7 +78,7 @@
               <div>
                 <input type="file" @change="handleImageChange" />
                 <el-collapse-transition>
-                  <div v-if="Object.keys(colourPreferences).length > 0">
+                  <div v-if="Object.keys(colourOptions).length > 0">
                     <p class="el-upload__tip" style="color:green">
                       <i class="el-icon el-icon-check"></i> Colour scheme
                       generated based on the imageFileContent provided.
@@ -106,7 +106,17 @@
             </div>
 
             <!-- Theme selection unit -->
-            <ThemeSelection :colours="colourOptions" />
+            <ThemeSelection
+              :colours="colourOptions"
+              :newScheme="true"
+              @newTheme="colourOptions = $event.theme"
+            >
+              <div
+                class="colour_unit"
+                :name="colourOptions[0]"
+                :style="{backgroundColor:colourOptions[0]}"
+              ></div>
+            </ThemeSelection>
           </div>
           <div v-else class="empty_imageFileContent_container">
             <h5>No logo Detected</h5>
@@ -162,10 +172,9 @@ export default {
     return {
       imageFileContent: "",
       formInput: {},
-      colourOptions: [],
+      colourOptions: "",
       currentStep: "0",
       pageLoading: false,
-      colourPreferences: [],
       moreInformation: false,
       imageFile: ""
     };
@@ -267,7 +276,7 @@ export default {
         Vibrant.from(this.imageFileContent).getPalette((err, palette) => {
           if (!err) {
             this.pageLoading = false;
-            this.colourOptions.push(palette.Vibrant.hex);
+            this.colourOptions = palette.Vibrant.hex;
           }
         });
       }
@@ -299,12 +308,11 @@ export default {
       clientRegisterData.company_name = clientRegisterData.company_name
         .replace(" ", "")
         .toLowerCase();
-      clientRegisterData.company_colours = this.colourPreferences;
+      clientRegisterData.company_colours = this.colourOptions;
 
       this.uploadImage()
         .then(response => {
           clientRegisterData.company_image = response.metadata.fullPath;
-          console.log(clientRegisterData.company_image);
           this.request({
             method: "POST",
             url: "clients/create",
@@ -406,5 +414,10 @@ export default {
     max-width: 200px;
     max-height: 200px;
   }
+}
+.colour_unit {
+  border-radius: 50%;
+  padding: 2em;
+  cursor: pointer;
 }
 </style>

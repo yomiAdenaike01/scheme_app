@@ -1,9 +1,10 @@
 <template>
   <div :class="['image_wrapper ', { flex_center: center }]">
     <transition name="el-fade-in">
-      <el-image v-if="getClient" :src="getClient.company_image" fit="cover">
-        <div slot="error" class="image-slot">
-          <i class="el-icon-picture-outline"></i>
+      <el-image v-if="getClient" :src="getClient.company_image" fit="cover"></el-image>
+      <el-image v-else class="error_image">
+        <div slot="error" class="error_image_slot">
+          <i class="el-icon-user"></i>
         </div>
       </el-image>
     </transition>
@@ -55,5 +56,9 @@ export default {
 .pending_image {
   height: 100px;
   width: 100px;
+}
+.el-icon-user {
+  font-size: 2em;
+  color: #999;
 }
 </style>
