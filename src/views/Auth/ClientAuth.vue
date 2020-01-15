@@ -10,10 +10,10 @@
         :customMethod="registerNewClient"
         :nextTab="true"
         @changeTab="selectedTab = '1'"
-        :submitText="returnIsFormValid ? 'Register' : 'Next'"
+        :submitText="selectedTab == '1'  ? 'Register' : 'Next'"
       >
         <!-- Upload Image -->
-        <template #footer_content v-if="selectedTab == 'company & user details'">
+        <template #footer_content v-if="selectedTab == '0'">
           <el-divider>
             <span>Logo Selection</span>
           </el-divider>

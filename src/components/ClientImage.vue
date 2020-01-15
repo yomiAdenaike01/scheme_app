@@ -1,19 +1,9 @@
 <template>
   <div :class="['image_wrapper ', { flex_center: center }]">
     <transition name="el-fade-in">
-      <el-image
-        v-if="image || getClient"
-        :src="showClient ? getClient.company_image : image"
-        fit="cover"
-      >
+      <el-image :src="showClient ? getClient.company_image : image" fit="cover">
         <div slot="error" class="error_image_slot">
-          <i class="el-icon-user"></i>
-        </div>
-      </el-image>
-      <!-- Display icon if there is no image -->
-      <el-image v-else>
-        <div slot="error" class="error_image_slot">
-          <i class="error_icon el-icon-office-building"></i>
+          <i :class="[`error_icon ${icon}`]"></i>
         </div>
       </el-image>
     </transition>
@@ -35,6 +25,11 @@ export default {
       type: Boolean,
       default: true
     },
+    icon: {
+      type: String,
+      default: "el-icon-office-building"
+    },
+
     image: {
       type: String
     },

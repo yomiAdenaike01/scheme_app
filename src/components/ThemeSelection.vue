@@ -6,9 +6,9 @@
       class="theme-picker"
       popper-class="theme-picker-dropdown"
     />
-    <div class="flex_center">
+    <!-- <div class="flex_center">
       <slot v-if="false"></slot>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -138,9 +138,7 @@ export default {
             styleTag.setAttribute("id", id);
             document.head.appendChild(styleTag);
           }
-          if (this.isValidClient) {
-            localStorage.setItem("cssText", newStyle);
-          }
+          localStorage.setItem("cssText", newStyle);
           styleTag.innerText = newStyle;
         };
       };
