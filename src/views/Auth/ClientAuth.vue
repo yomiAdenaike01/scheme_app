@@ -5,8 +5,11 @@
       <Tabs
         :tabs="returnTabs"
         v-model="selectedTab"
-        @formContent="formInput = $event; selectedTab ='scheme personalisation'"
+        :selectedTab="selectedTab"
+        @val="formInput = $event"
         :customMethod="registerNewClient"
+        :nextTab="true"
+        @changeTab="selectedTab = '1'"
         :submitText="returnIsFormValid ? 'Register' : 'Next'"
       >
         <!-- Upload Image -->
@@ -50,7 +53,7 @@ export default {
   mixins: [refactorLocation],
   data() {
     return {
-      selectedTab: "company & user details",
+      selectedTab: "0",
       imageFileContent: "",
       formInput: {},
       colourOptions: "",
@@ -156,16 +159,6 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-
-    handleImageChange(e) {
-      this.imageFile = e.target.files[0];
-      let fileReader = new FileReader();
-
-      fileReader.onload = () => {
-        this.imageFileContent = fileReader.result;
-      };
-      fileReader.readAsDataURL(this.imageFile);
-    },
 
     genAccentColour() {
       if (this.imageFileContent.length > 0) {

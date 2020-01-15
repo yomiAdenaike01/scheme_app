@@ -1,4 +1,4 @@
-<template>
+<template >
   <div class="upload_image_container mt-4">
     <el-upload action="/" :auto-upload="false" :on-change="emitFile" :limit="1">
       <el-button round type="primary" icon="el-icon-upload" size="small">Select Files</el-button>
@@ -10,7 +10,16 @@
 <script>
 export default {
   name: "UploadFile",
+  data() {
+    return {
+      uploadFileSuccess: false
+    };
+  },
   props: {
+    readMethod: {
+      type: String,
+      default: "readAsDataURL"
+    },
     tip: {
       type: String,
       default: () => {
@@ -18,11 +27,7 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      uploadFileSuccess: false
-    };
-  },
+
   methods: {
     emitFile(e) {
       let { raw } = e;
@@ -33,7 +38,7 @@ export default {
           this.$emit("fileContent", fileReader.result);
         }
       };
-      fileReader.readAsDataURL(raw);
+      fileReader[this.readMethod](raw);
     }
   }
 };

@@ -36,13 +36,7 @@
             <!-- Selecting the templates -->
             <transition name="el-fade-in">
               <div v-if="returnIsTemplateSelected">
-                <el-button
-                  size="small"
-                  round
-                  type="primary"
-                  @click="publishSavedTemplate"
-                  >Publish</el-button
-                >
+                <el-button size="small" round type="primary" @click="publishSavedTemplate">Publish</el-button>
               </div>
             </transition>
           </div>
@@ -50,16 +44,14 @@
       </el-form-item>
       <!-- Timesheet -->
       <el-form-item class="custom_form_item">
-        <p @click="uploadTimesheetToggle = !uploadTimesheetToggle">
-          Upload Timesheet
-        </p>
+        <p @click="uploadTimesheetToggle = !uploadTimesheetToggle">Upload Timesheet</p>
         <el-collapse-transition>
           <div class="mt-3" v-if="uploadTimesheetToggle">
             <!-- Input for the timesheet -->
-            <input
-              type="file"
-              @change="timeSheetManagement"
-              id="upload_timesheet"
+            <UploadFile
+              @fileContent="fileContent=$event"
+              readMethod="readAsBinaryString"
+              tip="No tip provided"
             />
           </div>
         </el-collapse-transition>
@@ -67,9 +59,9 @@
 
       <!-- Create for multiple employees (IF ADMIN) -->
       <el-form-item class="custom_form_item" v-if="getIsAdmin">
-        <p @click="selectMultipleEmployees = !selectMultipleEmployees">
-          Assign Shift To Multiple Employees
-        </p>
+        <p
+          @click="selectMultipleEmployees = !selectMultipleEmployees"
+        >Assign Shift To Multiple Employees</p>
         <el-collapse-transition>
           <div class="mt-3" v-if="selectMultipleEmployees">
             <el-checkbox-group v-model="multi_employee">
@@ -78,8 +70,7 @@
                 :key="index"
                 :value="member.value"
                 :label="member.label"
-                >{{ member.label }}</el-checkbox-button
-              >
+              >{{ member.label }}</el-checkbox-button>
             </el-checkbox-group>
           </div>
         </el-collapse-transition>
@@ -137,8 +128,7 @@
         round
         type="primary"
         @click="$emit('createEvent', eventData), $emit('toggle', false)"
-        >Publish</el-button
-      >
+      >Publish</el-button>
       <el-button round @click="$emit('toggle', false)">Cancel</el-button>
     </span>
   </el-dialog>
@@ -196,7 +186,8 @@ export default {
           }
         ]
       },
-      success: false
+      success: false,
+      fileContent: ""
     };
   },
   props: {
@@ -414,30 +405,25 @@ export default {
       });
     },
 
-    timeSheetManagement(e) {
+    async timeSheetManagement() {
       const csvtojson = require("csvtojson");
-      const fileReader = new FileReader();
-      e = e.target.files[0];
       this.processingTimeSheet = true;
-
-      fileReader.onload = async () => {
-        try {
-          let fileContent = await csvtojson().fromString(fileReader.result);
-          let validationResult = await this.validateCSVData(fileContent);
-          // If not selected template them create a new template and if upload timesheet is not selected
-          if (!this.returnIsTemplateSelected && this.uploadTimesheetToggle) {
-            this.uploadTimeSheetAndTemplate(validationResult);
-          }
-        } catch (e) {
-          this.processingTimeSheet = false;
-          this.UPDATE_NOTIFICATIONS({
-            type: "error",
-            message:
-              "Failed when processing the csv file, please check the csv file and upload it again"
-          });
+      let fileContent = this.fileContent;
+      try {
+        let fileContent = await csvtojson().fromString(fileContent);
+        let validationResult = await this.validateCSVData(fileContent);
+        // If not selected template them create a new template and if upload timesheet is not selected
+        if (!this.returnIsTemplateSelected && this.uploadTimesheetToggle) {
+          this.uploadTimeSheetAndTemplate(validationResult);
         }
-      };
-      fileReader.readAsBinaryString(e);
+      } catch (e) {
+        this.processingTimeSheet = false;
+        this.UPDATE_NOTIFICATIONS({
+          type: "error",
+          message:
+            "Failed when processing the csv file, please check the csv file and upload it again"
+        });
+      }
     },
     /**
      *  Adds one week to the content

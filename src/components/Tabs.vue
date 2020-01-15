@@ -1,13 +1,7 @@
 <template>
-  <div class="form_container">
+  <div class="tabs_container">
     <slot name="header_content"></slot>
-    <el-tabs
-      @tab-click="$emit('input', $event.label.toLowerCase())"
-      :type="tabType"
-      :closable="false"
-      stretch
-      :addable="false"
-    >
+    <el-tabs :type="tabType" :closable="false" stretch :addable="false" v-model="tabChange">
       <el-tab-pane v-for="(tab, index) in tabs" :label="tab.label" :key="index">
         <el-form style="padding-top:1em" v-if="tab.hasOwnProperty('formContent')">
           <el-form-item v-for="(input, index) in tab.formContent" :key="index" :prop="input.name">
@@ -62,6 +56,14 @@ export default {
     };
   },
   props: {
+    nextTab: {
+      type: Boolean,
+      default: false
+    },
+    selectedTab: {
+      type: String,
+      default: "0"
+    },
     customMethod: {
       type: Function
     },
@@ -79,10 +81,23 @@ export default {
       required: true
     }
   },
-
+  computed: {
+    tabChange: {
+      get() {
+        return this.selectedTab;
+      },
+      set(val) {
+        this.$emit("input", val);
+      }
+    }
+  },
   methods: {
     submitForm() {
       this.$emit("val", this.formContent);
+
+      if (this.nextTab) {
+        this.$emit("changeTab");
+      }
     }
   }
 };
