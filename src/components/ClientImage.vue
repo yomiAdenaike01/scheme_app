@@ -1,7 +1,7 @@
 <template>
-  <div :class="['image_wrapper m-2', { flex_center: center }]">
+  <div :class="['image_wrapper ', { flex_center: center }]">
     <transition name="el-fade-in">
-      <el-image v-if="getClient" :src="getClient.company_image">
+      <el-image v-if="getClient" :src="getClient.company_image" fit="cover">
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline"></i>
         </div>
@@ -42,6 +42,10 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .el-image {
+    max-height: 100px;
+    max-width: 100px;
   }
 }
 .response {

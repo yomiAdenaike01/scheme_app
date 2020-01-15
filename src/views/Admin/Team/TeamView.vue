@@ -1,5 +1,5 @@
 <template>
-  <el-col class="team_wrapper" v-loading="loadingTeam">
+  <el-col class="team_wrapper" v-loading="false">
     <el-row class="team_container">
       <Title
         style="text-align:center"
@@ -16,11 +16,7 @@
           position="left"
           :icon="false"
         >
-          <el-badge
-            is-dot
-            :type="member.is_online ? 'success' : 'danger'"
-            class="item"
-          >
+          <el-badge is-dot :type="member.is_online ? 'success' : 'danger'" class="item">
             <Avatar :name="member.name" />
           </el-badge>
         </Dropdown>
@@ -78,6 +74,8 @@ export default {
         if (this.team.length <= 0) {
           this.loadingTeam = false;
           this.noTeam = true;
+        } else {
+          this.loadingTeam;
         }
       }, 5000);
     },
@@ -124,6 +122,11 @@ export default {
       background-color: darken($color: #ffff, $amount: 2);
     }
   }
+}
+.team_center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /**

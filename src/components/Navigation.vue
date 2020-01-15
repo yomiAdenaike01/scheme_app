@@ -5,17 +5,18 @@
     :default-active="$route.path"
     :router="true"
     mode="vertical"
-    :collapse="$mq != 'lg'"
+    :collapse="true"
+    :style="{backgroundColor:'#0d243f'}"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
-      <i :class="route.icon"></i>
-
+      <i :class="route.icon" class="home_icon"></i>
       <span slot="title">{{ route.name }}</span>
     </el-menu-item>
   </el-menu>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Navigation",
   data() {
@@ -32,11 +33,6 @@ export default {
           path: "/admin/schedule",
           icon: "el-icon-time"
         },
-        // {
-        //   name: 'Reports',
-        //   path: '/admin/reports',
-        //   icon: 'el-icon-notebook-1'
-        // },
         {
           name: "Messenger",
           path: "/comms/messenger",
@@ -44,8 +40,15 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+    ...mapState(["client"])
   }
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.home_icon {
+  font-size: 1.5em;
+}
+</style>

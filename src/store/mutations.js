@@ -12,6 +12,7 @@ export default {
       styleTag.innerText = state.theme;
     }
   },
+  RESET_THEME(state) {},
   UPDATE_THEME(state, payload) {
     localStorage.setItem("cssText", payload);
   },

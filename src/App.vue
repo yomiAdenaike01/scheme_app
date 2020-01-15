@@ -1,42 +1,11 @@
 <template>
-  <div
-    id="app"
-    v-resize-text="defaultSize"
-    :class="{ mobile: $mq != 'lg' }"
-    v-loading="resolving"
-  >
-    <!-- Error dialog -->
-    <el-dialog center :visible.sync="error" width="700px">
-      <div class="client_error_dialog">
-        <Title
-          title="Error when getting data."
-          subtitle="Re-enter your company name to restart the process."
-        />
-        <el-input
-          class="client_name"
-          placeholder="Company Name"
-          v-model="companyName"
-        >
-          <template slot="append">.schemeapp.cloud</template>
-        </el-input>
-        <div class="button_container m-4">
-          <el-button
-            round
-            type="primary"
-            :disabled="companyName.length <= 0"
-            @click="getClient"
-            >Retry</el-button
-          >
-          <el-button
-            round
-            plain
-            @click="$router.push({ name: 'register' }), (error = false)"
-            >Register with scheme cloud</el-button
-          >
-        </div>
-      </div>
-    </el-dialog>
-    <!-- Error dialog -->
+  <div id="app" v-resize-text="defaultSize" :class="{ mobile: $mq != 'lg' }" v-loading="resolving">
+    <ErrorDialog
+      @dialogChange="error = $event"
+      :display="error"
+      @companyNameChange="companyName=$event"
+      @getClient="getClient"
+    />
 
     <keep-alive>
       <router-view></router-view>
@@ -49,6 +18,7 @@ import { mapState, mapActions, mapMutations } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
 import firebase, { storage } from "firebase";
+import ErrorDialog from "@/components/ErrorDialog";
 export default {
   name: "app",
   data() {
@@ -56,16 +26,34 @@ export default {
       resolving: true,
       error: false,
       companyName: "",
-      companyImage: ""
+      companyImage: "",
+      clientInterval: null
     };
   },
   created() {
     // If there is
     this.SET_THEME();
-    this.getClient();
+    this.clientInterval = setInterval(() => {
+      this.getClient()
+        .then(response => {
+          if (Object.keys(this.client).length <= 0) {
+            this.resolving = false;
+            this.UPDATE_CLIENT(response);
+          } else {
+            this.resolving = false;
+          }
+        })
+        .catch(error => {
+          this.error = true;
+          this.resolving = false;
+        });
+    }, 6000);
+  },
+  beforeDestroy() {
+    clearInterval(this.clientInterval);
   },
   computed: {
-    ...mapState(["notifications", "defaultSize"])
+    ...mapState(["notifications", "defaultSize", "client"])
   },
   mixins: [refactorLocation],
   methods: {
@@ -73,46 +61,43 @@ export default {
     ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
 
     getClient() {
-      let currentHostname = window.location.hostname.split(".");
-      if (this.companyName.length <= 0) {
-        let client = window.location.hostname.toString().split(".");
-        let subdomain = client[0];
-        let domain = client[1];
-
-        this.request({
-          method: "GET",
-          url: "clients/one",
-
-          params: { client_name: subdomain }
-        })
-          .then(response => {
-            this.resolving = false;
-            let { company_image } = response;
-
-            this.UPDATE_CLIENT(response);
-            firebase
-              .storage()
-              .ref(company_image)
-              .getDownloadURL()
-              .then(url => {
-                response.company_image = url;
-                this.UPDATE_CLIENT(response);
-              })
-              .catch(error => {
-                console.error(error);
-              });
+      return new Promise((resolve, reject) => {
+        let currentHostname = window.location.hostname.split(".");
+        if (this.companyName.length <= 0) {
+          let client = window.location.hostname.toString().split(".");
+          let subdomain = client[0];
+          let domain = client[1];
+          this.request({
+            method: "GET",
+            url: "clients/one",
+            params: { client_name: subdomain }
           })
-          .catch(error => {
-            this.resolving = false;
-            this.error = true;
-          });
-      } else {
-        this.refactorWindowLocation(this.companyName);
-      }
+            .then(response => {
+              let { company_image } = response;
+              firebase
+                .storage()
+                .ref(company_image)
+                .getDownloadURL()
+                .then(url => {
+                  response.company_image = url;
+                  resolve(response);
+                })
+                .catch(error => {
+                  reject(error);
+                });
+            })
+            .catch(error => {
+              reject(error);
+            });
+        } else {
+          this.refactorWindowLocation(this.companyName);
+        }
+      });
     }
   },
   components: {
-    Title
+    Title,
+    ErrorDialog
   },
 
   watch: {

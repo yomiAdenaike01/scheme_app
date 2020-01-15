@@ -5,7 +5,7 @@
         <el-container style="height:100%">
           <el-main class="login_wrapper">
             <!-- Display the clients image -->
-            <ClientImage :center="true" class="rounded_image" />
+            <ClientImage :center="true" class="mb-4" />
             <!-- Auth Register &  Login -->
             <AuthFormContainer
               v-loading="loading"
@@ -29,8 +29,7 @@
                     round
                     size="small"
                     type="primary"
-                    >Registering a new company ? Click here to register.
-                  </el-button>
+                  >Registering a new company ? Click here to register.</el-button>
                 </div>
                 <!-- New client registration -->
               </template>
@@ -65,7 +64,6 @@ export default {
       payload: {}
     };
   },
-
   computed: {
     ...mapGetters(["getClient"]),
     returnTabs() {

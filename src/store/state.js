@@ -30,5 +30,8 @@ export default {
   userNotifications: [],
   currentInterval: "",
   viewMobileMenu: false,
-  defaultSize: { minFontSize: "10px", maxFontSize: "16px" }
+  defaultSize: { minFontSize: "10px", maxFontSize: "16px" },
+  intervals: {
+    clientInterval: null
+  }
 };

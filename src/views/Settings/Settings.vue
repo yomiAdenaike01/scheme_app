@@ -9,15 +9,8 @@
             subtitle="Change all aspects of your settings here."
           />
 
-          <SettingsSelection
-            @prefChange="view = $event"
-            :selection="returnSettings"
-          />
-          <div
-            @click="verifyEmail"
-            v-loading="loading"
-            v-if="!currentUser.verified"
-          >
+          <SettingsSelection @prefChange="view = $event" :selection="returnSettings" />
+          <div @click="verifyEmail" v-loading="loading" v-if="!currentUser.verified">
             <el-alert
               class="mt-4 activate_account_alert"
               :class="{ disabled: type == 'error' }"
@@ -38,7 +31,7 @@
             <ProfileSettings />
           </el-col>
           <el-col v-else-if="settingsView == 'customisation'">
-            <ThemeSelection />
+            <CustomisationSettings />
           </el-col>
         </el-row>
       </el-main>
@@ -48,8 +41,7 @@
           v-loading="loading"
           v-if="settingsUpdated"
           size="small"
-          >Save Settings</el-button
-        >
+        >Save Settings</el-button>
       </el-footer>
     </el-container>
   </el-drawer>
@@ -63,7 +55,7 @@ import SecuritySettings from "./components/SecuritySettings";
 import GeneralSettings from "./components/GeneralSettings";
 import ProfileSettings from "./components/ProfileSettings";
 import responsive from "@/mixins/responsiveProperties";
-import ThemeSelection from "@/views/Auth/components/ThemeSelection";
+import CustomisationSettings from "./components/CustomisationSettings";
 export default {
   name: "Settings",
   data() {
@@ -172,7 +164,7 @@ export default {
     SecuritySettings,
     GeneralSettings,
     ProfileSettings,
-    ThemeSelection
+    CustomisationSettings
   },
   mixins: [responsive],
 

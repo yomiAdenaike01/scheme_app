@@ -8,24 +8,13 @@
           size="small"
           icon="el-icon-arrow-left"
           @click="$router.push({ name: 'login' })"
-          >Go to login</el-button
-        >
+        >Go to login</el-button>
       </div>
 
-      <el-tabs
-        type="card"
-        :closable="false"
-        :addable="false"
-        stretch
-        v-model="currentStep"
-      >
+      <el-tabs type="card" :closable="false" :addable="false" stretch v-model="currentStep">
         <!-- Client Details Tab -->
         <el-tab-pane label="Company & User Details">
-          <el-form
-            class="form_container"
-            v-if="currentStep <= 0"
-            label-position="top"
-          >
+          <el-form class="form_container" v-if="currentStep <= 0" label-position="top">
             <!-- More inforation button -->
             <el-button
               class="m-4"
@@ -35,13 +24,9 @@
               icon="el-icon-warning-outline"
               v-if="false"
               @click="moreInformation = !moreInformation"
-              >More information</el-button
-            >
+            >More information</el-button>
             <el-collapse-transition>
-              <div
-                class="more_information_container mb-4"
-                v-if="moreInformation"
-              >
+              <div class="more_information_container mb-4" v-if="moreInformation">
                 <h3 class="mb-4">How to login</h3>
                 <p style="font-size:.9em">
                   Each company uses scheme cloud using their name. In the event
@@ -52,11 +37,7 @@
             </el-collapse-transition>
             <!-- FORM  -->
             <el-form-item v-for="item in returnClientForm" :key="item.model">
-              <el-input
-                :placeholder="item.placeholder"
-                v-model="formInput[item.model]"
-                clearable
-              />
+              <el-input :placeholder="item.placeholder" v-model="formInput[item.model]" clearable />
             </el-form-item>
 
             <!-- Client Details end -->
@@ -87,8 +68,7 @@
                   v-for="(option, index) in item.options"
                   :key="index"
                   :value="option.text"
-                  >{{ option.text }}
-                </el-option>
+                >{{ option.text }}</el-option>
               </component>
             </el-form-item>
 
@@ -111,6 +91,7 @@
 
           <!-- Personlisation Tab -->
         </el-tab-pane>
+
         <el-tab-pane label="Personalisation">
           <div class="theme_wrapper" v-if="imageFileContent">
             <!-- Title -->
@@ -121,10 +102,11 @@
               the results. These can be changed later.
             </p>
             <div class="image_container">
-              <el-image :src="imageFileContent" fit="cover"></el-image>
+              <el-image :src="imageFileContent" fit="cover" />
             </div>
+
             <!-- Theme selection unit -->
-            <ThemeSelectionUnit :colours="colourPreferences" />
+            <ThemeSelection :colours="colourOptions" />
           </div>
           <div v-else class="empty_imageFileContent_container">
             <h5>No logo Detected</h5>
@@ -144,10 +126,11 @@
           @click="
             currentStep == '0' ? (currentStep = '1') : registerNewClient()
           "
-          >{{
-            currentStep == "0" ? "Go To Personalisation" : "Finalize Account"
-          }}</el-button
         >
+          {{
+          currentStep == "0" ? "Go To Personalisation" : "Finalize Account"
+          }}
+        </el-button>
       </div>
     </el-card>
   </div>
@@ -156,7 +139,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
 import Title from "@/components/Title";
-import ThemeSelectionUnit from "./components/ThemeSelection";
+import ThemeSelection from "@/components/ThemeSelection";
 import * as Vibrant from "node-vibrant";
 import refactorLocation from "@/mixins/refactorLocation";
 import firebase from "firebase";
@@ -179,7 +162,7 @@ export default {
     return {
       imageFileContent: "",
       formInput: {},
-      colourOptions: {},
+      colourOptions: [],
       currentStep: "0",
       pageLoading: false,
       colourPreferences: [],
@@ -284,11 +267,7 @@ export default {
         Vibrant.from(this.imageFileContent).getPalette((err, palette) => {
           if (!err) {
             this.pageLoading = false;
-            for (let property in palette) {
-              if (!property.toLowerCase().includes("muted")) {
-                this.colourPreferences.push(palette[property].hex);
-              }
-            }
+            this.colourOptions.push(palette.Vibrant.hex);
           }
         });
       }
@@ -355,7 +334,7 @@ export default {
     }
   },
   components: {
-    ThemeSelectionUnit,
+    ThemeSelection,
     Title
   },
   watch: {
@@ -424,7 +403,6 @@ export default {
   justify-content: center;
   align-items: center;
   .el-image {
-    border-radius: 50%;
     max-width: 200px;
     max-height: 200px;
   }

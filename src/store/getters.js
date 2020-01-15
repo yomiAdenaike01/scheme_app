@@ -17,6 +17,11 @@ export default {
     return employee_type == 1 || employee_type == "Admin";
   },
   getCompanyColours(state) {
-    return state.client.company_colours;
+    let colours = state.client.company_colours;
+    if (colours.length > 0) {
+      return colours;
+    } else {
+      return [];
+    }
   }
 };

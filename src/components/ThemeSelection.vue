@@ -2,20 +2,11 @@
   <div class="colour_picker_wrapper">
     <el-color-picker
       v-model="theme"
-      :predefine="returnColours"
+      :predefine="colours"
       class="theme-picker"
       popper-class="theme-picker-dropdown"
       size="medium"
     />
-    <!-- <div class="predefined_colours_container">
-      <div
-        @click.native="theme = colour"
-        class="colour_unit"
-        v-for="(colour, index) in colours"
-        :style="{ backgroundColor: colour }"
-        :key="index"
-      ></div>
-    </div> -->
   </div>
 </template>
 
@@ -24,6 +15,7 @@ import { mapMutations, mapState } from "vuex";
 const version = require("element-ui/package.json").version; // element-ui version from node_modules
 const ORIGINAL_THEME = "#409EFF"; // default color
 export default {
+  name: "ThemeSelection",
   data() {
     return {
       chalk: "", // content of theme-chalk css
@@ -48,34 +40,8 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapState(["client"]),
-    returnColours() {
-      if (this.client) {
-        return this.client.company_colours;
-      } else if (!this.client && !this.colours) {
-        return [
-          "#409EFF",
-          "#1890ff",
-          "#304156",
-          "#212121",
-          "#11a983",
-          "#13c2c2",
-          "#6959CD",
-          "#f5222d"
-        ];
-      } else if (this.colours) {
-        return this.colours;
-      }
-    },
-    defaultTheme() {
-      return this.$store.state.settings.theme;
-    }
-  },
-
   watch: {
     async theme(val) {
-      console.warn(val);
       const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
       if (typeof val !== "string") return;
       const themeCluster = this.getThemeCluster(val.replace("#", ""));
