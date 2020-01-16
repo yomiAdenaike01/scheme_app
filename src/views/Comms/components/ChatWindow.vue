@@ -1,6 +1,8 @@
 <template>
-  <div class="chat_window_container" v-loading="loading">
-    <ChatMessage v-for="message in messages" :key="message._id" :message="message" />
+  <div class="chat_window_container" v-loading="false">
+    <transition-group name="el-fade-in">
+      <ChatMessage v-for="message in messages" :key="message._id" :message="message" />
+    </transition-group>
   </div>
 </template>
 

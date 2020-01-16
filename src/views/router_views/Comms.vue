@@ -1,5 +1,7 @@
 <template>
-  <router-view></router-view>
+  <keep-alive>
+    <router-view></router-view>
+  </keep-alive>
 </template>
 
 <script>
@@ -11,10 +13,11 @@ export default {
       commsInterval: null
     };
   },
-  destroyed() {
+  deactivated() {
     clearInterval(this.commsInterval);
+    this.$destroy();
   },
-  created() {
+  activated() {
     this.commsInterval = setInterval(() => {
       this.getTranscripts();
       this.getTeam();

@@ -7,9 +7,7 @@
       resize="both"
     >
       <template slot="prepend">
-        <UploadFile
-          :buttonConfig="{type:'text',round:true,icon:'el-icon-paperclip',circle:'true'}"
-        />
+        <UploadFile :buttonConfig="{type:'text',round:true,icon:'el-icon-paperclip',circle:true}" />
       </template>
       <template slot="append">
         <div class="flex">

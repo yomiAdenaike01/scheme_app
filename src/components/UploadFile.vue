@@ -21,7 +21,7 @@ export default {
       default: () => {
         return {
           text: "Select Files",
-          circle: "false",
+          circle: false,
           round: true,
           type: "primary",
           icon: "el-icon-upload",

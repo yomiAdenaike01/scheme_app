@@ -28,6 +28,9 @@ import ScheduleCalendar from "./components/ScheduleCalendar";
 import Title from "@/components/Title";
 export default {
   name: "Schedule",
+  deactivated() {
+    this.$destroy();
+  },
   data() {
     return {
       self: this,

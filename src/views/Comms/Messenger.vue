@@ -24,12 +24,7 @@ export default {
   created() {
     this.getTranscripts()
       .then(response => {
-        if (response.length > 0) {
-          this.error = true;
-          this.loading = false;
-        } else {
-          this.loading = false;
-        }
+        this.loading = false;
       })
       .catch(error => {
         this.loading = false;
