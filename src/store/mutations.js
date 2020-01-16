@@ -2,6 +2,9 @@ import storage from "./storage";
 import sounds from "@/mixins/playSound";
 
 export default {
+  UPDATE_COLOURS(state, { target, val }) {
+    state.localSettings.colours[target] = val;
+  },
   SET_THEME(state) {
     let id = "chalk-style";
     let styleTag = document.getElementById(id);

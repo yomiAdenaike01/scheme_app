@@ -24,7 +24,8 @@ export default {
       live_dashboard: true,
       notifications: true
     },
-    security: {}
+    security: {},
+    colours: {}
   },
   viewNotificationsCenter: false,
   userNotifications: [],

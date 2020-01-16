@@ -20,6 +20,10 @@ export default {
     };
   },
   props: {
+    target: {
+      type: String,
+      default: null
+    },
     newScheme: Boolean,
     colours: {
       type: Array,
@@ -44,6 +48,7 @@ export default {
 
   methods: {
     ...mapActions(["updateTheme"]),
+    ...mapMutations(["UPDATE_COLOURS"]),
     updateStyle(style, oldCluster, newCluster) {
       let newStyle = style;
       oldCluster.forEach((color, index) => {
@@ -110,57 +115,63 @@ export default {
       immediate: true
     },
     async theme(val) {
-      const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
-      if (typeof val !== "string") return;
-      const themeCluster = this.getThemeCluster(val.replace("#", ""));
-      const originalCluster = this.getThemeCluster(oldVal.replace("#", ""));
+      if (this.target) {
+        this.UPDATE_COLOURS({ target: this.target, val });
+        return;
+      } else {
+        const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
+        if (typeof val !== "string") return;
+        const themeCluster = this.getThemeCluster(val.replace("#", ""));
+        const originalCluster = this.getThemeCluster(oldVal.replace("#", ""));
 
-      const getHandler = (variable, id) => {
-        return () => {
-          const originalCluster = this.getThemeCluster(
-            ORIGINAL_THEME.replace("#", "")
-          );
-          const newStyle = this.updateStyle(
-            this[variable],
+        const getHandler = (variable, id) => {
+          return () => {
+            const originalCluster = this.getThemeCluster(
+              ORIGINAL_THEME.replace("#", "")
+            );
+            const newStyle = this.updateStyle(
+              this[variable],
+              originalCluster,
+              themeCluster
+            );
+            let styleTag = document.getElementById(id);
+            if (!styleTag) {
+              styleTag = document.createElement("style");
+              styleTag.setAttribute("id", id);
+              document.head.appendChild(styleTag);
+            }
+            localStorage.setItem("cssText", newStyle);
+            styleTag.innerText = newStyle;
+            if (this.isValidClient) {
+              this.updateTheme(val);
+            }
+          };
+        };
+        if (!this.chalk) {
+          const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`;
+          await this.getCSSString(url, "chalk");
+        }
+        const chalkHandler = getHandler("chalk", "chalk-style");
+        chalkHandler();
+        const styles = [].slice
+          .call(document.querySelectorAll("style"))
+          .filter(style => {
+            const text = style.innerText;
+            return (
+              new RegExp(oldVal, "i").test(text) &&
+              !/Chalk Variables/.test(text)
+            );
+          });
+        styles.forEach(style => {
+          const { innerText } = style;
+          if (typeof innerText !== "string") return;
+          style.innerText = this.updateStyle(
+            innerText,
             originalCluster,
             themeCluster
           );
-          let styleTag = document.getElementById(id);
-          if (!styleTag) {
-            styleTag = document.createElement("style");
-            styleTag.setAttribute("id", id);
-            document.head.appendChild(styleTag);
-          }
-          localStorage.setItem("cssText", newStyle);
-          styleTag.innerText = newStyle;
-          if (this.isValidClient) {
-            this.updateTheme(val);
-          }
-        };
-      };
-      if (!this.chalk) {
-        const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`;
-        await this.getCSSString(url, "chalk");
-      }
-      const chalkHandler = getHandler("chalk", "chalk-style");
-      chalkHandler();
-      const styles = [].slice
-        .call(document.querySelectorAll("style"))
-        .filter(style => {
-          const text = style.innerText;
-          return (
-            new RegExp(oldVal, "i").test(text) && !/Chalk Variables/.test(text)
-          );
         });
-      styles.forEach(style => {
-        const { innerText } = style;
-        if (typeof innerText !== "string") return;
-        style.innerText = this.updateStyle(
-          innerText,
-          originalCluster,
-          themeCluster
-        );
-      });
+      }
     }
   }
 };

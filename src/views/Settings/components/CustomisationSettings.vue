@@ -3,7 +3,7 @@
     <Title defaultClass="m-0" subtitle="Primary Colour" />
     <ThemeSelection />
     <Title defaultClass="m-0" subtitle="Sidebar Colour" />
-    <ThemeSelection />
+    <ThemeSelection target="sidebar" />
   </div>
 </template>
 
