@@ -43,7 +43,6 @@ export default {
   REMOVE_USER(state) {
     state.currentUser = {};
     state.token = {};
-    localStorage.clear();
     document.getElementById("chalk-style").remove();
   },
   UPDATE_USER(state, payload) {
