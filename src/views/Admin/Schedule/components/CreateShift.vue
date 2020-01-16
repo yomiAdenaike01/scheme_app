@@ -1,6 +1,6 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
-    <Title
+    <!-- <Title
       defaultClass="mb-0"
       :title="!getIsAdmin ? 'Create Request' : 'Create Shift'"
       :subtitle="
@@ -9,7 +9,7 @@
           : 'Fill in the form below to create a shift.'
       "
       slot="title"
-    />
+    />-->
 
     <el-form
       v-loading="processingTimeSheet"
@@ -18,63 +18,44 @@
       label-position="left"
     >
       <!-- Displaying templates -->
-      <el-form-item
-        class="custom_form_item shift_templates_container"
-        v-if="templates.length > 0"
-        v-loading="loadingTemplates"
-        @click="displayTemplates = !displayTemplates"
-      >
-        <p>Previously Saved Templates</p>
-        <el-collapse-transition>
-          <div>
-            <ShiftTemplate
-              @selectedTemplate="selectedTemplate = $event"
-              v-for="template in templates"
-              :data="template"
-              :key="template._id"
-            />
-            <!-- Selecting the templates -->
-            <transition name="el-fade-in">
-              <div v-if="returnIsTemplateSelected">
-                <el-button size="small" round type="primary" @click="publishSavedTemplate">Publish</el-button>
-              </div>
-            </transition>
-          </div>
-        </el-collapse-transition>
-      </el-form-item>
+      <Title
+        title="Options"
+        defaultClass="m-0"
+        subtitle="Here are some quick options that can speed up the process of creating an event"
+      />
+      <ToggleSlideDown title="Select Previous Templates">
+        <div>
+          <ShiftTemplate
+            @selectedTemplate="selectedTemplate = $event"
+            v-for="template in templates"
+            :data="template"
+            :key="template._id"
+          />
+          <el-button size="small" round type="primary" @click="publishSavedTemplate">Publish</el-button>
+        </div>
+      </ToggleSlideDown>
       <!-- Timesheet -->
-      <el-form-item class="custom_form_item">
-        <p @click="uploadTimesheetToggle = !uploadTimesheetToggle">Upload Timesheet</p>
-        <el-collapse-transition>
-          <div class="mt-3" v-if="uploadTimesheetToggle">
-            <!-- Input for the timesheet -->
-            <UploadFile
-              @fileContent="fileContent=$event"
-              readMethod="readAsBinaryString"
-              tip="No tip provided"
-            />
-          </div>
-        </el-collapse-transition>
-      </el-form-item>
+
+      <ToggleSlideDown title="Upload New Timesheet">
+        <!-- Input for the timesheet -->
+        <UploadFile
+          @fileContent="fileContent=$event"
+          readMethod="readAsBinaryString"
+          tip="No tip provided"
+        />
+      </ToggleSlideDown>
 
       <!-- Create for multiple employees (IF ADMIN) -->
-      <el-form-item class="custom_form_item" v-if="getIsAdmin">
-        <p
-          @click="selectMultipleEmployees = !selectMultipleEmployees"
-        >Assign Shift To Multiple Employees</p>
-        <el-collapse-transition>
-          <div class="mt-3" v-if="selectMultipleEmployees">
-            <el-checkbox-group v-model="multi_employee">
-              <el-checkbox-button
-                v-for="(member, index) in returnTeam"
-                :key="index"
-                :value="member.value"
-                :label="member.label"
-              >{{ member.label }}</el-checkbox-button>
-            </el-checkbox-group>
-          </div>
-        </el-collapse-transition>
-      </el-form-item>
+      <ToggleSlideDown v-if="getIsAdmin" title="Assign Shift To Multiple Employees">
+        <el-checkbox-group v-model="multi_employee">
+          <el-checkbox-button
+            v-for="(member, index) in returnTeam"
+            :key="index"
+            :value="member.value"
+            :label="member.label"
+          >{{ member.label }}</el-checkbox-button>
+        </el-checkbox-group>
+      </ToggleSlideDown>
 
       <!-- Second form to be able to disable other entries -->
       <el-form :model="eventData" :disabled="returnInvalidateForm">
@@ -139,6 +120,9 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import dates from "@/mixins/dates";
 import ShiftTemplate from "./ShiftTemplate";
 import moment from "moment";
+import UploadFile from "@/components/UploadFile";
+import Title from "@/components/Title";
+import ToggleSlideDown from "@/components/ToggleSlideDown";
 export default {
   name: "CreateShift",
   mixins: [dates],
@@ -514,8 +498,10 @@ export default {
     }
   },
   components: {
-    Title: () => import("@/components/Title"),
-    ShiftTemplate
+    Title,
+    ShiftTemplate,
+    UploadFile,
+    ToggleSlideDown
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="title_wrapper" :class="defaultClass">
-    <h1 class="m-0 p-0" v-if="title">{{ title }}</h1>
+    <h2 class="m-0 p-0" v-if="title">{{ title }}</h2>
     <p v-if="subtitle" class="desc">{{ subtitle }}</p>
     <br />
     <slot></slot>

@@ -5,7 +5,7 @@
     element-loading-text="Loading team members please wait..."
   >
     <Title title="Schedule" subtitle="View your calendar" />
-    <Toolbar @modalChanges="self.modals[$event] = true" class="m-3" />
+    <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
     <ScheduleCalendar @displayCreateShift="modals.create_event =$event" class="cal" />
     <CreateShift
       @toggle="modals.create_event = $event"
@@ -32,15 +32,8 @@ export default {
     return {
       self: this,
       loading: false,
-      liveSchedule: false,
       scheduleInterval: null,
-      searchedTeamMember: "",
-      filters: {
-        employee: "",
-        abscences: "",
-        holidays: "",
-        late: ""
-      },
+
       modals: {
         create_event: false,
         edit_event: false,
@@ -192,37 +185,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.view_indicator {
-  text-transform: capitalize;
-}
-.sidebar {
-  background: rgb(253, 253, 253);
-  height: 100vh;
-}
-span {
-  font-size: 1.2em;
-}
-.vuecal {
-  box-shadow: none;
-}
-.checkbox {
-  text-transform: capitalize;
-}
-.view_indicator {
-  color: $primary_colour;
-}
-.time_wrapper {
-  background: rgb(253, 253, 253);
-  color: #999;
-  border-radius: 40px;
-  font-size: 0.9em;
-}
-.icon {
-  cursor: pointer;
-}
-.cal {
-  height: 80%;
-}
-</style>
