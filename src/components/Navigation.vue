@@ -68,4 +68,7 @@ export default {
 .home_icon {
   font-size: 1.5em;
 }
+.el-menu-item i {
+  color: darken($color: white, $amount: 10);
+}
 </style>
