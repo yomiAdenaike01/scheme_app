@@ -6,7 +6,6 @@
       size="small"
       icon="el-icon-plus"
       round
-      type="primary"
       @click="UPDATE_START_NEW_CHAT(true)"
     >Start New Chat</el-button>
   </div>
@@ -33,6 +32,5 @@ export default {
 .no_chat_indiciator {
   margin-top: -1em;
   font-size: 2.5em;
-  color: #ccc;
 }
 </style>

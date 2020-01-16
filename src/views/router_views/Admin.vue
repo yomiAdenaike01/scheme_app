@@ -19,10 +19,10 @@ export default {
     ...mapState(["localSettings", "userNotifications", "currentUser"])
   },
 
-  deactivated() {
+  destroyed() {
     clearInterval(this.adminInterval);
   },
-  activated() {
+  created() {
     // Starting interval
     this.adminInterval = setInterval(() => {
       this.getTeam();

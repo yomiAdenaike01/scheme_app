@@ -1,64 +1,6 @@
 <template>
   <el-dialog :visible.sync="view">
-    <Title
-      title="Create Employee"
-      subtitle="Fill in the form below to create an employee, the employee will recieve an email for them to finalize their account details."
-      slot="title"
-    />
-    <el-form
-      label-position="left"
-      v-loading="loading"
-      :model="employeeForm"
-      :rules="rules"
-      ref="employeeForm"
-    >
-      <h4 style="text-align:center" class="light m-4 grey">
-        Please note that the password for the new employee will be:
-        <strong>{{ genPwd }}</strong>
-      </h4>
-      <ToggleSlideDown title="Upload Employee Speadsheet">
-        <div class="flex_center">
-          <UploadFile @fileContent="fileContent = $event" tip />
-        </div>
-      </ToggleSlideDown>
-
-      <el-form-item
-        v-for="(item, index) in formItems"
-        :key="index"
-        :prop="item.name"
-        :label="item.placeholder"
-      >
-        <component
-          style="width:95%"
-          :is="
-            item.type == 'date'
-              ? 'el-date-picker'
-              : item.type == 'select'
-              ? 'el-select'
-              : 'el-input'
-          "
-          v-model="employeeForm[item.model || item.name]"
-          :clearable="item.clearable"
-          :type="item.type"
-          :placeholder="
-            `Please enter the employee's ${item.placeholder.toLowerCase()}.`
-          "
-        >
-          <el-option
-            v-for="option in item.options"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
-            :disabled="option.disabled"
-          ></el-option>
-        </component>
-      </el-form-item>
-      <!-- TODO ADD ATTACHMENTS AND DOCUMENTATION LIKE CV's  -->
-    </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button round type="primary" @click="validateEmployeeForm">Create</el-button>
-      <el-button round @click="$emit('toggle', false)">Cancel</el-button>
-    </span>
+    <Tabs :tabs="tabs"></Tabs>
   </el-dialog>
 </template>
 
@@ -66,6 +8,8 @@
 import { mapActions } from "vuex";
 import UploadFile from "@/components/UploadFile";
 import ToggleSlideDown from "@/components/ToggleSlideDown";
+import Tabs from "@/components/Tabs";
+import CreateEmeployeeOptions from "./CreateEmployeeOptions";
 export default {
   name: "CreateEmployee",
   data() {
@@ -111,6 +55,21 @@ export default {
         ];
       }
       return rules;
+    },
+    tabs() {
+      return [
+        {
+          label: "Create Employee",
+          formContent: this.formItems
+        },
+        {
+          label: "Options",
+          view: {
+            props: "",
+            component: CreateEmeployeeOptions
+          }
+        }
+      ];
     },
     formItems() {
       return [
@@ -245,7 +204,9 @@ export default {
   components: {
     Title: () => import("@/components/Title"),
     UploadFile,
-    ToggleSlideDown
+    ToggleSlideDown,
+    Tabs,
+    CreateEmeployeeOptions
   }
 };
 </script>

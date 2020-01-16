@@ -1,17 +1,13 @@
 <template>
-  <div class="chat_window_container">
-    <div v-for="message in messages" :key="message._id"></div>
-  </div>
+  <div class="chat_window_container">{{messages}}</div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   name: "ChatWindow",
-  data() {
-    return {
-      messages: []
-    };
+  props: {
+    messages: Array | Object
   },
   methods: {
     ...mapActions(["request"])

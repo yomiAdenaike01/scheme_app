@@ -12,7 +12,7 @@
       border
       size="small"
     ></el-checkbox>
-    <!-- No shifts to display -->
+    <!-- No shifts  -->
     <el-row style="height:98%; overflow:auto">
       <el-card class="mt-3" v-if="!returnAnyShifts" shadow="none">
         <Title
@@ -80,7 +80,7 @@ export default {
       let noShifts = {
         title: "No current events.",
         subtitle: "You can view or create new requests here",
-        buttonText: "Book an team members shift / holiday or time off"
+        buttonText: "Make a request for some time off or holiday time."
       };
 
       if (this.getIsAdmin) {

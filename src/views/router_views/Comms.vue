@@ -11,10 +11,10 @@ export default {
       commsInterval: null
     };
   },
-  deactivated() {
+  destroyed() {
     clearInterval(this.commsInterval);
   },
-  activated() {
+  created() {
     this.commsInterval = setInterval(() => {
       this.getTranscripts();
       this.getTeam();

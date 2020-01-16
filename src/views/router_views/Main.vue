@@ -6,9 +6,7 @@
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </el-col>
       <el-col>
-        <keep-alive>
-          <router-view></router-view>
-        </keep-alive>
+        <router-view></router-view>
       </el-col>
     </el-row>
     <NotificationsCenter />
@@ -24,7 +22,7 @@ import moment, * as moments from "moment";
 
 export default {
   name: "Main",
-  activated() {
+  created() {
     let isVerified = this.currentUser.verified;
     if (!isVerified) {
       this.UPDATE_NOTIFICATIONS({

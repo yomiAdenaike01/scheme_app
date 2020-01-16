@@ -1,11 +1,11 @@
 <template>
   <div class="chatbody_container flex columns">
-    <div v-if="!isActiveChat" class="window_wrapper height-100">
-      <ChatWindow />
+    <div v-if="isActiveChat" class="window_wrapper height-100">
+      <ChatWindow :messages="activeTranscript" />
       <ChatInput />
     </div>
     <div v-else class="flex_center no_active_chat">
-      <p>No active chats</p>
+      <p>No active chats, select one to begin.</p>
     </div>
   </div>
 </template>
@@ -17,9 +17,9 @@ import { mapState } from "vuex";
 export default {
   name: "ChatBody",
   computed: {
-    ...mapState("Comms", ["activeChat"]),
+    ...mapState("Comms", ["activeTranscript"]),
     isActiveChat() {
-      return Object.keys(this.activeChat).length > 0;
+      return Object.keys(this.activeTranscript).length > 0;
     }
   },
   components: {

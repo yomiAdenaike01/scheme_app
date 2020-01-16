@@ -1,5 +1,5 @@
 <template>
-  <el-col class="chat_list_container" :style="{ borderRight: `1.5px solid #efefef` }">
+  <el-col class="chat_list_container pr-0" :style="{ borderRight: `1.5px solid #efefef` }">
     <ChatListHeader />
     <div v-if="transcripts.length > 0">
       <PreviousChat :key="transcript._id" :data="transcript" v-for="transcript in transcripts" />

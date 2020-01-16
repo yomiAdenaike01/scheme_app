@@ -1,4 +1,21 @@
 export default {
+  startChat(context, payload) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch(
+          "request",
+          { method: "POST", url: "messenger/start", data: payload },
+          { root: true }
+        )
+        .then(response => {
+          context.commit("UPDATE_TRANSCRIPTS", response);
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
   getTranscripts(context) {
     return new Promise((resolve, reject) => {
       const anyTranscripts = context.state.transcripts.length <= 0;

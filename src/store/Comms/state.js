@@ -1,6 +1,6 @@
 export default {
   messages: [],
   transcripts: [],
-  activeChat: {},
+  activeTranscript: {},
   startNewChat: false
 };
