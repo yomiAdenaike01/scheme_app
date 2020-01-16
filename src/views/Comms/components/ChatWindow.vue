@@ -1,9 +1,12 @@
 <template>
-  <div class="chat_window_container">{{messages}}</div>
+  <div class="chat_window_container">
+    <ChatMessage v-for="message in messages" :key="message._id" :message="message" />
+  </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
+import ChatMessage from "./ChatMessage";
 export default {
   name: "ChatWindow",
   data() {
@@ -21,7 +24,7 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    }, 100000);
+    }, 10000);
   },
   destroyed() {
     clearInterval(this.getMessagesInterval);
@@ -32,6 +35,9 @@ export default {
   },
   methods: {
     ...mapActions("Comms", ["getMessages"])
+  },
+  components: {
+    ChatMessage
   }
 };
 </script>
