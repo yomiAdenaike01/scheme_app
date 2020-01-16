@@ -16,6 +16,7 @@
           <i :class="[`error_icon ${icon}`]"></i>
         </div>
       </el-image>
+
       <div v-else class="error_image_slot">
         <i :class="[`error_icon ${icon}`]"></i>
       </div>

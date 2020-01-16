@@ -1,7 +1,12 @@
 <template>
   <div class="reg_wrapper">
-    <el-card>
-      <ClientImage class="m-4" :image="imageFileContent" :center="true" :showClient="false" />
+    <el-card v-loading="pageLoading">
+      <ClientImage
+        class="m-4"
+        :image="imageFileContent"
+        :center="true"
+        :showClient="false"
+      />
       <Tabs
         :tabs="returnTabs"
         v-model="selectedTab"
@@ -10,7 +15,7 @@
         :customMethod="registerNewClient"
         :nextTab="true"
         @changeTab="selectedTab = '1'"
-        :submitText="selectedTab == '1'  ? 'Register' : 'Next'"
+        :submitText="selectedTab == '1' ? 'Register' : 'Next'"
       >
         <!-- Upload Image -->
         <template #footer_content v-if="selectedTab == '0'">
@@ -31,15 +36,14 @@ import Title from "@/components/Title";
 import ThemeSelection from "@/components/ThemeSelection";
 import * as Vibrant from "node-vibrant";
 import refactorLocation from "@/mixins/refactorLocation";
-import firebase from "firebase";
-import uuid from "uuid";
-import mime from "mime-type";
 import Tabs from "@/components/Tabs";
 import CompanyPersonlisation from "./components/CompanyPersonlisation";
 import UploadFile from "@/components/UploadFile";
 import ClientImage from "@/components/ClientImage";
+import uploadContent from "@/mixins/uploadContent";
 export default {
   name: "ClientAuth",
+  mixins: [uploadContent],
   created() {
     let allForms = this.returnRegisterForm.concat(this.returnClientForm);
     allForms.map(form => {
@@ -170,26 +174,6 @@ export default {
         });
       }
     },
-    uploadImage() {
-      this.pageLoading = true;
-
-      // Upload to firebase;
-      const storage = firebase.storage().ref();
-
-      return new Promise((resolve, reject) => {
-        let ext = this.imageFileContent.split(";")[0].split("/")[1];
-        const storageRef = storage.child(`clients/${uuid()}.${ext}`);
-
-        storageRef
-          .putString(this.imageFileContent, "data_url")
-          .then(snapshot => {
-            resolve(snapshot);
-          })
-          .catch(error => {
-            reject(error);
-          });
-      });
-    },
 
     registerNewClient() {
       this.pageLoading = true;
@@ -199,9 +183,10 @@ export default {
         .toLowerCase();
       clientRegisterData.company_colours = this.colourOptions;
 
-      this.uploadImage()
+      this.upload()
         .then(response => {
-          clientRegisterData.company_image = response.metadata.fullPath;
+          clientRegisterData.company_image = response.url;
+          clientRegisterData.storage_ref = response.ref;
           this.request({
             method: "POST",
             url: "clients/create",

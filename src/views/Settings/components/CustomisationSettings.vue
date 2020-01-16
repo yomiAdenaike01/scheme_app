@@ -1,14 +1,18 @@
 <template>
-  <div class="customisation_wrapper flex_center columns">
-    <Title defaultClass="m-0" subtitle="Primary Colour" />
-    <ThemeSelection />
-    <Title defaultClass="m-0" subtitle="Sidebar Colour" />
-    <ThemeSelection target="sidebar" />
+  <div class="customisation_wrapper">
+    <div class="flex_center columns">
+      <Title defaultClass="m-0" subtitle="Primary Colour" />
+      <ThemeSelection />
+      <Title defaultClass="m-0" subtitle="Sidebar Colour" />
+      <ThemeSelection target="sidebar" />
+    </div>
+    <ChangeLogo />
   </div>
 </template>
 
 <script>
 import ThemeSelection from "@/components/ThemeSelection";
+import ChangeLogo from "./selections/ChangeLogo";
 import { mapMutations } from "vuex";
 import Title from "@/components/Title";
 export default {
@@ -19,7 +23,8 @@ export default {
   },
   components: {
     ThemeSelection,
-    Title
+    Title,
+    ChangeLogo
   }
 };
 </script>

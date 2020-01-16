@@ -1,6 +1,6 @@
 import storage from "./storage";
 import sounds from "@/mixins/playSound";
-
+import theme from "@/mixins/theme";
 export default {
   UPDATE_COLOURS(state, { target, val }) {
     state.localSettings.colours[target] = val;
@@ -18,6 +18,7 @@ export default {
   },
   UPDATE_CLIENT(state, payload) {
     state.client = payload;
+    theme.methods.mutateTheme(payload.company_colours);
   },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
     state.weeklyTimesheetUploaded = payload;
@@ -44,6 +45,8 @@ export default {
     state.currentUser = {};
     state.token = {};
     document.getElementById("chalk-style").remove();
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentUser");
   },
   UPDATE_USER(state, payload) {
     state.currentUser = payload.user;

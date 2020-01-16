@@ -1,56 +1,7 @@
-<template>
-  <div class="colour_picker_wrapper">
-    <el-color-picker
-      v-model="theme"
-      :predefine="colours"
-      class="theme_picker"
-    />
-    <!-- <div class="flex_center">
-      <slot v-if="false"></slot>
-    </div>-->
-  </div>
-</template>
-
-<script>
 import { mapMutations, mapState, mapGetters, mapActions } from "vuex";
-
-import theme from "@/mixins/theme";
+const version = require("element-ui/package.json").version; // element-ui version from node_modules
+const ORIGINAL_THEME = "#409EFF"; // default color
 export default {
-  name: "ThemeSelection",
-  mixins: [theme],
-  data() {
-    return {
-      chalk: "", // content of theme-chalk css
-      theme: ""
-    };
-  },
-  props: {
-    target: {
-      type: String,
-      default: null
-    },
-    newScheme: Boolean,
-    colours: {
-      type: Array,
-      default: () => {
-        return;
-        [
-          "#409EFF",
-          "#1890ff",
-          "#304156",
-          "#212121",
-          "#11a983",
-          "#13c2c2",
-          "#6959CD",
-          "#f5222d"
-        ];
-      }
-    }
-  },
-  computed: {
-    ...mapGetters(["isValidClient"])
-  },
-
   methods: {
     ...mapActions(["updateTheme"]),
     ...mapMutations(["UPDATE_COLOURS"]),
@@ -110,18 +61,66 @@ export default {
       }
       clusters.push(shadeColor(theme, 0.1));
       return clusters;
-    }
-  },
-  watch: {
-    defaultTheme: {
-      handler: function(val, oldVal) {
-        this.theme = val;
-      },
-      immediate: true
     },
-    theme(val) {
-      this.mutateTheme(val);
+
+    async mutateTheme(val) {
+      if (this.target) {
+        this.UPDATE_COLOURS({ target: this.target, val });
+        return;
+      } else {
+        const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
+        if (typeof val !== "string") return;
+        const themeCluster = this.getThemeCluster(val.replace("#", ""));
+        const originalCluster = this.getThemeCluster(oldVal.replace("#", ""));
+
+        const getHandler = (variable, id) => {
+          return () => {
+            const originalCluster = this.getThemeCluster(
+              ORIGINAL_THEME.replace("#", "")
+            );
+            const newStyle = this.updateStyle(
+              this[variable],
+              originalCluster,
+              themeCluster
+            );
+            let styleTag = document.getElementById(id);
+            if (!styleTag) {
+              styleTag = document.createElement("style");
+              styleTag.setAttribute("id", id);
+              document.head.appendChild(styleTag);
+            }
+            localStorage.setItem("cssText", newStyle);
+            styleTag.innerText = newStyle;
+            if (this.isValidClient) {
+              this.updateTheme(val);
+            }
+          };
+        };
+        if (!this.chalk) {
+          const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`;
+          await this.getCSSString(url, "chalk");
+        }
+        const chalkHandler = getHandler("chalk", "chalk-style");
+        chalkHandler();
+        const styles = [].slice
+          .call(document.querySelectorAll("style"))
+          .filter(style => {
+            const text = style.innerText;
+            return (
+              new RegExp(oldVal, "i").test(text) &&
+              !/Chalk Variables/.test(text)
+            );
+          });
+        styles.forEach(style => {
+          const { innerText } = style;
+          if (typeof innerText !== "string") return;
+          style.innerText = this.updateStyle(
+            innerText,
+            originalCluster,
+            themeCluster
+          );
+        });
+      }
     }
   }
 };
-</script>

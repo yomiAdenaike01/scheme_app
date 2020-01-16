@@ -1,8 +1,10 @@
-<template >
+<template>
   <div class="upload_image_container mt-4">
     <el-upload action="/" :auto-upload="false" :on-change="emitFile" :limit="1">
-      <el-button round type="primary" icon="el-icon-upload" :size="size">Select Files</el-button>
-      <div class="txt_center el-upload__tip" slot="tip">{{tip}}</div>
+      <el-button round type="primary" icon="el-icon-upload" :size="size"
+        >Select Files</el-button
+      >
+      <div class="txt_center el-upload__tip" slot="tip">{{ tip }}</div>
     </el-upload>
   </div>
 </template>
@@ -47,4 +49,3 @@ export default {
   }
 };
 </script>
-

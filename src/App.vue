@@ -27,7 +27,6 @@
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
-import firebase, { storage } from "firebase";
 import ErrorDialog from "@/components/ErrorDialog";
 export default {
   name: "app",
@@ -50,13 +49,8 @@ export default {
     this.clientInterval = setInterval(() => {
       this.getClient()
         .then(response => {
-          if (Object.keys(this.client).length <= 0) {
-            this.resolving = false;
-            this.UPDATE_CLIENT(response);
-            this.SET_THEME(response.company_colours);
-          } else {
-            this.resolving = false;
-          }
+          this.resolving = false;
+          this.UPDATE_CLIENT(response);
         })
         .catch(error => {
           // Stop the interval
@@ -92,17 +86,7 @@ export default {
           })
             .then(response => {
               let { company_image } = response;
-              firebase
-                .storage()
-                .ref(company_image)
-                .getDownloadURL()
-                .then(url => {
-                  response.company_image = url;
-                  resolve(response);
-                })
-                .catch(error => {
-                  reject(error);
-                });
+              resolve(response);
             })
             .catch(error => {
               reject(error);

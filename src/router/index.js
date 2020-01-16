@@ -79,19 +79,19 @@ const routes = [
     ]
   },
   {
-    path: "/login",
+    path: "/auth/user",
     name: "login",
     component: UserAuth,
     meta: {
-      title: "Login"
+      title: "User Authentication"
     }
   },
   {
-    path: "/register",
+    path: "/auth/client",
     name: "register",
     component: ClientAuth,
     meta: {
-      title: "Register"
+      title: "Client Authentication"
     }
   }
 ];

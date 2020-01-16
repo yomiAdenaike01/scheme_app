@@ -10,8 +10,8 @@
             <Tabs
               v-loading="loading"
               :tabs="returnTabs"
-              :submitText="selectedForm"
-              v-model="selectedForm"
+              :submitText="tabIndex == '0' ? 'Login' : 'Register'"
+              v-model="tabIndex"
               @val="
                 formModel[selectedForm] = $event;
                 processUser();
@@ -21,20 +21,21 @@
                 <!-- New client registration -->
                 <div
                   class="new_client_button_container mb-4 mt-4"
-                  v-if="selectedForm == 'register'"
+                  v-if="selectedForm == '1'"
                 >
+                  <!-- New client registration -->
                   <el-button
                     v-if="!getClient"
                     @click="$router.push({ name: 'register' })"
                     round
                     size="small"
                     type="primary"
-                  >Registering a new company ? Click here to register.</el-button>
+                    >Registering a new company ? Click here to
+                    register.</el-button
+                  >
                 </div>
-                <!-- New client registration -->
               </template>
             </Tabs>
-            <!-- End of auth form contatiner -->
           </el-main>
         </el-container>
       </el-card>
@@ -53,7 +54,7 @@ export default {
   data() {
     return {
       newUser: false,
-      selectedForm: "login",
+      tabIndex: "0",
       formModel: {
         login: {},
         register: {},
@@ -66,6 +67,13 @@ export default {
   },
   computed: {
     ...mapGetters(["getClient"]),
+    selectedForm() {
+      if (this.tabIndex == "0") {
+        return "login";
+      } else {
+        return "register";
+      }
+    },
     returnTabs() {
       // loop the types of forms and create a label
       return [
