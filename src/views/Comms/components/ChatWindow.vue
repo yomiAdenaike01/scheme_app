@@ -6,11 +6,32 @@
 import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   name: "ChatWindow",
-  props: {
-    messages: Array | Object
+  data() {
+    return {
+      getMessagesInterval: null,
+      messages: []
+    };
+  },
+  created() {
+    this.getMessagesInterval = setInterval(() => {
+      this.getMessages({ transcript_id: this.activeTranscript._id })
+        .then(response => {
+          this.messages = messages;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }, 100000);
+  },
+  destroyed() {
+    clearInterval(this.getMessagesInterval);
+  },
+
+  computed: {
+    ...mapState("Comms", ["activeTranscript"])
   },
   methods: {
-    ...mapActions(["request"])
+    ...mapActions("Comms", ["getMessages"])
   }
 };
 </script>

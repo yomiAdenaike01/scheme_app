@@ -1,14 +1,15 @@
 <template>
   <div
-    class="previous_chat_container flex align-center flex--start p-4"
+    class="previous_chat_container flex align-center flex--space-between p-4"
     @click="UPDATE_ACTIVE_TRANSCRIPT(data)"
   >
-    <Avatar class="mr-3" :name="!participant ? 'John Doe' : participant" />
-    <div class="flex columns">
-      <p>{{content}}</p>
-      <p class="time">{{updatedAt}}</p>
+    <div class="flex align-center">
+      <Avatar class="mr-3" :name="!participant ? 'John Doe' : participant" />
+      <div class="flex columns">
+        <p>{{content}}</p>
+        <p class="time">{{updatedAt}}</p>
+      </div>
     </div>
-
     <i class="el-icon-view" :style="{color:getSidebarColour}" v-if="activeTranscript._id == id"></i>
   </div>
 </template>
@@ -64,6 +65,7 @@ export default {
 
 <style lang="scss" scoped>
 .previous_chat_container {
+  flex: 1;
   line-height: 1.5em;
   cursor: pointer;
   border-bottom: 1.5px solid #efefef;

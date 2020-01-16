@@ -1,4 +1,20 @@
 export default {
+  getMessages(context, payload) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch(
+          "request",
+          { method: "POST", url: "messenger/messages", data: payload },
+          { root: true }
+        )
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
   startChat(context, payload) {
     return new Promise((resolve, reject) => {
       context
