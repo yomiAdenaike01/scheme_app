@@ -6,10 +6,7 @@ import firebase from "firebase";
 // Plugins
 import "./plugins/mobile";
 import "./plugins/resizeText";
-
-import Element from "element-ui";
-import "@/assets/element-variables.scss";
-import locale from "element-ui/lib/locale/lang/en";
+import "./plugins/element";
 
 try {
   firebase.initializeApp({
@@ -24,8 +21,6 @@ try {
 } catch (error) {
   console.warn(error);
 }
-
-Vue.use(Element, { locale });
 
 new Vue({
   router,

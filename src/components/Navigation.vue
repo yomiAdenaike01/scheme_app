@@ -12,6 +12,7 @@
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
       <i :class="route.icon" class="home_icon"></i>
+      <span slot="title">{{ route.name }}</span>
     </el-menu-item>
   </el-menu>
 </template>
