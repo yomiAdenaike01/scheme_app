@@ -12,7 +12,7 @@
       border
       size="small"
     ></el-checkbox>
-
+    <!-- No shifts to display -->
     <el-row style="height:98%; overflow:auto">
       <el-card class="mt-3" v-if="!returnAnyShifts" shadow="none">
         <Title

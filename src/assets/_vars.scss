@@ -87,6 +87,9 @@ body {
 .black {
   color: black;
 }
+.columns {
+  flex-direction: column;
+}
 
 a {
   text-decoration: none;

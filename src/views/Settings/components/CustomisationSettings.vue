@@ -1,26 +1,25 @@
 <template>
-  <div class="customisation_wrapper">
-    <p>Primary Colour</p>
+  <div class="customisation_wrapper flex_center columns">
+    <Title defaultClass="m-0" subtitle="Primary Colour" />
     <ThemeSelection />
-    <p>Sidebar Colour</p>
-    <el-color-picker size="medium" />
-    <br />
-    <div class="reset_button_container">
-      <el-button @click="RESET_THEME">Reset theme settings</el-button>
-    </div>
+    <Title defaultClass="m-0" subtitle="Sidebar Colour" />
+    <ThemeSelection />
   </div>
 </template>
 
 <script>
 import ThemeSelection from "@/components/ThemeSelection";
 import { mapMutations } from "vuex";
+import Title from "@/components/Title";
 export default {
   name: "CustomisationSettings",
-  components: {
-    ThemeSelection
-  },
+
   methods: {
     ...mapMutations(["RESET_THEME"])
+  },
+  components: {
+    ThemeSelection,
+    Title
   }
 };
 </script>

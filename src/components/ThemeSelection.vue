@@ -1,11 +1,6 @@
 <template>
   <div class="colour_picker_wrapper">
-    <el-color-picker
-      v-model="theme"
-      :predefine="colours"
-      class="theme-picker"
-      popper-class="theme-picker-dropdown"
-    />
+    <el-color-picker v-model="theme" :predefine="colours" class="theme_picker" />
     <!-- <div class="flex_center">
       <slot v-if="false"></slot>
     </div>-->
@@ -172,38 +167,3 @@ export default {
 </script>
 
 
-<style lang="scss" scoped>
-.colour_picker_wrapper {
-  text-align: center;
-
-  .theme-picker {
-    .el-color-picker__trigger {
-      width: 500px;
-      height: 500px;
-    }
-  }
-}
-
-.theme-message,
-.theme-picker-dropdown {
-  z-index: 99999 !important;
-}
-
-.theme-picker-dropdown .el-color-dropdown__link-btn {
-  display: none;
-}
-.colour_unit {
-  padding: 1em;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-.predefined_colours_container {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  cursor: pointer;
-}
-</style>
