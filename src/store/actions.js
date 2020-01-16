@@ -14,11 +14,11 @@ const sortPayload = (state, payload) => {
 };
 
 export default {
-  updateTheme(context, update) {
+  updateTheme(context, content) {
     context.dispatch("request", {
       method: "POST",
       url: "clients/update",
-      data: { update }
+      data: { update: content }
     });
   },
   updateSettings(context) {

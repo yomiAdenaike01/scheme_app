@@ -1,6 +1,8 @@
 import storage from "./storage";
 import sounds from "@/mixins/playSound";
-import theme from "@/mixins/theme";
+import alterTheme from "@/mixins/alterTheme";
+import Vue from "vue";
+Vue.mixin(alterTheme);
 export default {
   UPDATE_COLOURS(state, { target, val }) {
     state.localSettings.colours[target] = val;
@@ -18,7 +20,7 @@ export default {
   },
   UPDATE_CLIENT(state, payload) {
     state.client = payload;
-    theme.methods.mutateTheme(payload.company_colours);
+    // alterTheme.mutateTheme(payload.company_colours);
   },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
     state.weeklyTimesheetUploaded = payload;
@@ -63,7 +65,7 @@ export default {
       sounds.methods.playSuccessSound();
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
-      sounds.methods.playErrorSound();
+      // sounds.methods.playErrorSound();
     } else if (notification.message == "network error") {
       state.critical_network_error = true;
     }

@@ -1,7 +1,12 @@
-import { mapMutations, mapState, mapGetters, mapActions } from "vuex";
+import { mapMutations, mapActions, mapGetters } from "vuex";
 const version = require("element-ui/package.json").version; // element-ui version from node_modules
 const ORIGINAL_THEME = "#409EFF"; // default color
+let theme = null,
+  chalk = null;
 export default {
+  computed: {
+    ...mapGetters(["isValidClient"])
+  },
   methods: {
     ...mapActions(["updateTheme"]),
     ...mapMutations(["UPDATE_COLOURS"]),
@@ -63,12 +68,13 @@ export default {
       return clusters;
     },
 
-    async mutateTheme(val) {
+    async mutateTheme(val, syncClient) {
       if (this.target) {
         this.UPDATE_COLOURS({ target: this.target, val });
         return;
       } else {
-        const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
+        theme = val;
+        const oldVal = chalk ? theme : ORIGINAL_THEME;
         if (typeof val !== "string") return;
         const themeCluster = this.getThemeCluster(val.replace("#", ""));
         const originalCluster = this.getThemeCluster(oldVal.replace("#", ""));
@@ -91,12 +97,12 @@ export default {
             }
             localStorage.setItem("cssText", newStyle);
             styleTag.innerText = newStyle;
-            if (this.isValidClient) {
-              this.updateTheme(val);
+            if (syncClient) {
+              this.updateTheme({ company_colours: val });
             }
           };
         };
-        if (!this.chalk) {
+        if (!chalk) {
           const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`;
           await this.getCSSString(url, "chalk");
         }

@@ -1,5 +1,5 @@
 import storage from "./storage";
-import vars from "@/assets/element-variables.scss";
+import vars from "@/assets/_vars.scss";
 export default {
   theme: localStorage.getItem("cssText"),
   client: {},
@@ -25,7 +25,9 @@ export default {
       notifications: true
     },
     security: {},
-    colours: {}
+    colours: {
+      sidebar: vars.default
+    }
   },
   viewNotificationsCenter: false,
   userNotifications: [],

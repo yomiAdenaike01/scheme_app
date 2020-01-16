@@ -1,9 +1,13 @@
 <template>
-  <div class="upload_image_container mt-4">
+  <div class="upload_image_container">
     <el-upload action="/" :auto-upload="false" :on-change="emitFile" :limit="1">
-      <el-button round type="primary" icon="el-icon-upload" :size="size"
-        >Select Files</el-button
-      >
+      <el-button
+        :round="buttonConfig.round"
+        :type="buttonConfig.type"
+        :icon="buttonConfig.icon"
+        :size="buttonConfig.size"
+        :circle="buttonConfig.circle"
+      >{{buttonConfig.text}}</el-button>
       <div class="txt_center el-upload__tip" slot="tip">{{ tip }}</div>
     </el-upload>
   </div>
@@ -18,9 +22,18 @@ export default {
     };
   },
   props: {
-    size: {
-      type: String,
-      default: "medium"
+    buttonConfig: {
+      type: Object,
+      default: () => {
+        return {
+          text: "Select Files",
+          circle: "false",
+          round: true,
+          type: "primary",
+          icon: "el-icon-upload",
+          size: "medium"
+        };
+      }
     },
     readMethod: {
       type: String,
@@ -29,7 +42,7 @@ export default {
     tip: {
       type: String,
       default: () => {
-        return "jpg/png files with a size less than 500kb";
+        return "";
       }
     }
   },

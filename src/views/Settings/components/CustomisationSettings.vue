@@ -2,7 +2,7 @@
   <div class="customisation_wrapper">
     <div class="flex_center columns">
       <Title defaultClass="m-0" subtitle="Primary Colour" />
-      <ThemeSelection />
+      <ThemeSelection :syncClient="true" />
       <Title defaultClass="m-0" subtitle="Sidebar Colour" />
       <ThemeSelection target="sidebar" />
     </div>
@@ -17,7 +17,6 @@ import { mapMutations } from "vuex";
 import Title from "@/components/Title";
 export default {
   name: "CustomisationSettings",
-
   methods: {
     ...mapMutations(["RESET_THEME"])
   },

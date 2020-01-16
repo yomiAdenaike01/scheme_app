@@ -2,6 +2,9 @@ export default {
   isValidClient(state, getters) {
     return Object.keys(state.client).length > 0;
   },
+  getSidebarColour(state) {
+    return state.localSettings.colours.sidebar;
+  },
   getClient(state) {
     let client;
     if (Object.keys(state.client).length > 0) {

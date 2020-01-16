@@ -43,7 +43,6 @@ import ClientImage from "@/components/ClientImage";
 import uploadContent from "@/mixins/uploadContent";
 export default {
   name: "ClientAuth",
-  mixins: [uploadContent],
   created() {
     let allForms = this.returnRegisterForm.concat(this.returnClientForm);
     allForms.map(form => {
@@ -54,7 +53,7 @@ export default {
       }
     });
   },
-  mixins: [refactorLocation],
+  mixins: [refactorLocation, uploadContent],
   data() {
     return {
       selectedTab: "0",
@@ -183,7 +182,10 @@ export default {
         .toLowerCase();
       clientRegisterData.company_colours = this.colourOptions;
 
-      this.upload()
+      this.upload({
+        ref: { folder: "clients", file: null },
+        content: this.imageFileContent
+      })
         .then(response => {
           clientRegisterData.company_image = response.url;
           clientRegisterData.storage_ref = response.ref;

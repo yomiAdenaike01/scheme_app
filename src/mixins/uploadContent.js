@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import "firebase/storage";
 import uuid from "uuid";
 
 export default {
@@ -6,9 +6,10 @@ export default {
     upload({ ref, content }) {
       let { folder, file } = ref;
       const storage = firebase.storage().ref();
+      let storageRefID = uuid();
       return new Promise((resolve, reject) => {
         let storageTask = storage
-          .child(`${folder}/${file ? file : uuid()}`)
+          .child(`${folder}/${file ? file : storageRefID}`)
           .putString(content, "data_url");
 
         storageTask.on(

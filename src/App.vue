@@ -28,6 +28,7 @@ import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
 import ErrorDialog from "@/components/ErrorDialog";
+import alterTheme from "@/mixins/alterTheme";
 export default {
   name: "app",
   data() {
@@ -60,6 +61,13 @@ export default {
           this.resolving = false;
         });
     }, 6000);
+
+    // this.$store.subscribe((mutation, state) => {
+    //   if (mutation.type === "UPDATE_CLIENT") {
+    //     let { company_colours } = state.client;
+    //     this.mutateTheme(company_colours);
+    //   }
+    // });
   },
   beforeDestroy() {
     clearInterval(this.clientInterval);
@@ -68,7 +76,7 @@ export default {
     ...mapState(["notifications", "defaultSize", "client"]),
     ...mapGetters(["isValidClient"])
   },
-  mixins: [refactorLocation],
+  mixins: [refactorLocation, alterTheme],
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
@@ -103,6 +111,10 @@ export default {
   },
 
   watch: {
+    "client.company_colours"(val) {
+      console.log(val);
+      this.mutateTheme(val);
+    },
     notifications(val) {
       this.$notify(val[0]);
     }

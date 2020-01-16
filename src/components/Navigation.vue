@@ -7,7 +7,7 @@
     mode="vertical"
     :collapse="true"
     text-color="#fff"
-    :background-color="colours"
+    :background-color="getSidebarColour"
     :active-text-color="lightColour"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
@@ -18,14 +18,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 var tinycolor = require("tinycolor2");
 export default {
   name: "Navigation",
   data() {
     return {
       isCollapse: true,
-      colours: "#0d243f",
       routes: [
         {
           name: "Dashboard",
@@ -52,20 +51,11 @@ export default {
   },
   computed: {
     ...mapState(["client", "localSettings"]),
+    ...mapGetters(["getSidebarColour"]),
     lightColour() {
       let baseColour = tinycolor(this.colours);
       return baseColour.lighten(50).toString();
     }
-  },
-
-  created() {
-    this.$store.subscribe((mutation, state) => {
-      if (mutation.type === "UPDATE_COLOURS") {
-        let { colours } = state.localSettings;
-        console.log(colours.sidebar);
-        this.colours = colours.sidebar;
-      }
-    });
   }
 };
 </script>

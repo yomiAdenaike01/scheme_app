@@ -10,8 +10,15 @@
             <Tabs
               v-loading="loading"
               :tabs="returnTabs"
-              :submitText="tabIndex == '0' ? 'Login' : 'Register'"
+              :submitText="
+                tabIndex == '0' && isValidClient
+                  ? 'Login'
+                  : !isValidClient
+                  ? 'Invalid client please register'
+                  : 'Register'
+              "
               v-model="tabIndex"
+              :disable="!isValidClient"
               @val="
                 formModel[selectedForm] = $event;
                 processUser();
@@ -21,11 +28,11 @@
                 <!-- New client registration -->
                 <div
                   class="new_client_button_container mb-4 mt-4"
-                  v-if="selectedForm == '1'"
+                  v-if="tabIndex != '0'"
                 >
                   <!-- New client registration -->
                   <el-button
-                    v-if="!getClient"
+                    v-if="!isValidClient"
                     @click="$router.push({ name: 'register' })"
                     round
                     size="small"
@@ -66,7 +73,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getClient"]),
+    ...mapGetters(["isValidClient"]),
     selectedForm() {
       if (this.tabIndex == "0") {
         return "login";
