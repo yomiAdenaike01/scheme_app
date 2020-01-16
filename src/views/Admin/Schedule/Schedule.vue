@@ -5,48 +5,14 @@
     element-loading-text="Loading team members please wait..."
   >
     <Title title="Schedule" subtitle="View your calendar" />
-    <el-row v-loading="loading" type="flex">
-      <el-col class="pl-3 pr-3">
-        <el-row class="mb-4" type="flex" :gutter="10" align="middle">
-         
-          <el-col>
-            <el-button
-              @click="modals.create_event = true"
-              round
-              type="primary"
-              size="small"
-            >
-              {{ getIsAdmin ? "Create Event" : "Create Request" }}
-              <i class="el-icon-plus"></i>
-            </el-button>
-            <el-button
-              v-if="getIsAdmin"
-              round
-              type="primary"
-              size="small"
-              @click="modals.create_employee = true"
-            >
-              Create Employee
-              <i class="el-icon-plus"></i>
-            </el-button>
-          </el-col>
-        </el-row>
-        <ScheduleCalendar
-          @displayCreateShift="modals.create_event = $event"
-          style="height:60%"
-        />
-      </el-col>
-    </el-row>
-
+    <Toolbar @modalChanges="self.modals[$event] = true" class="m-3" />
+    <ScheduleCalendar @displayCreateShift="modals.create_event =$event" class="cal" />
     <CreateShift
       @toggle="modals.create_event = $event"
       @createEvent="createEvent"
       :display="modals.create_event"
     />
-    <CreateEmployee
-      @toggle="modals.create_employee = $event"
-      :display="modals.create_employee"
-    />
+    <CreateEmployee @toggle="modals.create_employee = $event" :display="modals.create_employee" />
   </div>
 </template>
 
@@ -55,14 +21,16 @@ import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import CreateShift from "./components/CreateShift";
 import CreateEmployee from "./components/CreateEmployee";
-
+import Toolbar from "./components/Toolbar";
 import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";
 import ScheduleCalendar from "./components/ScheduleCalendar";
+import Title from "@/components/Title";
 export default {
   name: "Schedule",
   data() {
     return {
+      self: this,
       loading: false,
       liveSchedule: false,
       scheduleInterval: null,
@@ -214,12 +182,13 @@ export default {
   mixins: [dates],
 
   components: {
-    Title: () => import("@/components/Title"),
+    Title,
     ScheduleCalendar,
     CreateShift,
     Dropdown,
     Popover,
-    CreateEmployee
+    CreateEmployee,
+    Toolbar
   }
 };
 </script>
@@ -252,5 +221,8 @@ span {
 }
 .icon {
   cursor: pointer;
+}
+.cal {
+  height: 80%;
 }
 </style>

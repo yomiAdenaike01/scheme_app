@@ -1,14 +1,5 @@
 <template>
   <div>
-    <!-- <el-select v-model="default_view">
-      <el-option
-        v-for="(option, index) in returnCalendarOptions"
-        :key="index"
-        :label="option.label"
-        :value="option.value"
-        >{{ option.label }}</el-option
-      >
-    </el-select> -->
     <vue-cal
       v-loading="loading"
       :events="returnShiftEvents"
