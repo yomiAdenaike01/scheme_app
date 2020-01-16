@@ -10,7 +10,9 @@
         <p class="time">{{updatedAt}}</p>
       </div>
     </div>
-    <i class="el-icon-view" :style="{color:getSidebarColour}" v-if="activeTranscript._id == id"></i>
+    <transition name="el-fade-in">
+      <i class="el-icon-view" :style="{color:getSidebarColour}" v-if="activeTranscript._id == id"></i>
+    </transition>
   </div>
 </template>
 

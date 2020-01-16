@@ -16,7 +16,7 @@ export default {
     this.getMessagesInterval = setInterval(() => {
       this.getMessages({ transcript_id: this.activeTranscript._id })
         .then(response => {
-          this.messages = messages;
+          this.messages = response;
         })
         .catch(error => {
           console.log(error);
