@@ -1,6 +1,6 @@
 <template>
   <div
-    class="previous_chat_container flex align-center flex--space-between p-4"
+    :class="['previous_chat_container flex align-center flex--space-between',{selected:activeTranscript._id == id}]"
     @click="UPDATE_ACTIVE_TRANSCRIPT(data)"
   >
     <div class="flex align-center">
@@ -11,7 +11,11 @@
       </div>
     </div>
     <transition name="el-fade-in">
-      <i class="el-icon-view" :style="{color:getSidebarColour}" v-if="activeTranscript._id == id"></i>
+      <div
+        v-if="activeTranscript._id == id"
+        class="selected_indicator"
+        :style="{backgroundColor:client.company_colours}"
+      ></div>
     </transition>
   </div>
 </template>
@@ -30,6 +34,7 @@ export default {
   computed: {
     ...mapState("Admin", ["team"]),
     ...mapState("Comms", ["activeTranscript"]),
+    ...mapState(["client"]),
     ...mapGetters(["getSidebarColour"]),
 
     participant() {
@@ -69,15 +74,25 @@ export default {
 .previous_chat_container {
   flex: 1;
   line-height: 1.5em;
+  min-height: 100px;
   cursor: pointer;
   border-bottom: 1.5px solid #efefef;
   transition: 0.15s linear all;
+  padding-left: 10px;
   &:hover {
     background: darken($color: #fff, $amount: 2);
+  }
+  &.selected {
+    box-shadow: $box_shadow;
   }
 }
 .time {
   color: rgb(172, 172, 172);
   font-size: 0.9em;
+}
+.selected_indicator {
+  width: 10px;
+  height: 100%;
+  min-height: 100px;
 }
 </style>

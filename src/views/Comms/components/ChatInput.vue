@@ -66,8 +66,8 @@ export default {
 .chat_input_container {
   position: absolute;
   border-radius: 10px;
-  left: 10%;
-  right: 10%;
+  right: 0;
+  left: 0;
   bottom: 0;
 }
 </style>

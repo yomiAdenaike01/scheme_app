@@ -1,5 +1,5 @@
 <template>
-  <div class="chat_window_container">
+  <div class="chat_window_container" v-loading="loading">
     <ChatMessage v-for="message in messages" :key="message._id" :message="message" />
   </div>
 </template>
@@ -12,10 +12,22 @@ export default {
   data() {
     return {
       getMessagesInterval: null,
-      messages: []
+      messages: [],
+      loading: true
     };
   },
   created() {
+    this.getMessages({ transcript_id: this.activeTranscript._id })
+      .then(response => {
+        this.messages = response;
+        this.loading = false;
+      })
+      .catch(error => {
+        console.log(error);
+        this.loading = false;
+      });
+  },
+  mounted() {
     this.getMessagesInterval = setInterval(() => {
       this.getMessages({ transcript_id: this.activeTranscript._id })
         .then(response => {
