@@ -53,8 +53,12 @@ export default {
     ...mapState(["client", "localSettings"]),
     ...mapGetters(["getSidebarColour"]),
     lightColour() {
-      let baseColour = tinycolor(this.colours);
-      return baseColour.lighten(50).toString();
+      let baseColour = tinycolor(this.getSidebarColour);
+      if (baseColour.isLight()) {
+        return baseColour.darken(10).toString();
+      } else {
+        return baseColour.lighten(40).toString();
+      }
     }
   }
 };

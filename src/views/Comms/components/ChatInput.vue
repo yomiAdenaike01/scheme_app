@@ -1,9 +1,9 @@
 <template>
   <div class="input_container">
     <div class="chat_input_container flex flex--space-between">
-      <el-input placeholder="Chat Body" v-model="chatContent.content" />
+      <el-input placeholder="Type message here...." type="textarea" v-model="chatContent.content" />
       <el-button circle icon="el-icon-position"></el-button>
-      <UploadFile :buttonConfig="{round:true,icon:'el-icon-paperclip',circle:true}" />
+      <UploadFile :buttonConfig="{round:true,icon:'el-icon-paperclip',circle:'true'}" />
     </div>
   </div>
 </template>
@@ -37,13 +37,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.input_container {
-  width: 50%;
-  height: 100%;
-}
 .chat_input_container {
-  .el-input {
-    width: 200px;
-  }
+  width: 50%;
+  position: absolute;
+  left: 0%;
+  right: 0;
+  bottom: 0;
 }
 </style>

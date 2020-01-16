@@ -1,15 +1,8 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col
-      class="client_indicator"
-      :style="{ borderRight: `1.5px solid #efefef` }"
-    >
-      <ClientImage v-if="$mq == 'lg'" :responsive="true" />
-      <div
-        v-else
-        class="nav_toggle"
-        @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
-      >
+    <el-col class="client_indicator" :style="{ borderRight: `1.5px solid #efefef` }">
+      <ClientImage v-if="$mq == 'lg'" :responsive="true" :center="true" />
+      <div v-else class="nav_toggle" @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)">
         <i class="el-icon el-icon-menu"></i>
       </div>
     </el-col>
@@ -18,10 +11,7 @@
         <Dropdown :items="items" @method="handleCommands" :icon="false">
           <Avatar :name="currentUser.name" />
         </Dropdown>
-        <el-badge
-          :value="userNotifications.length"
-          class="item ml-2 mt-1 primary"
-        >
+        <el-badge :value="userNotifications.length" class="item ml-2 mt-1 primary">
           <el-button
             size="small"
             @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"

@@ -1,6 +1,6 @@
 <template>
   <div class="chatbody_container flex columns">
-    <div v-if="!isActiveChat" class="height-100">
+    <div v-if="!isActiveChat" class="window_wrapper height-100">
       <ChatWindow />
       <ChatInput />
     </div>
@@ -29,8 +29,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.window_wrapper {
+  position: relative;
+  height:100%;
+}
 .chatbody_container {
   width: 100%;
+  height: 100%;
 }
 .no_active_chat {
   height: 100%;

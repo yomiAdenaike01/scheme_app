@@ -6,6 +6,8 @@ $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 #app {
   height: 100%;
   overflow: hidden;
+  border-collapse: collapse;
+
   /**
   _   _  _  ___ _  _    ___
   | \_/ |/ \| o ) || |  | __|
