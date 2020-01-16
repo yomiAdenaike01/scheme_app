@@ -5,7 +5,7 @@
       <PreviousChat :key="transcript._id" :data="transcript" v-for="transcript in transcripts" />
     </div>
     <!-- Error display -->
-    <ErrorDisplay v-else />
+    <NoChats v-else />
   </el-col>
 </template>
 
@@ -13,7 +13,7 @@
 import { mapState, mapGetters } from "vuex";
 import PreviousChat from "./PreviousChat";
 import ChatListHeader from "./ChatListHeader";
-import ErrorDisplay from "./ErrorDisplay";
+import NoChats from "./NoChats";
 export default {
   name: "ChatList",
   computed: {
@@ -26,7 +26,7 @@ export default {
   components: {
     PreviousChat,
     ChatListHeader,
-    ErrorDisplay
+    NoChats
   }
 };
 </script>

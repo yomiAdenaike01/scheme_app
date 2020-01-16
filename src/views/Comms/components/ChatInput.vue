@@ -1,10 +1,22 @@
 <template>
-  <div class="input_container">
-    <div class="chat_input_container flex flex--space-between">
-      <el-input placeholder="Type message here...." type="textarea" v-model="chatContent.content" />
-      <el-button circle icon="el-icon-position"></el-button>
-      <UploadFile :buttonConfig="{round:true,icon:'el-icon-paperclip',circle:'true'}" />
-    </div>
+  <div class="chat_input_container columns">
+    <el-input
+      @keyup.enter="sendMessage"
+      placeholder="Type message here...."
+      v-model="chatContent.content"
+      resize="both"
+    >
+      <template slot="prepend">
+        <UploadFile
+          :buttonConfig="{type:'text',round:true,icon:'el-icon-paperclip',circle:'true'}"
+        />
+      </template>
+      <template slot="append">
+        <div class="flex">
+          <el-button type="text" circle icon="el-icon-position" @click="sendMessage" />
+        </div>
+      </template>
+    </el-input>
   </div>
 </template>
 
@@ -28,7 +40,21 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations("Comms", ["POLL_CHAT"])
+    ...mapMutations("Comms", ["POLL_CHAT", "UPDATE_MESSAGES"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    sendMessage() {
+      let { attatchments, content, transcript_id } = this.chatContent;
+      if (!attatchments || !content) {
+        this.UPDATE_NOTIFICATIONS({
+          type: "warning",
+          message: "Messages must have content"
+        });
+      } else {
+        this.request(this.chatContent).then(response => {
+          this.UPDATE_MESSAGES(response);
+        });
+      }
+    }
   },
   components: {
     UploadFile
@@ -38,10 +64,10 @@ export default {
 
 <style lang="scss" scoped>
 .chat_input_container {
-  width: 50%;
   position: absolute;
-  left: 0%;
-  right: 0;
+  border-radius: 10px;
+  left: 10%;
+  right: 10%;
   bottom: 0;
 }
 </style>

@@ -2,16 +2,25 @@
   <div class="error_display flex_center columns">
     <i :style="{color:getClient.company_colours}" class="el-icon-chat-round no_chat_indiciator"></i>
     <p>No previous chats found</p>
-    <el-button size="small" icon="el-icon-plus" round type="primary">Start New Chat</el-button>
+    <el-button
+      size="small"
+      icon="el-icon-plus"
+      round
+      type="primary"
+      @click="UPDATE_START_NEW_CHAT(true)"
+    >Start New Chat</el-button>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 export default {
-  name: "ErrorDisplay",
+  name: "NoChats",
   computed: {
     ...mapGetters(["getClient"])
+  },
+  methods: {
+    ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"])
   }
 };
 </script>

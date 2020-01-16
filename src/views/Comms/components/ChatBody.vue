@@ -31,11 +31,10 @@ export default {
 <style lang="scss" scoped>
 .window_wrapper {
   position: relative;
-  height:100%;
+  flex: 0.9;
 }
 .chatbody_container {
-  width: 100%;
-  height: 100%;
+  flex: 1;
 }
 .no_active_chat {
   height: 100%;

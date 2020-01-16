@@ -1,13 +1,7 @@
 <template>
   <div class="upload_image_container">
     <el-upload action="/" :auto-upload="false" :on-change="emitFile" :limit="1">
-      <el-button
-        :round="buttonConfig.round"
-        :type="buttonConfig.type"
-        :icon="buttonConfig.icon"
-        :size="buttonConfig.size"
-        :circle="buttonConfig.circle"
-      >{{buttonConfig.text}}</el-button>
+      <el-button v-bind="buttonConfig">{{buttonConfig.text}}</el-button>
       <div class="txt_center el-upload__tip" slot="tip">{{ tip }}</div>
     </el-upload>
   </div>

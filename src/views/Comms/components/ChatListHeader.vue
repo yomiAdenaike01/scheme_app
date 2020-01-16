@@ -4,13 +4,12 @@
     <Dropdown @method="switchMethod" placement="bottom-start" :icon="false" :items="items">
       <el-button icon="el-icon-more" type="primary" circle size="small"></el-button>
     </Dropdown>
-    <NewChatDialog :view="newChatDialog" @toggle="newChatDialog = $event" />
   </div>
 </template>
 
 <script>
-import NewChatDialog from "./NewChatDialog";
 import Dropdown from "@/components/Dropdown";
+import { mapMutations } from "vuex";
 export default {
   name: "ChatListHeader",
   data() {
@@ -30,14 +29,14 @@ export default {
     }
   },
   methods: {
+    ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"]),
     switchMethod(command) {
       if (command == "startNewChat") {
-        this.newChatDialog = true;
+        this.UPDATE_START_NEW_CHAT(true);
       }
     }
   },
   components: {
-    NewChatDialog,
     Dropdown
   }
 };

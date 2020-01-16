@@ -3,6 +3,7 @@
     <el-row type="flex" :gutter="10" class="messenger_container" v-loading="loading">
       <ChatList />
       <ChatBody />
+      <NewChatDialog />
     </el-row>
   </div>
 </template>
@@ -11,6 +12,7 @@
 import { mapActions, mapState } from "vuex";
 import ChatList from "./components/ChatList";
 import ChatBody from "./components/ChatBody";
+import NewChatDialog from "./components/NewChatDialog";
 export default {
   name: "Messenger",
   data() {
@@ -42,7 +44,8 @@ export default {
   },
   components: {
     ChatList,
-    ChatBody
+    ChatBody,
+    NewChatDialog
   }
 };
 </script>

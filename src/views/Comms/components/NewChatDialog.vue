@@ -11,7 +11,7 @@
 
 <script>
 import Title from "@/components/Title";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 export default {
   name: "NewChatDialog",
   props: {
@@ -22,14 +22,19 @@ export default {
   },
   computed: {
     ...mapState("Admin", ["team"]),
+    ...mapState("Comms", ["startNewChat"]),
+
     toggleView: {
       get() {
-        return this.view;
+        return this.startNewChat;
       },
       set(val) {
-        this.$emit("toggle", val);
+        this.UPDATE_START_NEW_CHAT(val);
       }
     }
+  },
+  methods: {
+    ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"])
   },
   components: {
     Title
