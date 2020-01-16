@@ -3,7 +3,7 @@
     <div
       :class="['message flex',{from_user:amISender}]"
       :style="{
-        backgroundColor:amISender ? 'red' : 'blue'
+        backgroundColor:amISender ? client.company_colours : 'blue'
         }"
     >
       <p>{{content}}</p>
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 import ClientImage from "@/components/ClientImage";
 export default {
   name: "ChatMessage",
@@ -23,7 +23,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["currentUser", "client"]),
     amISender() {
       return this.message.sender_id == this.currentUser._id;
     },
@@ -41,6 +41,7 @@ export default {
 .message_container {
   width: 100%;
   justify-content: flex-start;
+  color: white;
 }
 .message {
   background: #efefef;
