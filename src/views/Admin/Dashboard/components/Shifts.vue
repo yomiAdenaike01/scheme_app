@@ -14,7 +14,7 @@
     ></el-checkbox>
 
     <el-row style="height:98%; overflow:auto">
-      <el-card class="mt-3" v-if="!returnAnyShifts">
+      <el-card class="mt-3" v-if="!returnAnyShifts" shadow="none">
         <Title
           :title="noShiftsContent.title"
           :subtitle="noShiftsContent.subtitle"

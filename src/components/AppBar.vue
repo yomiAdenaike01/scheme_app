@@ -151,6 +151,7 @@ export default {
 }
 .infobar_wrapper {
   border-bottom: solid 1px #e6e6e6;
+  box-shadow: $box_shadow;
 }
 .nav_toggle {
   cursor: pointer;

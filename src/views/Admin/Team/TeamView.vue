@@ -8,8 +8,9 @@
         subtitle="View and interact with your team members here"
       />
 
-      <el-col v-for="(member, index) in team" :key="index" class="member">
+      <el-col v-for="(member, index) in team" :key="index" class="member flex_center">
         <Dropdown
+          class="p-2"
           @click.native="hoveredTeamMember = member._id"
           :items="items"
           @method="handleEvents"
@@ -115,7 +116,6 @@ export default {
 }
 .team_container {
   .el-col {
-    padding: 1em;
     border-bottom: solid 1px #e6e6e6;
     cursor: pointer;
     &:hover {
