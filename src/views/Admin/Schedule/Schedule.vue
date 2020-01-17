@@ -188,3 +188,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.cal {
+  height: 75%;
+}
+</style>

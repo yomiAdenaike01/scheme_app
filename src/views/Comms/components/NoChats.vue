@@ -1,6 +1,6 @@
 <template>
   <div class="error_display flex_center columns">
-    <i :style="{color:getClient.company_colours}" class="el-icon-chat-round no_chat_indiciator"></i>
+    <i :style="{color:colours}" class="el-icon-chat-round no_chat_indiciator"></i>
     <p>No previous chats found</p>
     <el-button
       size="small"
@@ -16,7 +16,10 @@ import { mapGetters, mapMutations } from "vuex";
 export default {
   name: "NoChats",
   computed: {
-    ...mapGetters(["getClient"])
+    ...mapGetters(["isValidClient ,getClient"]),
+    colours() {
+      return this.getClient ? this.getClient.company_colours : "";
+    }
   },
   methods: {
     ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"])

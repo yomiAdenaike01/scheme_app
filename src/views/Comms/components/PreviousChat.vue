@@ -4,7 +4,7 @@
     @click="UPDATE_ACTIVE_TRANSCRIPT(data)"
   >
     <div class="flex align-center">
-      <Avatar class="mr-3" :name="!participant ? 'John Doe' : participant" />
+      <Avatar class="mr-3" :name="participant.name" />
       <div class="flex columns">
         <p>{{content}}</p>
         <p class="time">{{updatedAt}}</p>
@@ -23,9 +23,12 @@
 <script>
 import moment from "moment";
 import Avatar from "@/components/Avatar";
+import findTeam from "@/mixins/findTeam";
+
 import { mapState, mapMutations, mapGetters } from "vuex";
 export default {
   name: "PreviousChat",
+  mixins: [findTeam],
   props: {
     data: {
       type: Object
@@ -36,17 +39,10 @@ export default {
     ...mapState("Comms", ["activeTranscript"]),
     ...mapState(["client"]),
     ...mapGetters(["getSidebarColour"]),
-
     participant() {
-      let foundUser = this.team.find(member => {
-        return member._id == this.data.user_2;
-      });
-      if (!foundUser) {
-        foundUser = "";
-      } else {
-        foundUser = foundUser.name;
-      }
-      return foundUser;
+      return this.findTeamMember(this.data.user_2)
+        ? this.findTeamMember(this.data.user_2)
+        : "John Doe";
     },
     updatedAt() {
       return moment().calendar(this.data.updated_at);

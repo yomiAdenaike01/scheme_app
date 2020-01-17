@@ -5,12 +5,12 @@ export default {
   getSidebarColour(state) {
     return state.localSettings.colours.sidebar;
   },
-  getClient(state) {
-    let client;
-    if (Object.keys(state.client).length > 0) {
-      client = state.client;
+  getClient(state, getters) {
+    if (getters.isValidClient) {
+      return state.client;
+    } else {
+      return {};
     }
-    return client;
   },
   getPreferences(state) {
     return state.currentUser.preferences;

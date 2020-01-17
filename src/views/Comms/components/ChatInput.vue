@@ -1,17 +1,29 @@
 <template>
   <div class="chat_input_container columns">
     <el-input
-      @keyup.enter="sendMessage"
+      @keypress.enter="sendMessage"
       placeholder="Type message here...."
       v-model="chatContent.content"
       resize="both"
     >
       <template slot="prepend">
-        <UploadFile :buttonConfig="{type:'text',round:true,icon:'el-icon-paperclip',circle:true}" />
+        <UploadFile
+          :buttonConfig="{
+            type: 'text',
+            round: true,
+            icon: 'el-icon-paperclip',
+            circle: true
+          }"
+        />
       </template>
       <template slot="append">
         <div class="flex">
-          <el-button type="text" circle icon="el-icon-position" @click="sendMessage" />
+          <el-button
+            type="text"
+            circle
+            icon="el-icon-position"
+            @click="sendChatMessage"
+          />
         </div>
       </template>
     </el-input>
@@ -33,24 +45,31 @@ export default {
       }
     };
   },
-  comnputed: {
-    ...mapState([])
+  computed: {
+    ...mapState("Comms", ["activeTranscript"])
   },
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions("Comms", ["sendMessage"]),
     ...mapMutations("Comms", ["POLL_CHAT", "UPDATE_MESSAGES"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
-    sendMessage() {
+    sendChatMessage() {
       let { attatchments, content, transcript_id } = this.chatContent;
-      if (!attatchments || !content) {
+      if (!attatchments && !content) {
         this.UPDATE_NOTIFICATIONS({
           type: "warning",
           message: "Messages must have content"
         });
       } else {
-        this.request(this.chatContent).then(response => {
-          this.UPDATE_MESSAGES(response);
-        });
+        this.chatContent.transcript_id = this.activeTranscript._id;
+        this.chatContent.reciever_id = this.activeTranscript.user_2;
+
+        this.sendMessage(this.chatContent)
+          .then(response => {
+            return response;
+          })
+          .catch(error => {
+            return error;
+          });
       }
     }
   },

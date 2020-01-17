@@ -24,6 +24,11 @@ export default {
           name: `Start new chat`,
           icon: "el-icon-plus",
           command: "startNewChat"
+        },
+        {
+          name: `Delete chat`,
+          icon: "el-icon-close",
+          command: "removeChat"
         }
       ];
     }

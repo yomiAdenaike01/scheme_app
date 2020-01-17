@@ -1,4 +1,22 @@
 export default {
+  sendMessage(context, payload) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch(
+          "request",
+          {
+            method: "POST",
+            url: "messenger/send",
+            data: payload
+          },
+          { root: true }
+        )
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => reject(error));
+    });
+  },
   getMessages(context, payload) {
     return new Promise((resolve, reject) => {
       context

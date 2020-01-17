@@ -1,12 +1,16 @@
-<template >
-  <div class="flex message_container" :class="{['flex--end']:amISender}">
+<template>
+  <div class="flex message_container" :class="{ ['flex--end']: amISender }">
     <div
-      :class="['message flex',{from_user:amISender}]"
+      :class="[
+        'message mt-1 mr-3 ml-3 flex',
+        { from_user: amISender },
+        { not_user: !amISender }
+      ]"
       :style="{
-        backgroundColor:amISender ? client.company_colours : 'blue'
-        }"
+        backgroundColor: amISender ? client.company_colours : '#cccc'
+      }"
     >
-      <p>{{content}}</p>
+      <p>{{ content }}</p>
     </div>
   </div>
 </template>
@@ -46,8 +50,13 @@ export default {
 .message {
   background: #efefef;
   padding: 1em;
+  border-radius: 20px;
+
   &.from_user {
-    border-top-right-radius: 10px;
+    border-bottom-right-radius: 1px;
+  }
+  &.not_user {
+    border-bottom-left-radius: 1px;
   }
 }
 </style>
