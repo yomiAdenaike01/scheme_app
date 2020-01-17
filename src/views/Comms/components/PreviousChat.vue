@@ -1,20 +1,32 @@
 <template>
   <div
-    :class="['previous_chat_container flex align-center flex--space-between',{selected:activeTranscript._id == id}]"
+    :class="[
+      'previous_chat_container flex align-center flex--space-between',
+      { selected: activeTranscript._id == id }
+    ]"
     @click="UPDATE_ACTIVE_TRANSCRIPT(data)"
   >
     <div class="flex align-center">
+      <!-- Select chat to delete indicator -->
+      <el-checkbox
+        v-if="selectionState"
+        v-model="deleteChatIndicator"
+        size="medium"
+        class="mr-4"
+        
+      />
       <Avatar class="mr-3" :name="participant.name" />
       <div class="flex columns">
-        <p>{{content}}</p>
-        <p class="time">{{updatedAt}}</p>
+        <p>{{ content }}</p>
+        <p class="time">{{ updatedAt }}</p>
       </div>
     </div>
+    <!-- Indicator for selected chat -->
     <transition name="el-fade-in">
       <div
         v-if="activeTranscript._id == id"
         class="selected_indicator"
-        :style="{backgroundColor:client.company_colours}"
+        :style="{ backgroundColor: client.company_colours }"
       ></div>
     </transition>
   </div>
@@ -28,15 +40,24 @@ import findTeam from "@/mixins/findTeam";
 import { mapState, mapMutations, mapGetters } from "vuex";
 export default {
   name: "PreviousChat",
+  data() {
+    return {
+      deleteChatIndicator: ""
+    };
+  },
   mixins: [findTeam],
   props: {
     data: {
       type: Object
+    },
+    selectionState:{
+      type:Boolean,
+      default:false
     }
   },
   computed: {
     ...mapState("Admin", ["team"]),
-    ...mapState("Comms", ["activeTranscript"]),
+    ...mapState("Comms", ["activeTranscript",'selectedChat']),
     ...mapState(["client"]),
     ...mapGetters(["getSidebarColour"]),
     participant() {
@@ -55,6 +76,10 @@ export default {
     },
     id() {
       return this.data._id;
+    },
+    isSelectedToRemove(){
+      let selectedChat = this.selectedChat;
+      return selectedChat == this.id;
     }
   },
   methods: {
@@ -62,6 +87,13 @@ export default {
   },
   components: {
     Avatar
+  },
+  watch: {
+    deleteChatIndicator(val) {
+      if (val) {
+        this.$emit("selectedChat", this.id);
+      }
+    }
   }
 };
 </script>

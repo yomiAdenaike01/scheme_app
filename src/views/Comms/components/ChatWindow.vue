@@ -1,7 +1,7 @@
 <template>
   <div class="chat_window_container" v-loading="false">
-    <div class="banner p-2">
-      <!-- <Avatar :name="returnTeamMember.name" /> -->
+    <div class="banner p-2 mb-4">
+      <Avatar :name="returnTeamMember" />
     </div>
     <transition-group name="el-fade-in">
       <ChatMessage
@@ -57,7 +57,12 @@ export default {
   computed: {
     ...mapState("Comms", ["activeTranscript"]),
     returnTeamMember() {
-      return this.findTeamMember(this.activeTranscript.user_2);
+      let teamMember = this.findTeamMember(this.activeTranscript.user_2);
+      if (teamMember) {
+        return teamMember.name;
+      } else {
+        return "John Doe";
+      }
     }
   },
   methods: {

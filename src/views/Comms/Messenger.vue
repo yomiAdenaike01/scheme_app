@@ -21,7 +21,7 @@ export default {
       loading: true
     };
   },
-  created() {
+  activated() {
     this.getTranscripts()
       .then(response => {
         this.loading = false;

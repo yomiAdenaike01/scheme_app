@@ -9,6 +9,7 @@ export default {
       state.messages.push(payload.messages);
     }
   },
+  
   UPDATE_TRANSCRIPTS(state, payload) {
     if (payload.type == "all") {
       state.transcripts = payload.data;

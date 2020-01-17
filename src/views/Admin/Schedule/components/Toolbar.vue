@@ -8,8 +8,7 @@
         :round="button.round"
         :type="button.type ? button.type :'primary'"
         :key="key"
-        plain
-        size="small"
+        size="medium"
         @click="button.emit ? $emit('modalChanges',button.emit) : button.method ? button.method : null"
       >{{button.label}}</el-button>
     </el-col>

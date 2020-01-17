@@ -36,8 +36,15 @@ export default {
   methods: {
     ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"]),
     switchMethod(command) {
-      if (command == "startNewChat") {
+      switch(command){
+        case 'startNewChat':{
         this.UPDATE_START_NEW_CHAT(true);
+        break;
+        }
+        case 'removeChat':{
+          this.$emit("removeChat");
+          break;
+        }
       }
     }
   },

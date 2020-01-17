@@ -1,4 +1,17 @@
 export default {
+  deleteChat(context,payload){
+    return new Promise((resolve,reject)=>{
+      context.dispatch('request',{
+        method:'DELETE',
+        url:'messenger/transcripts',
+        data:payload
+      },{root:true}).then(response=>{
+        resolve(response);
+      }).catch(error=>{
+        reject(error);
+      })
+    })
+  },
   sendMessage(context, payload) {
     return new Promise((resolve, reject) => {
       context
@@ -51,6 +64,8 @@ export default {
     });
   },
   getTranscripts(context) {
+    let {transcripts} = context.state;
+    if(transcripts.length <= 0){
     return new Promise((resolve, reject) => {
       const anyTranscripts = context.state.transcripts.length <= 0;
       if (anyTranscripts) {
@@ -73,4 +88,5 @@ export default {
       }
     });
   }
+}
 };

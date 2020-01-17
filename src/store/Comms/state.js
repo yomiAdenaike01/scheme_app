@@ -2,5 +2,6 @@ export default {
   messages: [],
   transcripts: [],
   activeTranscript: {},
-  startNewChat: false
+  startNewChat: false,
+  selectedChat:'',
 };

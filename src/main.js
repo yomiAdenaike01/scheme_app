@@ -7,6 +7,8 @@ import "./plugins/mobile";
 import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
+import "./plugins/clickOutside";
+
 
 new Vue({
   router,
