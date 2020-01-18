@@ -1,15 +1,10 @@
 <template>
   <div class="moreinformation_container">
-    <Popover :position="hoverPosition" trigger="click" width="250">
-      <el-button
-        slot="trigger"
-        round
-        icon="el-icon-help"
-        @click="displayInstructions=!displayInstructions"
-      ></el-button>
-      <div slot="content" class="instructions_content" v-if="displayInstructions">
+    <Popover :position="hoverPosition" trigger="hover" width="250">
+      <el-button slot="trigger" circle type="text">More Information</el-button>
+      <div slot="content" class="instructions_content">
         <h3 class="mb-2">{{returnInstructionsContent.title}}</h3>
-        <p>{{returnInstructionsContent.information}}</p>
+        <p style="line-height:1.5em">{{returnInstructionsContent.information}}</p>
       </div>
     </Popover>
   </div>
@@ -20,11 +15,7 @@ import { mapGetters } from "vuex";
 import Popover from "@/components/Popover";
 export default {
   name: "MoreInformation",
-  data() {
-    return {
-      displayInstructions: ""
-    };
-  },
+
   props: {
     hoverPosition: {
       type: String,
@@ -50,6 +41,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

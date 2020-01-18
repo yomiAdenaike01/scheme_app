@@ -1,6 +1,10 @@
 <template>
-  <el-collapse class="m-3">
+  <el-collapse>
     <el-collapse-item :title="title">
+      <div slot="title" class="flex slidedown_title_content flex--space-between">
+        <p>{{title}}</p>
+        <slot name="titleContent"></slot>
+      </div>
       <div :class="center ? 'flex_center' : ''">
         <slot></slot>
       </div>
@@ -26,5 +30,8 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.slidedown_title_content {
+  width: 100%;
+}
 </style>
