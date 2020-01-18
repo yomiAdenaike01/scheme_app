@@ -2,12 +2,7 @@
   <div class="create_shift_options_container">
     <!-- Displaying templates -->
     <ToggleSlideDown title="Use saved template">
-      <MoreInformation
-        slot="titleContent"
-        index="admin"
-        instruction="create_template"
-        class="mr-2"
-      />
+      <MoreInformation slot="titleContent" index="admin" instruction="create_template" />
 
       <div class="flex flex--space-between align-center mt-3">
         <div class="flex columns" v-if="templates.length > 0">
