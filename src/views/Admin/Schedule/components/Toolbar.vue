@@ -24,7 +24,7 @@ export default {
   computed: {
     ...mapGetters(["getIsAdmin"]),
     buttons() {
-      return [
+      let buttons = [
         {
           label: "View Filters",
           emit: "view_filters",
@@ -36,14 +36,17 @@ export default {
           emit: "create_event",
           round: true,
           icon: "el-icon-date"
-        },
-        {
+        }
+      ];
+      if (this.getIsAdmin) {
+        buttons.push({
           label: "Create employee",
           emit: "create_employee",
           round: true,
           icon: "el-icon-user"
-        }
-      ];
+        });
+      }
+      return buttons;
     }
   }
 };

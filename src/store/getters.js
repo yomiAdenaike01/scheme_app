@@ -1,3 +1,4 @@
+import { instructions } from "@/stubs/instructions";
 export default {
   isValidClient(state, getters) {
     return Object.keys(state.client).length > 0;
@@ -31,8 +32,13 @@ export default {
     }
   },
 
-  // Get notifications that are not read yet
-  getFilteredNotifications(){
-
+  getInstructions() {
+    return instructions;
+  },
+  getAdminInstructions(state, getters) {
+    return getters.getInstructions.admin;
+  },
+  getCommsInstructions(state, getters) {
+    return getters.getInstructions.comms;
   }
 };

@@ -24,7 +24,7 @@ export default {
           circle: false,
           round: true,
           type: "primary",
-          icon: "el-icon-upload",
+          icon: "el-icon-top",
           size: "medium"
         };
       }

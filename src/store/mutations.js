@@ -55,14 +55,13 @@ export default {
     storage.set("token", payload.token);
     storage.set("currentUser", payload.user);
   },
- 
+
   UPDATE_NOTIFICATIONS(state, notification) {
     if (notification.type == "success") {
       notification.title = "Opeartion Successful";
       sounds.methods.playSuccessSound();
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
-      // sounds.methods.playErrorSound();
     } else if (notification.message == "network error") {
       state.critical_network_error = true;
     }

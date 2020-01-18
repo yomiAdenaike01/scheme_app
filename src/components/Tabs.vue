@@ -9,9 +9,19 @@
       v-model="tabChange"
       v-loading="loading"
     >
+      <slot name="body_content"></slot>
       <el-tab-pane v-for="(tab, index) in tabs" :label="tab.label" :key="index">
-        <el-form style="padding-top:1em" v-if="tab.hasOwnProperty('formContent')">
-          <el-form-item v-for="(input, index) in tab.formContent" :key="index" :prop="input.name">
+        <el-form
+          style="padding-top:1em"
+          v-if="tab.hasOwnProperty('formContent')"
+          :disabled="disableForm"
+        >
+          <el-form-item
+            v-for="(input, index) in tab.formContent"
+            :key="index"
+            :prop="input.name"
+            :label="input.label"
+          >
             <component
               class="dialog_item"
               :is="
@@ -23,8 +33,12 @@
               "
               v-model="formContent[input.model]"
               :show-password="input.type == 'password'"
-              :type="input.type == 'date' ? 'date' : null"
+              :type="input.type == 'date' ? 'date' : input.type == 'date-time' ? 'datetimerange' : input.textarea ? 'textarea' : null"
               v-bind="input"
+              :required="input.required"
+              :disabled="input.disabled"
+              :start-placeholder="input.start_placeholder"
+              :end-placeholder="input.end_placeholder"
             >
               <el-option
                 v-for="(option, index) in input.options"
@@ -35,7 +49,11 @@
           </el-form-item>
         </el-form>
         <div v-else>
-          <component :is="tab.view.component" v-bind="tab.view.props" />
+          <component
+            :is="tab.view.component"
+            v-bind="tab.view.props"
+            @conponentChanges="emitComponentData"
+          />
         </div>
         <!--  Footer -->
         <slot name="footer_content"></slot>
@@ -64,6 +82,7 @@ export default {
     };
   },
   props: {
+    liveChange: Boolean,
     loading: {
       type: Boolean,
       default: false
@@ -95,6 +114,10 @@ export default {
     disable: {
       type: Boolean,
       default: false
+    },
+    disableForm: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -108,11 +131,21 @@ export default {
     }
   },
   methods: {
+    emitComponentData(e) {
+      this.$emit(e.eventname, e.eventdata);
+    },
     submitForm() {
       this.$emit("val", this.formContent);
 
       if (this.nextTab) {
         this.$emit("changeTab");
+      }
+    }
+  },
+  watch: {
+    formContent(val) {
+      if (this.liveChange) {
+        this.$emit("val", val);
       }
     }
   }
@@ -127,6 +160,6 @@ export default {
   text-transform: capitalize;
 }
 .dialog_item {
-  width: 100%;
+  width: 70%;
 }
 </style>

@@ -1,117 +1,23 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
-    <!-- <Title
-      defaultClass="mb-0"
-      :title="!getIsAdmin ? 'Create Request' : 'Create Shift'"
-      :subtitle="
-        !getIsAdmin
-          ? 'Fill in the form below to create a request.'
-          : 'Fill in the form below to create a shift.'
-      "
-      slot="title"
-    />-->
-
-    <el-form
-      v-loading="processingTimeSheet"
-      class="ml-3 mr-3 mt-0 pt-0"
-      status-icon
-      label-position="left"
+    <Tabs
+      :tabs="tabs"
+      @uploadFileContent="fileContent = $event"
+      @val="eventData = $event"
+      :disable="currentTab == 1"
+      v-model.number="currentTab"
+      :liveChange="true"
+      :customMethod="submit"
+      :disableForm="fileContent.length > 0"
     >
-      <!-- Displaying templates -->
-      <Title
-        title="Options"
-        defaultClass="m-0"
-        subtitle="Here are some quick options that can speed up the process of creating an event"
-      />
-      <ToggleSlideDown title="Select Previous Templates">
-        <div>
-          <ShiftTemplate
-            @selectedTemplate="selectedTemplate = $event"
-            v-for="template in templates"
-            :data="template"
-            :key="template._id"
-          />
-          <el-button size="small" round type="primary" @click="publishSavedTemplate">Publish</el-button>
-        </div>
-      </ToggleSlideDown>
-      <!-- Timesheet -->
-
-      <ToggleSlideDown title="Upload New Timesheet">
-        <!-- Input for the timesheet -->
-        <UploadFile
-          @fileContent="fileContent=$event"
-          readMethod="readAsBinaryString"
-          tip="No tip provided"
+      <!-- Confirmation unit for a template or csv content -->
+      <div class="content_container p-3 flex_center" slot="body_content" v-if="currentTab == 0">
+        <ConfirmationUnit
+          :condition="fileContent.length > 0"
+          confirmationText="Timesheet selected. Form disabled"
         />
-      </ToggleSlideDown>
-
-      <!-- Create for multiple employees (IF ADMIN) -->
-      <ToggleSlideDown v-if="getIsAdmin" title="Assign Shift To Multiple Employees">
-        <el-checkbox-group v-model="multi_employee">
-          <el-checkbox-button
-            v-for="(member, index) in returnTeam"
-            :key="index"
-            :value="member.value"
-            :label="member.label"
-          >{{ member.label }}</el-checkbox-button>
-        </el-checkbox-group>
-      </ToggleSlideDown>
-
-      <!-- Second form to be able to disable other entries -->
-      <el-form :model="eventData" :disabled="returnInvalidateForm">
-        <el-form-item
-          :required="item.required"
-          v-for="item in returnCreateShiftConfig"
-          :key="item.id"
-          :label="item.name"
-        >
-          <component
-            class="form_item"
-            :is="item.type == 'select' ? 'el-select' : 'el-date-picker'"
-            type="datetimerange"
-            v-model="eventData[item.id]"
-            :start-placeholder="
-              item.start_placeholder ? item.start_placeholder : null
-            "
-            :end-placeholder="
-              item.end_placeholder ? item.end_placeholder : null
-            "
-            :placeholder="item.placeholder"
-            :disabled="item.disabled"
-          >
-            <el-option
-              v-for="(option, index) in item.options"
-              :key="index"
-              :value="option.value"
-              :label="option.label"
-            ></el-option>
-          </component>
-          <el-collapse-transition v-if="isNotShiftOrHoliday">
-            <el-form-item class="custom_form_item">
-              <el-input
-                type="textarea"
-                :placeholder="
-                  `Please input reasons for ${eventData.shift_type}`
-                "
-                v-model="textarea"
-                maxlength="250"
-                show-word-limit
-              />
-            </el-form-item>
-          </el-collapse-transition>
-        </el-form-item>
-      </el-form>
-    </el-form>
-
-    <!-- Footer -->
-    <span slot="footer" class="dialog-footer" v-if="!returnInvalidateForm">
-      <el-button
-        round
-        type="primary"
-        @click="$emit('createEvent', eventData), $emit('toggle', false)"
-      >Publish</el-button>
-      <el-button round @click="$emit('toggle', false)">Cancel</el-button>
-    </span>
+      </div>
+    </Tabs>
   </el-dialog>
 </template>
 
@@ -122,75 +28,26 @@ import ShiftTemplate from "./ShiftTemplate";
 import moment from "moment";
 import UploadFile from "@/components/UploadFile";
 import Title from "@/components/Title";
-import ToggleSlideDown from "@/components/ToggleSlideDown";
+import Tabs from "@/components/Tabs";
+import CreateShiftOptions from "./CreateShiftOptions";
+import ConfirmationUnit from "@/components/ConfirmationUnit";
 export default {
   name: "CreateShift",
   mixins: [dates],
   data() {
     return {
-      repeat_toggle: false,
-      selectMultipleEmployees: false,
-      uploadTimesheetToggle: false,
-      isValidCSV: false,
-      validFile: null,
-      processingTimeSheet: false,
-      selectedTemplate: {},
-      templates: [],
-      loadingTemplates: false,
-      displayTemplates: false,
-      eventData: {
-        date: {},
-        assigned_to: "",
-        loading: false,
-        shift_type: null,
-        repeat_days: [0],
-        reasons: ""
-      },
-      multi_employee: [],
-
-      templateData: {
-        name: "",
-        content: ""
-      },
-      validationData: {
-        startDate: [
-          {
-            type: "date",
-            required: true,
-            message: "Please pick a date",
-            trigger: "change"
-          }
-        ],
-        endDate: [
-          {
-            type: "date",
-            required: true,
-            message: "Please pick a date",
-            trigger: "change"
-          }
-        ]
-      },
+      eventData: {},
       success: false,
-      fileContent: ""
+      fileContent: "",
+      currentTab: 0
     };
   },
   props: {
     display: Boolean
   },
-  mounted() {
+  activated() {
     this.loadingTemplates = true;
-    this.request({
-      method: "GET",
-      url: "templates/all"
-    })
-      .then(response => {
-        this.templates = response;
-        this.loadingTemplates = false;
-      })
-      .catch(error => {
-        this.loadingTemplates = false;
-        return error;
-      });
+
     // this.loadingTemplates = false;
   },
   computed: {
@@ -198,26 +55,53 @@ export default {
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
     ...mapGetters("Admin", ["getTeamMember"]),
+    tabs() {
+      return [
+        {
+          label: this.getIsAdmin ? "Create event" : "Create Request",
+          formContent: this.returnCreateShiftConfig
+        },
+        {
+          label: "Options",
+          view: {
+            component: CreateShiftOptions
+          }
+        }
+      ];
+    },
 
-    returnIsTemplateSelected() {
-      return Object.keys(this.selectedTemplate).length > 0;
-    },
-    returnInvalidateForm() {
-      return this.uploadTimesheetToggle || this.returnIsTemplateSelected;
-    },
-    returnIsMultiEmployeesSelected() {
-      return this.selectMultipleEmployees || this.multi_employee.length > 0;
-    },
     returnShiftTypes() {
       let shiftTypes = this.shiftTypes;
-      let newShiftTypes = [];
+      let shiftTypeOptions = [];
+
       for (let property in shiftTypes) {
-        newShiftTypes.push({
-          label: shiftTypes[property],
-          value: parseInt(property)
-        });
+        let shiftTypeText = shiftTypes[property];
+        const append = () => {
+          shiftTypeOptions.push({
+            text: shiftTypeText,
+            value: parseInt(property)
+          });
+        };
+        switch (shiftTypeText) {
+          case "Normal": {
+            if (this.getIsAdmin) {
+              append();
+            }
+            break;
+          }
+          case "Locumn": {
+            if (this.currentUser.employee_type == 3) {
+              append();
+            }
+            break;
+          }
+          default: {
+            append();
+            break;
+          }
+        }
       }
-      return newShiftTypes;
+      return shiftTypeOptions;
     },
 
     isNotShiftOrHoliday() {
@@ -228,22 +112,22 @@ export default {
 
     returnCreateShiftConfig() {
       let team = this.returnTeam;
+      let isShiftOrHoliday = this.isNotShiftOrHoliday;
 
       let createShiftConfig = [
         {
-          name: "Request type",
-          id: "shift_type",
           type: "select",
           placeholder: "Select event type",
           options: this.returnShiftTypes,
-          required: true
+          required: true,
+          model: "shift_type"
         },
         {
-          name: "Timings",
-          id: "date",
-          type: "date",
+          type: "date-time",
+          placeholder: "Timings",
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",
+          model: "date",
           required: true
         }
       ];
@@ -256,9 +140,22 @@ export default {
           placeholder: "Select Team Member",
           id: "assigned_to",
           type: "select",
+          model: "assigned_to",
           options: this.returnTeam,
           required: !this.returnIsMultiEmployeesSelected,
           disabled: this.returnIsMultiEmployeesSelected
+        });
+      }
+      // Add reasons for being sick
+      if (this.isNotShiftOrHoliday) {
+        createShiftConfig.push({
+          label:
+            "Please enter a reason for the sick leave or time off and please feel free to attach a document displaying proof",
+          type: "text",
+          textarea: true,
+          placeholder: "Optional: Please enter reason for sick leave",
+          model: "reasons",
+          required: true
         });
       }
 
@@ -267,7 +164,7 @@ export default {
     returnTeam() {
       return this.team.map(member => {
         return {
-          label: member.name,
+          text: member.name,
           value: member._id
         };
       });
@@ -288,16 +185,6 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_UPLOAD_TIMESHEET"]),
 
-    validateKeys(eventKey, validationKey) {
-      let isValid;
-      if (!validationKey || validationKey != eventKey) {
-        // Error found
-        isValid = false;
-      } else {
-        isValid = true;
-      }
-      return isValid;
-    },
     formatEventDates({ startDate, endDate }) {
       const format = "DD/MM/YYYY HH:mm:ss";
       startDate = moment(moment(startDate).format(format)).toISOString();
@@ -321,70 +208,20 @@ export default {
         const len = fileData.length;
         for (let i = 0; i < len; i++) {
           let eventElement = fileData[i];
-          const eventKeys = Object.keys(eventElement);
-          const validationKeys = Object.keys(validateData);
-          const eventKeysLen = eventKeys.length;
 
-          if (isAdmin) {
-            eventElement.is_approved = {
-              admin: 1,
-              user: 1
-            };
-          } else {
-            if (eventElement.assigned_to != this.currentUser._id) {
-              eventElement.assigned_to = this.currentUser._id;
+          // Loop the validation scheme and check that each one has values
+          for (let property in validateData) {
+            if (!eventElement[property]) {
+              this.UPDATE_NOTIFICATIONS({
+                title: "Error processing csv file",
+                type: "info",
+                message: "There are missing parameters."
+              });
+              return Promise.reject();
+              break;
             }
           }
-
-          // Check none of them are null if they are remove them
-          for (let property in eventElement) {
-            if (eventElement[property].length <= 0) {
-              fileData.splice(i, 1);
-            }
-          }
-
-          // Checking the keys against the validation schema
-          for (let j = 0; j < eventKeysLen; j++) {
-            const eventKey = eventKeys[j];
-            const validationKey = validationKeys[j];
-            let finalValidation = this.validateKeys(eventKey, validationKey);
-            if (finalValidation) {
-              resolve(fileData);
-            } else {
-              reject(finalValidation);
-            }
-          }
-
-          // Changed the assigned to
-          let foundTeamMember = this.getTeamMember(
-            eventElement.assigned_to,
-            "_id"
-          ).name;
-
-          if (!foundTeamMember) {
-            reject(false);
-            this.UPDATE_NOTIFICATIONS({
-              type: "error",
-              message: `${eventElement.assigned_to} could not be found as a team member`
-            });
-          }
-
-          eventElement.assigned_to = foundTeamMember._id;
-          this.processingTimeSheet = false;
-
-          // assign the shift type if there isn't one
-
-          if (!eventElement.shift_type) {
-            eventElement.shift_type = foundTeamMember.employee_type;
-          }
-
-          // Format the dates
-          let startDate = eventElement.startDate,
-            endDate = eventElement.endDate;
-
-          let formattedDates = this.formatEventDates({ startDate, endDate });
-          eventElement.startDate = formattedDates.startDate;
-          eventElement.endDate = formattedDates.endDate;
+          console.log(eventElement);
         }
       });
     },
@@ -394,12 +231,9 @@ export default {
       this.processingTimeSheet = true;
       let fileContent = this.fileContent;
       try {
-        let fileContent = await csvtojson().fromString(fileContent);
+        fileContent = await csvtojson().fromString(fileContent);
         let validationResult = await this.validateCSVData(fileContent);
-        // If not selected template them create a new template and if upload timesheet is not selected
-        if (!this.returnIsTemplateSelected && this.uploadTimesheetToggle) {
-          this.uploadTimeSheetAndTemplate(validationResult);
-        }
+        return Promise.resolve(validationResult);
       } catch (e) {
         this.processingTimeSheet = false;
         this.UPDATE_NOTIFICATIONS({
@@ -407,6 +241,7 @@ export default {
           message:
             "Failed when processing the csv file, please check the csv file and upload it again"
         });
+        return Promise.reject(e);
       }
     },
     /**
@@ -465,6 +300,9 @@ export default {
           });
       }
     },
+    submit() {
+      console.log("FINAL", this.eventData);
+    },
     /**
      * Propmt the user for the template name
      */
@@ -501,7 +339,22 @@ export default {
     Title,
     ShiftTemplate,
     UploadFile,
-    ToggleSlideDown
+    Tabs,
+    CreateShiftOptions,
+    ConfirmationUnit
+  },
+  watch: {
+    fileContent(val) {
+      if (val) {
+        this.timeSheetManagement()
+          .then(response => {
+            this.uploadTimeSheetAndTemplate(response);
+          })
+          .catch(error => {
+            return error;
+          });
+      }
+    }
   }
 };
 </script>
