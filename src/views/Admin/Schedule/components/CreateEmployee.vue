@@ -1,6 +1,13 @@
 <template>
   <el-dialog :visible.sync="view">
-    <Tabs :tabs="tabs" @val="employeeForm = $event"></Tabs>
+    <Tabs :tabs="tabs" @val="employeeForm = $event" :loading="loading">
+      <template #header_content>
+        <Title
+          title="Create employee"
+          subtitle="Enter the employee's details. Feel free to upload a csv file of the employee or employees"
+        />
+      </template>
+    </Tabs>
   </el-dialog>
 </template>
 
@@ -10,6 +17,7 @@ import UploadFile from "@/components/UploadFile";
 import ToggleSlideDown from "@/components/ToggleSlideDown";
 import Tabs from "@/components/Tabs";
 import CreateEmeployeeOptions from "./CreateEmployeeOptions";
+import Title from "@/components/Title";
 export default {
   name: "CreateEmployee",
   data() {
@@ -186,7 +194,7 @@ export default {
     }
   },
   components: {
-    Title: () => import("@/components/Title"),
+    Title,
     UploadFile,
     ToggleSlideDown,
     Tabs,

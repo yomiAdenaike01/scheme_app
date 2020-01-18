@@ -1,7 +1,14 @@
 <template>
   <div class="tabs_container">
     <slot name="header_content"></slot>
-    <el-tabs :type="tabType" :closable="false" stretch :addable="false" v-model="tabChange">
+    <el-tabs
+      :type="tabType"
+      :closable="false"
+      stretch
+      :addable="false"
+      v-model="tabChange"
+      v-loading="loading"
+    >
       <el-tab-pane v-for="(tab, index) in tabs" :label="tab.label" :key="index">
         <el-form style="padding-top:1em" v-if="tab.hasOwnProperty('formContent')">
           <el-form-item v-for="(input, index) in tab.formContent" :key="index" :prop="input.name">
@@ -57,6 +64,10 @@ export default {
     };
   },
   props: {
+    loading: {
+      type: Boolean,
+      default: false
+    },
     nextTab: {
       type: Boolean,
       default: false
