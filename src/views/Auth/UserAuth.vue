@@ -19,17 +19,11 @@
               "
               v-model="tabIndex"
               :disable="!isValidClient"
-              @val="
-                formModel[selectedForm] = $event;
-                processUser();
-              "
+              @val="setFormAndProcessUser"
             >
               <template #header_content>
                 <!-- New client registration -->
-                <div
-                  class="new_client_button_container mb-4 mt-4"
-                  v-if="tabIndex != '0'"
-                >
+                <div class="new_client_button_container mb-4 mt-4" v-if="tabIndex != '0'">
                   <!-- New client registration -->
                   <el-button
                     v-if="!isValidClient"
@@ -37,9 +31,10 @@
                     round
                     size="small"
                     type="primary"
-                    >Registering a new company ? Click here to
-                    register.</el-button
                   >
+                    Registering a new company ? Click here to
+                    register.
+                  </el-button>
                 </div>
               </template>
             </Tabs>
@@ -121,26 +116,7 @@ export default {
       }
       return switchObj;
     },
-    validationRules() {
-      let len = this.returnForm.length || 0;
-      let rules = {};
-      for (let i = 0; i < len; i++) {
-        let input = this.returnForm[i];
-        rules[this.selectedForm] = {
-          [input.name]: [
-            {
-              required: true,
-              message: `Please fill in ${input.name}`,
-              trigger: "blur"
-            }
-          ]
-        };
-      }
-      return rules;
-    },
-    returnValidationRules() {
-      return this.validationRules[this.selectedForm];
-    },
+
     returnForm() {
       return this.formConfig[this.selectedForm];
     },
@@ -253,7 +229,14 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
-
+    setFormAndProcessUser(e) {
+      try {
+        this.$set(this.formModel, this.selectedForm, e);
+        this.processUser();
+      } catch (error) {
+        reject();
+      }
+    },
     forgotPassword() {
       let forgotPwdForm = this.formModel[this.selectedForm];
       this.loading = true;

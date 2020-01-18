@@ -1,6 +1,6 @@
 <template>
   <el-dialog :visible.sync="view">
-    <Tabs :tabs="tabs"></Tabs>
+    <Tabs :tabs="tabs" @val="employeeForm = $event"></Tabs>
   </el-dialog>
 </template>
 
@@ -17,16 +17,7 @@ export default {
       uploadMultiple: false,
       loading: false,
       fileContent: "",
-      employeeForm: {
-        name: "",
-        email: "",
-        phone_number: "",
-        date_of_birth: "",
-        password: "",
-        employee_type: "",
-        admin_gen: true,
-        gender: ""
-      }
+      employeeForm: {}
     };
   },
 
@@ -74,26 +65,6 @@ export default {
     formItems() {
       return [
         {
-          name: "employeeType",
-          model: "employee_type",
-          placeholder: "Employee type",
-          type: "select",
-          options: [
-            {
-              value: "1",
-              label: "Admin"
-            },
-            {
-              value: "2",
-              label: "Regular Staff"
-            },
-            {
-              value: "3",
-              label: "Locumn"
-            }
-          ]
-        },
-        {
           name: "name",
           type: "text",
           clearable: true,
@@ -107,21 +78,22 @@ export default {
           options: [
             {
               value: "male",
-              label: "Male"
+              text: "Male"
             },
             {
               value: "female",
-              label: "Female"
+              text: "Female"
             },
             {
               value: "other",
-              label: "Other"
+              text: "Other"
             }
           ]
         },
+
         {
           name: "email",
-          type: "email",
+          type: "text",
           clearable: true,
           placeholder: "Email"
         },
@@ -133,12 +105,24 @@ export default {
           placeholder: "Phone Number"
         },
         {
-          name: "dateOfBirth",
-          model: "date_of_birth",
-
-          type: "date",
-          clearable: true,
-          placeholder: "Date Of Birth"
+          name: "employeeType",
+          model: "employee_type",
+          placeholder: "Employee type",
+          type: "select",
+          options: [
+            {
+              value: "1",
+              text: "Admin"
+            },
+            {
+              value: "2",
+              text: "Regular Staff"
+            },
+            {
+              value: "3",
+              text: "Locumn"
+            }
+          ]
         }
       ];
     },

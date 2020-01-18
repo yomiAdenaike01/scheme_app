@@ -3,7 +3,11 @@ export default {
     state.shifts = payload;
   },
   UPDATE_REQUESTS(state, payload) {
-    state.requests = payload;
+    let unreadRequests = payload.filter(request=>{return !request.is_read});
+    // Append notifications 
+    state.notifications.push(...unreadRequests);
+    state.requests = unreadRequests;
+    
   },
   UPDATE_TEAM(state, payload) {
     state.team = payload;

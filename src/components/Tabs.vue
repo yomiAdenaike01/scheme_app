@@ -6,6 +6,7 @@
         <el-form style="padding-top:1em" v-if="tab.hasOwnProperty('formContent')">
           <el-form-item v-for="(input, index) in tab.formContent" :key="index" :prop="input.name">
             <component
+              class="dialog_item"
               :is="
                 input.type == 'text' || input.type == 'password'
                   ? 'el-input'
@@ -113,5 +114,8 @@ export default {
 }
 .button_text {
   text-transform: capitalize;
+}
+.dialog_item {
+  width: 100%;
 }
 </style>

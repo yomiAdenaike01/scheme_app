@@ -52,6 +52,7 @@ export default {
   computed: {
     ...mapState(["client", "localSettings"]),
     ...mapGetters(["getSidebarColour"]),
+
     lightColour() {
       let baseColour = tinycolor(this.getSidebarColour);
       if (baseColour.isLight()) {

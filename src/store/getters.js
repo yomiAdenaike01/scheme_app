@@ -29,5 +29,10 @@ export default {
     } else {
       return [];
     }
+  },
+
+  // Get notifications that are not read yet
+  getFilteredNotifications(){
+
   }
 };

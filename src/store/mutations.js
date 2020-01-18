@@ -7,7 +7,7 @@ export default {
   UPDATE_COLOURS(state, { target, val }) {
     state.localSettings.colours[target] = val;
   },
-  SET_THEME(state) {
+  SET_THEME() {
     let id = "chalk-style";
     let styleTag = document.getElementById(id);
     if (!styleTag) {
@@ -46,7 +46,6 @@ export default {
   REMOVE_USER(state) {
     state.currentUser = {};
     state.token = {};
-    document.getElementById("chalk-style").remove();
     localStorage.removeItem("token");
     localStorage.removeItem("currentUser");
   },
@@ -56,9 +55,7 @@ export default {
     storage.set("token", payload.token);
     storage.set("currentUser", payload.user);
   },
-  UPDATE_HAS_SEEN_NOTIFICATIONS(state, payload) {
-    state.hasSeenNotifications = payload;
-  },
+ 
   UPDATE_NOTIFICATIONS(state, notification) {
     if (notification.type == "success") {
       notification.title = "Opeartion Successful";
