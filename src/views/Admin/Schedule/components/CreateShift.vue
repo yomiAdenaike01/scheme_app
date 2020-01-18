@@ -62,7 +62,7 @@ export default {
           formContent: this.returnCreateShiftConfig
         },
         {
-          label: "Options",
+          label: "Timesheets",
           view: {
             component: CreateShiftOptions
           }

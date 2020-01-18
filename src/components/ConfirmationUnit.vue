@@ -6,7 +6,7 @@
       :style="{backgroundColor:getCompanyColours}"
     >
       <i class="el-icon-check condition_indicator mr-4"></i>
-      <p>{{confirmationText}}</p>
+      <p class="information_text_container">{{confirmationText}}</p>
     </div>
   </transition>
 </template>
@@ -42,5 +42,8 @@ export default {
 }
 .condition_indicator {
   font-size: 1.5em;
+}
+.information_text_container {
+  max-width: 200px;
 }
 </style>

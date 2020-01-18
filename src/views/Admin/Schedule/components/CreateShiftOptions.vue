@@ -1,7 +1,7 @@
 <template>
   <div class="create_shift_options_container">
     <!-- Displaying templates -->
-    <ToggleSlideDown title="Select template">
+    <ToggleSlideDown title="Use saved template">
       <div class="template_container">
         <div v-if="templates.length > 0">
           <ShiftTemplate v-for="template in templates" :key="template._id" :data="template" />
@@ -14,7 +14,7 @@
       </div>
     </ToggleSlideDown>
     <!-- Upload content -->
-    <ToggleSlideDown title="Upload">
+    <ToggleSlideDown title="Upload new timesheet">
       <div class="upload_file_container columns">
         <Title
           defaultClass="m-0"

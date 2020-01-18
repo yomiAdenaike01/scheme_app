@@ -1,6 +1,6 @@
 <template>
   <div class="moreinformation_container">
-    <Popover :position="hoverPosition" trigger="click">
+    <Popover :position="hoverPosition" trigger="click" width="250">
       <el-button
         slot="trigger"
         round
@@ -8,6 +8,7 @@
         @click="displayInstructions=!displayInstructions"
       ></el-button>
       <div slot="content" class="instructions_content" v-if="displayInstructions">
+        <h3 class="mb-2">{{returnInstructionsContent.title}}</h3>
         <p>{{returnInstructionsContent.information}}</p>
       </div>
     </Popover>
