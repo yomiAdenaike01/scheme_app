@@ -1,12 +1,7 @@
 <template>
   <div class="reg_wrapper">
     <el-card v-loading="pageLoading">
-      <ClientImage
-        class="m-4"
-        :image="imageFileContent"
-        :center="true"
-        :showClient="false"
-      />
+      <ClientImage class="m-4" :image="imageFileContent" :center="true" :showClient="false" />
       <Tabs
         :tabs="returnTabs"
         v-model="selectedTab"
@@ -115,6 +110,11 @@ export default {
           model: "company_phone",
           type: "text",
           placeholder: "Company Phone Number"
+        },
+        {
+          model: "company_subdomain",
+          type: "text",
+          placeholder: ".schemeapp.cloud"
         }
       ];
     },

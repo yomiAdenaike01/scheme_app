@@ -24,7 +24,7 @@ import moment, * as moments from "moment";
 
 export default {
   name: "Main",
-  created() {
+  activated() {
     let isVerified = this.currentUser.verified;
     if (!isVerified) {
       this.UPDATE_NOTIFICATIONS({

@@ -15,7 +15,6 @@ export default {
   },
   deactivated() {
     clearInterval(this.commsInterval);
-    this.$destroy();
   },
   activated() {
     this.commsInterval = setInterval(() => {
