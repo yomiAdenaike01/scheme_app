@@ -1,6 +1,7 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
     <Tabs
+      v-loading="loading"
       :tabs="tabs"
       @uploadFileContent="fileContent = $event"
       @removeContent="fileContent = '', timeSheetError = null"
@@ -8,7 +9,7 @@
       :disable="currentTab == 1"
       v-model.number="currentTab"
       :liveChange="true"
-      :customMethod="submit"
+      :customMethod="!timeSheetError && fileContent.length > 0 ? submitWithTimeSheet : submitOneShift"
       :disableForm="fileContent.length > 0"
     >
       <!-- Confirmation unit for a template or csv content -->
@@ -30,23 +31,27 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import dates from "@/mixins/dates";
 import ShiftTemplate from "./ShiftTemplate";
-import moment from "moment";
 import UploadFile from "@/components/UploadFile";
 import Title from "@/components/Title";
 import Tabs from "@/components/Tabs";
 import CreateShiftOptions from "./CreateShiftOptions";
 import ValidationUnit from "@/components/ValidationUnit";
 import MoreInformation from "@/components/MoreInformation";
+import findTeam from "@/mixins/findTeam";
+import createShift from "../createShift";
+const csvtojson = require("csvtojson");
+
 export default {
   name: "CreateShift",
-  mixins: [dates],
+  mixins: [dates, findTeam, createShift],
   data() {
     return {
       eventData: {},
-      success: false,
+      loading: false,
       fileContent: "",
       currentTab: 0,
-      timeSheetError: null
+      timeSheetError: null,
+      timeSheetData: ""
     };
   },
   props: {
@@ -54,7 +59,6 @@ export default {
   },
   activated() {
     this.loadingTemplates = true;
-
     // this.loadingTemplates = false;
   },
   computed: {
@@ -62,22 +66,7 @@ export default {
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
     ...mapGetters("Admin", ["getTeamMember"]),
-    validationUnitController() {
-      return {
-        success: {
-          condition: this.timeSheetError == false,
-          text: "Time sheet successfully validated."
-        },
-        danger: {
-          text: "Time sheet validation failed.",
-          condition: this.timeSheetError == true
-        },
-        info: {
-          text: "Timesheet not selected",
-          condition: this.fileContent.length <= 0
-        }
-      };
-    },
+
     tabs() {
       return [
         {
@@ -91,46 +80,6 @@ export default {
           }
         }
       ];
-    },
-
-    returnShiftTypes() {
-      let shiftTypes = this.shiftTypes;
-      let shiftTypeOptions = [];
-
-      for (let property in shiftTypes) {
-        let shiftTypeText = shiftTypes[property];
-        const append = () => {
-          shiftTypeOptions.push({
-            text: shiftTypeText,
-            value: parseInt(property)
-          });
-        };
-        switch (shiftTypeText) {
-          case "Normal": {
-            if (this.getIsAdmin) {
-              append();
-            }
-            break;
-          }
-          case "Locumn": {
-            if (this.currentUser.employee_type == 3) {
-              append();
-            }
-            break;
-          }
-          default: {
-            append();
-            break;
-          }
-        }
-      }
-      return shiftTypeOptions;
-    },
-
-    isNotShiftOrHoliday() {
-      let shiftType = this.eventData.shift_type;
-      const isAdmin = this.getIsAdmin;
-      return !isAdmin && shiftType > 3;
     },
 
     returnCreateShiftConfig() {
@@ -182,14 +131,7 @@ export default {
 
       return createShiftConfig;
     },
-    returnTeam() {
-      return this.team.map(member => {
-        return {
-          text: member.name,
-          value: member._id
-        };
-      });
-    },
+
     view: {
       get() {
         return this.display;
@@ -197,166 +139,83 @@ export default {
       set(toggle) {
         this.$emit("toggle", toggle);
       }
-    },
-    repeatDaysConfig() {
-      return ["Mon", "Tue", "Wed", "Thurs", "Fri", "Sat", "Sun"];
     }
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_UPLOAD_TIMESHEET"]),
-
-    formatEventDates({ startDate, endDate }) {
-      const format = "DD/MM/YYYY HH:mm:ss";
-      startDate = moment(moment(startDate).format(format)).toISOString();
-      endDate = moment(moment(endDate).format(format)).toISOString();
-      return {
-        startDate,
-        endDate
-      };
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    resetData() {
+      this.timeSheetError = null;
+      this.fileContent = "";
+      this.timeSheetData = "";
+      this.loading = true;
+      let loadingTimeout;
+      clearTimeout(loadingTimeout);
+      loadingTimeout = setTimeout(() => {
+        this.loading = false;
+      }, 1000);
     },
     /**
      * @params {Array} converted csv file
+     * TODO SHIFT TYPES
+     * TODO CAN ADD OTHER USERS IF ADMIN
+     * TODO RETURN THE CORRECT TEAM MEMBERS
      */
-    validateCSVData(fileData) {
-      return new Promise((resolve, reject) => {
-        let validateData = {
-          assigned_to: null,
-          startDate: null,
-          endDate: null
-        };
-        let isAdmin = this.getIsAdmin;
-        const len = fileData.length;
-        for (let i = 0; i < len; i++) {
-          let eventElement = fileData[i];
+    async validateCSVData(fileData) {
+      let validateData = {
+        assigned_to: null,
+        startDate: null,
+        endDate: null,
+        shift_type: null
+      };
+      let isAdmin = this.getIsAdmin;
+      let currentUser = this.currentUser.name.trim().toLowerCase();
+      const len = fileData.length;
 
-          // Loop the validation scheme and check that each one has values
-          for (let property in validateData) {
-            if (!eventElement[property]) {
-              this.UPDATE_NOTIFICATIONS({
-                title: "Error processing csv file",
-                type: "info",
-                message: "There are missing parameters."
-              });
-              return Promise.reject();
-              break;
-            } else {
-              return Promise.reolve();
-            }
+      for (let i = 0; i < len; i++) {
+        let eventElement = this.convertEvent(fileData[i]);
+        // Loop the validation scheme and check that each one has values
+        for (let property in validateData) {
+          let eventAttribute = eventElement[property];
+          if (!eventAttribute) {
+            return Promise.reject(
+              "Timesheet validation error, please enter the correct data format for the timesheets"
+            );
           }
-          console.log(eventElement);
         }
-      });
+      }
+      return Promise.resolve(fileData);
     },
 
     async timeSheetManagement() {
-      const csvtojson = require("csvtojson");
-      this.processingTimeSheet = true;
-      let fileContent = this.fileContent;
       try {
-        fileContent = await csvtojson().fromString(fileContent);
-        let validationResult = await this.validateCSVData(fileContent);
+        let holder = await csvtojson().fromString(this.fileContent);
+        let validationResult = await this.validateCSVData(this.fileContent);
         return Promise.resolve(validationResult);
       } catch (e) {
-        this.processingTimeSheet = false;
-        this.UPDATE_NOTIFICATIONS({
-          title: "Failed to validate timesheet",
-          type: "info",
-          message:
-            "Failed when processing the csv file, please check the csv file and upload it again"
-        });
         return Promise.reject(e);
       }
-    },
-    /**
-     *  Adds one week to the content
-     */
-    addOneWeekData(data) {
-      return data.map(elem => {
-        return {
-          ...elem,
-          startDate: moment(
-            moment(elem.startDate).add(1, "week")
-          ).toISOString(),
-          endDate: moment(moment(elem.endDate).add(1, "week")).toISOString()
-        };
-      });
-    },
-    /**
-     * Publish saved template
-     */
-    publishSavedTemplate() {
-      this.uploadTimeSheet(this.selectedTemplate.content);
-    },
-    /**
-     * Upload time sheet
-     */
-    uploadTimeSheet(content) {
-      let timesheet = content;
-      let payload = {
-        method: "POST",
-        url: "shifts/timesheet",
-        data: { timesheet: content }
-      };
-      // Running normal request to timesheet
-      this.request(payload)
-        .then(response => {
-          if (!this.weeklyTimesheetUploaded) {
-            this.UPDATE_UPLOAD_TIMESHEET(true);
-            this.$emit("toggle", false);
-          }
-          this.$emit("toggle", false);
-        })
-        .catch(error => {
-          return error;
-        });
-      this.processingTimeSheet = false;
+    }
+  },
 
-      // If there is a selected template add one week to its contents and then update the timesheet
-      if (this.returnIsTemplateSelected) {
-        timesheet = this.addOneWeekData(timesheet);
-        payload.data = { update: { content: timesheet } };
-        payload.url = "templates/update";
-        this.request(payload)
-          .then(response => this.$emit("toggle", false))
+  watch: {
+    fileContent(val) {
+      if (val) {
+        let data = this.timeSheetManagement()
+          .then(response => {
+            this.timeSheetData = response;
+            this.timeSheetError = false;
+          })
           .catch(error => {
-            return error;
+            this.timeSheetError = true;
+
+            this.UPDATE_NOTIFICATIONS({
+              title: "Timesheet error",
+              message: error,
+              type: "info"
+            });
           });
       }
-    },
-    submit() {
-      console.log("FINAL", this.eventData);
-    },
-    /**
-     * Propmt the user for the template name
-     */
-    uploadTimeSheetAndTemplate(file) {
-      this.processingTimeSheet = false;
-      this.$prompt(
-        "Please input your new template name if you want to save this timesheet as a template",
-        "Save Template",
-        {
-          confirmButtonText: "Save",
-          cancelButtonText: "Cancel",
-          inputPlaceholder: `schedule_created ${new Date()}`,
-          roundButton: true
-        }
-      ).then(({ value }) => {
-        this.processingTimeSheet = true;
-        // Set the template data fields
-        this.templateData.content = this.addOneWeekData(file);
-        this.templateData.name = value;
-
-        if (!this.templateData.name) {
-          this.UPDATE_NOTIFICATIONS({
-            type: "error",
-            message: "Please fill in the correct fields for your new template"
-          });
-        }
-
-        // Run request for template and timesheet
-        this.uploadTimeSheet({ timesheet: file, template: this.templateData });
-      });
     }
   },
   components: {
@@ -367,21 +226,6 @@ export default {
     CreateShiftOptions,
     ValidationUnit,
     MoreInformation
-  },
-  watch: {
-    fileContent(val) {
-      if (val) {
-        this.timeSheetManagement()
-          .then(response => {
-            this.timeSheetError = false;
-          })
-          .catch(error => {
-            this.timeSheetError = true;
-
-            return error;
-          });
-      }
-    }
   }
 };
 </script>

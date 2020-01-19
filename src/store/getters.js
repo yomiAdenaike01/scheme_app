@@ -34,11 +34,5 @@ export default {
 
   getInstructions() {
     return instructions;
-  },
-  getAdminInstructions(state, getters) {
-    return getters.getInstructions.admin;
-  },
-  getCommsInstructions(state, getters) {
-    return getters.getInstructions.comms;
   }
 };

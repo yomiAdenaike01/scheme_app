@@ -1,11 +1,11 @@
 <template>
-  <keep-alive>
+  <keep-alive :key="currentUser._id">
     <router-view></router-view>
   </keep-alive>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "Comms",
   data() {
@@ -23,6 +23,9 @@ export default {
       this.getTeam();
       this.getNotifications();
     }, 5000);
+  },
+  computed: {
+    ...mapState(["currentUser"])
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),

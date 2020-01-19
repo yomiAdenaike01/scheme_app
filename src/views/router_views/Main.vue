@@ -6,7 +6,7 @@
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </el-col>
       <el-col>
-        <keep-alive>
+        <keep-alive :key="currentUser._id">
           <router-view></router-view>
         </keep-alive>
       </el-col>

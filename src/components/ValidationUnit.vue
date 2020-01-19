@@ -1,20 +1,17 @@
 <template>
   <el-tag
+    style="width:100%; text-align:center"
     class="validation_unit"
     :type="booleanController"
-    effect="dark"
-  >{{self[booleanController]['text']}}</el-tag>
+    effect="plain"
+  >{{this[booleanController]['text'] }}</el-tag>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 export default {
   name: "ValidationUnit",
-  data() {
-    return {
-      self: this
-    };
-  },
+
   props: {
     text: {
       type: String
@@ -38,9 +35,8 @@ export default {
         ? "danger"
         : this.info.condition
         ? "info"
-        : "";
+        : "info";
     }
   }
 };
 </script>
-

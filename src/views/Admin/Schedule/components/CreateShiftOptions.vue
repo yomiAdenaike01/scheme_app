@@ -3,7 +3,6 @@
     <!-- Displaying templates -->
     <ToggleSlideDown title="Use saved template">
       <MoreInformation slot="titleContent" index="admin" instruction="create_template" />
-
       <div class="flex flex--space-between align-center mt-3">
         <div class="flex columns" v-if="templates.length > 0">
           <ShiftTemplate v-for="template in templates" :key="template._id" :data="template" />
@@ -11,6 +10,7 @@
         <p>No template found, press more information for find out more.</p>
       </div>
     </ToggleSlideDown>
+
     <!-- Upload content -->
     <ToggleSlideDown title="Upload new timesheet">
       <MoreInformation slot="titleContent" index="admin" instruction="upload_timesheet" />

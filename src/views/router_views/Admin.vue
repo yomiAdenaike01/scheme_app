@@ -1,6 +1,6 @@
 <template>
   <div style="height:100%">
-    <keep-alive>
+    <keep-alive :key="currentUser._id">
       <router-view></router-view>
     </keep-alive>
     <TeamMember />

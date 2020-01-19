@@ -16,7 +16,7 @@
       @companyNameChange="companyName = $event"
       @getClient="getClient"
     />
-    <keep-alive>
+    <keep-alive :key="currentUser._id">
       <router-view></router-view>
     </keep-alive>
   </div>
@@ -72,7 +72,7 @@ export default {
     clearInterval(this.clientInterval);
   },
   computed: {
-    ...mapState(["notifications", "defaultSize", "client"]),
+    ...mapState(["notifications", "currentUser", "defaultSize", "client"]),
     ...mapGetters(["isValidClient"])
   },
   mixins: [refactorLocation, alterTheme],
