@@ -16,7 +16,7 @@
       @companyNameChange="companyName = $event"
       @getClient="getClient"
     />
-    <keep-alive :key="currentUser._id">
+    <keep-alive>
       <router-view></router-view>
     </keep-alive>
   </div>
