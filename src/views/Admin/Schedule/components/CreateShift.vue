@@ -13,15 +13,15 @@
       :disableForm="fileContent.length > 0"
     >
       <!-- Confirmation unit for a template or csv content -->
-      <Title
-        slot="header_content"
-        defaultClass="m-0"
-        class="mb-4"
-        :title="getInstructions['admin']['create_event']['title']"
-        subtitle="Fill in the following form to create a new event"
-      />
-      <div class="content_container p-3 flex_center" slot="body_content" v-if="currentTab == 0">
-        <ValidationUnit v-bind="validationUnitController" />
+      <div slot="header_content">
+        <Title
+          defaultClass="m-0"
+          :title="getInstructions['admin']['create_event']['title']"
+          subtitle="Fill in the following form to create a new event"
+        />
+        <div class="content_container p-3 flex_center">
+          <ValidationUnit v-bind="validationUnitController" />
+        </div>
       </div>
     </Tabs>
   </el-dialog>

@@ -1,14 +1,7 @@
 <template>
   <div class="tabs_container">
     <slot name="header_content"></slot>
-    <el-tabs
-      :type="tabType"
-      :closable="false"
-      stretch
-      :addable="false"
-      v-model="tabChange"
-      v-loading="loading"
-    >
+    <el-tabs :closable="false" stretch :addable="false" v-model="tabChange" v-loading="loading">
       <slot name="body_content"></slot>
       <el-tab-pane v-for="(tab, index) in tabs" :label="tab.label" :key="index">
         <el-form

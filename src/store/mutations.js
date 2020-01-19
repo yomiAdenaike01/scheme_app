@@ -57,6 +57,7 @@ export default {
   },
 
   UPDATE_NOTIFICATIONS(state, notification) {
+    notification.showClose = false;
     if (notification.type == "success") {
       notification.title = "Opeartion Successful";
       sounds.methods.playSuccessSound();
