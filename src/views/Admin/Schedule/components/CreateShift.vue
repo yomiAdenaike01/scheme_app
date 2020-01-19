@@ -3,6 +3,7 @@
     <Tabs
       :tabs="tabs"
       @uploadFileContent="fileContent = $event"
+      @removeContent="fileContent = '', timeSheetError = null"
       @val="eventData = $event"
       :disable="currentTab == 1"
       v-model.number="currentTab"
@@ -11,11 +12,15 @@
       :disableForm="fileContent.length > 0"
     >
       <!-- Confirmation unit for a template or csv content -->
+      <Title
+        slot="header_content"
+        defaultClass="m-0"
+        class="mb-4"
+        :title="getInstructions['admin']['create_event']['title']"
+        subtitle="Fill in the following form to create a new event"
+      />
       <div class="content_container p-3 flex_center" slot="body_content" v-if="currentTab == 0">
-        <ConfirmationUnit
-          :condition="fileContent.length > 0"
-          confirmationText="Timesheet selected. Form disabled"
-        />
+        <ValidationUnit v-bind="validationUnitController" />
       </div>
     </Tabs>
   </el-dialog>
@@ -30,7 +35,8 @@ import UploadFile from "@/components/UploadFile";
 import Title from "@/components/Title";
 import Tabs from "@/components/Tabs";
 import CreateShiftOptions from "./CreateShiftOptions";
-import ConfirmationUnit from "@/components/ConfirmationUnit";
+import ValidationUnit from "@/components/ValidationUnit";
+import MoreInformation from "@/components/MoreInformation";
 export default {
   name: "CreateShift",
   mixins: [dates],
@@ -39,7 +45,8 @@ export default {
       eventData: {},
       success: false,
       fileContent: "",
-      currentTab: 0
+      currentTab: 0,
+      timeSheetError: null
     };
   },
   props: {
@@ -51,10 +58,26 @@ export default {
     // this.loadingTemplates = false;
   },
   computed: {
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["getIsAdmin", "getInstructions"]),
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
     ...mapGetters("Admin", ["getTeamMember"]),
+    validationUnitController() {
+      return {
+        success: {
+          condition: this.timeSheetError == false,
+          text: "Time sheet successfully validated."
+        },
+        danger: {
+          text: "Time sheet validation failed.",
+          condition: this.timeSheetError == true
+        },
+        info: {
+          text: "Timesheet not selected",
+          condition: this.fileContent.length <= 0
+        }
+      };
+    },
     tabs() {
       return [
         {
@@ -141,9 +164,7 @@ export default {
           id: "assigned_to",
           type: "select",
           model: "assigned_to",
-          options: this.returnTeam,
-          required: !this.returnIsMultiEmployeesSelected,
-          disabled: this.returnIsMultiEmployeesSelected
+          options: this.returnTeam
         });
       }
       // Add reasons for being sick
@@ -219,6 +240,8 @@ export default {
               });
               return Promise.reject();
               break;
+            } else {
+              return Promise.reolve();
             }
           }
           console.log(eventElement);
@@ -237,7 +260,8 @@ export default {
       } catch (e) {
         this.processingTimeSheet = false;
         this.UPDATE_NOTIFICATIONS({
-          type: "error",
+          title: "Failed to validate timesheet",
+          type: "info",
           message:
             "Failed when processing the csv file, please check the csv file and upload it again"
         });
@@ -341,16 +365,19 @@ export default {
     UploadFile,
     Tabs,
     CreateShiftOptions,
-    ConfirmationUnit
+    ValidationUnit,
+    MoreInformation
   },
   watch: {
     fileContent(val) {
       if (val) {
         this.timeSheetManagement()
           .then(response => {
-            this.uploadTimeSheetAndTemplate(response);
+            this.timeSheetError = false;
           })
           .catch(error => {
+            this.timeSheetError = true;
+
             return error;
           });
       }

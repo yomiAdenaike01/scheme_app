@@ -58,14 +58,14 @@
         <!--  Footer -->
         <slot name="footer_content"></slot>
         <!-- Submit button -->
-        <div class="button_container">
+        <div class="button_container mt-4">
           <el-button
             size="small"
             :disabled="disable"
             type="primary"
             class="button_text"
             round
-            @click="tab.formContent ? submitForm() : customMethod()"
+            @click="submitForm"
           >{{ submitText }}</el-button>
         </div>
       </el-tab-pane>
@@ -136,6 +136,7 @@ export default {
     },
     submitForm() {
       this.$emit("val", this.formContent);
+      this.customMethod();
 
       if (this.nextTab) {
         this.$emit("changeTab");

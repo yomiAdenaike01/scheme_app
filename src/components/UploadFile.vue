@@ -1,6 +1,12 @@
 <template>
   <div class="upload_image_container">
-    <el-upload action="/" :auto-upload="false" :on-change="emitFile" :limit="1">
+    <el-upload
+      action="/"
+      :auto-upload="false"
+      :on-change="emitFile"
+      :limit="1"
+      :on-remove="removeFileContent"
+    >
       <el-button v-bind="buttonConfig">{{buttonConfig.text}}</el-button>
       <div class="txt_center el-upload__tip" slot="tip">{{ tip }}</div>
     </el-upload>
@@ -42,6 +48,9 @@ export default {
   },
 
   methods: {
+    removeFileContent() {
+      this.$emit("removeContent", null);
+    },
     emitFile(e) {
       let { raw } = e;
       let fileReader = new FileReader();
@@ -56,3 +65,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.upload_image_container {
+  max-width: 100px;
+}
+</style>

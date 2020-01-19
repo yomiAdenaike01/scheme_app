@@ -45,6 +45,11 @@ export default {
           name: "User",
           path: "/admin/user",
           icon: "el-icon-user"
+        },
+        {
+          name: "Reports",
+          path: "/admin/reports",
+          icon: "el-icon-notebook-1"
         }
       ]
     };

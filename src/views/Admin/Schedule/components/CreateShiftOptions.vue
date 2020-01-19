@@ -19,12 +19,14 @@
           defaultClass="m-0"
           subtitle="Select only CSV files that must have the following rows:"
         />
-        <UploadFile
-          readMethod="readAsText"
-          @fileContent="$emit('conponentChanges',{eventname:'uploadFileContent',eventdata:$event})"
-          class="mt-3"
-          :buttonConfig="{text:'Select CSV File',round:true,icon:'el-icon-top',size:'small',type:'primary'}"
-        />
+        <div class="flex_center">
+          <UploadFile
+            readMethod="readAsText"
+            @removeContent="$emit('conponentChanges',{eventname:'removeContent',eventdata:null})"
+            @fileContent="$emit('conponentChanges',{eventname:'uploadFileContent',eventdata:$event})"
+            :buttonConfig="{text:'Select CSV File',round:true,icon:'el-icon-top',size:'small',type:'primary'}"
+          />
+        </div>
       </div>
     </ToggleSlideDown>
     <div class="template_container"></div>

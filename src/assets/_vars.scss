@@ -1,8 +1,12 @@
 $primary_colour: #2a68d4;
 $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+$success_colour: #67c23a;
+$error_colour: #f56c6c;
+
 .txt_center {
   text-align: center;
 }
+
 #app {
   overflow: hidden;
   border-collapse: collapse;

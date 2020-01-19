@@ -7,7 +7,7 @@ const ClientAuth = () => import("@/views/Auth/ClientAuth");
 const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
 const schedule = () => import("@/views/Admin/Schedule/Schedule");
 const messenger = () => import("@/views/Comms/Messenger");
-const reports = () => import("@/views/Admin/Reports");
+const reports = () => import("@/views/Admin/Reports/Reports");
 
 // Router views
 const mainApp = () => import("@/views/router_views/Main");
