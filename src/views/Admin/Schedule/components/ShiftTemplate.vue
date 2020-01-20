@@ -1,9 +1,9 @@
 <template>
   <el-card class="shift_template_wrapper mt-3" shadow="hover">
-    <el-row type="flex">
+    <el-row type="flex" :gutter="40">
       <el-col class="basic_information">
-        <header>{{returnWeekRange}}</header>
-        <section>{{client.company_name}}</section>
+        <header class="p-2">{{returnWeekRange}}</header>
+        <section class="p-2">{{client.company_name}}</section>
       </el-col>
       <el-col class="name_container">
         <h4>Template Name</h4>
@@ -62,13 +62,13 @@ export default {
 
 <style lang="scss" scoped>
 .shift_template_wrapper {
-  width: 70%;
+  cursor: pointer;
 }
 .basic_information {
   border-radius: 10px;
 }
 header {
-  background: #efefef;
+  background: lighten($color: #efefef, $amount: 2);
 }
 section {
   background: lighten($color: #efefef, $amount: 4);
