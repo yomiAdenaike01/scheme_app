@@ -21,22 +21,24 @@
               :disable="!isValidClient"
               @val="setFormAndProcessUser"
             >
-              <template #header_content>
+              <!-- New client registration -->
+              <div
+                class="new_client_button_container mb-4 mt-4"
+                slot="header_content"
+                v-if="tabIndex != '0'"
+              >
                 <!-- New client registration -->
-                <div class="new_client_button_container mb-4 mt-4" v-if="tabIndex != '0'">
-                  <!-- New client registration -->
-                  <el-button
-                    v-if="!isValidClient"
-                    @click="$router.push({ name: 'register' })"
-                    round
-                    size="small"
-                    type="primary"
-                  >
-                    Registering a new company ? Click here to
-                    register.
-                  </el-button>
-                </div>
-              </template>
+                <el-button
+                  v-if="!isValidClient"
+                  @click="$router.push({ name: 'register' })"
+                  round
+                  size="small"
+                  type="primary"
+                >
+                  Registering a new company ? Click here to
+                  register.
+                </el-button>
+              </div>
             </Tabs>
           </el-main>
         </el-container>
@@ -69,6 +71,7 @@ export default {
   },
   computed: {
     ...mapGetters(["isValidClient"]),
+    ...mapState(["client"]),
     selectedForm() {
       if (this.tabIndex == "0") {
         return "login";
@@ -92,7 +95,10 @@ export default {
     returnPayload() {
       return {
         method: "POST",
-        data: this.formModel[this.selectedForm],
+        data: {
+          client_id: this.client._id,
+          ...this.formModel[this.selectedForm]
+        },
         url: `/users/${this.selectedForm}`
       };
     },
@@ -229,12 +235,13 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
+
     setFormAndProcessUser(e) {
       try {
         this.$set(this.formModel, this.selectedForm, e);
         this.processUser();
       } catch (error) {
-        reject();
+        console.log(error);
       }
     },
     forgotPassword() {

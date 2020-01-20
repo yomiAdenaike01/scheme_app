@@ -23,19 +23,32 @@ export default {
   methods: {},
   computed: {
     ...mapGetters(["getIsAdmin"]),
+    renderCreateEventButton() {
+      let render = {
+        text: "Create request",
+        icon: "el-icon-question"
+      };
+      if (this.getIsAdmin) {
+        render = {
+          text: "Create Event",
+          icon: "el-icon-date"
+        };
+      }
+      return render;
+    },
     buttons() {
       let buttons = [
+        // {
+        //   label: "View Filters",
+        //   emit: "view_filters",
+        //   round: true,
+        //   icon: "el-icon-search"
+        // },
         {
-          label: "View Filters",
-          emit: "view_filters",
-          round: true,
-          icon: "el-icon-search"
-        },
-        {
-          label: "Create event",
+          label: this.renderCreateEventButton.text,
           emit: "create_event",
           round: true,
-          icon: "el-icon-date"
+          icon: this.renderCreateEventButton.icon
         }
       ];
       if (this.getIsAdmin) {

@@ -138,6 +138,8 @@ export default {
           url: "templates/create",
           data: { name, content }
         });
+        this.view = false;
+        this.resetData();
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);

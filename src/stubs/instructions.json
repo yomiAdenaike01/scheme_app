@@ -12,6 +12,10 @@
       "create_template": {
         "title": "Creating a new template",
         "information": "When uploading a new timesheet, users are given the option to save that timesheet and it't content as a template. This template when used in the future will update itself by one week when used. This is still an experimental feature and therefore, should be used cautiously."
+      },
+      "team_viewing": {
+        "title": "Viewing Team",
+        "information": "Your team members whether online or offline will appear here. There are quick actions that are displayed that will let you message members or book requests for them (admin)"
       }
     }
   }

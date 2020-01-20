@@ -3,9 +3,14 @@
     <!-- Displaying templates -->
     <ToggleSlideDown title="Your saved templates" :center="false">
       <MoreInformation slot="titleContent" index="admin" instruction="create_template" />
-      <div class="flex columns" v-if="templates.length > 0">
+      <div class="flex columns" v-if="templates.length > 0" v-loading="templateLoading">
         <el-input v-model="templateNamesSearch" placeholder="Seach Templates" size="mini"></el-input>
-        <ShiftTemplate v-for="template in templates" :key="template._id" :data="template" />
+        <ShiftTemplate
+          @deleteTemplate="deleteTemplate"
+          v-for="template in templates"
+          :key="template._id"
+          :data="template"
+        />
       </div>
       <div class="flex_center" v-else>
         <p>No template found, press more information for find out more.</p>
@@ -47,23 +52,13 @@ export default {
   data() {
     return {
       templates: "",
-      templateNamesSearch: ""
+      templateNamesSearch: "",
+      templateLoading: false
     };
   },
 
-  mounted() {
-    this.request({
-      method: "GET",
-      url: "templates/all"
-    })
-      .then(response => {
-        this.templates = response;
-        this.loadingTemplates = false;
-      })
-      .catch(error => {
-        this.loadingTemplates = false;
-        return error;
-      });
+  async mounted() {
+    await this.getTemplates();
   },
   mixins: [uploadContent],
   computed: {
@@ -73,7 +68,31 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"])
+    ...mapActions(["request"]),
+    async getTemplates() {
+      try {
+        this.templates = await this.request({
+          method: "GET",
+          url: "templates/all"
+        });
+        this.loadingTemplates = false;
+      } catch (error) {
+        this.loadingTemplates = false;
+      }
+    },
+    async deleteTemplate({ id, elem }) {
+      try {
+        this.templateLoading = true;
+        let deleteRequest = await this.request({
+          method: "DELETE",
+          url: "templates/delete",
+          data: { id }
+        });
+        await this.getTemplates();
+      } catch (error) {
+        this.templateLoading = false;
+      }
+    }
   },
   components: {
     ToggleSlideDown,

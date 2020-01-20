@@ -128,7 +128,9 @@ export default {
     },
     submitForm() {
       this.$emit("val", this.formContent);
-      this.customMethod();
+      if (this.customMethod) {
+        this.customMethod();
+      }
 
       if (this.nextTab) {
         this.$emit("changeTab");

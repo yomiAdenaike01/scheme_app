@@ -16,7 +16,7 @@
       <div slot="header_content">
         <Title
           defaultClass="m-0"
-          :title="getInstructions['admin']['create_event']['title']"
+          :title="getIsAdmin ? 'Create event' : 'Create request'"
           subtitle="Fill in the following form to create a new event"
         />
         <div class="content_container p-3 flex_center">
@@ -121,12 +121,11 @@ export default {
       // Add reasons for being sick
       if (this.isNotShiftOrHoliday) {
         createShiftConfig.push({
-          label:
-            "Please enter a reason for the sick leave or time off and please feel free to attach a document displaying proof",
           type: "text",
           textarea: true,
-          placeholder: "Optional: Please enter reason for sick leave",
-          model: "reasons",
+          placeholder:
+            "Optional: Please enter reason for sick leave or time-off",
+          model: "notes",
           required: true
         });
       }
@@ -160,8 +159,6 @@ export default {
     },
     /**
      * @params {Array} converted csv file
-     * TODO CAN ADD OTHER USERS IF ADMIN
-     * TODO RETURN THE CORRECT TEAM MEMBERS
      */
     async validateCSVData(fileData) {
       try {
@@ -177,6 +174,7 @@ export default {
 
         for (let i = 0; i < len; i++) {
           let eventElement = fileData[i];
+          // Validate against the schema
           for (let property in validateData) {
             if (!eventElement[property]) {
               return Promise.reject("Time sheet is missing parameters");
@@ -202,12 +200,20 @@ export default {
                   ).toISOString();
                   break;
                 }
+                case "shift_type": {
+                  if (eventElement[property] == 1) {
+                    return Promise.reject(
+                      "Non admins cannot create shifts, if you require a shift, please request it from your admin."
+                    );
+                  }
+                }
 
                 default:
                   break;
               }
             }
           }
+
           return Promise.resolve(eventElement);
         }
       } catch (error) {

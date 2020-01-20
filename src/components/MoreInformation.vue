@@ -4,7 +4,7 @@
       <el-button slot="trigger" size="mini" round type="primary">More Information</el-button>
       <div slot="content" class="instructions_content">
         <h3 class="mb-2">{{returnInstructionsContent.title}}</h3>
-        <p style="line-height:1.5em">{{returnInstructionsContent.information}}</p>
+        <p v-html="returnInstructionsContent.information" style="line-height:1.5em"></p>
       </div>
     </Popover>
   </div>

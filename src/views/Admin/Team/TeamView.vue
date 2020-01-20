@@ -1,27 +1,36 @@
 <template>
-  <el-col class="team_wrapper" v-loading="false">
-    <el-row class="team_container">
+  <el-col class="team_wrapper h-100" v-loading="false">
+    <el-row class="team_container h-100">
+      <!-- Display if in mobile view -->
       <Title
         style="text-align:center"
         v-if="$mq != 'lg'"
         title="Team"
         subtitle="View and interact with your team members here"
       />
-
-      <el-col v-for="(member, index) in team" :key="index" class="member flex_center">
-        <Dropdown
-          class="p-2"
-          @click.native="hoveredTeamMember = member._id"
-          :items="items"
-          @method="handleEvents"
-          position="left"
-          :icon="false"
-        >
-          <el-badge is-dot :type="member.is_online ? 'success' : 'danger'" class="item">
-            <Avatar :name="member.name" />
-          </el-badge>
-        </Dropdown>
-      </el-col>
+      <div v-if="team.length > 0">
+        <el-col v-for="(member, index) in team" :key="index" class="member flex_center">
+          <Dropdown
+            class="p-2"
+            @click.native="hoveredTeamMember = member._id"
+            :items="items"
+            @method="handleEvents"
+            position="left"
+            :icon="false"
+          >
+            <el-badge is-dot :type="member.is_online ? 'success' : 'danger'" class="item">
+              <Avatar :name="member.name" />
+            </el-badge>
+          </Dropdown>
+        </el-col>
+      </div>
+      <div v-else class="flex_center h-100 columns">
+        <i class="el-icon-user txt-large"></i>
+        <p
+          class="desc m-4 txt-center l-height-large"
+        >No team members detected, hover over the button below for more information.</p>
+        <MoreInformation hoverPosition="bottom-end" index="admin" instruction="team_viewing" />
+      </div>
     </el-row>
   </el-col>
 </template>
@@ -31,6 +40,7 @@ import { mapState, mapGetters, mapMutations } from "vuex";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 import Title from "@/components/Title";
+import MoreInformation from "@/components/MoreInformation";
 export default {
   name: "Team",
   created() {
@@ -102,14 +112,16 @@ export default {
   components: {
     Dropdown,
     Avatar,
-    Title
+    Title,
+    MoreInformation
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .team_wrapper {
-  width: 5%;
+  max-width: 11%;
+  min-width: 5%;
   border-left: solid 1px #e6e6e6;
   height: 100%;
   overflow-x: hidden;

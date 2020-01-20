@@ -9,10 +9,18 @@ $error_colour: #f56c6c;
 .w-100 {
   width: 100%;
 }
+.h-100 {
+  height: 100%;
+}
 .capitalize {
   text-transform: capitalize;
 }
-
+.txt-large {
+  font-size: 1.3em;
+}
+.l-height-large {
+  line-height: 1.6em;
+}
 #app {
   overflow: hidden;
   border-collapse: collapse;

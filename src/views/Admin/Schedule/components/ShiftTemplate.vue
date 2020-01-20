@@ -1,5 +1,10 @@
 <template>
-  <el-card class="shift_template_wrapper mt-3" shadow="hover">
+  <el-card
+    class="shift_template_wrapper mt-3"
+    shadow="hover"
+    v-loading="loading"
+    ref="shiftTemplate"
+  >
     <el-row type="flex" :gutter="40">
       <el-col class="basic_information">
         <header class="p-2">{{returnWeekRange}}</header>
@@ -12,7 +17,12 @@
       <el-col>
         <div class="inner_container columns">
           <el-button type="primary" circle icon="el-icon-edit-outline" />
-          <el-button type="danger" circle icon="el-icon-close" />
+          <el-button
+            type="danger"
+            circle
+            icon="el-icon-close"
+            @click="$emit('deleteTemplate',{id:data._id,elem:$refs.shiftTemplate})"
+          />
         </div>
       </el-col>
     </el-row>
@@ -28,7 +38,8 @@ export default {
   name: "Shift_Template",
   data() {
     return {
-      selected: false
+      selected: false,
+      loading: false
     };
   },
 
@@ -54,6 +65,7 @@ export default {
       return `${momentStartDate} - ${momentEndDate}`;
     }
   },
+
   components: {
     Title
   }

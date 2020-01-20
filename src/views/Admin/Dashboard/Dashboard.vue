@@ -1,7 +1,7 @@
 <template>
   <el-row :type="$mq == 'lg' ? 'flex' : null" style="height:100%">
     <Shifts />
-    <NoTeamMembers />
+    <!-- <NoTeamMembers /> -->
     <TeamView />
   </el-row>
 </template>
