@@ -1,12 +1,13 @@
 <template>
   <div class="create_shift_options_container">
     <!-- Displaying templates -->
-    <ToggleSlideDown title="Use saved template">
+    <ToggleSlideDown title="Your saved templates" :center="false">
       <MoreInformation slot="titleContent" index="admin" instruction="create_template" />
-      <div class="flex flex--space-between align-center mt-3">
-        <div class="flex columns" v-if="templates.length > 0">
-          <ShiftTemplate v-for="template in templates" :key="template._id" :data="template" />
-        </div>
+      <div class="flex columns" v-if="templates.length > 0">
+        <el-input v-model="templateNamesSearch" placeholder="Seach Templates" size="mini"></el-input>
+        <ShiftTemplate v-for="template in templates" :key="template._id" :data="template" />
+      </div>
+      <div class="flex_center" v-else>
         <p>No template found, press more information for find out more.</p>
       </div>
     </ToggleSlideDown>
@@ -40,15 +41,17 @@ import uploadContent from "@/mixins/uploadContent";
 import Title from "@/components/Title";
 import ShiftTemplate from "./ShiftTemplate";
 import MoreInformation from "@/components/MoreInformation";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "CreateShiftOptions",
   data() {
     return {
-      templates: ""
+      templates: "",
+      templateNamesSearch: ""
     };
   },
-  activated() {
+
+  mounted() {
     this.request({
       method: "GET",
       url: "templates/all"
@@ -68,6 +71,9 @@ export default {
     shiftConfig() {
       return ["name", "assigned_to", "startDate", "endDate", "shift_type"];
     }
+  },
+  methods: {
+    ...mapActions(["request"])
   },
   components: {
     ToggleSlideDown,

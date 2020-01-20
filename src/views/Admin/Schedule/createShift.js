@@ -68,36 +68,27 @@ export default {
     }
   },
   methods: {
-    convertEvent(eventElement) {
-      return this.formatDate(eventElement);
+    async getEmployeeID(name) {
+      if (name.trim().toLowerCase() == this.getName) {
+        return this.currentUser._id;
+      } else if (!this.getIsAdmin) {
+        return Promise.reject(
+          "You cannot have other teammate names when you are not an admin"
+        );
+      } else {
+        let foundTeamMember = this.team.find(member => {
+          return member.name == name;
+        });
+        if (foundTeamMember) {
+          return Promise.resolve(foundTeamMember._id);
+        } else {
+          return Promise.reject(
+            "Could not find the ID of the team members please re-enter their names correctly"
+          );
+        }
+      }
     },
-    // getEmployeeID(eventElement) {
-    //   let employeeName = eventElement.assigned_to.toLowerCase().trim();
-    //   if (this.team.length > 0) {
-    //     try {
-    //       eventElement.assigned_to = this.team.find(member => {
-    //         return member.name == employeeName;
-    //       });
-    //       if (eventElement.assigned_to) {
-    //         return eventElement;
-    //       }
-    //     } catch (error) {
-    //       console.warn(error);
-    //       return error;
-    //     }
-    //   }
-    // },
-    formatDate(eventElement) {
-      // Format dates
-      const format = "DD/MM/YYYY HH:mm:ss";
-      eventElement.startDate = moment(
-        moment(eventElement.startDate).format(format)
-      ).toISOString();
-      eventElement.endDate = moment(
-        moment(eventElement.endDate).format(format)
-      ).toISOString();
-      return eventElement;
-    },
+
     /**
      *  Adds one week to the content
      */

@@ -39,6 +39,7 @@ import ValidationUnit from "@/components/ValidationUnit";
 import MoreInformation from "@/components/MoreInformation";
 import findTeam from "@/mixins/findTeam";
 import createShift from "../createShift";
+import moment from "moment";
 const csvtojson = require("csvtojson");
 
 export default {
@@ -51,18 +52,19 @@ export default {
       fileContent: "",
       currentTab: 0,
       timeSheetError: null,
-      timeSheetData: ""
+      timeSheetData: "",
+      userTemplates: null
     };
   },
   props: {
     display: Boolean
   },
-  activated() {
-    this.loadingTemplates = true;
-    // this.loadingTemplates = false;
+
+  deactivated() {
+    this.resetData();
   },
   computed: {
-    ...mapGetters(["getIsAdmin", "getInstructions"]),
+    ...mapGetters(["getIsAdmin", "getInstructions", "getName"]),
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
     ...mapGetters("Admin", ["getTeamMember"]),
@@ -144,6 +146,7 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+
     resetData() {
       this.timeSheetError = null;
       this.fileContent = "";
@@ -157,40 +160,65 @@ export default {
     },
     /**
      * @params {Array} converted csv file
-     * TODO SHIFT TYPES
      * TODO CAN ADD OTHER USERS IF ADMIN
      * TODO RETURN THE CORRECT TEAM MEMBERS
      */
     async validateCSVData(fileData) {
-      let validateData = {
-        assigned_to: null,
-        startDate: null,
-        endDate: null,
-        shift_type: null
-      };
-      let isAdmin = this.getIsAdmin;
-      let currentUser = this.currentUser.name.trim().toLowerCase();
-      const len = fileData.length;
+      try {
+        let validateData = {
+          assigned_to: null,
+          startDate: null,
+          endDate: null,
+          shift_type: null
+        };
+        let isAdmin = this.getIsAdmin;
+        let currentUser = this.currentUser.name.trim().toLowerCase();
+        const len = fileData.length;
 
-      for (let i = 0; i < len; i++) {
-        let eventElement = this.convertEvent(fileData[i]);
-        // Loop the validation scheme and check that each one has values
-        for (let property in validateData) {
-          let eventAttribute = eventElement[property];
-          if (!eventAttribute) {
-            return Promise.reject(
-              "Timesheet validation error, please enter the correct data format for the timesheets"
-            );
+        for (let i = 0; i < len; i++) {
+          let eventElement = fileData[i];
+          for (let property in validateData) {
+            if (!eventElement[property]) {
+              return Promise.reject("Time sheet is missing parameters");
+              break;
+            } else {
+              switch (property) {
+                case "assigned_to": {
+                  eventElement[property] = await this.getEmployeeID(
+                    eventElement[property]
+                  );
+                  break;
+                }
+                case "startDate": {
+                  eventElement[property] = await moment(
+                    moment(eventElement[property])
+                  ).toISOString();
+                  break;
+                }
+
+                case "endDate": {
+                  eventElement[property] = await moment(
+                    moment(eventElement[property])
+                  ).toISOString();
+                  break;
+                }
+
+                default:
+                  break;
+              }
+            }
           }
+          return Promise.resolve(eventElement);
         }
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.resolve(fileData);
     },
 
     async timeSheetManagement() {
       try {
-        let holder = await csvtojson().fromString(this.fileContent);
-        let validationResult = await this.validateCSVData(this.fileContent);
+        let JSONshifts = await csvtojson().fromString(this.fileContent);
+        let validationResult = await this.validateCSVData(JSONshifts);
         return Promise.resolve(validationResult);
       } catch (e) {
         return Promise.reject(e);

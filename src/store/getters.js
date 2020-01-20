@@ -31,7 +31,9 @@ export default {
       return [];
     }
   },
-
+  getName(state) {
+    return state.currentUser.name.trim().toLowerCase();
+  },
   getInstructions() {
     return instructions;
   }

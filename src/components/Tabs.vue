@@ -3,7 +3,7 @@
     <slot name="header_content"></slot>
     <el-tabs :closable="false" stretch :addable="false" v-model="tabChange" v-loading="loading">
       <slot name="body_content"></slot>
-      <el-tab-pane v-for="(tab, index) in tabs" :label="tab.label" :key="index">
+      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab.label" :key="index">
         <el-form
           style="padding-top:1em"
           v-if="tab.hasOwnProperty('formContent')"
@@ -51,10 +51,9 @@
         <!--  Footer -->
         <slot name="footer_content"></slot>
         <!-- Submit button -->
-        <div class="button_container mt-4">
+        <div class="button_container mt-4" v-if="!disable">
           <el-button
             size="small"
-            :disabled="disable"
             type="primary"
             class="button_text"
             round
