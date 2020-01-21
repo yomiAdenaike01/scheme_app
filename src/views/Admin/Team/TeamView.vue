@@ -24,13 +24,14 @@
           </Dropdown>
         </el-col>
       </div>
-      <div v-else class="flex_center h-100 columns">
-        <i class="el-icon-user txt-large"></i>
-        <p
-          class="desc m-4 txt-center l-height-large"
-        >No team members detected, hover over the button below for more information.</p>
-        <MoreInformation hoverPosition="bottom-end" index="admin" instruction="team_viewing" />
-      </div>
+      <Nocontent
+        v-else
+        :moreInformation="getIsAdmin ? null : {index:'admin',instruction:'team_viewing',hoverPosition:'bottom-end'}"
+        text="No team members detected, hover over the button below for more information."
+        icon="el-icon-user"
+      >
+        <el-button round type="primary" size="mini">Create Team Member</el-button>
+      </Nocontent>
     </el-row>
   </el-col>
 </template>
@@ -41,6 +42,7 @@ import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 import Title from "@/components/Title";
 import MoreInformation from "@/components/MoreInformation";
+import Nocontent from "@/components/Nocontent";
 export default {
   name: "Team",
   created() {
@@ -113,7 +115,8 @@ export default {
     Dropdown,
     Avatar,
     Title,
-    MoreInformation
+    MoreInformation,
+    Nocontent
   }
 };
 </script>

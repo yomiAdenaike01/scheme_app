@@ -21,6 +21,7 @@
         style="background:rgb(250,250,250); height:100%;"
       >
         <el-main style="display:flex; align-items:center; justify-content:center">
+          <i class="el-icon-bell"></i>
           <h1 class="grey light">No notifications found.</h1>
         </el-main>
       </el-container>

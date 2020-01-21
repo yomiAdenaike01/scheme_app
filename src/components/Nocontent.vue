@@ -1,0 +1,34 @@
+<template>
+  <div class="flex_center h-100 columns">
+    <i :class="`${icon} txt-large`"></i>
+    <p class="desc m-4 txt-center l-height-large">{{text}}</p>
+    <MoreInformation
+      v-if="moreInformation"
+      :hoverPosition="moreInformation.hoverPosition"
+      :index="moreInformation.index"
+      :instruction="moreInformation.instruction"
+    />
+    <slot v-else></slot>
+  </div>
+</template>
+
+<script>
+import MoreInformation from "./MoreInformation";
+export default {
+  name: "Nocontent",
+  props: {
+    icon: {
+      type: String
+    },
+    text: {
+      type: String
+    },
+    moreInformation: {
+      type: Object
+    }
+  },
+  components: {
+    MoreInformation
+  }
+};
+</script>
