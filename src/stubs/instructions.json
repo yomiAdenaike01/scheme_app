@@ -5,6 +5,10 @@
         "title": "Creating event/shift",
         "information": "Events / Requests or shifts can be created here. They differ based on the user that is creating them."
       },
+      "upload_employee": {
+        "title": "Batch Upload Employees",
+        "information": "CSV files like shifts can be uploaded by they must follow strict guidelines"
+      },
       "upload_timesheet": {
         "title": "Uploading new timesheet",
         "information": "Timesheets require a certain template for them to be uploaded and used frequently, they will need to consits of the following, shift_type, name, startDate,endDate,assigned_to"

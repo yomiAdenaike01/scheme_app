@@ -8,6 +8,7 @@ const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
 const schedule = () => import("@/views/Admin/Schedule/Schedule");
 const messenger = () => import("@/views/Comms/Messenger");
 const reports = () => import("@/views/Admin/Reports/Reports");
+const user = () => import("@/views/Admin/User/User");
 
 // Router views
 const mainApp = () => import("@/views/router_views/Main");
@@ -55,6 +56,15 @@ const routes = [
             component: reports,
             meta: {
               title: "Reports",
+              authRequired: true
+            }
+          },
+          {
+            path: "user",
+            name: "user",
+            component: user,
+            meta: {
+              title: "User Management",
               authRequired: true
             }
           }

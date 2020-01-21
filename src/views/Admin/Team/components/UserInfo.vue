@@ -1,9 +1,10 @@
 <template>
   <div class="user_info_container">
     <h3>User Info</h3>
-    <p v-for="(property, index) in removeUnwantedProperties" :key="index">
-      {{ index }} : {{ property }}
-    </p>
+    <p
+      v-for="(property, index) in removeUnwantedProperties"
+      :key="index"
+    >{{ index }} : {{ property }}</p>
   </div>
 </template>
 
@@ -24,13 +25,7 @@ export default {
     removeUnwantedProperties() {
       let cleanedProperties = {};
       for (let property in this.data) {
-        if (
-          property != "_id" &&
-          property != "is_online" &&
-          property != "employee_type"
-        ) {
-          cleanedProperties[property] = this.data[property];
-        }
+        cleanedProperties[property] = this.data[property];
       }
       return cleanedProperties;
     }

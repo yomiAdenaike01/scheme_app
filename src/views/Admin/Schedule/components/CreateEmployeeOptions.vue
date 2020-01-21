@@ -1,9 +1,11 @@
 <template>
   <div class="employee_options">
     <ToggleSlideDown title="Upload Employee">
+      <MoreInformation slot="titleContent" index="admin" instruction="upload_employee" />
       <UploadFile
-        :buttonConfig="{circle:false, round:true, size:'small', text:'Select Files'}"
-        @fileContent="$emit('fileContent',$event)"
+        @removeContent="$emit('conponentChanges',{eventname:'removeContent',eventdata:null})"
+        readMethod="readAsText"
+        @fileContent="$emit('conponentChanges',{eventname:'fileContent',eventdata:$event})"
       />
     </ToggleSlideDown>
   </div>
@@ -13,12 +15,14 @@
 import ToggleSlideDown from "@/components/ToggleSlideDown";
 import UploadFile from "@/components/UploadFile";
 import uploadContent from "@/mixins/uploadContent";
+import MoreInformation from "@/components/MoreInformation";
 export default {
   name: "CreateEmployeeOptions",
   mixins: [uploadContent],
   components: {
     ToggleSlideDown,
-    UploadFile
+    UploadFile,
+    MoreInformation
   }
 };
 </script>

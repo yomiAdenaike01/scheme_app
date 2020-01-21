@@ -1,7 +1,14 @@
 <template>
   <div class="tabs_container">
     <slot name="header_content"></slot>
-    <el-tabs :closable="false" stretch :addable="false" v-model="tabChange" v-loading="loading">
+    <el-tabs
+      :closable="false"
+      stretch
+      :addable="false"
+      v-model="tabChange"
+      :tab-position="position"
+      v-loading="loading"
+    >
       <slot name="body_content"></slot>
       <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab.label" :key="index">
         <el-form
@@ -110,6 +117,9 @@ export default {
     disableForm: {
       type: Boolean,
       default: false
+    },
+    position: {
+      type: String
     }
   },
   computed: {

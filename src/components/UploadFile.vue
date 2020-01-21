@@ -31,7 +31,7 @@ export default {
           round: true,
           type: "primary",
           icon: "el-icon-top",
-          size: "medium"
+          size: "small"
         };
       }
     },

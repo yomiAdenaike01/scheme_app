@@ -1,31 +1,42 @@
 <template>
-  <el-dialog :visible.sync="view">
-    <Tabs :tabs="tabs" @val="employeeForm = $event" :loading="loading">
-      <template #header_content>
+  <el-dialog :visible.sync="view" v-loading="loading">
+    <Tabs
+      :tabs="tabs"
+      @fileContent="fileContent = $event"
+      @deleteContent="fileContent = $event"
+      @val="employeeForm = $event"
+      :disableForm="fileContent != null"
+    >
+      <div slot="header_content">
         <Title
           title="Create employee"
           subtitle="Enter the employee's details. Feel free to upload a csv file of the employee or employees"
         />
-      </template>
+        <div class="flex_center">
+          <ValidationUnit v-bind="renderValidationUnit" />
+        </div>
+      </div>
     </Tabs>
   </el-dialog>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import UploadFile from "@/components/UploadFile";
 import ToggleSlideDown from "@/components/ToggleSlideDown";
 import Tabs from "@/components/Tabs";
 import CreateEmeployeeOptions from "./CreateEmployeeOptions";
 import Title from "@/components/Title";
+import ValidationUnit from "@/components/ValidationUnit";
+const csvtojson = require("csvtojson");
 export default {
   name: "CreateEmployee",
   data() {
     return {
-      uploadMultiple: false,
       loading: false,
-      fileContent: "",
-      employeeForm: {}
+      fileContent: null,
+      fileError: null,
+      convertedData: {}
     };
   },
 
@@ -33,28 +44,31 @@ export default {
     display: Boolean
   },
   computed: {
+    ...mapState(["client"]),
+    renderValidationUnit() {
+      return {
+        success: {
+          condition: this.fileError == true,
+          text: "Employee timesheet passed tests ready to upload"
+        },
+        danger: {
+          condition: this.fileError == true,
+          text: "Employee timesheet passed tests ready to upload"
+        },
+        info: {
+          condition: this.fileError == null,
+          text: "Upload employee file"
+        }
+      };
+    },
+
     genPwd() {
       return this.employeeForm.name
         .trim()
         .toLowerCase()
         .replace(" ", "");
     },
-    isoDate() {
-      return this.employeeForm.date_of_birth.toISOString();
-    },
-    rules() {
-      let rules = {};
-      for (let prop in this.employeeForm) {
-        rules[prop] = [
-          {
-            required: true,
-            message: `Please enter the employee's ${prop.toLowerCase()}.`,
-            trigger: "blur"
-          }
-        ];
-      }
-      return rules;
-    },
+
     tabs() {
       return [
         {
@@ -62,7 +76,7 @@ export default {
           formContent: this.formItems
         },
         {
-          label: "Options",
+          label: "Upload Employees",
           view: {
             props: "",
             component: CreateEmeployeeOptions
@@ -144,52 +158,37 @@ export default {
     }
   },
   methods: {
-    handleChange(event) {
-      var input = event.target;
-
-      var reader = new FileReader();
-      console.log(input.files[0], reader.readAsText(input.files[0]));
-    },
-    reset() {
-      this.$set(this, "employeeForm", {
-        name: "",
-        email: "",
-        phone_number: "",
-        date_of_birth: "",
-        password: "",
-        employee_type: "",
-        admin_gen: true,
-        gender: ""
-      });
-    },
     ...mapActions(["request"]),
-    createEmployee() {
-      this.loading = true;
-      this.employeeForm.date_of_birth = this.isoDate;
-      this.employeeForm.password = this.genPwd;
-      const payload = {
-        method: "POST",
-        url: "/users/register",
-        data: this.employeeForm
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    async cleanData(JSONData) {
+      let JSONContent = await csvtojson().fromString(JSONData);
+      let schema = {
+        name: null,
+        email: "",
+        gender: "",
+        phone_number: "",
+        password: ""
       };
-      this.request(payload)
-        .then(response => {
-          this.$emit("toggle", false);
-          this.loading = false;
-          this.reset();
-        })
-        .catch(error => {
-          this.$emit("toggle", false);
-
-          this.loading = false;
-          this.reset();
-        });
-    },
-    validateEmployeeForm() {
-      this.$refs.employeeForm.validate(valid => {
-        if (valid) {
-          this.createEmployee();
+      const len = JSONContent.length;
+      for (let i = 0; i < len; i++) {
+        let employee = JSONContent[i];
+        employee["client_id"] = this.client._id;
+        for (let property in schema) {
+          if (!employee[property]) {
+            this.fileError = true;
+            return Promise.reject("Missing parameters for employee timesheet");
+            break;
+          }
         }
+      }
+      this.fileError = false;
+      return Promise.resolve(JSONContent);
+    },
+    async createEmployees(employees) {
+      await this.request({
+        method: "POST",
+        url: "users/register/multiple",
+        data: { employees: employees }
       });
     }
   },
@@ -198,7 +197,29 @@ export default {
     UploadFile,
     ToggleSlideDown,
     Tabs,
-    CreateEmeployeeOptions
+    CreateEmeployeeOptions,
+    ValidationUnit
+  },
+  watch: {
+    fileContent(val) {
+      this.loading = true;
+      this.cleanData(val)
+        .then(response => {
+          this.createEmployees(response).then(response => {
+            this.fileError = false;
+            this.loading = false;
+          });
+        })
+        .catch(error => {
+          this.loading = false;
+          this.fileError = true;
+          this.UPDATE_NOTIFICATIONS({
+            title: "Error when processing the employee sheet",
+            type: "info",
+            message: error
+          });
+        });
+    }
   }
 };
 </script>
