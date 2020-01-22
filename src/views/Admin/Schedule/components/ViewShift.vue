@@ -1,116 +1,174 @@
 <template>
-  <el-dialog :visible.sync="view">
-    <el-row slot="title" type="flex">
-      <el-col>
-        <Title
-          title="Details"
-          subtitle="View and edit the details of the shift/event/request here."
-          defaultClass="m-0"
-        />
-      </el-col>
-      <el-col style="display:flex; justify-content:flex-end">
-        <el-tag class="mt-4 mr-4" v-if="shift.is_pickup">Avaliable For Pickup</el-tag>
-      </el-col>
-    </el-row>
-
-    <el-form>
-      <el-form-item label="Assignee:">
-        <p class="member_name">
-          {{ returnTeamMember }}
-          <el-button
-            @click="toggleViewTeamMember"
-            class="ml-3"
-            v-if="getIsAdmin"
-            size="mini"
-          >View Team Member</el-button>
-        </p>
-      </el-form-item>
-      <el-form-item label="Approved:">
-        <el-button :icon="returnIcon" :type="returnApproval ? 'success' : 'warning'" circle></el-button>
-      </el-form-item>
-      <el-form-item label="Shift Type:">{{ shift.type }}</el-form-item>
-      <el-divider>
-        <span class="grey">Timing</span>
-      </el-divider>
-      <el-form-item label="Start Date Time:">
-        <span>{{ shift.start }}</span>
-      </el-form-item>
-      <el-form-item label="End Date Time:">
-        <span>{{ shift.end }}</span>
-      </el-form-item>
-      <el-row type="flex" :gutter="5">
-        <el-col v-if="shift.is_pickup && shift.shift_type <= 2">
-          <el-button style="width:100%" type="primary" plain @click="confirm('pickup')">Pickup</el-button>
-        </el-col>
-        <el-col v-if="!shift.is_pickup && shift.shift_type <= 2 && shift.assigned_to">
-          <el-button style="width:100%" type="danger" plain @click="confirm('delete')">Drop</el-button>
-        </el-col>
-        <el-col v-if="getIsAdmin || currentUser._id == shift.assigned_to">
-          <el-button style="width:100%" type="danger" @click="confirm('remove')">Delete</el-button>
-        </el-col>
-      </el-row>
-    </el-form>
+  <el-dialog :visible.sync="display" v-loading="loading">
+    <Title title="Shift View" subtitle="View the details of the shift here" />
+    {{shift}}
+    <!-- Remove shift or delete shift button -->
+    <el-button
+      type="danger"
+      size="small"
+      round
+      @click="renderDeleteButtonContent['method']"
+    >{{renderDeleteButtonContent['text']}}</el-button>
+    <!-- Shift type button -->
+    <el-button
+      round
+      :disabled="true"
+      size="small"
+      :type="renderShiftTypeButton['type']"
+    >{{renderShiftTypeButton['text']}}</el-button>
   </el-dialog>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 import Title from "@/components/Title";
-
+import moment from "moment";
 export default {
   name: "ViewShift",
+  data() {
+    return {
+      loading: false
+    };
+  },
   props: {
     shift: Object,
     display: Boolean
   },
   computed: {
-    ...mapGetters("Admin", ["getTeamMember"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapState("Admin", ["team"]),
     ...mapState(["currentUser"]),
-    returnTeamMember() {
-      return this.getTeamMember(this.shift.assigned_to, "_id").name;
-    },
-    canPickUp() {
-      /**
-       * Conditions:
-       *  is yours
-       *  can pick up (is not dropped)
-       *  is admin
-       *
-       */
-      let shift = this.shift;
-      //   let isShiftYours = shift.assigned_to == this.currentUser._id
-      //   let isDropped = shift.is_pickup
-      //   let isAdmin = this.getIsAdmin
-      let isShift = shift.is_pickup;
-      if (shift.is_pickup) {
-        return shift.is_pickup;
-      } else if (this.getIsAdmin) {
-        return true;
+    ...mapGetters(["getIsAdmin"]),
+
+    renderIsApproved() {
+      let { is_approved } = this.shift;
+      let { admin } = is_approved;
+      let approved;
+      if (admin) {
+        approved = true;
+      } else {
+        approved = false;
       }
-      return isShift;
+
+      return approved;
     },
 
-    returnIcon() {
-      let approved = this.returnApproval;
-      let returnval;
-      if (approved) {
-        returnval = "el-icon-check";
-      } else {
-        returnval = "el-icon-close";
+    renderShiftTypeButton() {
+      let { shift_type } = this.shift;
+      let buttonContent = {
+        type: "",
+        text: ""
+      };
+
+      switch (shift_type) {
+        case 4: {
+          buttonContent = {
+            type: "info",
+            text: "Time Off"
+          };
+          break;
+        }
+
+        case 1: {
+          buttonContent = {
+            type: "primary",
+            text: "Normal Shift"
+          };
+          break;
+        }
+
+        case 3: {
+          buttonContent = {
+            type: "warning",
+            text: "Holiday"
+          };
+          break;
+        }
+
+        case 5: {
+          buttonContent = {
+            type: "success",
+            text: "Sick Leave"
+          };
+          break;
+        }
+
+        case 2: {
+          buttonContent = {
+            type: "plain",
+            text: "Locumn"
+          };
+        }
+
+        default: {
+          break;
+        }
       }
-      return returnval;
+      return buttonContent;
     },
-    returnApproval() {
-      return this.shift.is_approved.admin == 1;
+    renderDateContent() {
+      let { startDate, endDate } = this.shift;
+      const format = "DD/MM/YYYY h:m";
+      startDate = moment(startDate).format(format);
+      endDate = moment(endDate).format(format);
+      return {
+        start: startDate,
+        end: endDate
+      };
     },
-    view: {
-      get() {
-        return this.display;
-      },
-      set(val) {
-        this.$emit("toggle", val);
+    renderDeleteButtonContent() {
+      let { canDelete, canDrop } = this.computeRemoveShift;
+      let buttonContent = {
+        text: "",
+        method: ""
+      };
+      if (canDelete) {
+        buttonContent.method = this.removeShift;
+        buttonContent.text = "Delete Shift";
       }
+      return buttonContent;
+    },
+    computeRemoveShift() {
+      let shiftRemoval = {
+        canDelete: false,
+        canDrop: false
+      };
+
+      let { name } = this.currentUser;
+      let { is_pickup } = this.shift;
+
+      name = name.trim().toLowerCase();
+
+      let { assigned_to } = this.shift;
+
+      if (Array.isArray(this.shift)) {
+        var foundUser = assigned_to.find((assignee, index) => {
+          return assignee._id == this.team[index]._id;
+        });
+      }
+
+      if (foundUser) {
+        foundUser.name = foundUser.name.toLowerCase();
+      }
+
+      if (this.getIsAdmin) {
+        shiftRemoval["canDelete"] = true;
+      } else if (foundUser.name == name) {
+        shiftRemoval["canDelete"] = true;
+        if (is_pickup) {
+          shiftRemoval["canDrop"] = true;
+        }
+      }
+      return shiftRemoval;
+    },
+    renderShiftMethods() {
+      let { assigned_to } = this.shift;
+      let team = this.team;
+      return team.filter((member, index) => {
+        return member._id == assigned_to[index] ? member.name : member._id;
+      });
+    },
+    returnShiftID() {
+      return this.shift._id;
     }
   },
   methods: {
@@ -118,122 +176,22 @@ export default {
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
 
-    toggleViewTeamMember() {
-      this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assigned_to });
-    },
-    confirm(question) {
-      switch (question) {
-        case "remove":
-          this.$confirm(
-            `Are you sure you want to remove this event ?`,
-            "Drop Event",
-            {
-              confirmButtonText: "Ok",
-              cancelButtonText: "Cancel",
-              type: "warning"
-            }
-          )
-            .then(response => {
-              this.deleteShift();
-            })
-            .catch(error => {
-              return error;
-            });
-          break;
-        case "delete":
-          this.$confirm(
-            `Are you sure you want to drop this event ?`,
-            "Drop Event",
-            {
-              confirmButtonText: "Ok",
-              cancelButtonText: "Cancel",
-              type: "warning"
-            }
-          )
-            .then(response => {
-              this.updateShift({ assigned_to: "", is_pickup: true });
-            })
-            .catch(error => {
-              return error;
-            });
-          break;
-        case "pickup":
-          this.$confirm(
-            `Are you sure you want to pickup this event ?`,
-            "Pickup Event",
-            {
-              confirmButtonText: "Ok",
-              cancelButtonText: "Cancel",
-              type: "warning"
-            }
-          )
-            .then(response => {
-              this.updateShift({
-                is_pickup: false,
-                assigned_to: this.currentUser._id
-              });
-            })
-            .catch(error => {
-              return error;
-            });
-          break;
-
-        default:
-          break;
-      }
-    },
-    loadingToggle(val, loading) {
-      this.$emit("loading", val);
-      if (!loading) {
-        this.$emit("toggle", val);
-      }
-    },
-    deleteShift() {
-      this.$emit("loading", true);
+    removeShift() {
       this.request({
         method: "DELETE",
-        url: "/shifts/delete",
-        data: {
-          id: this.shift.id
-        }
+        url: "shifts/delete",
+        data: returnShiftID
       })
         .then(response => {
-          this.$emit("loading", false);
-          this.$emit("toggle", false);
-          this.$emit("regetShifts", false);
+          return response;
         })
         .catch(error => {
-          this.$emit("loading", false);
-          this.$emit("toggle", false);
-
           return error;
         });
     },
-    updateShift(update) {
-      this.$emit("loading", true);
-      this.request({
-        method: "POST",
-        url: "/shifts/update",
-        data: {
-          id: this.shift.id,
-          update: update
-        }
-      })
-        .then(response => {
-          this.$emit("loading", false);
-          this.$emit("toggle", false);
-          this.$emit("regetShifts", false);
-
-          this.UPDATE_NOTIFICATIONS({
-            title: "Operation successful",
-            message: "Shift successfully updated.",
-            type: "success"
-          });
-        })
-        .catch(error => {
-          this.$emit("loading", false);
-          this.$emit("regetShifts", false);
-        });
+    // View the user that the shift is assigned to
+    toggleViewTeamMember() {
+      this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assigned_to });
     }
   },
   components: {

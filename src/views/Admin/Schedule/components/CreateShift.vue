@@ -115,7 +115,8 @@ export default {
           id: "assigned_to",
           type: "select",
           model: "assigned_to",
-          options: this.returnTeam
+          options: this.returnTeam,
+          multiple: true
         });
       }
       // Add reasons for being sick

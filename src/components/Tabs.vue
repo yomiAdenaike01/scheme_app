@@ -39,6 +39,7 @@
               :disabled="input.disabled"
               :start-placeholder="input.start_placeholder"
               :end-placeholder="input.end_placeholder"
+              :multiple="input.multiple"
             >
               <el-option
                 v-for="(option, index) in input.options"
@@ -120,6 +121,10 @@ export default {
     },
     position: {
       type: String
+    },
+    multiple: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
