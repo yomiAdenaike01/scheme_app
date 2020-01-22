@@ -89,9 +89,7 @@ export default {
       }
     },
 
-    /**
-     *  Adds one week to the content
-     */
+    // Adds one week to the content
     addOneWeekData(data) {
       return data.map(elem => {
         return {
@@ -117,17 +115,32 @@ export default {
         return Promise.reject(error);
       }
     },
-    async submitOneShift() {
-      try {
-        await this.request({
-          method: "POST",
-          url: "shifts/create",
-          data: { ...this.eventData }
+    submitOneShift() {
+      // Submit one shit
+      this.loading = true;
+      let { date } = this.eventData;
+
+      let startDate = moment(date[0]).toISOString();
+      let endDate = moment(date[1]).toISOString();
+
+      this.eventData = {
+        ...this.eventData,
+        startDate,
+        endDate
+      };
+      this.request({
+        method: "POST",
+        url: "shifts/create",
+        data: this.eventData
+      })
+        .then(response => {
+          this.loading = false;
+          return response;
+        })
+        .catch(error => {
+          this.loading = false;
+          return error;
         });
-        return Promise.resolve();
-      } catch (error) {
-        return Promise.reject();
-      }
     },
     // Save template
     async requestSaveTemplate({ name, content }) {

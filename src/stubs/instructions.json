@@ -1,6 +1,10 @@
 {
   "instructions": {
     "admin": {
+      "report": {
+        "title": "Reporting",
+        "information": "Your statistics will appear here."
+      },
       "create_event": {
         "title": "Creating event/shift",
         "information": "Events / Requests or shifts can be created here. They differ based on the user that is creating them."

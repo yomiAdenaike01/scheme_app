@@ -8,6 +8,7 @@
       <p>Hello</p>
     </el-col>
   </el-row>
+  <!-- new comment  -->
 </template>
 
 <script>

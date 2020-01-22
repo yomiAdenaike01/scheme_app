@@ -9,6 +9,7 @@ const schedule = () => import("@/views/Admin/Schedule/Schedule");
 const messenger = () => import("@/views/Comms/Messenger");
 const reports = () => import("@/views/Admin/Reports/Reports");
 const user = () => import("@/views/Admin/User/User");
+// const featurerequest = () => import("@/views/Admin/FeatureRequest");
 
 // Router views
 const mainApp = () => import("@/views/router_views/Main");
@@ -68,6 +69,14 @@ const routes = [
               authRequired: true
             }
           }
+          // {
+          //   path: "/request",
+          //   component: featurerequest,
+          //   meta: {
+          //     title: "Feature Request / Bug Reporting",
+          //     authRequired: true
+          //   }
+          // }
         ]
       },
       {

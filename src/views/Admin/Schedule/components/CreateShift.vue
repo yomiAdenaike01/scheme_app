@@ -40,7 +40,7 @@ import MoreInformation from "@/components/MoreInformation";
 import findTeam from "@/mixins/findTeam";
 import createShift from "../createShift";
 import moment from "moment";
-const csvtojson = require("csvtojson");
+import csvtojson from "csvtojson";
 
 export default {
   name: "CreateShift",
@@ -132,7 +132,7 @@ export default {
 
       return createShiftConfig;
     },
-
+    //  control the current view
     view: {
       get() {
         return this.display;
@@ -157,9 +157,7 @@ export default {
         this.loading = false;
       }, 1000);
     },
-    /**
-     * @params {Array} converted csv file
-     */
+
     async validateCSVData(fileData) {
       try {
         let validateData = {
