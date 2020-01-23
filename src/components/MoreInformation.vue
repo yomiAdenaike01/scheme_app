@@ -2,7 +2,7 @@
   <div class="moreinformation_container">
     <!-- Create popover with the index of the instructions -->
     <Popover :position="hoverPosition" trigger="hover" width="250">
-      <el-button slot="trigger" size="mini" round type="primary">More Information</el-button>
+      <el-button slot="trigger" size="mini" round :type="type">More Information</el-button>
 
       <div slot="content" class="instructions_content">
         <h3 class="mb-2">{{returnInstructionsContent.title}}</h3>
@@ -19,6 +19,10 @@ export default {
   name: "MoreInformation",
 
   props: {
+    type: {
+      type: String,
+      default: "primary"
+    },
     hoverPosition: {
       type: String,
       default: "right-end"
@@ -29,7 +33,7 @@ export default {
     },
     index: {
       type: String,
-      default: ""
+      default: "admin"
     }
   },
   computed: {

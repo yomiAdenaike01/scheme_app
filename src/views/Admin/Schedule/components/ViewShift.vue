@@ -1,61 +1,78 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <div v-loading="loading">
-      <Title title="Shift View" subtitle="View the details of the shift here" />
+    <Title title="View Shift" subtitle="Click on more information to display details">
+      <MoreInformation index="admin" instruction="view_shift" />
+    </Title>
+    <el-row type="flex" v-loading="loading">
+      <!-- FIRST COLUMN -->
 
-      <!-- Assigned to -->
-      <el-tag
-        type="info"
-        closable
-        v-for="(teamMember,index) in renderAssignedTo"
-        :key="index"
-        @close="removeTeamMemberFromShift(teamMember)"
-        :id="teamMember['id']"
-      >{{teamMember['name']}}</el-tag>
+      <el-col class="view_shift_col">
+        <!-- Assigned to -->
+        <div class="view_shift_dialog_item">
+          <h4>Assigned To</h4>
+          <el-tag
+            class="m-1"
+            type="info"
+            closable
+            v-for="(teamMember,index) in renderAssignedTo"
+            :key="index"
+            @close="removeTeamMemberFromShift(teamMember)"
+            :id="teamMember['id']"
+          >{{teamMember['name']}}</el-tag>
+        </div>
 
-      <el-col>
-        <!-- Shift type button -->
-        <el-button
-          round
-          :disabled="true"
-          size="small"
-          :type="renderButtonTypes['shiftType']['type']"
-        >{{renderButtonTypes['shiftType']['text']}}</el-button>
-      </el-col>
-      <el-col>
-        <el-button
-          circle
-          size="small"
-          :icon="renderButtonTypes['approval']['icon']"
-          :type="renderButtonTypes['approval']['type']"
-        ></el-button>
-      </el-col>
+        <el-col class="view_shift_dialog_item">
+          <!-- Shift type button -->
+          <h4>Shift / Event Type</h4>
 
-      <!-- Date content-->
-      <h4>{{renderDateContent.start}}</h4>
-      <h4>{{renderDateContent.end}}</h4>
-
-      <el-row type="flex" justify="space-between">
-        <el-col>
-          <!-- Edit shift button -->
           <el-button
             round
+            :disabled="true"
             size="small"
-            type="primary"
-            v-if="computeRemoveShift['canDrop'] || computeRemoveShift['canDelete']"
-          >Edit Shift</el-button>
+            :type="renderButtonTypes['shiftType']['type']"
+          >{{renderButtonTypes['shiftType']['text']}}</el-button>
         </el-col>
 
-        <el-col>
-          <!-- Remove shift or delete shift button -->
+        <el-col class="view_shift_dialog_item">
+          <h4>Shift / Event Approval</h4>
+
           <el-button
-            type="danger"
-            size="small"
-            round
-            @click="renderDeleteButtonContent['method']"
-          >{{renderDeleteButtonContent['text']}}</el-button>
+            circle
+            :icon="renderButtonTypes['approval']['icon']"
+            :type="renderButtonTypes['approval']['type']"
+          ></el-button>
         </el-col>
-      </el-row>
+      </el-col>
+
+      <!-- SECOND COLUMN -->
+      <el-col class="view_shift_col">
+        <!-- Date content-->
+
+        <div class="view_shift_dialog_item">
+          <h4>Start Date</h4>
+          <p class="mb-2">{{renderDateContent.start}}</p>
+        </div>
+        <div class="view_shift_dialog_item">
+          <h4>End Date</h4>
+          <p>{{renderDateContent.end}}</p>
+        </div>
+      </el-col>
+    </el-row>
+    <div class="view_shift_dialog_item no_border flex_center">
+      <!-- Edit shift button -->
+      <el-button
+        class="flex-1"
+        round
+        type="primary"
+        v-if="computeRemoveShift['canDrop'] || computeRemoveShift['canDelete']"
+      >Edit Shift</el-button>
+      <!-- Remove shift or delete shift button -->
+      <el-button
+        type="danger"
+        class="flex-1"
+        round
+        @click="renderDeleteButtonContent['method']"
+      >{{renderDeleteButtonContent['text']}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -364,3 +381,21 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.view_shift_dialog_item {
+  margin: 1em;
+  border: 1.5px solid whitesmoke;
+  padding: 1em;
+  border-radius: 10px;
+  max-width: 100%;
+  &.no_border {
+    border: none;
+  }
+}
+h4 {
+  margin-bottom: 10px;
+}
+.view_shift_col {
+  margin: 1em;
+}
+</style>
