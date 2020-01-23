@@ -75,34 +75,42 @@ export default {
       let len = shifts.length;
       let format = "YYYY-MM-DD HH:mm";
       let shiftEvents = [];
+
+      // Check that the assigned to is a string or array
+
       for (let i = 0; i < len; i++) {
         let shift = shifts[i];
-
-        let index = this.team.findIndex(x => {
-          return shift.assigned_to == x._id;
-        });
         let name;
-        if (this.team[index]) {
-          name = this.team[index].name;
-        } else if (this.currentUser._id == shift.assigned_to) {
-          name = this.currentUser.name;
-        } else {
-          name = "John Doe";
-        }
 
-        let shiftContent = this.returnShiftType(name, shift.shift_type);
+        if (!Array.isArray(shift.assigned_to)) {
+          let index = this.team.findIndex(x => {
+            return assigned_to == x._id;
+          });
+          if (this.team[index]) {
+            name = this.team[index].name;
+          } else if (this.currentUser._id == shift.assigned_to) {
+            name = this.currentUser.name;
+          } else {
+            name = "User Not Found";
+          }
+        } else {
+          name = "Multiple Users";
+        }
+        let { is_pickup, shift_type, is_approved, assigned_to } = shift;
+        let shiftContent = this.returnShiftType(name, shift_type);
+        let { _id, text, eventClass, type, endDate, startDate } = shiftContent;
 
         let shiftEvent = {
-          id: shift._id,
-          start: this.format(shift.startDate, format),
-          end: this.format(shift.endDate, format),
-          content: shiftContent.text,
-          class: shiftContent.eventClass,
-          assigned_to: shiftContent.name || shift.assigned_to,
-          type: shiftContent.type,
-          is_pickup: shift.is_pickup,
-          shift_type: shift.shift_type,
-          is_approved: shift.is_approved
+          id: _id,
+          start: this.format(startDate, format),
+          end: this.format(endDate, format),
+          content: text,
+          class: eventClass,
+          assigned_to,
+          type,
+          is_pickup,
+          shift_type,
+          is_approved
         };
         shiftEvents.push(shiftEvent);
       }
@@ -169,60 +177,73 @@ export default {
     },
 
     changeShiftTime(shift) {
-      // Check are you admin or is this shift yours
-      let canEdit =
+      const canEdit =
         shift.assigned_to == this.currentUser._id || this.getIsAdmin;
-      if (canEdit) {
-        let teamMember = this.getTeamMember(shift.assigned_to, "_id").name;
-        this.$confirm(
-          `Are you sure you would like to change ${teamMember}'s ${shift.type.toLowerCase()} from ${
-            shift.start
-          } to ${shift.end}`,
-          "Confirm",
-          {
-            confirmButtonText: "OK",
-            cancelButtonText: "Cancel",
-            type: "info"
-          }
-        ).then(response => {
-          this.loading = true;
-          const payload = {
-            id: shift.id,
-            update: {
-              startDate: shift.startDate.toISOString(),
-              endDate: shift.endDate.toISOString()
-            }
-          };
 
-          this.request({
-            url: "/shifts/update",
-            method: "POST",
-            data: payload
-          })
-            .then(response => {
-              this.loading = false;
-              let index = this.shifts.findIndex(shift => {
-                return shift._id == response._id;
-              });
-              console.log(index);
-              // Replace the shift that is in the same spot with updates
-              console.log(response);
-            })
-            .catch(error => {
-              this.loading = false;
-              console.log(error);
-            });
-        });
+      if (canEdit) {
+        let confirmResponse = this.confirmShiftChangeTime(shift);
+
+        if (confirmResponse) {
+          let { startDate, endDate } = shift;
+          this.loading = true;
+          this.updateShift(shift);
+        }
       } else {
-        this.$notify({
-          title: "Error",
-          type: "error",
+        this.loading = false;
+
+        this.UPDATE_NOTIFICATIONS({
+          title: "Error changing shift type",
           message:
-            "You cannot edit this shift because you are not an admin or this shift is not yours."
+            "You cannot edit this shift because you are not an admin or this shift is not yours.",
+          type: "info"
         });
+
         this.$forceUpdate();
       }
-      console.log(shift);
+    },
+    confirmShiftChangeTime(shift) {
+      let { type, assigned_to, start, end } = shift;
+
+      return this.$confirm(
+        `Are you sure you would like to change ${type.toLowerCase()} from ${start} to ${end}`,
+        "Confirm",
+        {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "info"
+        }
+      )
+        .then(response => {
+          return response;
+        })
+        .catch(error => {
+          return error;
+        });
+    },
+    updateShift({ startDate, endDate, _id }) {
+      startDate = startDate.toISOString();
+      endDate = endDate.toISOString();
+
+      const payload = {
+        id: _id,
+        update: {
+          startDate,
+          endDate
+        }
+      };
+
+      return this.request({
+        url: "/shifts/update",
+        method: "POST",
+        data: payload
+      })
+        .then(response => {
+          return response;
+        })
+        .catch(error => {
+          this.loading = false;
+          return error;
+        });
     }
   },
   components: {

@@ -1,6 +1,10 @@
 {
   "instructions": {
     "admin": {
+      "view_shift": {
+        "title": "View shift",
+        "information": "All the information about the shift is displayed here"
+      },
       "report": {
         "title": "Reporting",
         "information": "Your statistics will appear here."

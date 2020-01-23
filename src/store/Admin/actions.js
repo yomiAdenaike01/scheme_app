@@ -1,4 +1,49 @@
 export default {
+  deleteShift(context, id) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch(
+          "request",
+          {
+            method: "DELETE",
+            url: "shifts/delete",
+            data: {
+              id
+            }
+          },
+          { root: true }
+        )
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  updateShift(context, update) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch(
+          "request",
+          {
+            method: "POST",
+            url: "shifts/update",
+            data: {
+              id,
+              update
+            }
+          },
+          { root: true }
+        )
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
   getNotifications(context) {
     const payload = {
       method: "GET",
