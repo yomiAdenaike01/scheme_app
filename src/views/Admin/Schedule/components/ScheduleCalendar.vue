@@ -17,6 +17,7 @@
       :shift="shift"
       @toggle="view = $event"
       @loading="loading = $event"
+      @refreshShift="$emit('refreshShift',null)"
     />
   </div>
 </template>
@@ -38,9 +39,7 @@ export default {
       shift: {}
     };
   },
-  created() {
-    this.getShifts();
-  },
+
   mixins: [dates],
   computed: {
     ...mapState("Admin", ["shifts", "team"]),
@@ -96,9 +95,17 @@ export default {
         } else {
           name = "Multiple Users";
         }
-        let { is_pickup, shift_type, is_approved, assigned_to } = shift;
+        let {
+          _id,
+          is_pickup,
+          shift_type,
+          is_approved,
+          assigned_to,
+          startDate,
+          endDate
+        } = shift;
         let shiftContent = this.returnShiftType(name, shift_type);
-        let { _id, text, eventClass, type, endDate, startDate } = shiftContent;
+        let { text, eventClass, type } = shiftContent;
 
         let shiftEvent = {
           id: _id,
@@ -126,7 +133,6 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
-    ...mapActions("Admin", ["getShifts"]),
     returnShiftType(name, type) {
       let shiftTitle, shiftClass;
       switch (type) {

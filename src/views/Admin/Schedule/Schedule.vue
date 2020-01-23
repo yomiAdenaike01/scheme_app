@@ -6,7 +6,11 @@
   >
     <Title title="Schedule" subtitle="View your calendar" />
     <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
-    <ScheduleCalendar @displayCreateShift="modals.create_event =$event" class="cal" />
+    <ScheduleCalendar
+      @refreshShift="getShifts"
+      @displayCreateShift="modals.create_event =$event"
+      class="cal"
+    />
     <CreateShift
       @toggle="modals.create_event = $event"
       @createEvent="createEvent"
@@ -59,8 +63,10 @@ export default {
         x.name == this.searchedTeamMember;
       });
     },
+
     items() {
       const isAdmin = this.getIsAdmin;
+
       let items = [
         {
           name: isAdmin ? "Create Event" : "Create Request",
@@ -85,12 +91,7 @@ export default {
           command: "export_schedule"
         }
       ];
-      // if(this.getIsAdmin){
-      //      items = items.mp(item=>{
-      //        let command = item.command;
-      //       command == 'Create Employee' || command == 'Export Employee'
-      //      })
-      // }
+
       return items;
     },
 
@@ -103,11 +104,13 @@ export default {
     },
     filterConfig() {
       let filters = [];
+
       for (let filter in this.filters) {
         filters.push(filter);
       }
       return filters;
     },
+
     formConfig() {
       return [
         {
@@ -119,9 +122,13 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
+    ...mapActions("Admin", ["getShifts"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
-    createEmployee(employeeData) {},
+    refreshShifts() {
+      this.getShifts();
+    },
+
     createEvent(eventData) {
       this.loading = true;
       this.modals.createEvent = false;
@@ -130,15 +137,18 @@ export default {
         start: new Date(eventData.date[0]).toISOString(),
         end: new Date(eventData.date[1]).toISOString()
       };
+      let { start, end } = date;
 
       // check the dates if before today and create errors
       for (let property in date) {
         if (this.isBefore(date[property], true, null)) {
           this.loading = false;
+
           return this.UPDATE_NOTIFICATIONS({
             type: "error",
             message: "Events cannot be scheduled before now."
           });
+
           break;
         }
       }
@@ -147,10 +157,10 @@ export default {
         url: "/shifts/create",
         method: "POST",
         data: {
-          startDate: date.start,
-          endDate: date.end,
-          shift_type: eventData.shift_type,
-          assigned_to: eventData.assigned_to
+          startDate: start,
+          endDate: end,
+          shift_type,
+          assigned_to
         }
       };
 
@@ -171,7 +181,6 @@ export default {
         });
     },
     displayModals(command) {
-      console.log(command);
       this.modals[command] = true;
     }
   },

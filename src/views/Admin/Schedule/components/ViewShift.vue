@@ -286,7 +286,7 @@ export default {
     },
 
     returnShiftID() {
-      return this.shift._id;
+      return this.shift.id;
     }
   },
   methods: {
@@ -296,8 +296,11 @@ export default {
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
 
     closeDialog() {
-      this.loading = false;
-      this.$emit("toggle", false);
+      this.$nextTick(() => {
+        this.loading = false;
+        this.$emit("toggle", false);
+        this.$emit("refreshShift", null);
+      });
     },
     // Just update the shift without their name
     async removeTeamMemberFromShift({ name, id }) {
@@ -312,22 +315,19 @@ export default {
         for (let i = 0; i < len; i++) {
           let teamMemberAssignedToShift = this.renderAssignedTo[i];
 
-          teamMemberAssignedToShift = {
-            id: teamMemberAssignedToShift["id"]
-          };
+          teamMemberAssignedToShift = teamMemberAssignedToShift["id"];
 
-          if (teamMemberAssignedToShift["id"] == id) {
+          if (teamMemberAssignedToShift == id) {
             continue;
           }
 
           shiftTeamMembers.push(teamMemberAssignedToShift);
         }
-        console.log(response);
+
         if (response == "confirm") {
           this.loading = true;
-
           await this.updateShift({
-            assigned_to: shiftTeamMembers,
+            update: { assigned_to: shiftTeamMembers },
             id: this.returnShiftID
           });
 

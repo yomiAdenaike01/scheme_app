@@ -1,4 +1,6 @@
 export default {
+  // SHIFT METHODS
+
   deleteShift(context, id) {
     return new Promise((resolve, reject) => {
       context
@@ -21,7 +23,7 @@ export default {
         });
     });
   },
-  updateShift(context, update) {
+  updateShift(context, { id, update }) {
     return new Promise((resolve, reject) => {
       context
         .dispatch(
@@ -29,10 +31,7 @@ export default {
           {
             method: "POST",
             url: "shifts/update",
-            data: {
-              id,
-              update
-            }
+            data: { id, update }
           },
           { root: true }
         )
