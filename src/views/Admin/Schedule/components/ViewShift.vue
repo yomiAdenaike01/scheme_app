@@ -28,6 +28,7 @@
           <!-- Conditional drop down to change the shift type (if yours) -->
           <Dropdown
             :icon="false"
+            v-if="computeRemoveShift['canDelete']"
             :items="returnShiftTypes(shift.shift_type, 'command')"
             @method="handleChangeShiftType"
             position="right"
@@ -38,6 +39,13 @@
               :type="renderButtonTypes['shiftType']['type']"
             >{{renderButtonTypes['shiftType']['text']}}</el-button>
           </Dropdown>
+
+          <el-button
+            round
+            v-else
+            size="small"
+            :type="renderButtonTypes['shiftType']['type']"
+          >{{renderButtonTypes['shiftType']['text']}}</el-button>
         </el-col>
 
         <!-- Approval -->
@@ -336,13 +344,6 @@ export default {
       });
     },
 
-    // Delete shift confirmation
-    async confirmRemoveWholeShift() {
-      return await this.$confirm(
-        "Are you sure you want to delete the shift/event ?",
-        "Delete Confirmation"
-      );
-    },
     // Just update the shift without their name
     async removeTeamMemberFromShift({ name, id }) {
       // Confirm that this is what they want
@@ -379,6 +380,13 @@ export default {
         return error;
       }
     },
+    // REFACTOR TO ONLY USE ONE
+    async confirmRemoveWholeShift() {
+      return await this.$confirm(
+        "Are you sure you want to delete the shift/event ?",
+        "Delete Confirmation"
+      );
+    },
     async confirmUserRemovalFromShift(name) {
       return await this.$confirm(
         `Are you sure that you want to remove ${name} from this event ?`,
@@ -390,8 +398,14 @@ export default {
     toggleViewTeamMember() {
       this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assigned_to });
     },
-    handleChangeShiftType(shiftType) {
-      console.log(shiftType);
+    async handleChangeShiftType(shiftType) {
+      this.loading = true;
+      await this.updateShift({
+        id: this.returnShiftID,
+        update: { shift_type: shiftType }
+      });
+      this.loading = false;
+      this.closeDialog();
     }
   },
 
