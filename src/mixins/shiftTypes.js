@@ -15,8 +15,11 @@ export default {
 
       for (let i = 0; i < len; i++) {
         let { name, value } = shiftTypes[i];
-        if (value == toRemove) {
-          continue;
+
+        if (toRemove) {
+          if (value == toRemove) {
+            continue;
+          }
         }
 
         if (value == 2 && employee_type != 2) {

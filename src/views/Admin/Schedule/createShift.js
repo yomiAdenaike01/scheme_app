@@ -32,39 +32,6 @@ export default {
           condition: this.fileContent.length <= 0
         }
       };
-    },
-    returnShiftTypes() {
-      let shiftTypes = this.shiftTypes;
-      let shiftTypeOptions = [];
-
-      for (let property in shiftTypes) {
-        let shiftTypeText = shiftTypes[property];
-        const append = () => {
-          shiftTypeOptions.push({
-            text: shiftTypeText,
-            value: parseInt(property)
-          });
-        };
-        switch (shiftTypeText) {
-          case "Normal": {
-            if (this.getIsAdmin) {
-              append();
-            }
-            break;
-          }
-          case "Locumn": {
-            if (this.currentUser.employee_type == 3) {
-              append();
-            }
-            break;
-          }
-          default: {
-            append();
-            break;
-          }
-        }
-      }
-      return shiftTypeOptions;
     }
   },
   methods: {
@@ -135,6 +102,10 @@ export default {
       })
         .then(response => {
           this.loading = false;
+          this.UPDATE_NOTIFICATIONS({
+            type: "success",
+            message: "Shift successfully created"
+          });
           return response;
         })
         .catch(error => {

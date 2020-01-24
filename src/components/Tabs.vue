@@ -44,8 +44,8 @@
               <el-option
                 v-for="(option, index) in input.options"
                 :key="index"
-                :value="option.value ? option.value : option.text"
-              >{{ option.text }}</el-option>
+                :value="option.value ? option.value : option.text || option.name"
+              >{{ option.text || option.name }}</el-option>
             </component>
           </el-form-item>
         </el-form>

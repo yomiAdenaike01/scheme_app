@@ -233,7 +233,10 @@ export default {
       };
       if (canDelete) {
         buttonContent.method = () => {
+          this.loading = true;
           this.deleteShift(this.returnShiftID);
+          this.loading = false;
+          this.closeDialog();
         };
         buttonContent.text = "Delete shift";
       }

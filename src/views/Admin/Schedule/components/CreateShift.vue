@@ -41,10 +41,11 @@ import findTeam from "@/mixins/findTeam";
 import createShift from "../createShift";
 import moment from "moment";
 import csvtojson from "csvtojson";
+import shiftTypes from "@/mixins/shiftTypes";
 
 export default {
   name: "CreateShift",
-  mixins: [dates, findTeam, createShift],
+  mixins: [dates, findTeam, createShift, shiftTypes],
   data() {
     return {
       eventData: {},
@@ -68,7 +69,6 @@ export default {
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
     ...mapGetters("Admin", ["getTeamMember"]),
-
     tabs() {
       return [
         {
@@ -92,7 +92,7 @@ export default {
         {
           type: "select",
           placeholder: "Select event type",
-          options: this.returnShiftTypes,
+          options: this.returnShiftTypes(null, "value"),
           required: true,
           model: "shift_type"
         },
