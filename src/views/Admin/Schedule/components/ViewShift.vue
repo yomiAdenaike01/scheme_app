@@ -7,35 +7,42 @@
       <!-- FIRST COLUMN -->
 
       <el-col class="view_shift_col">
-        <!-- Assigned to -->
+        <!-- Assigned to (tags)-->
         <div class="view_shift_dialog_item">
           <h4>Assigned To</h4>
           <el-tag
             class="m-1"
             type="info"
-            closable
+            :closable="computeRemoveShift['canDelete']"
             v-for="(teamMember,index) in renderAssignedTo"
             :key="index"
             @close="removeTeamMemberFromShift(teamMember)"
             :id="teamMember['id']"
           >{{teamMember['name']}}</el-tag>
         </div>
+        <!-- Shift type -->
 
         <el-col class="view_shift_dialog_item">
-          <!-- Shift type button -->
           <h4>Shift / Event Type</h4>
 
-          <el-button
-            round
-            :disabled="true"
-            size="small"
-            :type="renderButtonTypes['shiftType']['type']"
-          >{{renderButtonTypes['shiftType']['text']}}</el-button>
+          <!-- Conditional drop down to change the shift type (if yours) -->
+          <Dropdown
+            :icon="false"
+            :items="returnShiftTypes(shift.shift_type, 'command')"
+            @method="handleChangeShiftType"
+            position="right"
+          >
+            <el-button
+              round
+              size="small"
+              :type="renderButtonTypes['shiftType']['type']"
+            >{{renderButtonTypes['shiftType']['text']}}</el-button>
+          </Dropdown>
         </el-col>
 
+        <!-- Approval -->
         <el-col class="view_shift_dialog_item">
           <h4>Shift / Event Approval</h4>
-
           <el-button
             circle
             :icon="renderButtonTypes['approval']['icon']"
@@ -82,8 +89,11 @@ import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 import Title from "@/components/Title";
 import MoreInformation from "@/components/MoreInformation";
 import moment from "moment";
+import Dropdown from "@/components/Dropdown";
+import shiftTypes from "@/mixins/shiftTypes";
 export default {
   name: "ViewShift",
+  mixins: [shiftTypes],
   data() {
     return {
       loading: false
@@ -102,9 +112,14 @@ export default {
     }
   },
   computed: {
-    ...mapState("Admin", ["team"]),
+    ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["currentUser"]),
     ...mapGetters(["getIsAdmin"]),
+    returnShifTypes() {
+      let { shift_type } = this.shift;
+      return this.getShiftType(shift_type, "command");
+    },
+
     computeDisplay: {
       get() {
         return this.display;
@@ -191,7 +206,7 @@ export default {
 
     renderDateContent() {
       let { startDate, endDate } = this.shift;
-      const format = "DD/MM/YYYY h:m";
+      const format = "DD/MM/YYYY HH:mm";
       startDate = moment(startDate).format(format);
       endDate = moment(endDate).format(format);
       return {
@@ -225,19 +240,20 @@ export default {
 
       let { name } = this.currentUser;
       let { is_pickup } = this.shift;
+      let foundUser;
 
       name = name.trim().toLowerCase();
 
       let { assigned_to } = this.shift;
 
       if (Array.isArray(this.shift)) {
-        var foundUser = assigned_to.find((assignee, index) => {
+        foundUser = assigned_to.find((assignee, index) => {
           return assignee._id == this.team[index]._id;
         });
       }
 
       if (foundUser) {
-        foundUser.name = foundUser.name.toLowerCase();
+        foundUser["name"] = foundUser["name"].toLowerCase();
       }
 
       if (this.getIsAdmin) {
@@ -308,7 +324,7 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapActions("Admin", ["deleteShift", "updateShift"]),
+    ...mapActions("Admin", ["deleteShift", "updateShift", "getShiftType"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
 
@@ -318,6 +334,14 @@ export default {
         this.$emit("toggle", false);
         this.$emit("refreshShift", null);
       });
+    },
+
+    // Delete shift confirmation
+    async confirmRemoveWholeShift() {
+      return await this.$confirm(
+        "Are you sure you want to delete the shift/event ?",
+        "Delete Confirmation"
+      );
     },
     // Just update the shift without their name
     async removeTeamMemberFromShift({ name, id }) {
@@ -355,29 +379,26 @@ export default {
         return error;
       }
     },
-    confirmUserRemovalFromShift(name) {
-      return new Promise((resolve, reject) => {
-        this.$confirm(
-          `Are you sure that you want to remove ${name} from this event ?`,
-          "Confirm Update"
-        )
-          .then(response => {
-            resolve(response);
-          })
-          .catch(error => {
-            reject(error);
-          });
-      });
+    async confirmUserRemovalFromShift(name) {
+      return await this.$confirm(
+        `Are you sure that you want to remove ${name} from this event ?`,
+        "Confirm Update"
+      );
     },
 
     // View the user that the shift is assigned to
     toggleViewTeamMember() {
       this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assigned_to });
+    },
+    handleChangeShiftType(shiftType) {
+      console.log(shiftType);
     }
   },
+
   components: {
     Title,
-    MoreInformation
+    MoreInformation,
+    Dropdown
   }
 };
 </script>

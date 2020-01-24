@@ -36,7 +36,15 @@ export default {
       default: true
     },
     items: {
-      type: Array
+      type: Array,
+      default: () => {
+        return [
+          {
+            name: "item",
+            command: "item"
+          }
+        ];
+      }
     }
   },
   methods: {
