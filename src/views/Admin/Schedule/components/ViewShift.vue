@@ -9,7 +9,7 @@
       <el-col class="view_shift_col">
         <!-- Assigned to (tags)-->
         <div class="view_shift_dialog_item">
-          <h4>Assigned To</h4>
+          <h4>Assigned to</h4>
           <el-tag
             class="m-1"
             type="info"
@@ -23,7 +23,7 @@
         <!-- Shift type -->
 
         <el-col class="view_shift_dialog_item">
-          <h4>Shift / Event Type</h4>
+          <h4>Shift / Event type</h4>
 
           <!-- Conditional drop down to change the shift type (if yours) -->
           <Dropdown
@@ -50,7 +50,7 @@
 
         <!-- Approval -->
         <el-col class="view_shift_dialog_item">
-          <h4>Shift / Event Approval</h4>
+          <h4>Shift / Event approval</h4>
           <el-button
             circle
             :icon="renderButtonTypes['approval']['icon']"
@@ -64,11 +64,11 @@
         <!-- Date content-->
 
         <div class="view_shift_dialog_item">
-          <h4>Start Date</h4>
+          <h4>Start date</h4>
           <p class="mb-2">{{renderDateContent.start}}</p>
         </div>
         <div class="view_shift_dialog_item">
-          <h4>End Date</h4>
+          <h4>End date</h4>
           <p>{{renderDateContent.end}}</p>
         </div>
       </el-col>
@@ -80,7 +80,7 @@
         round
         type="primary"
         v-if="computeRemoveShift['canDrop'] || computeRemoveShift['canDelete']"
-      >Edit Shift</el-button>
+      >Edit shift</el-button>
       <!-- Remove shift or delete shift button -->
       <el-button
         type="danger"
@@ -235,7 +235,7 @@ export default {
         buttonContent.method = () => {
           this.deleteShift(this.returnShiftID);
         };
-        buttonContent.text = "Delete Shift";
+        buttonContent.text = "Delete shift";
       }
       return buttonContent;
     },
@@ -419,7 +419,7 @@ export default {
 <style lang="scss" scoped>
 .view_shift_dialog_item {
   margin: 1em;
-  border: 1.5px solid whitesmoke;
+  border: 1.2px solid whitesmoke;
   padding: 1em;
   border-radius: 10px;
   max-width: 100%;
