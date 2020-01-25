@@ -5,7 +5,7 @@
       <ChatInput />
     </div>
     <div v-else class="flex_center no_active_chat">
-      <p>No active chats, select one to begin.</p>
+      <Nocontent v-bind="noContent" />
     </div>
   </div>
 </template>
@@ -13,18 +13,30 @@
 <script>
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
+import Nocontent from "@/components/Nocontent";
 import { mapState } from "vuex";
 export default {
   name: "ChatBody",
   computed: {
     ...mapState("Comms", ["activeTranscript"]),
+    noContent() {
+      return {
+        moreInformation: {
+          index: "comms",
+          instruction: "messenger"
+        },
+        text: "No active chats, select on to begin",
+        icon: "el-icon-chat-round"
+      };
+    },
     isActiveChat() {
       return Object.keys(this.activeTranscript).length > 0;
     }
   },
   components: {
     ChatWindow,
-    ChatInput
+    ChatInput,
+    Nocontent
   }
 };
 </script>

@@ -1,5 +1,11 @@
 {
   "instructions": {
+    "comms": {
+      "messenger": {
+        "title": "Messaging",
+        "information": "Your messages will be displayed here."
+      }
+    },
     "admin": {
       "requests": {
         "title": "Requests/Notifications",
