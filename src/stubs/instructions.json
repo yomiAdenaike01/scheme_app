@@ -1,6 +1,10 @@
 {
   "instructions": {
     "admin": {
+      "requests": {
+        "title": "Requests/Notifications",
+        "information": "Request and notifications are displayed here. Users that make requests <strong>(if admin)</strong> will be displayed here ready for your approval. Things to do with events that you are named on will be displayed here"
+      },
       "view_shift": {
         "title": "View shift",
         "information": "All the information about the shift is displayed here"

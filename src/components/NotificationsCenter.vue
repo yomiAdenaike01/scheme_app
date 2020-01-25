@@ -1,8 +1,7 @@
 <template>
   <div v-loading="globalLoader">
     <el-drawer :visible.sync="viewNotifications" :direction="this.settings.drawer">
-      <Title title="Notifications centre" subtitle="View and interact will notifications here." />
-      <transition name="el-fade-in">
+      <slide-x-left-transition>
         <el-row v-if="userNotifications.length > 0">
           <el-button
             style="width:100%"
@@ -15,16 +14,8 @@
             <Notification :notification="notification" />
           </el-col>
         </el-row>
-      </transition>
-      <el-container
-        v-if="userNotifications.length <= 0"
-        style="background:rgb(250,250,250); height:100%;"
-      >
-        <el-main style="display:flex; align-items:center; justify-content:center">
-          <i class="el-icon-bell"></i>
-          <h1 class="grey light">No notifications found.</h1>
-        </el-main>
-      </el-container>
+      </slide-x-left-transition>
+      <Nocontent v-bind="noContent" />
     </el-drawer>
   </div>
 </template>
@@ -34,6 +25,9 @@ import { mapState, mapMutations, mapActions } from "vuex";
 import Notification from "./Notification";
 import Title from "@/components/Title";
 import responsive from "@/mixins/responsiveProperties";
+import Nocontent from "@/components/Nocontent";
+import { SlideXLeftTransition } from "vue2-transitions";
+
 export default {
   name: "NotificationsCenter",
   data() {
@@ -47,6 +41,17 @@ export default {
       "userNotifications",
       "currentUser"
     ]),
+    noContent() {
+      return {
+        moreInformation: {
+          index: "admin",
+          instruction: "requests"
+        },
+        text:
+          "No notifications present. Usually your notifications and requests will be displayed here",
+        icon: "el-icon-bell"
+      };
+    },
     viewNotifications: {
       get() {
         return this.viewNotificationsCenter;
@@ -72,7 +77,9 @@ export default {
   },
   components: {
     Notification,
-    Title
+    Title,
+    Nocontent,
+    SlideXLeftTransition
   },
   mixins: [responsive]
 };

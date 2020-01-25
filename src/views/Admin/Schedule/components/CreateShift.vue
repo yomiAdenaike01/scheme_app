@@ -69,6 +69,38 @@ export default {
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
     ...mapGetters("Admin", ["getTeamMember"]),
+
+    isNotShiftOrHoliday() {
+      let shiftType = this.eventData.shift_type;
+      const isAdmin = this.getIsAdmin;
+      return !isAdmin && shiftType > 3;
+    },
+    returnTeam() {
+      return this.team.map(member => {
+        return {
+          text: member.name.toString(),
+          value: member._id.toString()
+        };
+      });
+    },
+    validationUnitController() {
+      return {
+        success: {
+          condition:
+            this.timeSheetError == false && this.fileContent.length > 0,
+          text:
+            "Time sheet successfully validated please submit to add timesheet."
+        },
+        danger: {
+          text: "Time sheet validation failed.",
+          condition: this.timeSheetError == true && this.fileContent.length > 0
+        },
+        info: {
+          text: "Timesheet not selected",
+          condition: this.fileContent.length <= 0
+        }
+      };
+    },
     tabs() {
       return [
         {
@@ -152,8 +184,10 @@ export default {
       this.fileContent = "";
       this.timeSheetData = "";
       this.loading = true;
+
       let loadingTimeout;
       clearTimeout(loadingTimeout);
+
       loadingTimeout = setTimeout(() => {
         this.loading = false;
       }, 1000);
@@ -167,6 +201,7 @@ export default {
           endDate: null,
           shift_type: null
         };
+
         let isAdmin = this.getIsAdmin;
         let currentUser = this.currentUser.name.trim().toLowerCase();
         const len = fileData.length;
@@ -174,9 +209,11 @@ export default {
         for (let i = 0; i < len; i++) {
           let eventElement = fileData[i];
           // Validate against the schema
+
           for (let property in validateData) {
             if (!eventElement[property]) {
               return Promise.reject("Time sheet is missing parameters");
+
               break;
             } else {
               switch (property) {
@@ -186,10 +223,12 @@ export default {
                   );
                   break;
                 }
+
                 case "startDate": {
                   eventElement[property] = await moment(
                     moment(eventElement[property])
                   ).toISOString();
+
                   break;
                 }
 
@@ -197,8 +236,10 @@ export default {
                   eventElement[property] = await moment(
                     moment(eventElement[property])
                   ).toISOString();
+
                   break;
                 }
+
                 case "shift_type": {
                   if (eventElement[property] == 1) {
                     return Promise.reject(
@@ -224,6 +265,7 @@ export default {
       try {
         let JSONshifts = await csvtojson().fromString(this.fileContent);
         let validationResult = await this.validateCSVData(JSONshifts);
+
         return Promise.resolve(validationResult);
       } catch (e) {
         return Promise.reject(e);

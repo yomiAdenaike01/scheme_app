@@ -10,49 +10,51 @@
       v-loading="loading"
     >
       <slot name="body_content"></slot>
-      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab.label" :key="index">
+      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab['label']" :key="index">
         <el-form
           style="padding-top:1em"
           v-if="tab.hasOwnProperty('formContent')"
           :disabled="disableForm"
         >
           <el-form-item
-            v-for="(input, index) in tab.formContent"
+            v-for="(input, index) in tab['formContent']"
             :key="index"
-            :prop="input.name"
-            :label="input.label"
+            :prop="input['name']"
+            :label="input['label']"
           >
             <component
               class="dialog_item"
               :is="
-                input.type == 'text' || input.type == 'password'
+                input['type'] == 'text' || input['type'] == 'password'
                   ? 'el-input'
-                  : input.type == 'select'
+                  : input['type'] == 'select'
                   ? 'el-select'
                   : 'el-date-picker'
               "
-              v-model="formContent[input.model]"
-              :show-password="input.type == 'password'"
-              :type="input.type == 'date' ? 'date' : input.type == 'date-time' ? 'datetimerange' : input.textarea ? 'textarea' : null"
+              v-model="formContent[input['model']]"
+              :value-key="input['text'] || input['name']"
+              :show-password="input['type'] == 'password'"
+              :type="input['type'] == 'date' ? 'date' : input['type'] == 'date-time' ? 'datetimerange' : input.textarea ? 'textarea' : null"
               v-bind="input"
-              :required="input.required"
-              :disabled="input.disabled"
-              :start-placeholder="input.start_placeholder"
-              :end-placeholder="input.end_placeholder"
-              :multiple="input.multiple"
+              :required="input['required']"
+              :disabled="input['disabled']"
+              :start-placeholder="input['start_placeholder']"
+              :end-placeholder="input['end_placeholder']"
+              :multiple="input['multiple']"
             >
               <el-option
-                v-for="(option, index) in input.options"
-                :key="index"
-                :value="option.value ? option.value : option.text || option.name"
-              >{{ option.text || option.name }}</el-option>
+                v-for="(option) in input['options']"
+                :label="option['text'] || option['name']"
+                :key="option['value']"
+                :value="option['value'] ? option['value'] : option['text'] || option['name']"
+              >{{ option['text'] || option['name'] }}</el-option>
             </component>
           </el-form-item>
         </el-form>
         <div v-else>
           <component
-            :is="tab.view.component"
-            v-bind="tab.view.props"
+            :is="tab['view']['component']"
+            v-bind="tab['view']['props']"
             @conponentChanges="emitComponentData"
           />
         </div>

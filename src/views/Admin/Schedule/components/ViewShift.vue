@@ -351,7 +351,12 @@ export default {
     async removeTeamMemberFromShift({ name, id }) {
       // Confirm that this is what they want
       try {
-        let response = await this.confirmUserRemovalFromShift(name);
+        let confirmShiftPrompt = {
+          message: `Are you sure that you want to remove ${name} from this event ?`,
+          title: "Confirm Update"
+        };
+
+        let response = await this.confirmShiftChanges(confirmShiftPrompt);
 
         let shiftTeamMembers = [];
 
@@ -383,18 +388,13 @@ export default {
         return error;
       }
     },
-    // REFACTOR TO ONLY USE ONE
-    async confirmRemoveWholeShift() {
-      return await this.$confirm(
-        "Are you sure you want to delete the shift/event ?",
+    /**
+     * For deletion: (NOT DONE YET)
+     *   "Are you sure you want to delete the shift/event ?",
         "Delete Confirmation"
-      );
-    },
-    async confirmUserRemovalFromShift(name) {
-      return await this.$confirm(
-        `Are you sure that you want to remove ${name} from this event ?`,
-        "Confirm Update"
-      );
+     */
+    async confirmShiftChanges({ message, title }) {
+      return await this.$confirm(message, title);
     },
 
     // View the user that the shift is assigned to

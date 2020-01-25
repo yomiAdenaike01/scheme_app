@@ -1,39 +1,6 @@
 import moment from "moment";
 
 export default {
-  computed: {
-    isNotShiftOrHoliday() {
-      let shiftType = this.eventData.shift_type;
-      const isAdmin = this.getIsAdmin;
-      return !isAdmin && shiftType > 3;
-    },
-    returnTeam() {
-      return this.team.map(member => {
-        return {
-          text: member.name,
-          value: member._id
-        };
-      });
-    },
-    validationUnitController() {
-      return {
-        success: {
-          condition:
-            this.timeSheetError == false && this.fileContent.length > 0,
-          text:
-            "Time sheet successfully validated please submit to add timesheet."
-        },
-        danger: {
-          text: "Time sheet validation failed.",
-          condition: this.timeSheetError == true && this.fileContent.length > 0
-        },
-        info: {
-          text: "Timesheet not selected",
-          condition: this.fileContent.length <= 0
-        }
-      };
-    }
-  },
   methods: {
     async getEmployeeID(name) {
       if (name.trim().toLowerCase() == this.getName) {
@@ -82,8 +49,8 @@ export default {
         return Promise.reject(error);
       }
     },
+    // Submit one shift
     submitOneShift() {
-      // Submit one shit
       this.loading = true;
       let { date } = this.eventData;
 
