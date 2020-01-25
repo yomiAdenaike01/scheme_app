@@ -23,49 +23,54 @@ export default {
     // alterTheme.mutateTheme(payload.company_colours);
   },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
-    state.weeklyTimesheetUploaded = payload;
+    Vue.set(state, "weeklyTimesheetUploaded", payload);
   },
   UPDATE_DEFAULT_FONT(state, payload) {
-    state.defaultSize = { minFontSize: payload.min, maxFontSize: payload.max };
+    Vue.set(state, "defaultSize", {
+      minFontSize: payload.min,
+      maxFontSize: payload.max
+    });
   },
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
-    state.viewMobileMenu = payload;
+    Vue.set(state, "viewMobileMenu", payload);
   },
   UPDATE_USER_NOTIFICATIONS(state, payload) {
-    state.userNotifications = payload;
+    Vue.set(state, "userNotifications", payload);
   },
   UPDATE_VIEW_NOTIFICATIONS_CENTER(state, payload) {
-    state.viewNotificationsCenter = payload;
+    Vue.set(state, "viewNotificationsCenter", payload);
   },
   UPDATE_SETTINGS(state, { category, key, value }) {
-    state.localSettings[category][key] = value;
+    Vue.set(state["localSettings"], category[key], value);
   },
   UPDATE_GLOBAL_LOADER(state, payload) {
-    state.globalLoader = payload;
+    Vue.set(state, "globalLoader", payload);
   },
   REMOVE_USER(state) {
-    state.currentUser = {};
-    state.token = {};
+    Vue.set(state, "currentUser", {});
+    Vue.set(state, "token", {});
+
     localStorage.removeItem("token");
     localStorage.removeItem("currentUser");
   },
-  UPDATE_USER(state, payload) {
-    state.currentUser = payload.user;
-    state.token = payload.token;
-    storage.set("token", payload.token);
-    storage.set("currentUser", payload.user);
+  UPDATE_USER(state, { user, token }) {
+    Vue.set(state, "token", token);
+    Vue.set(state, "currentUser", user);
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("currentUser", user);
   },
 
   UPDATE_NOTIFICATIONS(state, notification) {
     notification.showClose = false;
-    if (notification.type == "success") {
-      notification.title = "Opeartion Successful";
+    if (notification["type"] == "success") {
+      notification["title"] = "Opeartion Successful";
       sounds.methods.playSuccessSound();
-    } else if (notification.type == "error") {
-      notification.title = "Operation Unsuccessful";
-    } else if (notification.message == "network error") {
-      state.critical_network_error = true;
+    } else if (notification["type"] == "error") {
+      notification["title"] = "Operation Unsuccessful";
+    } else if (notification["message"] == "network error") {
+      state["critical_network_error"] = true;
     }
-    state.notifications.unshift(notification);
+    Vue.set(state, "notifications", [notification, ...state.notifications]);
   }
 };
