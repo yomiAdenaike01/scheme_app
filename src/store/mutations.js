@@ -19,8 +19,7 @@ export default {
     }
   },
   UPDATE_CLIENT(state, payload) {
-    state.client = payload;
-    // alterTheme.mutateTheme(payload.company_colours);
+    Vue.set(state, "client", payload);
   },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
     Vue.set(state, "weeklyTimesheetUploaded", payload);
