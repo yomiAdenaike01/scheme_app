@@ -1,22 +1,40 @@
 <template>
-  <el-dialog center :visible.sync="error" width="700px">
-    <div class="client_error_dialog">
+  <el-dialog center :visible.sync="viewController" width="700px">
+    <div class="client_error_dialog" v-if="clientError">
       <Title
         title="Invalid domain detected."
         subtitle="Re-enter your company name to restart the process."
       />
-      <el-input class="client_name" placeholder="Company Name" v-model="companyName">
+      <el-input
+        class="client_name"
+        placeholder="Company Name"
+        v-model="companyName"
+      >
         <template slot="append">.schemeapp.cloud</template>
       </el-input>
       <div class="button_container m-4">
-        <el-button round type="primary" :disabled="companyName.length <= 0" @click="getClient">Retry</el-button>
+        <el-button
+          round
+          type="primary"
+          :disabled="companyName.length <= 0"
+          @click="getClient"
+          >Retry</el-button
+        >
 
         <el-button
           round
           plain
-          @click="alreadyAtRegistration ? $emit('displayChange', false) : navigateToRegister"
-        >{{alreadyAtRegistration ? 'Close' : 'Register with scheme cloud' }}</el-button>
+          @click="
+            alreadyAtRegistration ? (display = false) : navigateToRegister
+          "
+          >{{
+            alreadyAtRegistration ? "Close" : "Register with scheme cloud"
+          }}</el-button
+        >
       </div>
+    </div>
+    <div v-else>
+      <h1>Critical Error</h1>
     </div>
   </el-dialog>
 </template>
@@ -32,6 +50,10 @@ export default {
     };
   },
   props: {
+    clientError: {
+      type: Boolean,
+      default: true
+    },
     display: {
       type: Boolean,
       default: true
@@ -40,20 +62,20 @@ export default {
   methods: {
     navigateToRegister() {
       this.$router.push({ name: "register" });
-      this.$emit("displayChange", false);
+      this.display = false;
     },
     getClient() {
       this.$emit("getClient");
     }
   },
   computed: {
-    error: {
+    viewController: {
       get() {
         return this.display;
       },
       set(val) {
         console.log(val);
-        this.$emit("displayChange", val);
+        this.$emit("toggle", val);
       }
     },
     alreadyAtRegistration() {
@@ -62,7 +84,7 @@ export default {
   },
   watch: {
     companyName(val) {
-      this.$emit("companyNameChange", val);
+      this.$emit("clientNameChange", val);
     }
   },
   components: {

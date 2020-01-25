@@ -7,15 +7,18 @@
     element-loading-background="rgba(255, 255, 255, 1)"
     :element-loading-text="
       `Loading
-    scheme cloud....`
+    client instance please wait....`
     "
   >
     <ErrorDialog
-      @displayChange="error = $event"
+      v-if="!critical_network_error"
+      @toggle="error = $event"
+      :clientError="true"
       :display="error"
-      @companyNameChange="companyName = $event"
+      @clientNameChange="clientName = $event"
       @getClient="getClient"
     />
+
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -34,7 +37,7 @@ export default {
     return {
       resolving: true,
       error: false,
-      companyName: "",
+      clientName: "",
       companyImage: "",
       clientInterval: null,
       subdomain: "",
@@ -60,19 +63,18 @@ export default {
           this.resolving = false;
         });
     }, 6000);
-
-    // this.$store.subscribe((mutation, state) => {
-    //   if (mutation.type === "UPDATE_CLIENT") {
-    //     let { company_colours } = state.client;
-    //     this.mutateTheme(company_colours);
-    //   }
-    // });
   },
   beforeDestroy() {
     clearInterval(this.clientInterval);
   },
   computed: {
-    ...mapState(["notifications", "currentUser", "defaultSize", "client"]),
+    ...mapState([
+      "notifications",
+      "currentUser",
+      "defaultSize",
+      "client",
+      "critical_network_error"
+    ]),
     ...mapGetters(["isValidClient"])
   },
   mixins: [refactorLocation, alterTheme],
@@ -83,23 +85,24 @@ export default {
     getClient() {
       return new Promise((resolve, reject) => {
         let currentHostname = window.location.hostname.split(".");
-        if (this.companyName.length <= 0) {
+
+        if (this.clientName.length <= 0) {
           let subdomain = this.windowClient[0];
           let domain = this.windowClient[1];
           this.request({
             method: "GET",
             url: "clients/one",
-            params: { client_name: subdomain }
+            params: { client_subdomain: subdomain }
           })
             .then(response => {
-              let { company_image } = response;
+              let { client_image } = response;
               resolve(response);
             })
             .catch(error => {
               reject(error);
             });
         } else {
-          this.refactorWindowLocation(this.companyName);
+          this.refactorWindowLocation(this.clientName);
         }
       });
     }
@@ -110,8 +113,7 @@ export default {
   },
 
   watch: {
-    "client.company_colours"(val) {
-      console.log(val);
+    "client.client_colours"(val) {
       this.mutateTheme(val);
     },
     notifications(val) {

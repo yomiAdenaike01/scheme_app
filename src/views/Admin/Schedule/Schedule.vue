@@ -1,23 +1,37 @@
 <template>
-  <div
-    style="height:100%;"
+  <el-row
+    class="schedule_container"
     v-loading="false"
     element-loading-text="Loading team members please wait..."
   >
     <Title title="Schedule" subtitle="View your calendar" />
+
     <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
+
     <ScheduleCalendar
       @refreshShift="getShifts"
-      @displayCreateShift="modals.create_event =$event"
-      class="cal"
+      @displayCreateShift="modals['create_event'] = $event"
+      :ScheduleFilters="filters['schedule_view']"
+      class="schedule_cal_container"
     />
+    <!-- Create views -->
     <CreateShift
-      @toggle="modals.create_event = $event"
+      @toggle="modals['create_event'] = $event"
       @createEvent="createEvent"
-      :display="modals.create_event"
+      :display="modals['create_event']"
     />
-    <CreateEmployee @toggle="modals.create_employee = $event" :display="modals.create_employee" />
-  </div>
+    <CreateEmployee
+      @toggle="modals['create_employee'] = $event"
+      :display="modals['create_employee']"
+    />
+
+    <!-- Shift and calendar view -->
+    <ScheduleFilters
+      @toggle="modals['schedule_view'] = $event"
+      :view="modals['schedule_view']"
+      @updateFilters="filters = $event"
+    />
+  </el-row>
 </template>
 
 <script>
@@ -30,6 +44,7 @@ import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";
 import ScheduleCalendar from "./components/ScheduleCalendar";
 import Title from "@/components/Title";
+import ScheduleFilters from "./components/ScheduleFilters";
 export default {
   name: "Schedule",
   deactivated() {
@@ -41,13 +56,18 @@ export default {
       loading: false,
       scheduleInterval: null,
 
+      filters: {
+        schedule_view: "week"
+      },
+
       modals: {
         create_event: false,
         edit_event: false,
         view_profile: false,
         export_profile: false,
         export_schedule: false,
-        create_employee: false
+        create_employee: false,
+        schedule_view: false
       },
 
       currentView: "",
@@ -137,6 +157,7 @@ export default {
         start: new Date(eventData.date[0]).toISOString(),
         end: new Date(eventData.date[1]).toISOString()
       };
+
       let { start, end } = date;
 
       // check the dates if before today and create errors
@@ -167,6 +188,7 @@ export default {
       this.request(payload)
         .then(response => {
           this.loading = false;
+
           if (this.getIsAdmin) {
             this.UPDATE_NOTIFICATIONS({
               type: "success",
@@ -180,6 +202,7 @@ export default {
           this.loading = false;
         });
     },
+
     displayModals(command) {
       this.modals[command] = true;
     }
@@ -193,12 +216,17 @@ export default {
     Dropdown,
     Popover,
     CreateEmployee,
-    Toolbar
+    Toolbar,
+    ScheduleFilters
   }
 };
 </script>
 <style lang="scss" scoped>
-.cal {
+.schedule_container {
+  height: 100%;
+  // overflow-y: auto;
+}
+.schedule_cal_container {
   height: 75%;
 }
 </style>

@@ -4,12 +4,16 @@
       v-loading="loading"
       :tabs="tabs"
       @uploadFileContent="fileContent = $event"
-      @removeContent="fileContent = '', timeSheetError = null"
+      @removeContent="(fileContent = ''), (timeSheetError = null)"
       @val="eventData = $event"
       :disable="currentTab == 1"
       v-model.number="currentTab"
       :liveChange="true"
-      :customMethod="!timeSheetError && fileContent.length > 0 ? submitWithTimeSheet : submitOneShift"
+      :customMethod="
+        !timeSheetError && fileContent.length > 0
+          ? submitWithTimeSheet
+          : submitOneShift
+      "
       :disableForm="fileContent.length > 0"
     >
       <!-- Confirmation unit for a template or csv content -->
@@ -68,21 +72,14 @@ export default {
     ...mapGetters(["getIsAdmin", "getInstructions", "getName"]),
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
-    ...mapGetters("Admin", ["getTeamMember"]),
+    ...mapGetters("Admin", ["getTeamMember", "getDropdownTeamMembers"]),
 
     isNotShiftOrHoliday() {
       let shiftType = this.eventData.shift_type;
       const isAdmin = this.getIsAdmin;
       return !isAdmin && shiftType > 3;
     },
-    returnTeam() {
-      return this.team.map(member => {
-        return {
-          text: member.name.toString(),
-          value: member._id.toString()
-        };
-      });
-    },
+
     validationUnitController() {
       return {
         success: {
@@ -117,7 +114,6 @@ export default {
     },
 
     returnCreateShiftConfig() {
-      let team = this.returnTeam;
       let isShiftOrHoliday = this.isNotShiftOrHoliday;
 
       let createShiftConfig = [
@@ -147,7 +143,7 @@ export default {
           id: "assigned_to",
           type: "select",
           model: "assigned_to",
-          options: this.returnTeam,
+          options: this.getDropdownTeamMembers,
           multiple: true
         });
       }

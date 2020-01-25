@@ -4,13 +4,20 @@
       <!-- Button collection -->
       <el-button
         :icon="button.icon ? button.icon : null"
-        v-for="(button,key) in buttons"
+        v-for="(button, key) in buttons"
         :round="button.round"
-        :type="button.type ? button.type :'primary'"
+        :type="button.type ? button.type : 'primary'"
         :key="key"
-        size="medium"
-        @click="button.emit ? $emit('modalChanges',button.emit) : button.method ? button.method : null"
-      >{{button.label}}</el-button>
+        size="small"
+        @click="
+          button.emit
+            ? $emit('modalChanges', button.emit)
+            : button.method
+            ? button.method
+            : null
+        "
+        >{{ button.label }}</el-button
+      >
     </el-col>
   </el-row>
 </template>
@@ -23,6 +30,7 @@ export default {
   methods: {},
   computed: {
     ...mapGetters(["getIsAdmin"]),
+
     renderCreateEventButton() {
       let render = {
         text: "Create request",
@@ -36,14 +44,15 @@ export default {
       }
       return render;
     },
+
     buttons() {
       let buttons = [
-        // {
-        //   label: "View Filters",
-        //   emit: "view_filters",
-        //   round: true,
-        //   icon: "el-icon-search"
-        // },
+        {
+          label: "Schedule filters",
+          emit: "schedule_view",
+          round: true,
+          icon: "el-icon-setting"
+        },
         {
           label: this.renderCreateEventButton.text,
           emit: "create_event",
@@ -65,5 +74,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

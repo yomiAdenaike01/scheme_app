@@ -67,8 +67,9 @@ export default {
       sounds.methods.playSuccessSound();
     } else if (notification["type"] == "error") {
       notification["title"] = "Operation Unsuccessful";
-    } else if (notification["message"] == "network error") {
-      state["critical_network_error"] = true;
+      if (typeof notification["message"] == "object") {
+        state["critical_network_error"] = true;
+      }
     }
     Vue.set(state, "notifications", [notification, ...state.notifications]);
   }

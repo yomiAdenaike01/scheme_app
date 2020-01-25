@@ -1,6 +1,9 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <Title title="View Shift" subtitle="Click on more information to display details">
+    <Title
+      title="View Shift"
+      subtitle="Click on more information to display details"
+    >
       <MoreInformation index="admin" instruction="view_shift" />
     </Title>
     <el-row type="flex" v-loading="loading">
@@ -14,11 +17,12 @@
             class="m-1"
             type="info"
             :closable="computeRemoveShift['canDelete']"
-            v-for="(teamMember,index) in renderAssignedTo"
+            v-for="(teamMember, index) in renderAssignedTo"
             :key="index"
             @close="removeTeamMemberFromShift(teamMember)"
             :id="teamMember['id']"
-          >{{teamMember['name']}}</el-tag>
+            >{{ teamMember["name"] }}</el-tag
+          >
         </div>
         <!-- Shift type -->
 
@@ -37,7 +41,8 @@
               round
               size="small"
               :type="renderButtonTypes['shiftType']['type']"
-            >{{renderButtonTypes['shiftType']['text']}}</el-button>
+              >{{ renderButtonTypes["shiftType"]["text"] }}</el-button
+            >
           </Dropdown>
 
           <el-button
@@ -45,7 +50,8 @@
             v-else
             size="small"
             :type="renderButtonTypes['shiftType']['type']"
-          >{{renderButtonTypes['shiftType']['text']}}</el-button>
+            >{{ renderButtonTypes["shiftType"]["text"] }}</el-button
+          >
         </el-col>
 
         <!-- Approval -->
@@ -65,11 +71,11 @@
 
         <div class="view_shift_dialog_item">
           <h4>Start date</h4>
-          <p class="mb-2">{{renderDateContent.start}}</p>
+          <p class="mb-2">{{ renderDateContent.start }}</p>
         </div>
         <div class="view_shift_dialog_item">
           <h4>End date</h4>
-          <p>{{renderDateContent.end}}</p>
+          <p>{{ renderDateContent.end }}</p>
         </div>
       </el-col>
     </el-row>
@@ -80,14 +86,16 @@
         round
         type="primary"
         v-if="computeRemoveShift['canDrop'] || computeRemoveShift['canDelete']"
-      >Edit shift</el-button>
+        >Edit shift</el-button
+      >
       <!-- Remove shift or delete shift button -->
       <el-button
         type="danger"
         class="flex-1"
         round
         @click="renderDeleteButtonContent['method']"
-      >{{renderDeleteButtonContent['text']}}</el-button>
+        >{{ renderDeleteButtonContent["text"] }}</el-button
+      >
     </div>
   </el-dialog>
 </template>

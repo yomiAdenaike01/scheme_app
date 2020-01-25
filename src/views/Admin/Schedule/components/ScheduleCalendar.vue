@@ -1,10 +1,10 @@
 <template>
   <div>
     <vue-cal
+      xsmall
       v-loading="loading"
       :events="returnShiftEvents"
-      :default-view="default_view"
-      hide-view-selector
+      :default-view="ScheduleFilters"
       :on-event-click="viewShift"
       editable-events
       @event-duration-change="changeShiftTime"
@@ -17,7 +17,7 @@
       :shift="shift"
       @toggle="view = $event"
       @loading="loading = $event"
-      @refreshShift="$emit('refreshShift',null)"
+      @refreshShift="$emit('refreshShift', null)"
     />
   </div>
 </template>
@@ -35,9 +35,14 @@ export default {
     return {
       view: false,
       loading: false,
-      default_view: "week",
       shift: {}
     };
+  },
+
+  props: {
+    ScheduleFilters: {
+      type: String
+    }
   },
 
   mixins: [dates],
@@ -80,8 +85,9 @@ export default {
       for (let i = 0; i < len; i++) {
         let shift = shifts[i];
         let name;
+        let assignedToArrayCondition = Array.isArray(shift.assigned_to);
 
-        if (!Array.isArray(shift.assigned_to)) {
+        if (!assignedToArrayCondition) {
           let index = this.team.findIndex(x => {
             return assigned_to == x._id;
           });
@@ -296,9 +302,8 @@ export default {
   color: green;
 }
 .vuecal__title-bar {
-  font-size: 1.1em;
+  margin: 1em 0;
   background: none;
-  font-weight: bold;
   .vuecal__title {
     button {
       color: #999;

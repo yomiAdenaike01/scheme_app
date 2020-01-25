@@ -1,4 +1,12 @@
 export default {
+  getDropdownTeamMembers(state) {
+    return state["team"].map(member => {
+      return {
+        text: member["name"].toString(),
+        value: member["_id"].toString()
+      };
+    });
+  },
   getTeamMember(state, getters, rootState) {
     return (toMatch, teamMemberProperty) => {
       let foundTeamMember = state.team.find(x => {

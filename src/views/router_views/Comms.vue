@@ -17,14 +17,16 @@ export default {
     clearInterval(this.commsInterval);
   },
   activated() {
-    this.commsInterval = setInterval(() => {
-      this.getTranscripts();
-      this.getTeam();
-      this.getNotifications();
-    }, 5000);
+    if (!this.critical_network_error) {
+      this.commsInterval = setInterval(() => {
+        this.getTranscripts();
+        this.getTeam();
+        this.getNotifications();
+      }, 5000);
+    }
   },
   computed: {
-    ...mapState(["currentUser"])
+    ...mapState(["currentUser", "critical_network_error"])
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),

@@ -18,21 +18,27 @@ export default {
     };
   },
   computed: {
-    ...mapState(["localSettings", "userNotifications", "currentUser"])
+    ...mapState([
+      "localSettings",
+      "userNotifications",
+      "currentUser",
+      "critical_network_error"
+    ])
   },
 
   deactivated() {
     clearInterval(this.adminInterval);
   },
   activated() {
-    // Starting interval
-    this.adminInterval = setInterval(() => {
-      this.getTeam();
-      this.getNotifications();
-      this.getShifts();
-    }, 5000);
-    if (this.userNotifications.length > 0) {
-      this.displayNewNotification();
+    if (!this.critical_network_error) {
+      this.adminInterval = setInterval(() => {
+        this.getTeam();
+        this.getNotifications();
+        this.getShifts();
+      }, 5000);
+      if (this.userNotifications.length > 0) {
+        this.displayNewNotification();
+      }
     }
   },
   methods: {

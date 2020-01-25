@@ -8,9 +8,15 @@
       v-model="tabChange"
       :tab-position="position"
       v-loading="loading"
+      :type="tabType"
     >
       <slot name="body_content"></slot>
-      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab['label']" :key="index">
+      <el-tab-pane
+        class="p-3"
+        v-for="(tab, index) in tabs"
+        :label="tab['label']"
+        :key="index"
+      >
         <el-form
           style="padding-top:1em"
           v-if="tab.hasOwnProperty('formContent')"
@@ -34,7 +40,15 @@
               v-model="formContent[input['model']]"
               :value-key="input['text'] || input['name']"
               :show-password="input['type'] == 'password'"
-              :type="input['type'] == 'date' ? 'date' : input['type'] == 'date-time' ? 'datetimerange' : input.textarea ? 'textarea' : null"
+              :type="
+                input['type'] == 'date'
+                  ? 'date'
+                  : input['type'] == 'date-time'
+                  ? 'datetimerange'
+                  : input.textarea
+                  ? 'textarea'
+                  : null
+              "
               v-bind="input"
               :required="input['required']"
               :disabled="input['disabled']"
@@ -43,11 +57,16 @@
               :multiple="input['multiple']"
             >
               <el-option
-                v-for="(option) in input['options']"
+                v-for="option in input['options']"
                 :label="option['text'] || option['name']"
                 :key="option['value']"
-                :value="option['value'] ? option['value'] : option['text'] || option['name']"
-              >{{ option['text'] || option['name'] }}</el-option>
+                :value="
+                  option['value']
+                    ? option['value']
+                    : option['text'] || option['name']
+                "
+                >{{ option["text"] || option["name"] }}</el-option
+              >
             </component>
           </el-form-item>
         </el-form>
@@ -68,7 +87,8 @@
             class="button_text"
             round
             @click="submitForm"
-          >{{ submitText }}</el-button>
+            >{{ submitText }}</el-button
+          >
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -83,6 +103,7 @@ export default {
       formContent: {}
     };
   },
+
   props: {
     liveChange: Boolean,
     loading: {
@@ -107,7 +128,7 @@ export default {
 
     tabType: {
       type: String,
-      default: "card"
+      default: ""
     },
     tabs: {
       type: Array,

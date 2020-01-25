@@ -35,8 +35,7 @@
                   size="small"
                   type="primary"
                 >
-                  Registering a new company ? Click here to
-                  register.
+                  Registering a new company ? Click here to register.
                 </el-button>
               </div>
             </Tabs>
@@ -111,13 +110,17 @@ export default {
 
       if (this.selectedForm == "register") {
         switchObj.title = "User sign up";
+
         switchObj.subtitle =
           "Fill in the following form to successfully register";
+
         switchObj.text = "Switch to login";
       } else if (this.selectedForm == "forgotPassword") {
         switchObj.title = "Forgot Password";
+
         switchObj.subtitle =
           "Fill in the following form to change the password";
+
         switchObj.text = "Switch to login";
       }
       return switchObj;
@@ -191,15 +194,15 @@ export default {
             options: [
               {
                 text: "Male",
-                value: "male"
+                value: 1
               },
               {
                 text: "Female",
-                value: "female"
+                value: 2
               },
               {
                 text: "Other",
-                value: "other"
+                value: 3
               }
             ]
           },

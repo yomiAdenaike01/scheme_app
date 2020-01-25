@@ -25,5 +25,12 @@ export default {
 <style lang="scss" scoped>
 .title_wrapper {
   color: black;
+  &.m-0 {
+    margin: 0;
+  }
+
+  &.p-0 {
+    padding: 0;
+  }
 }
 </style>
