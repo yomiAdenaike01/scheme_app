@@ -1,8 +1,8 @@
-import storage from "./storage";
 import sounds from "@/mixins/playSound";
 import alterTheme from "@/mixins/alterTheme";
 import Vue from "vue";
 Vue.mixin(alterTheme);
+
 export default {
   UPDATE_COLOURS(state, { target, val }) {
     state.localSettings.colours[target] = val;
@@ -58,7 +58,7 @@ export default {
     Vue.set(state, "currentUser", user);
 
     localStorage.setItem("token", token);
-    localStorage.setItem("currentUser", user);
+    localStorage.setItem("currentUser", JSON.stringify(user));
   },
 
   UPDATE_NOTIFICATIONS(state, notification) {

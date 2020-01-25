@@ -1,4 +1,3 @@
-import storage from "./storage";
 import vars from "@/assets/_vars.scss";
 export default {
   theme: localStorage.getItem("cssText"),
@@ -7,9 +6,9 @@ export default {
     process.env.NODE_ENV == "development"
       ? "http://localhost:7070/"
       : "https://schemeapi.now.sh/",
-  token: storage.get("token"),
-  currentUser: storage.get("currentUser")
-    ? JSON.parse(storage.get("currentUser"))
+  token: localStorage.getItem("token"),
+  currentUser: localStorage.getItem("currentUser")
+    ? JSON.parse(localStorage.getItem("currentUser"))
     : {},
   globalLoader: false,
   notifications: [],
