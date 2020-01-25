@@ -2,7 +2,7 @@ import axios from "axios";
 if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:7070/";
 } else {
-  axios.defaults.baseURL = "https://schemeapi.now.sh/";
+  axios.defaults.baseURL = "https://dev-schemapi.now.sh/";
 }
 
 const sortPayload = (state, payload) => {
