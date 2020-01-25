@@ -16,6 +16,7 @@
       @companyNameChange="companyName = $event"
       @getClient="getClient"
     />
+
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -28,6 +29,7 @@ import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
 import ErrorDialog from "@/components/ErrorDialog";
 import alterTheme from "@/mixins/alterTheme";
+
 export default {
   name: "app",
   data() {

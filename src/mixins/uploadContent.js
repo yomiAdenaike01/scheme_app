@@ -1,4 +1,4 @@
-import "firebase/storage";
+import firebase from "firebase";
 import uuid from "uuid";
 
 export default {

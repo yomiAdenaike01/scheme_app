@@ -3,46 +3,42 @@
     <header class="flex_center columns">
       <Avatar :name="currentUser.name" />
       <strong>{{currentUser.name}}</strong>
-      <span class="mb-4">{{currentUser.employee_type}}</span>
+      <small>{{getEmployeeTypeLabel}}</small>
       <span>{{currentUser.email}}</span>
     </header>
     <el-divider></el-divider>
     <Tabs
-      v-model.number="changeTabs"
+      tabType="card"
+      v-model.number="currentView"
       :tabs="renderTabs"
       :disable="true"
-      position="right"
       class="w-100"
     />
-    {{currentUser}}
+    <div v-if="currentView == 0">{{currentUser}}</div>
   </el-col>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import Tabs from "@/components/Tabs";
 import Avatar from "@/components/Avatar";
+
 export default {
   name: "UserInformation",
   data() {
     return {
-      tabs: 0
+      tabs: 0,
+      currentView: ""
     };
   },
   computed: {
     ...mapState(["currentUser"]),
-    changeTabs: {
-      get() {
-        return;
-      },
-      set(val) {
-        this.$emit("input", val);
-      }
-    },
+    ...mapGetters(["getEmployeeTypeLabel"]),
+
     renderTabs() {
       return [
         {
-          label: "Team Members",
+          renderTitle: "<i class='el-icon-user'></i>",
           view: {
             component: ""
           }
@@ -63,6 +59,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+header {
+  line-height: 1.5em;
+}
 .current_user_column {
   width: 100%;
   .el-tabs__item {

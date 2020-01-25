@@ -1,7 +1,29 @@
 import { instructions } from "@/stubs/instructions";
 export default {
   isValidClient(state, getters) {
-    return Object.keys(state.client).length > 0;
+    return Object.keys(state["client"]).length > 0;
+  },
+  getEmployeeTypeLabel(state) {
+    let { employee_type } = state["currentUser"];
+    let label;
+    switch (employee_type) {
+      case 1: {
+        label = "Admin";
+        break;
+      }
+      case 2: {
+        label = "General Employee";
+        break;
+      }
+      case 3: {
+        label = "Locumn";
+        break;
+      }
+
+      default:
+        break;
+    }
+    return label;
   },
   getSidebarColour(state) {
     return state.localSettings.colours.sidebar;

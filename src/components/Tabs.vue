@@ -4,13 +4,16 @@
     <el-tabs
       :closable="false"
       stretch
+      :type="tabType"
       :addable="false"
       v-model="tabChange"
       :tab-position="position"
       v-loading="loading"
     >
       <slot name="body_content"></slot>
+      <!-- Tabs -->
       <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab['label']" :key="index">
+        <span v-if="tab['renderTitle']" v-html="tab['renderTitle']" slot="label"></span>
         <el-form
           style="padding-top:1em"
           v-if="tab.hasOwnProperty('formContent')"
@@ -42,6 +45,15 @@
               :end-placeholder="input['end_placeholder']"
               :multiple="input['multiple']"
             >
+              <!-- Append and prepend for inputs -->
+              <div slot="append" v-if="input['suffix']">
+                <div v-html="input['suffix']"></div>
+              </div>
+              <div slot="prepend" v-if="input['prefix']">
+                <div v-html="input['prefix']"></div>
+              </div>
+
+              <!-- Select options -->
               <el-option
                 v-for="(option) in input['options']"
                 :label="option['text'] || option['name']"
@@ -49,6 +61,8 @@
                 :value="option['value'] ? option['value'] : option['text'] || option['name']"
               >{{ option['text'] || option['name'] }}</el-option>
             </component>
+
+            <small class="description" v-if="input['hint']" v-html="input['hint']"></small>
           </el-form-item>
         </el-form>
         <div v-else>
@@ -107,7 +121,7 @@ export default {
 
     tabType: {
       type: String,
-      default: "card"
+      default: ""
     },
     tabs: {
       type: Array,
@@ -173,5 +187,11 @@ export default {
 }
 .dialog_item {
   width: 70%;
+}
+.description {
+  display: block;
+  padding: 0;
+  margin: 0;
+  color: #999;
 }
 </style>

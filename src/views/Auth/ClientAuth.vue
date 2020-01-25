@@ -13,12 +13,12 @@
         :submitText="selectedTab == '1' ? 'Register' : 'Next'"
       >
         <!-- Upload Image -->
-        <template #footer_content v-if="selectedTab == '0'">
+        <div slot="footer_content" v-if="selectedTab == '0'">
           <el-divider>
             <span>Logo Selection</span>
           </el-divider>
           <UploadFile @fileContent="imageFileContent = $event" />
-        </template>
+        </div>
         <!-- Upload Image -->
       </Tabs>
     </el-card>
@@ -55,7 +55,6 @@ export default {
       imageFileContent: "",
       formInput: {},
       colourOptions: "",
-      currentStep: "0",
       pageLoading: false,
       moreInformation: false,
       imageFile: ""
@@ -85,7 +84,7 @@ export default {
     returnTabs() {
       return [
         {
-          label: "Company & User Details",
+          label: "Client & Admin Details",
           formContent: this.returnClientForm.concat(this.returnRegisterForm)
         },
         {
@@ -102,19 +101,21 @@ export default {
     returnClientForm() {
       return [
         {
-          model: "company_name",
+          model: "client_name",
           type: "text",
           placeholder: "Company Name"
         },
         {
-          model: "company_phone",
+          model: "client_phone",
           type: "text",
           placeholder: "Company Phone Number"
         },
         {
-          model: "company_subdomain",
+          model: "client_subdomain",
           type: "text",
-          placeholder: ".schemeapp.cloud"
+          suffix: ".schemeapp.cloud",
+          placeholder: "Desired subdomin name",
+          hint: "Please enter all lowercase with no spaces"
         }
       ];
     },
@@ -177,18 +178,15 @@ export default {
     registerNewClient() {
       this.pageLoading = true;
       let clientRegisterData = this.formInput;
-      clientRegisterData.company_name = clientRegisterData.company_name
-        .replace(" ", "")
-        .toLowerCase();
-      clientRegisterData.company_colours = this.colourOptions;
+      clientRegisterData.client_colours = this.colourOptions;
 
       this.upload({
         ref: { folder: "clients", file: null },
         content: this.imageFileContent
       })
-        .then(response => {
-          clientRegisterData.company_image = response.url;
-          clientRegisterData.storage_ref = response.ref;
+        .then(({ url, ref }) => {
+          clientRegisterData.client_image = url;
+          clientRegisterData.storage_ref = ref;
           this.request({
             method: "POST",
             url: "clients/create",
@@ -209,9 +207,7 @@ export default {
         });
     },
     processNewClient(response) {
-      this.refactorWindowLocation(
-        this.formInput.company_name.replace(" ", "").toLowerCase()
-      );
+      this.refactorWindowLocation(this.formInput.client_subdomin.toLowerCase());
     },
     checkIfTabIsValid(tab) {
       console.log(tab);
@@ -239,6 +235,7 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  overflow: auto;
   height: 100%;
   .el-card {
     width: 30%;
