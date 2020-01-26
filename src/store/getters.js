@@ -1,4 +1,4 @@
-import { instructions } from "@/stubs/instructions";
+import { guide } from "@/stubs/guide";
 export default {
   isValidClient(state, getters) {
     return Object.keys(state.client).length > 0;
@@ -24,7 +24,7 @@ export default {
     return employee_type == 1 || employee_type == "Admin";
   },
   getCompanyColours(state) {
-    let colours = state.client.company_colours;
+    let colours = state.client.client_colours;
     if (colours.length > 0) {
       return colours;
     } else {
@@ -34,7 +34,7 @@ export default {
   getName(state) {
     return state.currentUser.name.trim().toLowerCase();
   },
-  getInstructions() {
-    return instructions;
+  getGuide() {
+    return guide;
   }
 };

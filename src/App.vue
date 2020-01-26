@@ -10,7 +10,7 @@
     client instance please wait....`
     "
   >
-    <ErrorDialog
+    <ClientErrorDialog
       v-if="!critical_network_error"
       @toggle="error = $event"
       :clientError="true"
@@ -19,7 +19,9 @@
       @getClient="getClient"
     />
 
-    <keep-alive>
+    <CriticalError v-if="critical_network_error" />
+
+    <keep-alive v-else>
       <router-view></router-view>
     </keep-alive>
   </div>
@@ -29,8 +31,9 @@
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
-import ErrorDialog from "@/components/ErrorDialog";
+import ClientErrorDialog from "@/components/ClientErrorDialog";
 import alterTheme from "@/mixins/alterTheme";
+import CriticalError from "@/components/CriticalError";
 export default {
   name: "app",
   data() {
@@ -109,7 +112,8 @@ export default {
   },
   components: {
     Title,
-    ErrorDialog
+    ClientErrorDialog,
+    CriticalError
   },
 
   watch: {

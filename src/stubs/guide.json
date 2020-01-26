@@ -1,5 +1,11 @@
 {
-  "instructions": {
+  "guide": {
+    "misc": {
+      "critical_error": {
+        "title": "Critical Error",
+        "information": "Information"
+      }
+    },
     "comms": {
       "messenger": {
         "title": "Messaging",

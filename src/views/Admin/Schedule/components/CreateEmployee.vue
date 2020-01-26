@@ -96,6 +96,7 @@ export default {
         {
           name: "gender",
           placeholder: "Gender",
+          model: "gender",
           type: "select",
           options: [
             {
@@ -116,6 +117,7 @@ export default {
         {
           name: "email",
           type: "text",
+          model: "email",
           clearable: true,
           placeholder: "Email"
         },
@@ -133,15 +135,15 @@ export default {
           type: "select",
           options: [
             {
-              value: "1",
+              value: 1,
               text: "Admin"
             },
             {
-              value: "2",
-              text: "Regular Staff"
+              value: 2,
+              text: "General Staff"
             },
             {
-              value: "3",
+              value: 3,
               text: "Locumn"
             }
           ]

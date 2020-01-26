@@ -43,7 +43,7 @@
 import { mapState } from "vuex";
 import Title from "@/components/Title";
 export default {
-  name: "ErrorDialog",
+  name: "ClientErrorDialog",
   data() {
     return {
       companyName: ""

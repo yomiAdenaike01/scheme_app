@@ -41,13 +41,6 @@
       </el-col>
       <el-col class="p-3 approval_wrapper">
         <Dropdown :items="shiftActionItems" @method="handleShiftActions" />
-        <!-- <el-tag
-          @click="deleteShift"
-          class="member_name"
-          :type="shift.completed ? 'primary' : 'danger'"
-          >{{
-            shift.completed ? "Finished/ Ready to delete" : "Incomplete"
-          }}</el-tag -->
       </el-col>
     </el-row>
   </el-card>
@@ -58,6 +51,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 import employeeMethods from "@/mixins/employeeMethods";
 import dates from "@/mixins/dates";
 import Dropdown from "@/components/Dropdown";
+import ViewShift from "../../Schedule/components/ViewShift";
 export default {
   name: "Shift",
   mixins: [employeeMethods, dates],
@@ -65,7 +59,8 @@ export default {
   data() {
     return {
       viewDetails: false,
-      startEndTimeDiffType: "hours"
+      startEndTimeDiffType: "hours",
+      displayViewShift: false
     };
   },
   props: {
@@ -162,11 +157,12 @@ export default {
         }
 
         case "view_shift": {
-          this.$router.push({ name: "schedule" });
+          this.displayViewShift = true;
           break;
         }
         case "update_shift": {
-          this.$router.push({ name: "schedule" });
+          this.displayViewShift = true;
+
           break;
         }
 
@@ -189,7 +185,8 @@ export default {
     }
   },
   components: {
-    Dropdown
+    Dropdown,
+    ViewShift
   }
 };
 </script>

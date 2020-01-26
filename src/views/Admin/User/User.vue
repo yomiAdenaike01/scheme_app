@@ -4,11 +4,7 @@
     <el-col class="p-4 shadow" v-if="currentTab == 0">
       <UserTeamMember v-for="member in team" :key="member._id" :data="member" />
     </el-col>
-    <el-col class="p-4 shadow" v-else-if="currentTab == 1">
-      <p>Hello</p>
-    </el-col>
   </el-row>
-  <!-- new comment  -->
 </template>
 
 <script>
