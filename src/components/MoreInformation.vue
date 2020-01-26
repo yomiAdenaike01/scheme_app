@@ -2,16 +2,11 @@
   <div class="moreinformation_container">
     <!-- Create popover with the index of the instructions -->
     <Popover :position="hoverPosition" trigger="hover" width="250">
-      <el-button slot="trigger" size="mini" round :type="type"
-        >More Information</el-button
-      >
+      <el-button slot="trigger" size="mini" round :type="type">More Information</el-button>
 
       <div slot="content" class="instructions_content">
         <h3 class="mb-2">{{ returnGuideContent["title"] }}</h3>
-        <p
-          v-html="returnGuideContent['information']"
-          style="line-height:1.5em"
-        ></p>
+        <p v-html="returnGuideContent['information']" style="line-height:1.5em"></p>
       </div>
     </Popover>
   </div>
@@ -26,7 +21,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: "primary"
+      default: "text"
     },
     hoverPosition: {
       type: String,

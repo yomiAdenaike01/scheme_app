@@ -11,65 +11,19 @@
       :type="tabType"
     >
       <slot name="body_content"></slot>
-      <el-tab-pane
-        class="p-3"
-        v-for="(tab, index) in tabs"
-        :label="tab['label']"
-        :key="index"
-      >
-        <el-form
-          style="padding-top:1em"
+      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab['label']" :key="index">
+        <!-- Form component -->
+        <Form
+          @changeTab="$emit('changeTab')"
+          @val="$emit('val',$event)"
+          :customMethod="customMethod"
+          :disable="disable"
+          :disableForm="disableForm"
           v-if="tab.hasOwnProperty('formContent')"
-          :disabled="disableForm"
-        >
-          <el-form-item
-            v-for="(input, index) in tab['formContent']"
-            :key="index"
-            :prop="input['name']"
-            :label="input['label']"
-          >
-            <component
-              class="dialog_item"
-              :is="
-                input['type'] == 'text' || input['type'] == 'password'
-                  ? 'el-input'
-                  : input['type'] == 'select'
-                  ? 'el-select'
-                  : 'el-date-picker'
-              "
-              v-model="formContent[input['model']]"
-              :value-key="input['text'] || input['name']"
-              :show-password="input['type'] == 'password'"
-              :type="
-                input['type'] == 'date'
-                  ? 'date'
-                  : input['type'] == 'date-time'
-                  ? 'datetimerange'
-                  : input.textarea
-                  ? 'textarea'
-                  : null
-              "
-              v-bind="input"
-              :required="input['required']"
-              :disabled="input['disabled']"
-              :start-placeholder="input['start_placeholder']"
-              :end-placeholder="input['end_placeholder']"
-              :multiple="input['multiple']"
-            >
-              <el-option
-                v-for="option in input['options']"
-                :label="option['text'] || option['name']"
-                :key="option['value']"
-                :value="
-                  option['value']
-                    ? option['value']
-                    : option['text'] || option['name']
-                "
-                >{{ option["text"] || option["name"] }}</el-option
-              >
-            </component>
-          </el-form-item>
-        </el-form>
+          :config="tab.formContent"
+          :submitText="submitText"
+        />
+
         <div v-else>
           <component
             :is="tab['view']['component']"
@@ -77,33 +31,21 @@
             @conponentChanges="emitComponentData"
           />
         </div>
+
         <!--  Footer -->
         <slot name="footer_content"></slot>
-        <!-- Submit button -->
-        <div class="button_container mt-4" v-if="!disable">
-          <el-button
-            size="small"
-            type="primary"
-            class="button_text"
-            round
-            @click="submitForm"
-            >{{ submitText }}</el-button
-          >
-        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
+import Form from "./Form";
 export default {
   name: "Tabs",
-  data() {
-    return {
-      formContent: {}
-    };
+  components: {
+    Form
   },
-
   props: {
     liveChange: Boolean,
     loading: {
@@ -163,16 +105,6 @@ export default {
   methods: {
     emitComponentData(e) {
       this.$emit(e.eventname, e.eventdata);
-    },
-    submitForm() {
-      this.$emit("val", this.formContent);
-      if (this.customMethod) {
-        this.customMethod();
-      }
-
-      if (this.nextTab) {
-        this.$emit("changeTab");
-      }
     }
   },
   watch: {
@@ -184,15 +116,4 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.button_container {
-  display: flex;
-  justify-content: flex-end;
-}
-.button_text {
-  text-transform: capitalize;
-}
-.dialog_item {
-  width: 70%;
-}
-</style>
+

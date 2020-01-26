@@ -28,6 +28,7 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import ViewShift from "./ViewShift";
 import dates from "@/mixins/dates";
+
 export default {
   name: "ScheduleCalendar",
 
@@ -46,14 +47,17 @@ export default {
   },
 
   mixins: [dates],
+
   computed: {
     ...mapState("Admin", ["shifts", "team"]),
     ...mapState(["currentUser"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getTeamMember"]),
+
     // isMine() {
     //   return this.returnShiftDetails._id == this.currentUser._id
     // },
+
     returnCalendarOptions() {
       return [
         {
@@ -96,7 +100,7 @@ export default {
           } else if (this.currentUser._id == shift.assigned_to) {
             name = this.currentUser.name;
           } else {
-            name = "User Not Found";
+            name = "Unassigned user to shift";
           }
         } else {
           name = "Multiple Users";
@@ -110,6 +114,7 @@ export default {
           startDate,
           endDate
         } = shift;
+
         let shiftContent = this.returnShiftType(name, shift_type);
         let { text, eventClass, type } = shiftContent;
 
@@ -139,6 +144,7 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+
     returnShiftType(name, type) {
       let shiftTitle, shiftClass;
       switch (type) {
@@ -180,10 +186,12 @@ export default {
         eventClass: shiftClass
       };
     },
+
     viewShift(shift) {
       this.shift = shift;
       this.view = true;
     },
+
     displayCreateNewShift(startTime) {
       this.$emit("displayCreateShift", true);
     },
@@ -213,6 +221,7 @@ export default {
         this.$forceUpdate();
       }
     },
+
     confirmShiftChangeTime(shift) {
       let { type, assigned_to, start, end } = shift;
 
@@ -232,6 +241,7 @@ export default {
           return error;
         });
     },
+
     updateShift({ startDate, endDate, _id }) {
       startDate = startDate.toISOString();
       endDate = endDate.toISOString();

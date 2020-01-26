@@ -5,6 +5,7 @@
       <MoreInformation slot="titleContent" index="admin" instruction="create_template" />
       <div class="flex columns" v-if="templates.length > 0" v-loading="templateLoading">
         <el-input v-model="templateNamesSearch" placeholder="Seach Templates" size="mini"></el-input>
+
         <ShiftTemplate
           @deleteTemplate="deleteTemplate"
           v-for="template in templates"
@@ -12,19 +13,35 @@
           :data="template"
         />
       </div>
-      <div class="flex_center" v-else>
-        <p>No template found, press more information for find out more.</p>
+
+      <!-- No templates -->
+      <div v-else>
+        <div class="flex_center">
+          <Nocontent v-bind="noTemplateOptions">
+            <el-button
+              size="mini"
+              @click="displayCreateTemplate = !displayCreateTemplate"
+            >Create new template</el-button>
+          </Nocontent>
+        </div>
       </div>
+
+      <!-- Create template -->
+      <el-collapse-transition>
+        <CreateTemplate v-if="displayCreateTemplate" @toggle="displayCreateTemplate = false" />
+      </el-collapse-transition>
     </ToggleSlideDown>
 
     <!-- Upload content -->
     <ToggleSlideDown title="Upload new timesheet">
       <MoreInformation slot="titleContent" index="admin" instruction="upload_timesheet" />
+
       <div class="upload_file_container columns">
         <Title
           defaultClass="m-0"
           subtitle="Select only CSV files that must have the following rows:"
         />
+
         <div class="flex_center">
           <UploadFile
             readMethod="readAsText"
@@ -47,13 +64,16 @@ import Title from "@/components/Title";
 import ShiftTemplate from "./ShiftTemplate";
 import MoreInformation from "@/components/MoreInformation";
 import { mapState, mapActions } from "vuex";
+import Nocontent from "@/components/Nocontent";
+import CreateTemplate from "./CreateTemplate";
 export default {
   name: "CreateShiftOptions",
   data() {
     return {
       templates: "",
       templateNamesSearch: "",
-      templateLoading: false
+      templateLoading: false,
+      displayCreateTemplate: false
     };
   },
 
@@ -63,6 +83,12 @@ export default {
   mixins: [uploadContent],
   computed: {
     ...mapState(["currentUser"]),
+    noTemplateOptions() {
+      return {
+        text: "No templates found, press more information for find out more.",
+        icon: "el-icon-plus"
+      };
+    },
     shiftConfig() {
       return ["name", "assigned_to", "startDate", "endDate", "shift_type"];
     }
@@ -99,7 +125,9 @@ export default {
     UploadFile,
     Title,
     ShiftTemplate,
-    MoreInformation
+    MoreInformation,
+    Nocontent,
+    CreateTemplate
   }
 };
 </script>

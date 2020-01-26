@@ -35,7 +35,7 @@
       },
       "upload_timesheet": {
         "title": "Uploading new timesheet",
-        "information": "Timesheets require a certain template for them to be uploaded and used frequently, they will need to consits of the following, shift_type, name, startDate,endDate,assigned_to"
+        "information": "Timesheets require a certain template for them to be uploaded and used frequently, they will need to consits of the following, shift_type,  startDate,endDate,assigned_to"
       },
       "create_template": {
         "title": "Creating a new template",

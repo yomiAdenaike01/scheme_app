@@ -125,7 +125,7 @@ export default {
           model: "shift_type"
         },
         {
-          type: "date-time",
+          type: "date-time-range",
           placeholder: "Timings",
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",

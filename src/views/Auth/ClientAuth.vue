@@ -189,6 +189,7 @@ export default {
         .then(response => {
           clientRegisterData.company_image = response.url;
           clientRegisterData.storage_ref = response.ref;
+
           this.request({
             method: "POST",
             url: "clients/create",

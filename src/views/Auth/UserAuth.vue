@@ -2,7 +2,7 @@
   <div class="login_container">
     <div class="flex_container">
       <el-card class="form_container">
-        <el-container style="height:100%">
+        <el-container class="h-100">
           <el-main class="login_wrapper">
             <!-- Display the clients image -->
             <ClientImage :center="true" class="mb-4" />
@@ -34,9 +34,7 @@
                   round
                   size="small"
                   type="primary"
-                >
-                  Registering a new company ? Click here to register.
-                </el-button>
+                >Registering a new company ? Click here to register.</el-button>
               </div>
             </Tabs>
           </el-main>
@@ -239,6 +237,13 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
 
+    changeTab(form) {
+      if (form == "login") {
+        this.tabIndex = "0";
+      }
+      this.tabIndex = "1";
+    },
+
     setFormAndProcessUser(e) {
       try {
         this.$set(this.formModel, this.selectedForm, e);
@@ -249,7 +254,9 @@ export default {
     },
     forgotPassword() {
       let forgotPwdForm = this.formModel[this.selectedForm];
+
       this.loading = true;
+
       if (forgotPwdForm.password != forgotPwdForm.verify_password) {
         this.loading = false;
 
@@ -259,6 +266,7 @@ export default {
         });
       } else {
         delete forgotPwdForm.verify_password;
+
         this.request({
           method: "POST",
           url: "users/forgotpassword",
@@ -266,7 +274,7 @@ export default {
         })
           .then(response => {
             this.loading = false;
-            this.selectedForm = "login";
+            // this.chanteTab("login");
           })
           .catch(error => {
             this.loading = false;
@@ -287,6 +295,7 @@ export default {
       this.request(this.returnPayload)
         .then(response => {
           this.UPDATE_USER(response);
+
           if (response.user.admin_gen == true) {
             this.UPDATE_NOTIFICATIONS({
               type: "warning",
@@ -294,15 +303,16 @@ export default {
               message:
                 "Your password is insecure, please consider changing it in the user settings."
             });
+
             this.$router.push({ name: "dashboard" });
           }
+
           this.$router.push({ name: "dashboard" });
 
           this.loading = false;
-          this.selectedForm = "login";
+          // this.changeTab("login");
         })
         .catch(error => {
-          console.log(error);
           this.loading = false;
         });
     }
