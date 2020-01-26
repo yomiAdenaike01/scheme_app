@@ -62,7 +62,9 @@ export default {
           model: "name",
           type: "text",
           placeholder: "Template Name",
-          hint: ""
+          hint: `Optional: Default name will be <strong>template_${moment().format(
+            "DD-MM-YYYY_HH:MM"
+          )}</strong>`
         },
 
         {
