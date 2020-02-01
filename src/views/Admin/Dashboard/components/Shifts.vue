@@ -1,7 +1,8 @@
 <template>
   <el-col class="p-3">
     <!-- PREVIOUS SHIFTS SELECTION -->
-    <el-checkbox
+    <el-checkbox-button
+      size="mini"
       :disabled="previousShifts.length <= 0"
       v-model="displayPreviousShifts"
       :label="
@@ -10,8 +11,8 @@
             : 'View previous events / shifts'
         "
       border
-      size="small"
-    ></el-checkbox>
+    ></el-checkbox-button>
+
     <!-- No shifts  -->
     <el-row style="height:98%; overflow:auto">
       <el-card class="mt-3" v-if="!returnAnyShifts" shadow="none">
@@ -28,6 +29,7 @@
           >{{ noShiftsContent.buttonText }}</el-button>
         </Title>
       </el-card>
+
       <!-- SHIFTS IN CATEGORIES -->
       <transition name="el-fade-in">
         <el-col v-for="(prop, key) in categoriedShifts" :key="key">
@@ -35,6 +37,7 @@
           <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
         </el-col>
       </transition>
+
       <!-- PREVIOUS SHIFTS -->
       <el-collapse-transition>
         <el-col class="shift_overflow" v-if="previousShifts.length > 0 && displayPreviousShifts">

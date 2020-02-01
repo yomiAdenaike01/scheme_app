@@ -9,6 +9,7 @@
       :disable="currentTab == 1"
       v-model.number="currentTab"
       :liveChange="true"
+      size="mini"
       :customMethod="
         !timeSheetError && fileContent.length > 0
           ? submitWithTimeSheet
@@ -118,14 +119,15 @@ export default {
 
       let createShiftConfig = [
         {
-          type: "select",
+          "component-type": "select",
           placeholder: "Select event type",
           options: this.returnShiftTypes(null, "value"),
           required: true,
           model: "shift_type"
         },
         {
-          type: "date-time-range",
+          "component-type": "date-picker",
+          "input-type": "date-time-range",
           placeholder: "Timings",
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",
@@ -137,15 +139,26 @@ export default {
       // Check if it is an admin or not
       let isAdmin = this.getIsAdmin;
       if (isAdmin) {
-        createShiftConfig.unshift({
-          name: "Employee",
-          placeholder: "Select Team Member",
-          id: "assigned_to",
-          type: "select",
-          model: "assigned_to",
-          options: this.getDropdownTeamMembers,
-          multiple: true
-        });
+        createShiftConfig.unshift(
+          {
+            name: "Employee",
+            placeholder: "Select Team Member",
+            id: "assigned_to",
+            "component-type": "select",
+            model: "assigned_to",
+            options: this.getDropdownTeamMembers,
+            multiple: true
+          },
+          {
+            name: "repeat_for",
+            placeholder: "Repeat For (in days)",
+            id: "repeat_days",
+            "component-type": "number",
+            model: "repeat_days",
+            max: 5,
+            min: 0
+          }
+        );
       }
       // Add reasons for being sick
       if (this.isNotShiftOrHoliday) {

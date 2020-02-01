@@ -132,19 +132,18 @@ export default {
         forgotPassword: [
           {
             name: "email",
-            type: "text",
-            placeholder: "Email",
+"component-type":"text",            placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-            type: "password",
+           "component-type":"password",
             placeholder: "Password",
             model: "password"
           },
           {
             name: "Verify password",
-            type: "password",
+           "component-type":"password",
             placeholder: "Verify Password",
             model: "verify_password"
           }
@@ -152,13 +151,12 @@ export default {
         login: [
           {
             name: "email",
-            type: "text",
-            placeholder: "Email",
+"component-type":"text",            placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-            type: "password",
+           "component-type":"password",
             placeholder: "Password",
             model: "password"
           }
@@ -166,20 +164,18 @@ export default {
         register: [
           {
             name: "name",
-            type: "text",
-            placeholder: "First and last name",
+"component-type":"text",            placeholder: "First and last name",
             model: "name"
           },
           {
             name: "email",
-            type: "text",
-            placeholder: "Email",
+"component-type":"text",            placeholder: "Email",
             model: "email"
           },
 
           {
             name: "password",
-            type: "password",
+           "component-type":"password",
             placeholder: "New password",
             model: "password"
           },

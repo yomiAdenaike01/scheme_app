@@ -28,7 +28,7 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import ViewShift from "./ViewShift";
 import dates from "@/mixins/dates";
-
+import moment from "moment";
 export default {
   name: "ScheduleCalendar",
 
@@ -112,11 +112,45 @@ export default {
           is_approved,
           assigned_to,
           startDate,
-          endDate
+          endDate,
+          repeat_days
         } = shift;
 
         let shiftContent = this.returnShiftType(name, shift_type);
         let { text, eventClass, type } = shiftContent;
+
+        if (repeat_days > 0) {
+          for (let i = 0; i < repeat_days; i++) {
+            let startDate = moment().toDate();
+            startDate.setDate(i - 1);
+            startDate.setHours(9);
+            startDate.setMinutes(0);
+            startDate.setSeconds(0);
+            startDate = startDate.toISOString();
+
+            let endDate = moment().toDate();
+            endDate.setDate(i - 1);
+            endDate.setHours(17);
+            endDate.setMinutes(0);
+            endDate.setSeconds(0);
+
+            endDate = endDate.toISOString();
+
+            let shiftEvent = {
+              id: _id,
+              start: this.format(startDate, format),
+              end: this.format(endDate, format),
+              content: text,
+              class: eventClass,
+              assigned_to,
+              type,
+              is_pickup,
+              shift_type,
+              is_approved
+            };
+            shiftEvents.push(shiftEvent);
+          }
+        }
 
         let shiftEvent = {
           id: _id,

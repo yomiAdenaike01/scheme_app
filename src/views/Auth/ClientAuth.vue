@@ -103,7 +103,7 @@ export default {
       return [
         {
           model: "company_name",
-          type: "text",
+          "component-type": "text",
           placeholder: "Company Name"
         },
         {
@@ -123,26 +123,26 @@ export default {
       return [
         {
           name: "name",
-          type: "text",
+          "component-type": "text",
           placeholder: "First and last name",
           model: "name"
         },
 
         {
           name: "email",
-          type: "text",
+          "component-type": "text",
           placeholder: "Email",
           model: "email"
         },
         {
           name: "password",
-          type: "password",
+          "component-type": "password",
           placeholder: "New password",
           model: "password"
         },
         {
           name: "gender",
-          type: "select",
+          "component-type": "select",
           placeholder: "Gender",
           model: "gender",
           options: [

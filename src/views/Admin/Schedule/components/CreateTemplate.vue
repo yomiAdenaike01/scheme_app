@@ -60,7 +60,7 @@ export default {
       let createTemplateConfig = [
         {
           model: "name",
-          type: "text",
+          "component-type": "text",
           placeholder: "Template Name",
           hint: `Optional: Default name will be <strong>template_${moment().format(
             "DD-MM-YYYY_HH:MM"
@@ -69,13 +69,16 @@ export default {
 
         {
           model: "start_date",
-          type: "date-time",
+          "component-type": "date-picker",
+          'input-type':"date-time",
           placeholder: "Start date-time",
           disabled: this.configDisplay["start_end_week"]
         },
         {
           model: "end_date",
-          type: "date-time",
+          "component-type": "date-picker",
+                  'input-type':"date-time",
+
           placeholder: "End date-time",
           disabled: this.configDisplay["start_end_week"]
         }
@@ -86,7 +89,7 @@ export default {
           name: "Assign Employees",
           placeholder: "Select Team Members",
           id: "assigned_to",
-          type: "select",
+          "component-type": "select",
           model: "assigned_to",
           clearable: true,
           options: this.getDropdownTeamMembers,

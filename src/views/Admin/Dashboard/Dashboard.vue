@@ -8,13 +8,11 @@
 <script>
 import Shifts from "./components/Shifts";
 import TeamView from "../Team/TeamView";
-import NoTeamMembers from "../Team/NoTeamMembers";
 export default {
   name: "Dashboard",
   components: {
     TeamView,
-    Shifts,
-    NoTeamMembers
+    Shifts
   }
 };
 </script>

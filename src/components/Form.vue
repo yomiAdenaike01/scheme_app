@@ -7,25 +7,32 @@
       :label="input['label']"
     >
       <component
+        :size="size"
         class="dialog_item"
         :is="
-                input['type'] == 'text' || input['type'] == 'password'
+                input['component-type'] == 'text' || input['component-type'] == 'password'
                   ? 'el-input'
-                  : input['type'] == 'select'
+                  : input['component-type'] == 'select'
                   ? 'el-select'
-                  : 'el-date-picker'
+                  : input['component-type'] == 'date-picker'
+                  ? 'el-date-picker'
+                  :input['component-type'] == 'number'
+                  ? 'el-input-number'
+                  :null
               "
         v-model="formContent[input['model']]"
         :value-key="input['text'] || input['name']"
-        :show-password="input['type'] == 'password'"
+        :show-password="input['component-type'] == 'password'"
+        :min="input['min']"
+        :max="input['max']"
         :type="
-                input['type'] == 'date'
+                input['input-type'] == 'date'
                   ? 'date'
-                  : input['type'] == 'date-time-range'
+                  : input['input-type'] == 'date-time-range'
                   ? 'datetimerange'
-                  : input.textarea
+                  : input.hasOwnProperty('textarea')
                   ? 'textarea'
-                  : input['type'] == 'date-time'
+                  : input['input-type'] == 'date-time'
                   ? 'datetime'
                   : null
               "
@@ -35,8 +42,10 @@
         :start-placeholder="input['start_placeholder']"
         :end-placeholder="input['end_placeholder']"
         :multiple="input['multiple']"
-        :clearable="input['clearable']"
+        :clearable="true"
       >
+
+
         <el-option
           v-for="option in input['options']"
           :label="option['text'] || option['name']"
