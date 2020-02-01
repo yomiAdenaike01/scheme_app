@@ -1,25 +1,24 @@
 <template>
   <div class="reg_wrapper">
-    <el-card v-loading="pageLoading">
+    <el-card v-loading="loading">
       <ClientImage class="m-4" :image="imageFileContent" :center="true" :showClient="false" />
       <Tabs
         :tabs="returnTabs"
         v-model="selectedTab"
         :selectedTab="selectedTab"
-        @val="clientRegForm = $event"
-        :customMethod="registerNewClient"
+        @val="selectedTab == '0' ? clientRegForm.clientInformation = $event : clientRegForm.userInformation = $event"
+        :customMethod="changeTabs"
         :nextTab="true"
-        @changeTab="selectedTab = '1'"
-        :submitText="selectedTab == '1' ? 'Register' : 'Next'"
+        :submitText="selectedTab == returnTabs.length.toString() ? 'Register' : 'Next'"
       >
         <!-- Upload Image -->
-        <template #footer_content v-if="selectedTab == '0'">
-          <el-divider>
+        <div slot="footer_content" v-if="selectedTab == '0'">
+          <el-divider class="mb-5">
             <span>Logo Selection</span>
           </el-divider>
+          <!-- Upload Image -->
           <UploadFile @fileContent="imageFileContent = $event" />
-        </template>
-        <!-- Upload Image -->
+        </div>
       </Tabs>
     </el-card>
   </div>
@@ -36,27 +35,22 @@ import CompanyPersonlisation from "./components/CompanyPersonlisation";
 import UploadFile from "@/components/UploadFile";
 import ClientImage from "@/components/ClientImage";
 import uploadContent from "@/mixins/uploadContent";
+
 export default {
   name: "ClientAuth",
-  created() {
-    let allForms = this.returnRegisterForm.concat(this.returnClientForm);
-    allForms.map(form => {
-      for (let prop in form) {
-        if (prop == "model") {
-          this.$set(this.clientRegForm, form[prop], "");
-        }
-      }
-    });
-  },
+
   mixins: [refactorLocation, uploadContent],
   data() {
     return {
       selectedTab: "0",
       imageFileContent: "",
-      clientRegForm: {},
+      clientRegForm: {
+        userInformation: {},
+        clientInformation: {}
+      },
       colourOptions: "",
       currentStep: "0",
-      pageLoading: false,
+      loading: false,
       moreInformation: false,
       imageFile: ""
     };
@@ -82,38 +76,55 @@ export default {
       }
       return isValid;
     },
+    regFormValidation() {
+      let { clientInformation, userInformation } = this.clientRegForm;
+      return {
+        userInformation: Object.values(userInformation).length <= 0,
+        clientInformation: Object.values(clientInformation).length <= 0
+      };
+    },
     returnTabs() {
       return [
         {
-          label: "Company & User Details",
-          formContent: this.returnClientForm.concat(this.returnRegisterForm)
+          label: "Company Details",
+          formContent: this.returnClientForm
+        },
+        {
+          label: "User Details",
+          formContent: this.returnRegisterForm,
+          disabled: this.regFormValidation.clientInformation
         },
         {
           label: "Scheme Personalisation",
-          disabled:true,
+          disabled: this.regFormValidation.userInformation,
           view: {
             component: CompanyPersonlisation,
             props: {
-              predefinedColours: [this.colourOptions]
+              predefinedColours: [this.colourOptions],
+              method: this.registerNewClient
             }
           }
         }
       ];
     },
+
     returnClientForm() {
       return [
         {
-          model: "clientName",
+          model: "name",
           "component-type": "text",
           placeholder: "Company Name"
         },
         {
-          model: "clientPhone",
- "component-type": "text",          placeholder: "Company Phone Number"
+          model: "phone",
+          "component-type": "text",
+          placeholder: "Company Phone Number"
         },
         {
-          model: "clientSubdomain",
- "component-type": "text",          placeholder: ".schemeapp.cloud"
+          model: "subdomain",
+          "component-type": "text",
+          placeholder: ".schemeapp.cloud",
+          hint: "Optional: Will default to the company name"
         }
       ];
     },
@@ -125,26 +136,26 @@ export default {
           name: "name",
           "component-type": "text",
           placeholder: "First and last name",
-          model: "userName"
+          model: "name"
         },
 
         {
           name: "email",
           "component-type": "text",
           placeholder: "Email",
-          model: "userEmail"
+          model: "email"
         },
         {
           name: "password",
           "component-type": "password",
           placeholder: "New password",
-          model: "userPassword"
+          model: "password"
         },
         {
           name: "gender",
           "component-type": "select",
           placeholder: "Gender",
-          model: "userGender",
+          model: "gender",
           options: [
             {
               text: "Male"
@@ -160,14 +171,24 @@ export default {
       ];
     }
   },
+
   methods: {
     ...mapActions(["request"]),
+
+    changeTabs() {
+      let selectedTab = parseInt(this.selectedTab) + 1;
+      if (selectedTab == this.returnTabs.length) {
+        selectedTab = 0;
+      }
+
+      this.selectedTab = selectedTab.toString();
+    },
 
     genAccentColour() {
       if (this.imageFileContent.length > 0) {
         Vibrant.from(this.imageFileContent).getPalette((err, palette) => {
           if (!err) {
-            this.pageLoading = false;
+            this.loading = false;
             this.colourOptions = palette.Vibrant.hex;
           }
         });
@@ -175,26 +196,14 @@ export default {
     },
 
     registerNewClient() {
-      let clientRegPayload = {
-        userInformation: {},
-        clientInformation: {}
-      };
-      for (let property in this.clientRegForm) {
-        if (property.includes("user")) {
-          clientRegPayload.userInformation[property] = this.clientRegForm[
-            property
-          ];
-        }
-        clientRegPayload.clientInformation[property] = this.clientRegForm[
-          property
-        ];
-      }
-      this.pageLoading = true;
-      let { clientInformation, userInformation } = clientRegPayload;
+      this.loading = true;
 
-      clientInformation.clientName = clientInformation.clientName
+      let { clientInformation } = this.clientRegForm;
+
+      clientInformation.name = clientInformation.name
         .replace(" ", "")
         .toLowerCase();
+
       clientInformation.colours = this.colourOptions;
 
       this.upload({
@@ -202,21 +211,21 @@ export default {
         content: this.imageFileContent
       })
         .then(response => {
-          clientInformation.clientImage = response.url;
-          clientInformation.clientStorageRef = response.ref;
+          clientInformation.image = response.url;
+          clientInformation.storageRef = response.ref;
 
           this.request({
             method: "POST",
             url: "clients/create",
-            data: clientRegPayload
+            data: this.clientRegForm
           })
             .then(response => {
               // log them in
-              this.pageLoading = false;
+              this.loading = false;
               this.processNewClient(response);
             })
             .catch(error => {
-              this.pageLoading = false;
+              this.loading = false;
               console.error(error);
             });
         })
@@ -226,7 +235,7 @@ export default {
     },
     processNewClient(response) {
       this.refactorWindowLocation(
-        this.clientRegForm.clientName.replace(" ", "").toLowerCase()
+        this.clientRegForm.name.replace(" ", "").toLowerCase()
       );
     }
   },

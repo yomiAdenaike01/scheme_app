@@ -11,7 +11,7 @@
     "
   >
     <InvalidClient
-      @toggle="error = $event"
+      @toggle="invalidClient = $event"
       :invalidClient="invalidClient"
       @clientNameChange="clientName = $event"
       @getClient="getClient"
@@ -119,7 +119,7 @@ if(this.runInterval){
           
           this.request({
             method: "GET",
-            url: "clients/one",
+            url: "clients/get",
             params: { clientSubdomain: subdomain },
           },true)
             .then(response => {

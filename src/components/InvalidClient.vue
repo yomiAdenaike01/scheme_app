@@ -10,8 +10,10 @@
         placeholder="Company Name"
         v-model="companyName"
       >
-        <template slot="append">.schemeapp.cloud</template>
+        <span slot="append">.schemeapp.cloud</span>
       </el-input>
+
+
       <div class="button_container m-4">
         <el-button
           round
@@ -25,7 +27,7 @@
           round
           plain
           @click="
-            alreadyAtRegistration ? (display = false) : navigateToRegister
+            alreadyAtRegistration ? view = false : goToRegistration
           "
           >{{
             alreadyAtRegistration ? "Close" : "Register with scheme cloud"
@@ -55,9 +57,10 @@ export default {
   
   },
   methods: {
-    navigateToRegister() {
+    goToRegistration() {
+      console.log(this.$route.name);
       this.$router.push({ name: "register" });
-      this.display = false;
+      this.view = false;
     },
     getClient() {
       this.$emit("getClient");
@@ -66,7 +69,7 @@ export default {
   computed: {
     view: {
       get() {
-        return this.invalidClient && this.$route.name !='register';
+        return this.invalidClient
       },
       set(val) {
         this.$emit("toggle", val);

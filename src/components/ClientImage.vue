@@ -1,11 +1,7 @@
 <template>
   <div :class="['image_wrapper', { flex_center: center }]">
     <transition name="el-fade-in">
-      <el-image
-        v-if="getClient || image"
-        :src="showClient ? getClient.client_image : image"
-        fit="cover"
-      >
+      <el-image v-if="getClient || image" :src="showClient ? getClient.image : image" fit="cover">
         <div slot="error" class="error_image_slot">
           <i :class="[`error_icon ${icon}`]"></i>
         </div>
@@ -59,7 +55,7 @@ export default {
 <style lang="scss" scoped>
 .image_wrapper {
   .el-image {
-    width: 100px;
+    max-width: 100px;
   }
 }
 .flex_center {

@@ -51,7 +51,7 @@ export default {
   },
   mixins: [dates],
   computed: {
-    ...mapState(["client"]),
+  ...mapState(["clientInformation"]),
 
     returnWeekRange() {
       let startDate = this.data.content[0].startDate;

@@ -19,7 +19,7 @@ export default {
     }
   },
   UPDATE_CLIENT(state, payload) {
-    Vue.set(state, "client", payload);
+    Vue.set(state, "clientInformation", payload);
   },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
     Vue.set(state, "weeklyTimesheetUploaded", payload);

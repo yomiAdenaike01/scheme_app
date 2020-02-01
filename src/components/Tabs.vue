@@ -14,7 +14,6 @@
       <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :disabled="tab.disabled" :label="tab['label']" :key="index">
         <!-- Form component -->
         <Form
-          @changeTab="$emit('changeTab')"
           @val="$emit('val',$event)"
           :customMethod="customMethod"
           :disable="disable"

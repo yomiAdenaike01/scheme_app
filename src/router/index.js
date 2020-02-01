@@ -127,7 +127,7 @@ function genTitle({title}){
   
   if(Object.keys(clientInformation).length > 0){
     // if valid client display powered by
-    document.title = `${clientInformation.clientName} - powered by scheme`;
+    document.title = `${clientInformation.clientName} - Powered By SchemeCloud`;
   }else{
     document.title = title;
   }

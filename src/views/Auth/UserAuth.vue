@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     ...mapGetters(["isValidClient"]),
-    ...mapState(["client"]),
+  ...mapState(["clientInformation"]),
     selectedForm() {
       if (this.tabIndex == "0") {
         return "login";
@@ -93,7 +93,7 @@ export default {
       return {
         method: "POST",
         data: {
-          client_id: this.client._id,
+          clientID: this.clientInformation._id,
           ...this.formModel[this.selectedForm]
         },
         url: `/users/${this.selectedForm}`

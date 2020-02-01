@@ -1,5 +1,5 @@
 <template>
-  <div class="company_personlisation_container">
+  <div class="company_personlisation_container flex_center columns">
     <div v-if="client">
       <span class="desc">{{personalisationText}}</span>
     </div>
@@ -7,6 +7,9 @@
       <!-- Display a row for the sidebar and the other colours -->
       <ColourUnit :colour="colour" v-for="colour in predefinedColours" :key="colour" />
     </ThemeSelection>
+    <div class="flex flex--end align-end">
+      <el-button @click="method" round type="primary" size="mini">Submit</el-button>
+    </div>
   </div>
 </template>
 
@@ -19,10 +22,11 @@ export default {
   name: "CompanyPersonalisation",
   props: {
     definedColours: Array | String,
-    predefinedColours: Array | String
+    predefinedColours: Array | String,
+    method: Function
   },
   computed: {
-    ...mapState(["client"]),
+    ...mapState(["clientInformation"]),
     hasCompanyImage() {
       return this.client.hasOwnProperty("company_image");
     },

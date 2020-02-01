@@ -58,7 +58,7 @@ export default {
   computed: {
     ...mapState("Admin", ["team"]),
     ...mapState("Comms", ["activeTranscript",'selectedChat']),
-    ...mapState(["client"]),
+  ...mapState(["clientInformation"]),
     ...mapGetters(["getSidebarColour"]),
     participant() {
       return this.findTeamMember(this.data.user_2)

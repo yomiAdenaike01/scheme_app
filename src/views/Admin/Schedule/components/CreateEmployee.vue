@@ -44,7 +44,7 @@ export default {
     display: Boolean
   },
   computed: {
-    ...mapState(["client"]),
+  ...mapState(["clientInformation"]),
     renderValidationUnit() {
       return {
         success: {
