@@ -14,8 +14,8 @@
     ></el-checkbox-button>
 
     <!-- No shifts  -->
-    <el-row style="height:98%; overflow:auto">
-      <el-card class="mt-3" v-if="!returnAnyShifts" shadow="none">
+    <el-row class="h-100 overflow">
+      <el-card class="mt-3 rounded" v-if="!returnAnyShifts" shadow="none">
         <Title
           :title="noShiftsContent.title"
           :subtitle="noShiftsContent.subtitle"
@@ -32,7 +32,11 @@
 
       <!-- SHIFTS IN CATEGORIES -->
       <transition name="el-fade-in">
-        <el-col v-for="(prop, key) in categoriedShifts" :key="key">
+        <el-col
+          v-for="(prop, key) in categoriedShifts"
+          :key="key"
+          class="flex align-center columns w-100"
+        >
           <el-divider class="member_name">{{ key }}</el-divider>
           <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
         </el-col>
@@ -59,6 +63,7 @@ import employeeMethods from "@/mixins/employeeMethods";
 import Shift from "./Shift";
 import Notification from "@/components/Notification";
 import Title from "@/components/Title";
+import Nocontent from "@/components/Nocontent";
 export default {
   name: "Shifts",
   data() {
@@ -79,6 +84,7 @@ export default {
     ...mapState(["currentUser", "userNotifications"]),
     ...mapState("Admin", ["shifts", "team"]),
     ...mapGetters(["getIsAdmin"]),
+
     noShiftsContent() {
       let noShifts = {
         title: "No current events.",
@@ -93,9 +99,7 @@ export default {
       return noShifts;
     },
     returnAnyShifts() {
-      let result =
-        Object.keys(this.categoriedShifts).length > 0 &&
-        this.previousShifts.length > 0;
+      let result = Object.keys(this.categoriedShifts).length > 0;
       return result;
     },
     previousShifts() {

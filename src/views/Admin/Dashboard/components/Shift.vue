@@ -1,8 +1,5 @@
 <template>
-  <el-card
-    :body-style="{ padding: '0px' }"
-    class="mb-3 ml-3 mr-3 shift_container"
-  >
+  <el-card class="w-100 mb- ml-4 mr-4 shift_container">
     <el-row type="flex">
       <el-col class="shift_details_container unit p-3">
         <h5 class="member_name">{{ shift.shift_type }}</h5>
@@ -12,33 +9,17 @@
           {{ getEmployeeType }}
         </span>
       </el-col>
-      <el-col :class="['shift_times unit p-3', shift.class]">
+      <el-col :class="['shift_times  p-3', shift.class]">
         <div style="display:flex;justify-content:center; align-items:center">
           <span class="date">{{ shift.startDate }}</span>
-          <div
-            class="ml-3 mr-3"
-            style="display:flex; justify-content:center; align-items:center; flex-direction:column"
-          >
-            <i
-              style="font-size:1.3em"
-              class="el-icon el-icon-right p-0 m-0 grey"
-            ></i>
-            <span class="time_diff grey"
-              >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
-            >
+          <div class="ml-3 mr-3 flex_center columns">
+            <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
+            <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
           </div>
           <span class="date">{{ shift.endDate }}</span>
         </div>
       </el-col>
-      <el-col class="p-3 approval_wrapper unit">
-        <el-tag
-          class="member_name"
-          :type="shift.completed ? 'primary' : 'danger'"
-          >{{
-            shift.completed ? "Finished/ Ready to delete" : "Incomplete"
-          }}</el-tag
-        >
-      </el-col>
+
       <el-col class="p-3 approval_wrapper">
         <Dropdown :items="shiftActionItems" @method="handleShiftActions" />
       </el-col>
@@ -193,30 +174,12 @@ export default {
 
 <style lang="scss" scoped>
 .shift_container {
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.9em;
+  max-width: 60%;
 }
 
-// .normal_staff {
-//   background: #ecf5ff;
-//   color: $primary_colour;
-//   // border-top: 2px solid $primary_colour;
-// }
-// .locumn {
-//   background: #f0f9eb;
-//   color: #67c23a;
-//   // border-top: 2px solid #67c23a;
-// }
-// .holiday {
-//   background: #fef0f0;
-//   color: #f56c6c;
-//   // border-top: 2px solid #f56c6c;
-// }
-// .time_off {
-//   background: #fdf6ec;
-//   color: #f2c678;
-//   // border-top: 2px solid #f2c678;
-// }
 .shift_times {
   display: flex;
   justify-content: center;

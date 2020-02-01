@@ -88,7 +88,7 @@ export default {
       return [
         {
           name: "name",
-          type: "text",
+          "component-type": "text",
           clearable: true,
           placeholder: "Name",
           model: "name"
@@ -97,7 +97,7 @@ export default {
           name: "gender",
           placeholder: "Gender",
           model: "gender",
-          type: "select",
+          "component-type": "select",
           options: [
             {
               value: "male",
@@ -116,14 +116,14 @@ export default {
 
         {
           name: "email",
-          type: "text",
+          "component-type": "text",
           model: "email",
           clearable: true,
           placeholder: "Email"
         },
         {
           name: "phoneNumber",
-          type: "text",
+          "component-type": "text",
           model: "phone_number",
           clearable: true,
           placeholder: "Phone Number"
@@ -132,7 +132,7 @@ export default {
           name: "employeeType",
           model: "employee_type",
           placeholder: "Employee type",
-          type: "select",
+          "component-type": "select",
           options: [
             {
               value: 1,
@@ -217,7 +217,7 @@ export default {
           this.fileError = true;
           this.UPDATE_NOTIFICATIONS({
             title: "Error when processing the employee sheet",
-            type: "info",
+            "component-type": "info",
             message: error
           });
         });

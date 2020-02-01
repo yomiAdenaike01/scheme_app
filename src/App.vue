@@ -154,6 +154,7 @@ body {
 }
 
 @import "./assets/spacing";
+@import url("https://fonts.googleapis.com/css?family=Lato|Open+Sans&display=swap");
 @import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d");
 @font-face {
   font-family: "AvenirNextLTW01-Regular";
@@ -169,7 +170,7 @@ body {
 }
 
 * {
-  font-family: "AvenirNextLTW01-Regular";
+  font-family: "Open Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;

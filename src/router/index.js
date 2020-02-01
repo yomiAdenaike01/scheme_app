@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import store from "./../store/index";
+import store from "./../store";
 
 const UserAuth = () => import("@/views/Auth/UserAuth");
 const ClientAuth = () => import("@/views/Auth/ClientAuth");
@@ -122,7 +122,11 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const authRequired = to.matched.some(route => route.meta.authRequired);
   const isLoggedIn = Object.keys(store.state.currentUser).length > 0;
-  document.title = to.meta.title;
+  let { hostname } = window.location;
+  hostname = hostname.split(".")[0];
+
+  document.title = `${to.meta.title} ${hostname}- powered by scheme`;
+
   if (authRequired) {
     if (!isLoggedIn) {
       next({
