@@ -6,7 +6,7 @@
         :tabs="returnTabs"
         v-model="selectedTab"
         :selectedTab="selectedTab"
-        @val="formInput = $event"
+        @val="clientRegForm = $event"
         :customMethod="registerNewClient"
         :nextTab="true"
         @changeTab="selectedTab = '1'"
@@ -43,7 +43,7 @@ export default {
     allForms.map(form => {
       for (let prop in form) {
         if (prop == "model") {
-          this.$set(this.formInput, form[prop], "");
+          this.$set(this.clientRegForm, form[prop], "");
         }
       }
     });
@@ -53,7 +53,7 @@ export default {
     return {
       selectedTab: "0",
       imageFileContent: "",
-      formInput: {},
+      clientRegForm: {},
       colourOptions: "",
       currentStep: "0",
       pageLoading: false,
@@ -68,9 +68,9 @@ export default {
       let capNum =
         this.returnClientForm.length + this.returnRegisterForm.length;
       let isValid = false;
-      for (let property in this.formInput) {
+      for (let property in this.clientRegForm) {
         let initNum = 0;
-        if (this.formInput[property]) {
+        if (this.clientRegForm[property]) {
           initNum++;
 
           if (initNum == capNum) {
@@ -90,6 +90,7 @@ export default {
         },
         {
           label: "Scheme Personalisation",
+          disabled:true,
           view: {
             component: CompanyPersonlisation,
             props: {
@@ -102,49 +103,48 @@ export default {
     returnClientForm() {
       return [
         {
-          model: "company_name",
+          model: "clientName",
           "component-type": "text",
           placeholder: "Company Name"
         },
         {
-          model: "company_phone",
-          type: "text",
-          placeholder: "Company Phone Number"
+          model: "clientPhone",
+ "component-type": "text",          placeholder: "Company Phone Number"
         },
         {
-          model: "company_subdomain",
-          type: "text",
-          placeholder: ".schemeapp.cloud"
+          model: "clientSubdomain",
+ "component-type": "text",          placeholder: ".schemeapp.cloud"
         }
       ];
     },
 
     returnRegisterForm() {
+      let clientInformation = {};
       return [
         {
           name: "name",
           "component-type": "text",
           placeholder: "First and last name",
-          model: "name"
+          model: "userName"
         },
 
         {
           name: "email",
           "component-type": "text",
           placeholder: "Email",
-          model: "email"
+          model: "userEmail"
         },
         {
           name: "password",
           "component-type": "password",
           placeholder: "New password",
-          model: "password"
+          model: "userPassword"
         },
         {
           name: "gender",
           "component-type": "select",
           placeholder: "Gender",
-          model: "gender",
+          model: "userGender",
           options: [
             {
               text: "Male"
@@ -175,25 +175,40 @@ export default {
     },
 
     registerNewClient() {
+      let clientRegPayload = {
+        userInformation: {},
+        clientInformation: {}
+      };
+      for (let property in this.clientRegForm) {
+        if (property.includes("user")) {
+          clientRegPayload.userInformation[property] = this.clientRegForm[
+            property
+          ];
+        }
+        clientRegPayload.clientInformation[property] = this.clientRegForm[
+          property
+        ];
+      }
       this.pageLoading = true;
-      let clientRegisterData = this.formInput;
-      clientRegisterData.company_name = clientRegisterData.company_name
+      let { clientInformation, userInformation } = clientRegPayload;
+
+      clientInformation.clientName = clientInformation.clientName
         .replace(" ", "")
         .toLowerCase();
-      clientRegisterData.company_colours = this.colourOptions;
+      clientInformation.colours = this.colourOptions;
 
       this.upload({
         ref: { folder: "clients", file: null },
         content: this.imageFileContent
       })
         .then(response => {
-          clientRegisterData.company_image = response.url;
-          clientRegisterData.storage_ref = response.ref;
+          clientInformation.clientImage = response.url;
+          clientInformation.clientStorageRef = response.ref;
 
           this.request({
             method: "POST",
             url: "clients/create",
-            data: clientRegisterData
+            data: clientRegPayload
           })
             .then(response => {
               // log them in
@@ -211,11 +226,8 @@ export default {
     },
     processNewClient(response) {
       this.refactorWindowLocation(
-        this.formInput.company_name.replace(" ", "").toLowerCase()
+        this.clientRegForm.clientName.replace(" ", "").toLowerCase()
       );
-    },
-    checkIfTabIsValid(tab) {
-      console.log(tab);
     }
   },
   components: {

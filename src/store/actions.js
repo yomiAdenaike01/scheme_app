@@ -52,13 +52,15 @@ export default {
         return error;
       });
   },
-  request(context, payload) {
+  request(context, payload, disableNotification) {
     payload = sortPayload(context.state, payload);
 
     return axios(payload)
       .then(response => {
         response = response.data;
+
         if (response.hasOwnProperty("success")) {
+        
           if (typeof response.content == "string") {
             context.commit("UPDATE_NOTIFICATIONS", {
               message: response.content,
@@ -66,19 +68,24 @@ export default {
             });
           }
           return Promise.resolve(response.content);
+        
         } else if (response.hasOwnProperty("error")) {
+         
           return Promise.reject(response.content);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.hasOwnProperty("data")) {
           error = error.data.content;
         }
+        if(disableNotification){
         context.commit("UPDATE_NOTIFICATIONS", {
           message: error,
           type: "error"
         });
-        return Promise.reject(error);
+      }
+      return Promise.reject(error);
+
       });
   }
 };

@@ -11,7 +11,7 @@
       :type="tabType"
     >
       <slot name="body_content"></slot>
-      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :label="tab['label']" :key="index">
+      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :disabled="tab.disabled" :label="tab['label']" :key="index">
         <!-- Form component -->
         <Form
           @changeTab="$emit('changeTab')"

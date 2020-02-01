@@ -3,8 +3,8 @@
     <el-form-item
       v-for="(input, index) in config"
       :key="index"
-      :prop="input['name']"
-      :label="input['label']"
+      :prop="input.name"
+      :label="input.label"
     >
       <component
         :size="size"
@@ -20,11 +20,11 @@
                   ? 'el-input-number'
                   :null
               "
-        v-model="formContent[input['model']]"
-        :value-key="input['text'] || input['name']"
+        v-model="formContent[input.model]"
+        :value-key="input.text || input.name"
         :show-password="input['component-type'] == 'password'"
-        :min="input['min']"
-        :max="input['max']"
+        :min="input.min"
+        :max="input.max"
         :type="
                 input['input-type'] == 'date'
                   ? 'date'
@@ -37,28 +37,26 @@
                   : null
               "
         v-bind="input"
-        :required="input['required']"
-        :disabled="input['disabled']"
-        :start-placeholder="input['start_placeholder']"
-        :end-placeholder="input['end_placeholder']"
-        :multiple="input['multiple']"
+        :required="input.required"
+        :disabled="input.disabled"
+        :start-placeholder="input.start_placeholder"
+        :end-placeholder="input.end_placeholder"
+        :multiple="input.multiple"
         :clearable="true"
       >
-
-
         <el-option
-          v-for="option in input['options']"
-          :label="option['text'] || option['name']"
-          :key="option['value']"
+          v-for="option in input.options"
+          :label="option.text || option.name"
+          :key="option.value"
           :value="
-                  option['value']
-                    ? option['value']
-                    : option['text'] || option['name']
+                  option.value
+                    ? option.value
+                    : option.text || option.name
                 "
-        >{{ option["text"] || option["name"] }}</el-option>
+        >{{ option.text || option.name }}</el-option>
       </component>
       <!-- Hint -->
-      <small class="description" v-if="input['hint']" v-html="input['hint']"></small>
+      <small class="description" v-if="input.hint" v-html="input.hint"></small>
     </el-form-item>
 
     <!-- Submit button -->

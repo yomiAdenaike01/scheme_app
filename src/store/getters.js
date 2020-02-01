@@ -1,14 +1,14 @@
 import { guide } from "@/stubs/guide";
 export default {
   isValidClient(state, getters) {
-    return Object.keys(state.client).length > 0;
+    return Object.keys(state.clientInformation).length > 0;
   },
   getSidebarColour(state) {
     return state.localSettings.colours.sidebar;
   },
   getClient(state, getters) {
     if (getters.isValidClient) {
-      return state.client;
+      return state.clientInformation;
     } else {
       return {};
     }
@@ -24,7 +24,7 @@ export default {
     return employee_type == 1 || employee_type == "Admin";
   },
   getCompanyColours(state) {
-    let colours = state.client.client_colours;
+    let colours = state.clientInformation.colours;
     if (colours.length > 0) {
       return colours;
     } else {

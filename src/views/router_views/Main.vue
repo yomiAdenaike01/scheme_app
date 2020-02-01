@@ -49,7 +49,7 @@ export default {
       "userNotifications",
       "viewMobileMenu",
       "defaultSize",
-      "critical_network_error",
+      "criticalNetworkError",
       "weeklyTimesheetUploaded",
       "localSettings"
     ]),
@@ -136,7 +136,7 @@ export default {
     NotificationsCenter
   },
   watch: {
-    critical_network_error: {
+    criticalNetworkError: {
       immediate: true,
       handler(val) {
         if (val) {

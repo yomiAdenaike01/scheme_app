@@ -119,13 +119,25 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  const authRequired = to.matched.some(route => route.meta.authRequired);
-  const isLoggedIn = Object.keys(store.state.currentUser).length > 0;
+function genTitle({title}){
   let { hostname } = window.location;
   hostname = hostname.split(".")[0];
 
-  document.title = `${to.meta.title} ${hostname}- powered by scheme`;
+  let {clientInformation} = store.state
+  
+  if(Object.keys(clientInformation).length > 0){
+    // if valid client display powered by
+    document.title = `${clientInformation.clientName} - powered by scheme`;
+  }else{
+    document.title = title;
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  const authRequired = to.matched.some(route => route.meta.authRequired);
+  const isLoggedIn = Object.keys(store.state.currentUser).length > 0;
+
+  genTitle(to.meta)
 
   if (authRequired) {
     if (!isLoggedIn) {

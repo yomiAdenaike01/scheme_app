@@ -1,7 +1,12 @@
 import vars from "@/assets/_vars.scss";
 export default {
   theme: localStorage.getItem("cssText"),
-  client: {},
+  requestIntervals:{
+    team: 6000,
+    shifts: 6000,
+    client:4000,
+  },
+  clientInformation: {},
   environmentURL:
     process.env.NODE_ENV == "development"
       ? "http://localhost:7070/"
@@ -12,16 +17,16 @@ export default {
     : {},
   globalLoader: false,
   notifications: [],
-  critical_network_error: false,
+  criticalNetworkError: false,
   weeklyTimesheetUploaded: false,
   hasSeenNotifications: false,
 
   localSettings: {
     general: {
-      live_schedule: true,
-      live_notifications: true,
-      live_dashboard: true,
-      notifications: true
+      liveSchedule: true,
+      liveNotifications: true,
+      liveDashboard: true,
+      notificationAlerts: true
     },
     security: {},
     colours: {

@@ -68,7 +68,7 @@ export default {
     } else if (notification["type"] == "error") {
       notification["title"] = "Operation Unsuccessful";
       if (typeof notification["message"] == "object") {
-        state["critical_network_error"] = true;
+        state["criticalNetworkError"] = true;
       }
     }
     Vue.set(state, "notifications", [notification, ...state.notifications]);

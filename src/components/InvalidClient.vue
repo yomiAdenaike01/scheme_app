@@ -1,6 +1,6 @@
 <template>
-  <el-dialog center :visible.sync="viewController" width="700px">
-    <div class="client_error_dialog" v-if="clientError">
+  <el-dialog center :visible.sync="view" width="700px">
+    <div class="client_error_dialog">
       <Title
         title="Invalid domain detected."
         subtitle="Re-enter your company name to restart the process."
@@ -33,9 +33,7 @@
         >
       </div>
     </div>
-    <div v-else>
-      <h1>Critical Error</h1>
-    </div>
+ 
   </el-dialog>
 </template>
 
@@ -43,21 +41,18 @@
 import { mapState } from "vuex";
 import Title from "@/components/Title";
 export default {
-  name: "ClientErrorDialog",
+  name: "InvalidClient",
   data() {
     return {
       companyName: ""
     };
   },
   props: {
-    clientError: {
+    invalidClient: {
       type: Boolean,
       default: true
     },
-    display: {
-      type: Boolean,
-      default: true
-    }
+  
   },
   methods: {
     navigateToRegister() {
@@ -69,12 +64,11 @@ export default {
     }
   },
   computed: {
-    viewController: {
+    view: {
       get() {
-        return this.display;
+        return this.invalidClient && this.$route.name !='register';
       },
       set(val) {
-        console.log(val);
         this.$emit("toggle", val);
       }
     },

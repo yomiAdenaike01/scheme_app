@@ -17,7 +17,7 @@ export default {
     clearInterval(this.commsInterval);
   },
   activated() {
-    if (!this.critical_network_error) {
+    if (!this.criticalNetworkError) {
       this.commsInterval = setInterval(() => {
         this.getTranscripts();
         this.getTeam();
@@ -26,7 +26,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["currentUser", "critical_network_error"])
+    ...mapState(["currentUser", "criticalNetworkError"])
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),

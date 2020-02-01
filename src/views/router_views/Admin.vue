@@ -22,7 +22,7 @@ export default {
       "localSettings",
       "userNotifications",
       "currentUser",
-      "critical_network_error"
+      "criticalNetworkError"
     ])
   },
 
@@ -30,7 +30,7 @@ export default {
     clearInterval(this.adminInterval);
   },
   activated() {
-    if (!this.critical_network_error) {
+    if (!this.criticalNetworkError) {
       this.adminInterval = setInterval(() => {
         this.getTeam();
         this.getNotifications();
