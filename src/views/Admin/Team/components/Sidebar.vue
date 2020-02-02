@@ -1,12 +1,13 @@
 <template>
-  <div class="tab_wrapper">
+  <div class="tab_wrapper h-100">
     <!-- Display the avatar -->
     <div class="avatar_info_container">
       <Avatar :name="returnUsername" class="sidebar_avatar mb-3" />
       <h4>{{ returnUsername }}</h4>
     </div>
-    <el-tabs tab-position="left" v-model="selectedTab">
+    <el-tabs tab-position="left" type="card" v-model="selectedTab">
       <el-tab-pane
+        class="h-100"
         :key="index"
         v-for="(tab, index) in tabItems"
         :label="tab.label"
