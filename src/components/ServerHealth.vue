@@ -2,9 +2,12 @@
   <div
     v-loading="loading"
     class="p-1 server_health_container flex_center"
-    :class="[{ healthy: serverHealth.healthy }]"
+    :class="[
+      { healthy: serverHealth.healthy },
+      { unhealthy: !serverHealth.healthy }
+    ]"
   >
-    <i class="el-icon-check mr-2"></i> {{ displayText }}
+    {{ displayText }}
   </div>
 </template>
 
@@ -35,7 +38,10 @@ export default {
   background: whitesmoke;
   color: white;
   &.healthy {
-    background: #67c23a;
+    background: $success_colour;
+  }
+  &.unhealthy {
+    background: $error_colour;
   }
 }
 </style>
