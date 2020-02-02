@@ -4,7 +4,7 @@
     class="p-1 server_health_container flex_center"
     :class="[{ healthy: serverHealth.healthy }]"
   >
-    {{ displayText }}
+    <i class="el-icon-check mr-2"></i> {{ displayText }}
   </div>
 </template>
 
