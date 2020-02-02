@@ -4,8 +4,8 @@ import Vue from "vue";
 Vue.mixin(alterTheme);
 
 export default {
-  UPDATE_SERVER_STATUS(state, { env, status, message }) {
-    Vue.set(state, "serverHealth", { env, status, message });
+  UPDATE_SERVER_HEALTH_STATUS(state, payload) {
+    Vue.set(state, "serverHealth", payload);
   },
   UPDATE_COLOURS(state, { target, val }) {
     state.localSettings.colours[target] = val;

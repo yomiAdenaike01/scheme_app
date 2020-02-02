@@ -1,7 +1,7 @@
 <template>
   <el-menu
     id="main_nav"
-    style="height:100%"
+    style="height:100%; border:none"
     :default-active="$route.path"
     :router="true"
     mode="vertical"

@@ -21,7 +21,7 @@ export default {
     noGoogleCal() {
       return {
         text:
-          "You have encountered a critical server error, to proceed please contact support so that this can be fixed",
+          "A google calendar connection was not found to create one press the button below",
         icon: "el-icon-date",
         buttonText: "Configure google calendar"
       };

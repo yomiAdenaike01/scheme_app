@@ -1,14 +1,10 @@
 <template>
   <div
-    class="server_health_container"
-    v-loading="validStatus"
-    :class="[
-      { pending: validStatus },
-      { healthy: serverHealth.status == 200 },
-      { unhealthy: serverHealth.status == 500 }
-    ]"
+    v-loading="loading"
+    class="p-1 server_health_container flex_center"
+    :class="[{ healthy: serverHealth.healthy }]"
   >
-    {{ serverHealth }}
+    {{ displayText }}
   </div>
 </template>
 
@@ -16,18 +12,17 @@
 import { mapState } from "vuex";
 export default {
   name: "ServerHealth",
-  created() {},
   computed: {
     ...mapState(["serverHealth"]),
-    validStatus() {
-      return Object.keys(this.serverHealth).length > 0;
+    loading() {
+      return Object.keys(this.serverHealth).length == 0;
     },
-    displayStatus() {
-      let { status } = this.serverHealth;
-      if (status == 200) {
-        return "Server is healthy";
+    displayText() {
+      let { healthy } = this.serverHealth;
+      if (healthy) {
+        return "Your cloud instance is healthy";
       } else {
-        return "Errors found in server please contact your administrator";
+        return "Server error detected please contact your admin";
       }
     }
   }
@@ -36,11 +31,11 @@ export default {
 
 <style lang="scss" scoped>
 .server_health_container {
-  padding: 20px;
   width: 100%;
   background: whitesmoke;
+  color: white;
   &.healthy {
-    background: green;
+    background: #67c23a;
   }
 }
 </style>

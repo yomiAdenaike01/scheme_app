@@ -18,12 +18,10 @@ export default {
     context
       .dispatch("request", {
         method: "GET",
-        url: "/"
+        url: "/healthcheck"
       })
       .then(response => {
-        context.commit("UPDATE_SERVER_HEALTH_STATUS", {
-          response
-        });
+        context.commit("UPDATE_SERVER_HEALTH_STATUS", response);
       })
       .catch(error => {
         return error;
