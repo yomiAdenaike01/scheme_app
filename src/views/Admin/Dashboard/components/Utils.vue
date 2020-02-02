@@ -1,31 +1,30 @@
 <template>
   <el-col class="m-4">
-    <Title
-      title="This Week"
-      subtitle="View a small summary of the metrics here."
-    />
     <div class="flex_center">
       <el-col type="flex" v-for="(content, key) in weeklyTotals" :key="key">
         <el-card class="m-1" shadow="none">
           <div class="flex_center columns">
-            <strong>
+            <h3 class="m-0 p-0">
               {{
                 content.result.hasOwnProperty("name")
                   ? content.result.name
                   : content.result
               }}
-            </strong>
-            <Title :subtitle="content.label" />
+            </h3>
+            <Title defaultClass="m-0" :subtitle="content.label" />
           </div>
         </el-card>
       </el-col>
     </div>
+    <GoogleCal />
   </el-col>
 </template>
 
 <script>
 import Title from "@/components/Title";
 import Chart from "@/components/Chart";
+import GoogleCal from "./GoogleCal";
+
 import moment from "moment";
 import { mapState, mapGetters, mapActions } from "vuex";
 export default {
@@ -83,7 +82,8 @@ export default {
   },
   components: {
     Title,
-    Chart
+    Chart,
+    GoogleCal
   }
 };
 

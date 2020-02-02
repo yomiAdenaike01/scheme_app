@@ -14,6 +14,21 @@ const sortPayload = (state, payload) => {
 };
 
 export default {
+  checkServerHealth(context) {
+    context
+      .dispatch("request", {
+        method: "GET",
+        url: "/"
+      })
+      .then(response => {
+        context.commit("UPDATE_SERVER_HEALTH_STATUS", {
+          response
+        });
+      })
+      .catch(error => {
+        return error;
+      });
+  },
   updateTheme(context, content) {
     context.dispatch("request", {
       method: "POST",
@@ -21,7 +36,7 @@ export default {
       data: { update: content }
     });
   },
-  
+
   updateSettings(context) {
     return new Promise((resolve, reject) => {
       context
@@ -41,7 +56,6 @@ export default {
     });
   },
 
-
   getNotifications(context) {
     context
       .dispatch("request", {
@@ -56,17 +70,14 @@ export default {
       });
   },
 
-
   request(context, payload, disableNotification) {
     payload = sortPayload(context.state, payload);
 
     return axios(payload)
       .then(response => {
-
         response = response.data;
 
         if (response.hasOwnProperty("success")) {
-        
           if (typeof response.content == "string") {
             context.commit("UPDATE_NOTIFICATIONS", {
               message: response.content,
@@ -74,24 +85,21 @@ export default {
             });
           }
           return Promise.resolve(response.content);
-        
         } else if (response.hasOwnProperty("error")) {
-         
           return Promise.reject(response.content);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         if (error.hasOwnProperty("data")) {
           error = error.data.content;
         }
-        if(!disableNotification){
-        context.commit("UPDATE_NOTIFICATIONS", {
-          message: error,
-          type: "error"
-        });
-      }
-      return Promise.reject(error);
-
+        if (!disableNotification) {
+          context.commit("UPDATE_NOTIFICATIONS", {
+            message: error,
+            type: "error"
+          });
+        }
+        return Promise.reject(error);
       });
   }
 };

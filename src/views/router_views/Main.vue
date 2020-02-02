@@ -6,7 +6,10 @@
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </el-col>
       <el-col>
-        <keep-alive :key="currentUser._id">
+        <!-- Server health -->
+        <ServerHealth />
+        <!-- Router view -->
+        <keep-alive>
           <router-view></router-view>
         </keep-alive>
       </el-col>
@@ -16,15 +19,19 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
 import NotificationsCenter from "@/components/NotificationsCenter";
 import moment, * as moments from "moment";
+import ServerHealth from "@/components/ServerHealth";
 
 export default {
   name: "Main",
+
   activated() {
+    this.checkServerHealth();
+
     let isVerified = this.currentUser.verified;
     if (!isVerified) {
       this.UPDATE_NOTIFICATIONS({
@@ -60,6 +67,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(["checkServerHealth"]),
     ...mapMutations([
       "REMOVE_USER",
       "UPDATE_NOTIFICATIONS",
@@ -133,7 +141,8 @@ export default {
   components: {
     Navigation,
     AppBar,
-    NotificationsCenter
+    NotificationsCenter,
+    ServerHealth
   },
   watch: {
     criticalNetworkError: {

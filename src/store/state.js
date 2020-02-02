@@ -1,10 +1,11 @@
 import vars from "@/assets/_vars.scss";
 export default {
   theme: localStorage.getItem("cssText"),
-  requestIntervals:{
+  serverHealth: {},
+  requestIntervals: {
     team: 6000,
     shifts: 6000,
-    client:4000,
+    client: 4000
   },
   clientInformation: {},
   environmentURL:

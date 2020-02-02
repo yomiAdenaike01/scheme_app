@@ -4,6 +4,9 @@ import Vue from "vue";
 Vue.mixin(alterTheme);
 
 export default {
+  UPDATE_SERVER_STATUS(state, { env, status, message }) {
+    Vue.set(state, "serverHealth", { env, status, message });
+  },
   UPDATE_COLOURS(state, { target, val }) {
     state.localSettings.colours[target] = val;
   },
@@ -46,7 +49,6 @@ export default {
     Vue.set(state, "globalLoader", payload);
   },
   REMOVE_USER(state) {
-    
     Vue.set(state, "currentUser", {});
     Vue.set(state, "token", {});
 

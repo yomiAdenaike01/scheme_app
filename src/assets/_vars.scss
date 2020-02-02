@@ -3,7 +3,7 @@ $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 $success_colour: #67c23a;
 $error_colour: #f56c6c;
 $border_radius: 10px;
-$border:  1px solid #EBEEF5;
+$border: 1px solid #ebeef5;
 
 .overflow {
   overflow: auto;
@@ -23,6 +23,9 @@ $border:  1px solid #EBEEF5;
 
 .h-100 {
   height: 100%;
+}
+.large_icon {
+  font-size: 3em;
 }
 .capitalize {
   text-transform: capitalize;
@@ -118,13 +121,13 @@ $border:  1px solid #EBEEF5;
 .black {
   color: black;
 }
-.primary{
+.primary {
   color: $primary_colour;
 }
 .columns {
   flex-direction: column;
 }
-.caps{
+.caps {
   text-transform: uppercase;
 }
 a {
@@ -194,8 +197,6 @@ a {
 :export {
   default: #0d243f;
 }
-
-
 
 /**
 // @import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d");

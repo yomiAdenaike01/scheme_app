@@ -8,7 +8,7 @@ import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
 import "./plugins/clickOutside";
-
+import "./plugins/google";
 
 new Vue({
   router,

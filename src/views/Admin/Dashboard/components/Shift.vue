@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100 mt-3 shift_container rounded shadow">
+  <div class="mt-3 shift_container rounded shadow">
     <el-row type="flex">
       <el-col class="shift_details_container details_unit p-2">
         <h5 class="member_name">{{ getShiftType }}</h5>
@@ -22,7 +22,7 @@
         }}</el-tag>
       </el-col>
 
-      <el-col :class="['shift_times flex p-3 details_unit', shift.class]">
+      <el-col :class="['shift_times flex details_unit', shift.class]">
         <div class="flex_center">
           <span class="date">{{ formattedDates.start }}</span>
           <div class="flex_center columns">

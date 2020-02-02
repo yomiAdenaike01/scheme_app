@@ -1,32 +1,26 @@
 <template>
-  <el-row :type="$mq == 'lg' ? 'flex' : null" class="h-100 p-3">
-    <StatsView />
-
-    <Shifts />
-
-    <TeamView />
-  </el-row>
+  <div class="h-100">
+    <el-row :type="$mq == 'lg' ? 'flex' : null" class="h-100 pl-4">
+      <Shifts />
+      <Utils />
+      <TeamView />
+    </el-row>
+  </div>
 </template>
 
 <script>
 import Shifts from "./components/Shifts";
 import TeamView from "../Team/TeamView";
-import StatsView from "../Stats/StatsView";
+import Utils from "./components/Utils";
 export default {
-  
   name: "Dashboard",
-  activated(){
-
-  },
-  deactivated(){
-
-  },
-  computed:{
-  },
+  activated() {},
+  deactivated() {},
+  computed: {},
   components: {
     TeamView,
     Shifts,
-    StatsView
+    Utils
   }
 };
 /**

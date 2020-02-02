@@ -9,7 +9,11 @@
         subtitle="View and interact with your team members here"
       />
       <div v-if="team.length > 0">
-        <el-col v-for="(member, index) in team" :key="index" class="member flex_center">
+        <el-col
+          v-for="(member, index) in team"
+          :key="index"
+          class="member flex_center"
+        >
           <Dropdown
             class="p-2"
             @click.native="hoveredTeamMember = member._id"
@@ -18,7 +22,11 @@
             position="left"
             :icon="false"
           >
-            <el-badge is-dot :type="member.is_online ? 'success' : 'danger'" class="item">
+            <el-badge
+              is-dot
+              :type="member.isOnline ? 'success' : 'danger'"
+              class="item"
+            >
               <Avatar :name="member.name" />
             </el-badge>
           </Dropdown>
@@ -26,11 +34,25 @@
       </div>
       <Nocontent
         v-else
-        :moreInformation="getIsAdmin ? null : {index:'admin',instruction:'team_viewing',hoverPosition:'bottom-end'}"
+        :moreInformation="
+          getIsAdmin
+            ? null
+            : {
+                index: 'admin',
+                instruction: 'team_viewing',
+                hoverPosition: 'bottom-end'
+              }
+        "
         text="No team members detected, hover over the button below for more information."
         icon="el-icon-user"
       >
-        <el-button round type="primary" @click="$router.push({name:'schedule'})" size="mini">Create Team Member</el-button>
+        <el-button
+          round
+          type="primary"
+          @click="$router.push({ name: 'schedule' })"
+          size="mini"
+          >Create Team Member</el-button
+        >
       </Nocontent>
     </el-row>
   </el-col>
