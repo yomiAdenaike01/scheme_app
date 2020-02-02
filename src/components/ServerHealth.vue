@@ -1,14 +1,16 @@
 <template>
-  <div
-    v-loading="loading"
-    class="p-1 server_health_container flex_center"
-    :class="[
-      { healthy: serverHealth.healthy },
-      { unhealthy: !serverHealth.healthy }
-    ]"
-  >
-    {{ displayText }}
-  </div>
+  <transition name="el-fade-in">
+    <div
+      v-loading="loading"
+      class="p-1 server_health_container flex_center"
+      :class="[
+        { healthy: serverHealth.healthy },
+        { unhealthy: !serverHealth.healthy }
+      ]"
+    >
+      {{ displayText }}
+    </div>
+  </transition>
 </template>
 
 <script>

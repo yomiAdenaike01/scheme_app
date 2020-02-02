@@ -10,16 +10,6 @@
     client instance please wait....`
     "
   >
-    <InvalidClient
-    v-if="invalidClient"
-      @toggle="invalidClient = $event"
-      :invalidClient="invalidClient"
-      @clientNameChange="clientName = $event"
-      @getClient="getClient"
-    />
-
-    <CriticalError v-if="criticalNetworkError" />
-
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -37,44 +27,34 @@ export default {
   name: "app",
   data() {
     return {
-      loading: true,
       clientName: "",
       clientInterval: null,
-      invalidClient:false,
+      invalidClient: false,
       windowClient: window.location.hostname.toString().split(".")
     };
   },
- async created() {
+  async created() {
     if (this.isValidClient) {
       this.SET_THEME();
     }
 
-if(this.runInterval){
-
-    this.clientInterval = setInterval( async () => {
+    if (this.runInterval) {
+      this.clientInterval = setInterval(async () => {
+        try {
+          let response = await this.getClient();
+          this.UPDATE_CLIENT(response);
+        } catch (error) {
+          this.genError(error);
+        }
+      }, this.requestIntervals.client);
+    } else {
       try {
-       let response = await this.getClient();
-       this.UPDATE_CLIENT(response);
-       this.loading=  false;
-      
+        let response = await this.getClient();
+        this.UPDATE_CLIENT(response);
       } catch (error) {
-        
-        this.genError(error);
-      
+        this.genError(error, false);
       }
-    }, this.requestIntervals.client);
-
-  }else{
-    try { 
-      let response = await this.getClient();
-      this.UPDATE_CLIENT(response)
-      this.loading = false;
-    } catch (error) {
-      this.genError(error,false);
     }
-  }
-
-
   },
   destroyed() {
     clearInterval(this.clientInterval);
@@ -88,42 +68,50 @@ if(this.runInterval){
       "clientInformation",
       "criticalNetworkError"
     ]),
+    ...mapState("Admin", ["team", "shifts"]),
     ...mapGetters(["isValidClient"]),
-    runInterval(){
-      return this.$route.name != 'register' && this.isValidClient
+    loading() {
+      // Check team and schedule
+      return (
+        this.team.length == 0 && Object.keys(this.clientInformation).length > 0
+      );
+    },
+    runInterval() {
+      return this.$route.name != "register" && this.isValidClient;
     }
   },
   mixins: [refactorLocation, alterTheme],
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
-    
-    genError(error, displayDialog){
-      if(!displayDialog){
+
+    genError(error, displayDialog) {
+      if (!displayDialog) {
         this.invalidClient = false;
       }
-          this.clientInterval = null;
-          this.loading = false;
-        this.invalidClient = true;
+      this.clientInterval = null;
+      this.loading = false;
+      this.invalidClient = true;
 
-          console.error(error);
+      console.error(error);
     },
 
     getClient() {
       return new Promise((resolve, reject) => {
-        
         let currentHostname = window.location.hostname.split(".");
 
         if (this.clientName.length <= 0) {
-
           let subdomain = this.windowClient[0];
           let domain = this.windowClient[1];
-          
-          this.request({
-            method: "GET",
-            url: "clients/get",
-            params: { clientSubdomain: subdomain },
-          },true)
+
+          this.request(
+            {
+              method: "GET",
+              url: "clients/get",
+              params: { clientSubdomain: subdomain }
+            },
+            true
+          )
             .then(response => {
               resolve(response);
             })
@@ -131,7 +119,6 @@ if(this.runInterval){
               reject(error);
             });
         } else {
-          
           this.refactorWindowLocation(this.clientName);
         }
       });

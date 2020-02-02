@@ -9,7 +9,7 @@
         <Sidebar
           v-if="getUserInfo.name"
           :teamMemberData="getUserInfo"
-          @changedTab="selectedTab = $event"
+          @changedTab="selectedTab = $event.toString()"
           :tabItems="tabItems"
         >
           <div class="content_body">
@@ -26,7 +26,8 @@
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
-import TeamUserInfo from "./components/UserInfo.vue";
+import TeamUserInfo from "./components/UserInfo";
+import TeamShiftInfo from "./components/TeamShiftInfo";
 import Sidebar from "./components/Sidebar";
 export default {
   name: "TeamMember",
@@ -34,7 +35,7 @@ export default {
     return {
       documentation: [],
       self: this,
-      selectedTab: null
+      selectedTab: 0
     };
   },
 
@@ -47,14 +48,14 @@ export default {
       let component, props;
       switch (selectedTab) {
         // Display user personal details
-        case "0": {
+        case 0: {
           component = TeamUserInfo;
           props = this.getUserInfo;
           break;
         }
         // Display user shifts
-        case "1": {
-          component = <template><h1>Hello</h1></template>
+        case 1: {
+          component = TeamShiftInfo;
           break;
         }
 
@@ -131,7 +132,8 @@ export default {
   },
   components: {
     TeamUserInfo,
-    Sidebar
+    Sidebar,
+    TeamShiftInfo
   }
 };
 </script>

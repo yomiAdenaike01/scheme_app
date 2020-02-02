@@ -25,6 +25,8 @@ import Navigation from "@/components/Navigation";
 import NotificationsCenter from "@/components/NotificationsCenter";
 import moment, * as moments from "moment";
 import ServerHealth from "@/components/ServerHealth";
+import CriticalError from "@/components/CriticalError";
+import InvalidClient from "@/components/InvalidClient";
 
 export default {
   name: "Main",
