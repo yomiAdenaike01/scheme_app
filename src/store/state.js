@@ -7,7 +7,9 @@ export default {
     shifts: 6000,
     client: 4000
   },
-  clientInformation: {},
+  clientInformation: localStorage.getItem("clientInformation")
+    ? JSON.parse(localStorage.getItem("clientInformation"))
+    : {},
   environmentURL:
     process.env.NODE_ENV == "development"
       ? "http://localhost:7070/"

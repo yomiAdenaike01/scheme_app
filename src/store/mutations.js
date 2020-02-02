@@ -23,6 +23,7 @@ export default {
   },
   UPDATE_CLIENT(state, payload) {
     Vue.set(state, "clientInformation", payload);
+    localStorage.setItem("clientInformation", JSON.stringify(payload));
   },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
     Vue.set(state, "weeklyTimesheetUploaded", payload);

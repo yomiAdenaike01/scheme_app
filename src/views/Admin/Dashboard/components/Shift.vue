@@ -204,7 +204,6 @@ export default {
 .shift_container {
   border-radius: 10px;
   border: $border;
-  font-size: 0.85em;
   line-height: 2.1em;
 }
 
