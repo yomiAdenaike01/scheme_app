@@ -1,10 +1,9 @@
 <template>
   <div class="user_info_container">
-    <h3>User Info</h3>
-    <p
-      v-for="(property, index) in removeUnwantedProperties"
-      :key="index"
-    >{{ index }} : {{ property }}</p>
+    <h5>User Info</h5>
+    <p v-for="(property, index) in removeUnwantedProperties" :key="index">
+      {{ index }} : {{ property }}
+    </p>
   </div>
 </template>
 

@@ -5,7 +5,7 @@
       <Avatar :name="returnUsername" class="sidebar_avatar mb-3" />
       <h4>{{ returnUsername }}</h4>
     </div>
-    <el-tabs tab-position="left" v-model.number="selectedTab">
+    <el-tabs tab-position="left" v-model="selectedTab">
       <el-tab-pane
         :key="index"
         v-for="(tab, index) in tabItems"

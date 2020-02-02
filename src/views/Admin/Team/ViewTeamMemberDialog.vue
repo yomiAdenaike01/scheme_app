@@ -30,7 +30,7 @@ import TeamUserInfo from "./components/UserInfo";
 import TeamShiftInfo from "./components/TeamShiftInfo";
 import Sidebar from "./components/Sidebar";
 export default {
-  name: "TeamMember",
+  name: "ViewTeamMemberDialog",
   data() {
     return {
       documentation: [],
@@ -48,14 +48,15 @@ export default {
       let component, props;
       switch (selectedTab) {
         // Display user personal details
-        case 0: {
+        case "0": {
           component = TeamUserInfo;
           props = this.getUserInfo;
           break;
         }
         // Display user shifts
-        case 1: {
+        case "1": {
           component = TeamShiftInfo;
+          props = "";
           break;
         }
 

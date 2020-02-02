@@ -73,7 +73,7 @@ export default {
     loading() {
       // Check team and schedule
       return (
-        this.team.length == 0 && Object.keys(this.clientInformation).length > 0
+        this.team.length == 0 && Object.keys(this.clientInformation).length == 0
       );
     },
     runInterval() {

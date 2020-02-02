@@ -1,15 +1,15 @@
 <template>
-  <div style="height:100%">
-    <keep-alive :key="currentUser._id">
+  <div class="h-100">
+    <keep-alive>
       <router-view></router-view>
     </keep-alive>
-    <TeamMember />
+    <ViewTeamMemberDialog />
   </div>
 </template>
 
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
-import TeamMember from "@/views/Admin/Team/TeamMember";
+import ViewTeamMemberDialog from "@/views/Admin/Team/ViewTeamMemberDialog";
 export default {
   name: "Admin",
   data() {
@@ -53,7 +53,7 @@ export default {
     }
   },
   components: {
-    TeamMember
+    ViewTeamMemberDialog
   }
 };
 </script>

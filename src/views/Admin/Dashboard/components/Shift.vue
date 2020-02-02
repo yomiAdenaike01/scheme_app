@@ -1,5 +1,8 @@
 <template>
-  <div class="mt-3 shift_container rounded shadow">
+  <div
+    class="mb-3 shift_container rounded shadow"
+    @click="$router.push({ name: 'schedule' })"
+  >
     <el-row type="flex">
       <el-col class="shift_details_container details_unit p-2">
         <h5 class="member_name">{{ getShiftType }}</h5>
@@ -18,7 +21,7 @@
         >
 
         <el-tag effect="dark" size="small" class="capitalize" type="primary">{{
-          shift.tag
+          shift.timeTag
         }}</el-tag>
       </el-col>
 

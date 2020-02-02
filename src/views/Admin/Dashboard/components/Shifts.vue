@@ -24,11 +24,7 @@
       <!-- SHIFTS IN CATEGORIES -->
       <transition-group name="el-fade-in">
         <el-col v-for="(category, index) in categorisedShifts" :key="index">
-          <Shift
-            v-for="(shift, key) in category"
-            :key="key"
-            :shift="{ ...shift, tag: index }"
-          />
+          <Shift v-for="(shift, key) in category" :key="key" :shift="shift" />
         </el-col>
       </transition-group>
     </el-row>
