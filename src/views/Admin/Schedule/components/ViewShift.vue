@@ -16,7 +16,7 @@
           <el-tag
             class="m-1"
             type="info"
-            :closable="computeRemoveShift['canDelete']"
+            :closable="computeRemoveShift.canDelete"
             v-for="(teamMember, index) in renderAssignedTo"
             :key="index"
             @close="removeTeamMemberFromShift(teamMember)"
@@ -32,16 +32,15 @@
           <!-- Conditional drop down to change the shift type (if yours) -->
           <Dropdown
             :icon="false"
-            v-if="computeRemoveShift['canDelete']"
-            :items="returnShiftTypes(shift.shift_type, 'command')"
-            @method="handleChangeShiftType"
+            v-if="computeRemoveShift.canDelete"
+            :items="returnShiftTypes(shift.type, 'command')"
+            @method="handleChangetype"
             position="right"
           >
             <el-button
               round
               size="small"
-              :type="renderButtonTypes['shiftType']['type']"
-              >{{ renderButtonTypes["shiftType"]["text"] }}</el-button
+              >{{ shift.type }}</el-button
             >
           </Dropdown>
 
@@ -49,8 +48,8 @@
             round
             v-else
             size="small"
-            :type="renderButtonTypes['shiftType']['type']"
-            >{{ renderButtonTypes["shiftType"]["text"] }}</el-button
+            :type="renderButtonTypes.type"
+            >{{ renderButtonTypes.type.text }}</el-button
           >
         </el-col>
 
@@ -59,8 +58,8 @@
           <h4>Shift / Event approval</h4>
           <el-button
             circle
-            :icon="renderButtonTypes['approval']['icon']"
-            :type="renderButtonTypes['approval']['type']"
+            :icon="renderButtonTypes.approval.icon"
+            :type="renderButtonTypes.approval.type"
           ></el-button>
         </el-col>
       </el-col>
@@ -81,18 +80,17 @@
     </el-row>
     <div class="view_shift_dialog_item no_border flex_center">
       <!-- Edit shift button -->
-      <el-button
+      <!-- <el-button
         class="flex-1"
-        round
-        type="primary"
-        v-if="computeRemoveShift['canDrop'] || computeRemoveShift['canDelete']"
+        
+        v-if="computeRemoveShift.canDrop || computeRemoveShift.canDelete"
         >Edit shift</el-button
-      >
+      > -->
       <!-- Remove shift or delete shift button -->
       <el-button
-        type="danger"
+      plain
+      type="danger"
         class="flex-1"
-        round
         @click="renderDeleteButtonContent['method']"
         >{{ renderDeleteButtonContent["text"] }}</el-button
       >
@@ -131,10 +129,7 @@ export default {
     ...mapState("Admin", ["team", "shiftTypes"]),
     ...mapState(["currentUser"]),
     ...mapGetters(["getIsAdmin"]),
-    returnShifTypes() {
-      let { shift_type } = this.shift;
-      return this.getShiftType(shift_type, "command");
-    },
+  
 
     computeDisplay: {
       get() {
@@ -145,10 +140,10 @@ export default {
       }
     },
     renderButtonTypes() {
-      let { shift_type } = this.shift;
+      let { type } = this.shift;
       let isApproved = this.returnIsApproved;
       let buttonContent = {
-        shiftType: {
+        type: {
           type: "",
           text: ""
         },
@@ -165,9 +160,9 @@ export default {
         };
       }
 
-      switch (shift_type) {
+      switch (type) {
         case 4: {
-          buttonContent["shiftType"] = {
+          buttonContent["type"] = {
             type: "info",
             text: "Time Off"
           };
@@ -175,7 +170,7 @@ export default {
         }
 
         case 1: {
-          buttonContent["shiftType"] = {
+          buttonContent["type"] = {
             type: "primary",
             text: "Normal Shift"
           };
@@ -183,7 +178,7 @@ export default {
         }
 
         case 3: {
-          buttonContent["shiftType"] = {
+          buttonContent["type"] = {
             type: "warning",
             text: "Holiday"
           };
@@ -191,7 +186,7 @@ export default {
         }
 
         case 5: {
-          buttonContent["shiftType"] = {
+          buttonContent["type"] = {
             type: "success",
             text: "Sick Leave"
           };
@@ -199,7 +194,7 @@ export default {
         }
 
         case 2: {
-          buttonContent["shiftType"] = {
+          buttonContent["type"] = {
             type: "plain",
             text: "Locumn"
           };
@@ -212,7 +207,7 @@ export default {
       return buttonContent;
     },
     returnIsApproved() {
-      let { admin } = this.shift["is_approved"];
+      let { admin } = this.shift.isApproved;
       let approved = false;
       if (admin == 1) {
         approved = true;
@@ -263,10 +258,10 @@ export default {
 
       name = name.trim().toLowerCase();
 
-      let { assigned_to } = this.shift;
+      let { assignedTo } = this.shift;
 
       if (Array.isArray(this.shift)) {
-        foundUser = assigned_to.find((assignee, index) => {
+        foundUser = assignedTo.find((assignee, index) => {
           return assignee._id == this.team[index]._id;
         });
       }
@@ -287,19 +282,19 @@ export default {
       return shiftRemoval;
     },
     renderAssignedTo() {
-      let { assigned_to } = this.shift;
+      let { assignedTo } = this.shift;
       let team = this.team;
       let mappedTeamMemberNames;
 
-      if (Array.isArray(assigned_to)) {
+      if (Array.isArray(assignedTo)) {
         // Loop assigned to and replace them with names
 
-        const len = assigned_to.length;
+        const len = assignedTo.length;
         mappedTeamMemberNames = [];
         // Return the team member names if its an array
 
         for (let i = 0; i < len; i++) {
-          let assignedTeamMember = assigned_to[i];
+          let assignedTeamMember = assignedTo[i];
           const teamLen = team.length;
 
           for (let j = 0; j < teamLen; j++) {
@@ -321,9 +316,9 @@ export default {
       } else {
         // Find the id within the team
 
-        let { assigned_to } = this.shift;
+        let { assignedTo } = this.shift;
         mappedTeamMemberNames = this.team.find(member => {
-          return member._id == assigned_to;
+          return member._id == assignedTo;
         });
 
         if (mappedTeamMemberNames) {
@@ -343,7 +338,7 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapActions("Admin", ["deleteShift", "updateShift", "getShiftType"]),
+    ...mapActions("Admin", ["deleteShift", "updateShift"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
 
@@ -385,7 +380,7 @@ export default {
         if (response == "confirm") {
           this.loading = true;
           await this.updateShift({
-            update: { assigned_to: shiftTeamMembers },
+            update: { assignedTo: shiftTeamMembers },
             id: this.returnShiftID
           });
 
@@ -407,13 +402,13 @@ export default {
 
     // View the user that the shift is assigned to
     toggleViewTeamMember() {
-      this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assigned_to });
+      this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assignedTo });
     },
-    async handleChangeShiftType(shiftType) {
+    async handleChangetype(type) {
       this.loading = true;
       await this.updateShift({
         id: this.returnShiftID,
-        update: { shift_type: shiftType }
+        update: { type }
       });
       this.loading = false;
       this.closeDialog();
@@ -432,7 +427,7 @@ export default {
   margin: 1em;
   border: 1.2px solid whitesmoke;
   padding: 1em;
-  border-radius: 10px;
+  border-radius: 5px;
   max-width: 100%;
   &.no_border {
     border: none;

@@ -112,7 +112,9 @@ export default {
   },
   methods: {
     submitForm() {
+
       this.$emit("val", this.formContent);
+      // comments
       if (this.customMethod) {
         this.customMethod();
       }

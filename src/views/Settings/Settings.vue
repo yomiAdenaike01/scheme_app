@@ -24,9 +24,7 @@
           <el-col v-if="settingsView == 'security'">
             <SecuritySettings />
           </el-col>
-          <el-col v-else-if="settingsView == 'general'">
-            <GeneralSettings />
-          </el-col>
+          
           <el-col v-else-if="settingsView == 'profile'">
             <ProfileSettings />
           </el-col>
@@ -94,9 +92,7 @@ export default {
     },
     returnSettings() {
       return [
-        {
-          label: "General"
-        },
+     
         {
           label: "Security"
         },

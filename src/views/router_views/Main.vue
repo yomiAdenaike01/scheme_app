@@ -85,14 +85,14 @@ export default {
     },
 
     checkIsLocumnWorking() {
-      this.shifts.map(shift => {
+      this.shifts.all.map(shift => {
         // Is Today
         let shiftStartTime = shift.startDate;
-        let shiftType = shift.shift_type;
+        let type = shift.type;
         if (
           shiftStartTime == moment(shiftStartTime).isSame(new Date(), "day")
         ) {
-          if (shiftType == 2) {
+          if (type == 2) {
             this.UPDATE_NOTIFICATIONS({
               title: "No locumn shift detected.",
               message: "Please go to schedule to book a new locumn shift.",

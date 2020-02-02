@@ -47,7 +47,7 @@ export default {
           icon: "el-icon-user"
         },
         {
-          name: "Reports",
+          name: "Reports (BETA)",
           path: "/admin/reports",
           icon: "el-icon-notebook-1"
         }

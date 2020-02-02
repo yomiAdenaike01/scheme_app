@@ -3,6 +3,8 @@ $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 $success_colour: #67c23a;
 $error_colour: #f56c6c;
 $border_radius: 10px;
+$border:  1px solid #EBEEF5;
+
 .overflow {
   overflow: auto;
 }
@@ -116,10 +118,15 @@ $border_radius: 10px;
 .black {
   color: black;
 }
+.primary{
+  color: $primary_colour;
+}
 .columns {
   flex-direction: column;
 }
-
+.caps{
+  text-transform: uppercase;
+}
 a {
   text-decoration: none;
 }

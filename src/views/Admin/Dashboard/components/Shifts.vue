@@ -1,54 +1,40 @@
 <template>
-  <el-col class="p-3">
-    <!-- PREVIOUS SHIFTS SELECTION -->
-    <el-checkbox-button
-      size="mini"
-      :disabled="previousShifts.length <= 0"
-      v-model="displayPreviousShifts"
-      :label="
-          previousShifts.length <= 0
-            ? 'No shifts / events to display'
-            : 'View previous events / shifts'
-        "
-      border
-    ></el-checkbox-button>
-
-    <!-- No shifts  -->
-    <el-row class="h-100 overflow">
-      <el-card class="mt-3 rounded" v-if="!returnAnyShifts" shadow="none">
+  <el-col class="m-4">
+    <el-row class="h-100">
+      <Title
+        title="Events"
+        subtitle="View all categorised events below. Feel free to make updates as you see fit."
+      />
+      <el-card class=" mt-3 rounded" v-if="!returnAnyShifts" shadow="none">
         <Title
           :title="noShiftsContent.title"
           :subtitle="noShiftsContent.subtitle"
-          style="font-size:.8em; text-align:center"
+          class="txt_center"
         >
           <el-button
-            type="primary"
-            plain
+            type="info"
             size="small"
+            plain
             @click="$router.push({ name: 'schedule' })"
-          >{{ noShiftsContent.buttonText }}</el-button>
+            >{{ noShiftsContent.buttonText }}</el-button
+          >
         </Title>
       </el-card>
 
       <!-- SHIFTS IN CATEGORIES -->
-      <transition name="el-fade-in">
+      <transition-group name="el-fade-in">
         <el-col
-          v-for="(prop, key) in categoriedShifts"
-          :key="key"
+          v-for="(category, index) in categorisedShifts"
+          :key="index"
           class="flex align-center columns w-100"
         >
-          <el-divider class="member_name">{{ key }}</el-divider>
-          <Shift v-for="(shift, key) in categoriedShifts[key]" :key="key" :shift="shift" />
+          <Shift
+            v-for="(shift, key) in category"
+            :key="key"
+            :shift="{ ...shift, tag: index }"
+          />
         </el-col>
-      </transition>
-
-      <!-- PREVIOUS SHIFTS -->
-      <el-collapse-transition>
-        <el-col class="shift_overflow" v-if="previousShifts.length > 0 && displayPreviousShifts">
-          <el-divider>Previous</el-divider>
-          <Shift v-for="(shift, key) in previousShifts" :key="key" :shift="shift" />
-        </el-col>
-      </el-collapse-transition>
+      </transition-group>
     </el-row>
   </el-col>
 </template>
@@ -82,9 +68,16 @@ export default {
   mixins: [dates, employeeMethods],
   computed: {
     ...mapState(["currentUser", "userNotifications"]),
-    ...mapState("Admin", ["shifts", "team"]),
+    ...mapState("Admin", ["shifts", "team", "shiftTypes", "employeeTypes"]),
     ...mapGetters(["getIsAdmin"]),
-
+    categorisedShifts() {
+      let { today, upcoming, previous } = this.shifts;
+      return {
+        today,
+        upcoming,
+        previous
+      };
+    },
     noShiftsContent() {
       let noShifts = {
         title: "No current events.",
@@ -99,83 +92,7 @@ export default {
       return noShifts;
     },
     returnAnyShifts() {
-      let result = Object.keys(this.categoriedShifts).length > 0;
-      return result;
-    },
-    previousShifts() {
-      return this.returnShifts.previous;
-    },
-    categoriedShifts() {
-      return this.returnShifts.categories;
-    },
-    returnShifts() {
-      let shifts = this.shifts;
-      let _shifts = {
-        week: [],
-        today: [],
-        upcoming: [],
-        previous: []
-      };
-      let len = shifts.length;
-      let format = this.$mq == "lg" ? "DD MMM YYYY HH:mm " : "DD MMM HH:mm";
-
-      // Object details
-      let weeks = _shifts.week;
-      let today = _shifts.today;
-      let upcoming = _shifts.upcoming;
-      let previous = _shifts.previous;
-
-      for (let i = 0; i < len; i++) {
-        const shift = shifts[i];
-        if (this.getIsAdmin || shift.assigned_to == this.currentUser._id) {
-          let newShift = Object.assign({}, shift);
-          let teamMember =
-            this.team.find(x => {
-              return x._id == shift.assigned_to;
-            }) || this.currentUser;
-
-          // Shift conversion
-          let shiftDetails = this.convertShift(shift.shift_type);
-          newShift.user = teamMember.employee_type;
-          newShift.assigned_to = teamMember.name;
-          newShift.shift_type = shiftDetails.title;
-          newShift.startDate = this.format(newShift.startDate, format);
-          newShift.endDate = this.format(newShift.endDate, format);
-          newShift.isoStart = shift.startDate;
-          newShift.isoEnd = shift.endDate;
-          newShift.shift_type_num = shift.shift_type;
-          newShift.class = shiftDetails.class;
-          newShift.completed = false;
-          // Set whether shift is completd or not
-          if (!this.isAfter(newShift.isoEnd, true)) {
-            newShift.completed = true;
-          }
-
-          // Sort shifts into date categories
-          if (this.isToday(newShift.isoStart)) {
-            today.push(newShift);
-          } else if (this.isThisWeek(newShift.isoStart)) {
-            weeks.push(newShift);
-          } else if (this.isAfter(newShift.isoStart, true)) {
-            upcoming.push(newShift);
-          } else {
-            previous.push(newShift);
-          }
-        }
-      }
-      let categories = {};
-      // Dynammically adding and removing from the object
-      for (let property in _shifts) {
-        let categoryArray = _shifts[property];
-        if (categoryArray.length > 0 && property != "previous") {
-          categories[property] = categoryArray;
-        }
-      }
-
-      return {
-        categories,
-        previous: _shifts.previous
-      };
+      return Object.values(this.shifts).length > 0;
     }
   },
   methods: {

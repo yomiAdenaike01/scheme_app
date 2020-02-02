@@ -1,27 +1,37 @@
 <template>
-  <div class="team_member flex">
+  <div class="team_member flex p-4 " @click="UPDATE_VIEW_TEAM_MEMBER({view:true,id:data._id})">
     <Avatar :name="data.name" />
-    <div class="text_content">
-      <strong>Locumn</strong>
-      <span>Employee Type</span>
+
+    <div class="flex columns">
+    <div class="text_content ml-2">
+      <p class="rbold m-0 p-0">{{data.name}}</p> 
+      <small>{{employeeTypes[data.employeeType - 1].name}}</small>
     </div>
-    <div class="text_content">
-      <strong>Locumn</strong>
-      <span>Employee Type</span>
-    </div>
-    {{data}}
+ 
+  </div>
   </div>
 </template>
 
 <script>
 import Avatar from "@/components/Avatar";
+
+import { mapState, mapMutations } from 'vuex';
+import TeamView from '../../Team/TeamView.vue';
 export default {
   name: "UserTeamMember",
   props: {
     data: Object
   },
+  computed:{
+    ...mapState('Admin',['employeeTypes']),
+  },
+  methods:{
+    ...mapMutations('Admin',['UPDATE_VIEW_TEAM_MEMBER']),
+
+  },
   components: {
-    Avatar
+    Avatar,
+    TeamView
   }
 };
 </script>
@@ -29,5 +39,10 @@ export default {
 <style lang="scss" scoped>
 .team_member {
   overflow-x: hidden;
+  transition:.56s ease background;
+  cursor: pointer;
+  &:hover{
+    background:#f9f9f9;
+  }
 }
 </style>

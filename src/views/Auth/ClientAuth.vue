@@ -4,19 +4,18 @@
       <ClientImage class="m-4" :image="imageFileContent" :center="true" :showClient="false" />
       <Tabs
         :tabs="returnTabs"
-        v-model="selectedTab"
+        v-model.number="selectedTab"
         :selectedTab="selectedTab"
-        @val="selectedTab == '0' ? clientRegForm.clientInformation = $event : clientRegForm.userInformation = $event"
+        @val="selectedTab == 0 ? clientRegForm.clientInformation = $event : clientRegForm.userInformation = $event"
         :customMethod="changeTabs"
         :nextTab="true"
-        :submitText="selectedTab == returnTabs.length.toString() ? 'Register' : 'Next'"
+        :submitText="selectedTab == returnTabs.length ? 'Register' : 'Next'"
       >
         <!-- Upload Image -->
-        <div slot="footer_content" v-if="selectedTab == '0'">
+        <div slot="footer_content" v-if="selectedTab == 0">
           <el-divider class="mb-5">
             <span>Logo Selection</span>
           </el-divider>
-          <!-- Upload Image -->
           <UploadFile @fileContent="imageFileContent = $event" />
         </div>
       </Tabs>
@@ -42,16 +41,14 @@ export default {
   mixins: [refactorLocation, uploadContent],
   data() {
     return {
-      selectedTab: "0",
+      selectedTab: 0,
       imageFileContent: "",
       clientRegForm: {
         userInformation: {},
         clientInformation: {}
       },
       colourOptions: "",
-      currentStep: "0",
       loading: false,
-      moreInformation: false,
       imageFile: ""
     };
   },
@@ -176,7 +173,7 @@ export default {
     ...mapActions(["request"]),
 
     changeTabs() {
-      let selectedTab = parseInt(this.selectedTab) + 1;
+      let selectedTab = this.selectedTab + 1;
       if (selectedTab == this.returnTabs.length) {
         selectedTab = 0;
       }
@@ -235,7 +232,7 @@ export default {
     },
     processNewClient(response) {
       this.refactorWindowLocation(
-        this.clientRegForm.name.replace(" ", "").toLowerCase()
+        this.clientRegForm.clientInformation.subdomain.replace(" ", "").toLowerCase()
       );
     }
   },

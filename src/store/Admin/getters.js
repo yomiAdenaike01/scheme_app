@@ -1,4 +1,7 @@
 export default {
+  getAllShifts(state){
+    return state.shifts.all;
+  },
   getDropdownTeamMembers(state) {
     return state["team"].map(member => {
       return {

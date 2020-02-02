@@ -1,30 +1,48 @@
 <template>
-  <el-card class="w-100 mb- ml-4 mr-4 shift_container">
+  <div class="w-100 mt-3 shift_container rounded shadow">
     <el-row type="flex">
-      <el-col class="shift_details_container unit p-3">
-        <h5 class="member_name">{{ shift.shift_type }}</h5>
-        <p class="member_name mt-1 mb-1">{{ shift.assigned_to }}</p>
-        <span class="grey employee_type">
-          <i class="el-icon el-icon-user grey"></i>
-          {{ getEmployeeType }}
-        </span>
+      <el-col class="shift_details_container details_unit p-2">
+        <h5 class="member_name">{{ getShiftType }}</h5>
+        <p class="member_name">{{ assignedToText }}</p>
+        <el-tag
+          class="mr-1"
+          effect="dark"
+          size="small"
+          v-if="approval.boolean"
+          :value="approval.text"
+          type="success"
+          >{{ approval.text }}</el-tag
+        >
+        <el-tag v-else effect="dark" size="small" type="danger"
+          >Not approved</el-tag
+        >
+
+        <el-tag effect="dark" size="small" class="capitalize" type="primary">{{
+          shift.tag
+        }}</el-tag>
       </el-col>
-      <el-col :class="['shift_times  p-3', shift.class]">
-        <div style="display:flex;justify-content:center; align-items:center">
-          <span class="date">{{ shift.startDate }}</span>
-          <div class="ml-3 mr-3 flex_center columns">
-            <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
-            <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
+
+      <el-col :class="['shift_times flex p-3 details_unit', shift.class]">
+        <div class="flex_center">
+          <span class="date">{{ formattedDates.start }}</span>
+          <div class="flex_center columns">
+            <i
+              style="font-size:1.3em"
+              class="el-icon el-icon-right p-0 m-0 grey"
+            ></i>
+            <span class="time_diff grey"
+              >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
+            >
           </div>
-          <span class="date">{{ shift.endDate }}</span>
+          <span class="date">{{ formattedDates.end }}</span>
         </div>
       </el-col>
 
-      <el-col class="p-3 approval_wrapper">
+      <el-col class="flex_center shift_controls_wrapper">
         <Dropdown :items="shiftActionItems" @method="handleShiftActions" />
       </el-col>
     </el-row>
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -33,6 +51,7 @@ import employeeMethods from "@/mixins/employeeMethods";
 import dates from "@/mixins/dates";
 import Dropdown from "@/components/Dropdown";
 import ViewShift from "../../Schedule/components/ViewShift";
+import moment from "moment";
 export default {
   name: "Shift",
   mixins: [employeeMethods, dates],
@@ -50,9 +69,10 @@ export default {
   computed: {
     ...mapState(["currentUser"]),
     ...mapGetters(["getIsAdmin"]),
+    ...mapState("Admin", ["employeeTypes", "shiftTypes", "team"]),
     shiftActionItems() {
       let actions = [];
-      if (this.shift.assigned_to == this.currentUser._id || this.getIsAdmin) {
+      if (this.shift.assignedTo == this.currentUser._id || this.getIsAdmin) {
         actions.push(
           {
             name: "Delete Shift",
@@ -71,55 +91,60 @@ export default {
       }
       return actions;
     },
-    approved() {
-      let result;
-      let approval = this.shift.is_approved;
-      if (approval.admin == 0) {
-        result = "declined";
-      } else if (approval.admin == 0 && approval.user == 0) {
-        result = "undecided";
-      } else if (approval.admin == 1 && approval.user == 1) {
-        result = "accepted";
-      }
-      return result;
+    approval() {
+      let approved = this.shift.isApproved.admin == 1;
+      return {
+        boolean: approved,
+        text: approved ? "Approved" : "Not Approved"
+      };
     },
-    stepTypeText() {
-      let step;
-      switch (this.shift.shift_type_num) {
-        case 1:
-          step = "Shift";
-          break;
-        case 2:
-          step = "Shift";
-          break;
-        case 3:
-          step = "Holiday";
-          break;
-        case 4:
-          step = "Time Off";
-          break;
-        case 5:
-          step = "Sick Leave";
-          break;
-        default:
-          break;
-      }
-      return step;
+    shiftTypeText() {
+      let { type } = this.shift;
+      return this.shiftTypes[type - 1].name;
     },
+    assignedToText() {
+      let { assignedTo } = this.shift;
+      let assignedToText;
+      if (Array.isArray(assignedTo) && assignedTo.length > 1) {
+        assignedToText = "Multiple Users";
+      } else {
+        let foundTeamMember = this.team.find(member => {
+          return member._id == assignedTo[0];
+        });
+        if (foundTeamMember && foundTeamMember.hasOwnProperty("name")) {
+          assignedToText = foundTeamMember.name;
+        } else {
+          assignedToText = "No team member found";
+        }
+      }
+      return assignedToText;
+    },
+
+    formattedDates() {
+      const format = "ddd-MM HH:mm";
+      let { startDate, endDate } = this.shift;
+      return {
+        start: moment(startDate).format(format),
+        end: moment(endDate).format(format)
+      };
+    },
+
     startAndEndTimeDiff() {
-      let shift = this.shift;
-      let isoEnd = shift.isoEnd;
-      let isoStart = shift.isoStart;
-      let type = shift.shift_type_num;
-      let diff = this.duration(isoEnd, isoStart).as("hours");
+      let { startDate, endDate, type } = this.shift;
+
+      let diff = this.duration(endDate, startDate).as("hours");
       if (diff > 23) {
         this.startEndTimeDiffType = "days";
       } else if (diff > 100) {
         this.startEndTimeDiffType = "weeks";
       }
-      diff = this.duration(isoEnd, isoStart).as(this.startEndTimeDiffType);
+      diff = this.duration(endDate, startDate).as(this.startEndTimeDiffType);
 
       return Math.floor(diff);
+    },
+    getShiftType() {
+      let type = this.shift.type - 1;
+      return this.shiftTypes[type].name;
     },
     getEmployeeType() {
       return this.convertEmployeeType(this.shift.user);
@@ -175,9 +200,9 @@ export default {
 <style lang="scss" scoped>
 .shift_container {
   border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.9em;
-  max-width: 60%;
+  border: $border;
+  font-size: 0.85em;
+  line-height: 2.1em;
 }
 
 .shift_times {
@@ -185,21 +210,26 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
-.unit {
-  border-right: 1px solid #e6e6e6;
-}
 .shift_details_container {
-  width: 20%;
+  width: 30%;
 }
-.employee_type {
+
+.details_unit {
+  border-right: 1px solid #e6e6e6;
+  padding: 0 10px;
+}
+
+.approval_wrapper {
   text-transform: uppercase;
   font-size: 0.8em;
 }
-.approval_wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
+.shift_controls_wrapper {
+  width: 10%;
+}
+.date {
+  margin: 0 40px;
+}
+.approved {
+  color: green;
 }
 </style>

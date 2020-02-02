@@ -1,8 +1,7 @@
 <template>
   <div class="title_wrapper" :class="defaultClass">
-    <h2 class="m-0 p-0" v-if="title">{{ title }}</h2>
-    <p v-if="subtitle" class="desc">{{ subtitle }}</p>
-    <br />
+    <h2 v-if="title">{{ title }}</h2>
+    <p v-if="subtitle" class="desc mb-2">{{ subtitle }}</p>
     <slot></slot>
   </div>
 </template>
@@ -16,8 +15,8 @@ export default {
       type: String,
       default: "m-3"
     },
-    title: String,
-    subtitle: String
+    title: String | Number,
+    subtitle: String | Number
   },
   computed: { ...mapState(["defaultSize"]) }
 };

@@ -11,7 +11,7 @@
       :type="tabType"
     >
       <slot name="body_content"></slot>
-      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :disabled="tab.disabled" :label="tab['label']" :key="index">
+      <el-tab-pane class="p-3" v-for="(tab, index) in tabs" :disabled="tab.disabled" :label="tab.label" :key="index">
         <!-- Form component -->
         <Form
           @val="$emit('val',$event)"
@@ -25,8 +25,8 @@
 
         <div v-else>
           <component
-            :is="tab['view']['component']"
-            v-bind="tab['view']['props']"
+            :is="tab.view.component"
+            v-bind="tab.view.props"
             @conponentChanges="emitComponentData"
           />
         </div>
@@ -56,8 +56,8 @@ export default {
       default: false
     },
     selectedTab: {
-      type: String,
-      default: "0"
+      type: String | Number,
+      default: 0
     },
     customMethod: {
       type: Function
@@ -94,10 +94,10 @@ export default {
   computed: {
     tabChange: {
       get() {
-        return this.selectedTab;
+        return this.selectedTab.toString();
       },
       set(val) {
-        this.$emit("input", val);
+        this.$emit("input", parseInt(val));
       }
     }
   },

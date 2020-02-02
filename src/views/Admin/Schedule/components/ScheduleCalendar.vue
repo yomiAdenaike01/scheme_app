@@ -27,7 +27,6 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import ViewShift from "./ViewShift";
-import dates from "@/mixins/dates";
 import moment from "moment";
 export default {
   name: "ScheduleCalendar",
@@ -46,18 +45,17 @@ export default {
     }
   },
 
-  mixins: [dates],
 
   computed: {
-    ...mapState("Admin", ["shifts", "team"]),
+    ...mapState("Admin", ["shifts", "team","shiftTypes"]),
     ...mapState(["currentUser"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getTeamMember"]),
+    ...mapGetters("Admin", ["getTeamMember","getAllShifts"]),
 
     // isMine() {
     //   return this.returnShiftDetails._id == this.currentUser._id
     // },
-
+ 
     returnCalendarOptions() {
       return [
         {
@@ -79,94 +77,49 @@ export default {
       ];
     },
     returnShiftEvents() {
-      let shifts = this.shifts;
+      /**
+       * title,
+       * name,
+       * id,
+       * class,
+       * formatted time
+       * approval
+       */
+      let shifts = this.shifts.all;
       let len = shifts.length;
       let format = "YYYY-MM-DD HH:mm";
-      let shiftEvents = [];
 
       // Check that the assigned to is a string or array
 
-      for (let i = 0; i < len; i++) {
-        let shift = shifts[i];
-        let name;
-        let assignedToArrayCondition = Array.isArray(shift.assigned_to);
+    
+      shifts =  shifts.map(shift=>{
+        
+        let{isApproved,startDate,_id,endDate, assignedTo,type}= shift
+        type = type - 1
+        type = this.shiftTypes[type].name;
+        startDate = moment(startDate).format(format)
+        endDate = moment(endDate).format(format);
 
-        if (!assignedToArrayCondition) {
-          let index = this.team.findIndex(x => {
-            return assigned_to == x._id;
-          });
-          if (this.team[index]) {
-            name = this.team[index].name;
-          } else if (this.currentUser._id == shift.assigned_to) {
-            name = this.currentUser.name;
-          } else {
-            name = "Unassigned user to shift";
-          }
-        } else {
-          name = "Multiple Users";
-        }
-        let {
-          _id,
-          is_pickup,
-          shift_type,
-          is_approved,
-          assigned_to,
-          startDate,
-          endDate,
-          repeat_days
-        } = shift;
+        let shiftClass = type.replace(" ","_").toLowerCase();
+        let text = type;
+        
 
-        let shiftContent = this.returnShiftType(name, shift_type);
-        let { text, eventClass, type } = shiftContent;
-
-        if (repeat_days > 0) {
-          for (let i = 0; i < repeat_days; i++) {
-            let startDate = moment().toDate();
-            startDate.setDate(i - 1);
-            startDate.setHours(9);
-            startDate.setMinutes(0);
-            startDate.setSeconds(0);
-            startDate = startDate.toISOString();
-
-            let endDate = moment().toDate();
-            endDate.setDate(i - 1);
-            endDate.setHours(17);
-            endDate.setMinutes(0);
-            endDate.setSeconds(0);
-
-            endDate = endDate.toISOString();
-
-            let shiftEvent = {
-              id: _id,
-              start: this.format(startDate, format),
-              end: this.format(endDate, format),
-              content: text,
-              class: eventClass,
-              assigned_to,
-              type,
-              is_pickup,
-              shift_type,
-              is_approved
-            };
-            shiftEvents.push(shiftEvent);
-          }
+        if(Array.isArray(assignedTo)){
+          text=`Multiple team member's ${type}`
         }
 
-        let shiftEvent = {
-          id: _id,
-          start: this.format(startDate, format),
-          end: this.format(endDate, format),
+        return{
+           id: _id,
+          start: startDate,
+          end: endDate,
           content: text,
-          class: eventClass,
-          assigned_to,
-          type,
-          is_pickup,
-          shift_type,
-          is_approved
-        };
-        shiftEvents.push(shiftEvent);
-      }
-      return shiftEvents;
+          class: shiftClass,
+          isApproved,
+          assignedTo,
+          type
+        }
+      });
+      return shifts;
     },
 
     returnShiftDetails() {
@@ -179,45 +132,11 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
-    returnShiftType(name, type) {
-      let shiftTitle, shiftClass;
-      switch (type) {
-        case 1: {
-          shiftClass = "normal_staff";
-          shiftTitle = "Regular shift";
-          break;
-        }
-        case 2: {
-          shiftClass = "locumn";
-          shiftTitle = "Locumn shift";
-
-          break;
-        }
-        case 3: {
-          shiftClass = "holiday";
-          shiftTitle = "Holiday";
-
-          break;
-        }
-        case 4: {
-          shiftClass = "time_off";
-          shiftTitle = "Time off";
-
-          break;
-        }
-        case 5: {
-          shiftClass = "sick_leave";
-          shiftTitle = "Sick leave";
-
-          break;
-        }
-        default:
-          break;
-      }
+    returntype(name, type) {
       return {
-        text: `${name}'s ${shiftTitle}`,
-        type: shiftTitle,
-        eventClass: shiftClass
+        text: `${name}'s ${this.shiftTypes[type].name}`,
+        type: this.shiftTypes[type].name,
+        eventClass: this.shiftTypes[type].name.trim().toLowerCase()
       };
     },
 
@@ -232,7 +151,7 @@ export default {
 
     changeShiftTime(shift) {
       const canEdit =
-        shift.assigned_to == this.currentUser._id || this.getIsAdmin;
+        shift.assignedTo == this.currentUser._id || this.getIsAdmin;
 
       if (canEdit) {
         let confirmResponse = this.confirmShiftChangeTime(shift);
@@ -257,7 +176,7 @@ export default {
     },
 
     confirmShiftChangeTime(shift) {
-      let { type, assigned_to, start, end } = shift;
+      let { type, assignedTo, start, end } = shift;
 
       return this.$confirm(
         `Are you sure you would like to change ${type.toLowerCase()} from ${start} to ${end}`,
@@ -316,7 +235,7 @@ export default {
 
 .vuecal__event {
   font-size: 0.8em;
-  &.normal_staff {
+  &.general_shift {
     background: #ecf5ff;
     color: $primary_colour;
     border-top: 2px solid $primary_colour;
@@ -331,7 +250,7 @@ export default {
     color: #f56c6c;
     border-top: 2px solid #f56c6c;
   }
-  &.time_off {
+  &.time_off,&.sick_leave {
     background: #fdf6ec;
     color: #f2c678;
     border-top: 2px solid #f2c678;

@@ -1,9 +1,9 @@
 <template>
   <el-row type="flex" class="user_container p-4">
-    <UserInformation class="ml-4" v-model.number="currentTab" />
-    <el-col class="p-4 shadow" v-if="currentTab == 0">
-      <UserTeamMember v-for="member in team" :key="member._id" :data="member" />
-    </el-col>
+    <UserInformation class="ml-4"  />
+    <el-col class="shadow" >
+ <UserTeamMember v-for="member in team" :key="member._id" :data="member"/>   
+  </el-col>
   </el-row>
 </template>
 
@@ -11,16 +11,29 @@
 import { mapState, mapActions } from "vuex";
 import UserTeamMember from "./components/UserTeamMember";
 import UserInformation from "./components/UserInformation";
+
 export default {
   name: "User",
   data() {
     return {
-      currentTab: 0
+     
     };
   },
   computed: {
     ...mapState(["currentUser"]),
-    ...mapState("Admin", ["team"])
+    ...mapState("Admin", ["team","employeeTypes"]),
+    
+    tableTeam(){
+      let team = [...this.team];
+      return team.map(member=>{
+        let {employeeType} = member;
+        return {
+          ...member,
+          employeeType:this.employeeTypes[employeeType].name
+        }
+      })
+      
+    }
   },
   components: {
     UserInformation,

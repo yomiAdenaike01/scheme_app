@@ -211,7 +211,7 @@ export default {
             name: "locumn",
             type: "select",
             placeholder: "Are you a locumn ?",
-            model: "employee_type",
+            model: "employeeType",
             options: [
               {
                 text: "Yes",
@@ -282,9 +282,9 @@ export default {
         this.forgotPassword();
       } else if (this.selectedForm == "register") {
         //Change employee type
-        this.formModel.login.employee_type == "Yes"
-          ? this.$set(this.formModel.register, "employee_type", 3)
-          : this.$set(this.formModel.register, "employee_type", 2);
+        this.formModel.login.employeeType == "Yes"
+          ? this.$set(this.formModel.register, "employeeType", 3)
+          : this.$set(this.formModel.register, "employeeType", 2);
       }
       this.loading = true;
 

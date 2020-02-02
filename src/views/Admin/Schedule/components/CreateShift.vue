@@ -76,9 +76,9 @@ export default {
     ...mapGetters("Admin", ["getTeamMember", "getDropdownTeamMembers"]),
 
     isNotShiftOrHoliday() {
-      let shiftType = this.eventData.shift_type;
+      let type = this.eventData.type;
       const isAdmin = this.getIsAdmin;
-      return !isAdmin && shiftType > 3;
+      return !isAdmin && type > 3;
     },
 
     validationUnitController() {
@@ -123,7 +123,7 @@ export default {
           placeholder: "Select event type",
           options: this.returnShiftTypes(null, "value"),
           required: true,
-          model: "shift_type"
+          model: "type"
         },
         {
           "component-type": "date-picker",
@@ -143,9 +143,9 @@ export default {
           {
             name: "Employee",
             placeholder: "Select Team Member",
-            id: "assigned_to",
+            id: "assignedTo",
             "component-type": "select",
-            model: "assigned_to",
+            model: "assignedTo",
             options: this.getDropdownTeamMembers,
             multiple: true
           },
@@ -153,10 +153,8 @@ export default {
             name: "repeat_for",
             placeholder: "Repeat For (in days)",
             id: "repeat_days",
-            "component-type": "number",
+            "component-type": "text",
             model: "repeat_days",
-            max: 5,
-            min: 0
           }
         );
       }
@@ -205,10 +203,10 @@ export default {
     async validateCSVData(fileData) {
       try {
         let validateData = {
-          assigned_to: null,
+          assignedTo: null,
           startDate: null,
           endDate: null,
-          shift_type: null
+          type: null
         };
 
         let isAdmin = this.getIsAdmin;
@@ -226,7 +224,7 @@ export default {
               break;
             } else {
               switch (property) {
-                case "assigned_to": {
+                case "assignedTo": {
                   eventElement[property] = await this.getEmployeeID(
                     eventElement[property]
                   );
@@ -249,7 +247,7 @@ export default {
                   break;
                 }
 
-                case "shift_type": {
+                case "type": {
                   if (eventElement[property] == 1) {
                     return Promise.reject(
                       "Non admins cannot create shifts, if you require a shift, please request it from your admin."

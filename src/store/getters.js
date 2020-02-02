@@ -20,16 +20,12 @@ export default {
     return false;
   },
   getIsAdmin(state) {
-    const employee_type = state.currentUser.employee_type;
-    return employee_type == 1 || employee_type == "Admin";
+    const employeeType = state.currentUser.employeeType;
+    return employeeType == 1 || employeeType == "Admin";
   },
-  getCompanyColours(state) {
-    let colours = state.clientInformation.colours;
-    if (colours.length > 0) {
-      return colours;
-    } else {
-      return [];
-    }
+  getClientColours(state) {
+    return state.clientInformation.colours;
+    
   },
   getName(state) {
     return state.currentUser.name.trim().toLowerCase();

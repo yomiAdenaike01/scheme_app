@@ -7,14 +7,14 @@ export default {
   },
   methods: {
     returnShiftTypes(toRemove, property) {
-      const shiftTypes = this.shiftTypes;
-      let { employee_type } = this.currentUser;
+      const types = this.shiftTypes;
+      let { employeeType } = this.currentUser;
 
-      let _shiftTypes = [];
-      const len = shiftTypes.length;
+      let _types = [];
+      const len = types.length;
 
       for (let i = 0; i < len; i++) {
-        let { name, value } = shiftTypes[i];
+        let { name, value } = types[i];
 
         if (toRemove) {
           if (value == toRemove) {
@@ -22,16 +22,17 @@ export default {
           }
         }
 
-        if (value == 2 && employee_type != 2) {
+        if (value == 2 && employeeType != 2) {
           continue;
         }
 
-        _shiftTypes.push({
+        _types.push({
           name,
           [property]: value
         });
+        
       }
-      return _shiftTypes;
+      return _types;
     }
   }
 };

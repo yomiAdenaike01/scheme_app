@@ -90,7 +90,7 @@ export default {
       };
     },
     shiftConfig() {
-      return ["name", "assigned_to", "startDate", "endDate", "shift_type"];
+      return ["name", "assignedTo", "startDate", "endDate", "type"];
     }
   },
   methods: {

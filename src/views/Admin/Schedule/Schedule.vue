@@ -180,8 +180,8 @@ export default {
         data: {
           startDate: start,
           endDate: end,
-          shift_type,
-          assigned_to
+          type,
+          assignedTo
         }
       };
 

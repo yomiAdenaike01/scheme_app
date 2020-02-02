@@ -21,6 +21,7 @@ export default {
       data: { update: content }
     });
   },
+  
   updateSettings(context) {
     return new Promise((resolve, reject) => {
       context
@@ -39,6 +40,8 @@ export default {
         });
     });
   },
+
+
   getNotifications(context) {
     context
       .dispatch("request", {
@@ -52,11 +55,14 @@ export default {
         return error;
       });
   },
+
+
   request(context, payload, disableNotification) {
     payload = sortPayload(context.state, payload);
 
     return axios(payload)
       .then(response => {
+
         response = response.data;
 
         if (response.hasOwnProperty("success")) {
@@ -78,7 +84,7 @@ export default {
         if (error.hasOwnProperty("data")) {
           error = error.data.content;
         }
-        if(disableNotification){
+        if(!disableNotification){
         context.commit("UPDATE_NOTIFICATIONS", {
           message: error,
           type: "error"

@@ -54,7 +54,7 @@ export default {
         }
         // Display user shifts
         case "1": {
-          component;
+          component = <template><h1>Hello</h1></template>
           break;
         }
 
@@ -82,7 +82,7 @@ export default {
           label: "Leave/Holiday"
         },
         {
-          label: "Notes"
+          label: "Notes (BETA)"
         }
       ];
     },
@@ -102,12 +102,12 @@ export default {
     },
     getTeamMemberShifts() {
       return this.shifts.filter(shift => {
-        return shift.assigned_to == this.teamMember;
+        return shift.assignedTo == this.teamMember;
       });
     },
     getSimilarTeamMembers() {
       return this.team.filter(member => {
-        return member.employee_type == this.getUserInfo.employee_type;
+        return member.employeeType == this.getUserInfo.employeeType;
       });
     }
   },

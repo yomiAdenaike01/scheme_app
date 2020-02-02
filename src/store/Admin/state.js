@@ -1,11 +1,31 @@
 export default {
   team: [],
-  shifts: [],
+  shifts: {
+    all:[],
+    upcoming:[],
+    today:[],
+    previous:[]
+  },
   requests: [],
   viewTeamMember: { view: false, id: null },
+  // 1 (admin), 2(Normal), 3(Locumn)
+  employeeTypes:[
+    {
+      name: "System Administrator",
+      value: 1
+    },
+    {
+      name: "General Staff",
+      value: 2
+    },
+    {
+      name: "Locumn",
+      value: 3
+    }
+  ],
   shiftTypes: [
     {
-      name: "General",
+      name: "General Shift",
       value: 1
     },
     {

@@ -1,5 +1,5 @@
 <template functional>
-  <div class="colour_unit p-3 m-2" :style="{backgroundColor:props.colour}"></div>
+  <div class="colour_unit" :style="{backgroundColor:props.colour}"></div>
 </template>
 <script>
 export default {
@@ -17,5 +17,7 @@ export default {
 .colour_unit {
   border-radius: 50%;
   box-shadow: $box_shadow;
+  width: 50px;
+  height:50px;
 }
 </style>

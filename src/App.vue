@@ -11,6 +11,7 @@
     "
   >
     <InvalidClient
+    v-if="invalidClient"
       @toggle="invalidClient = $event"
       :invalidClient="invalidClient"
       @clientNameChange="clientName = $event"
@@ -19,7 +20,7 @@
 
     <CriticalError v-if="criticalNetworkError" />
 
-    <keep-alive v-else>
+    <keep-alive>
       <router-view></router-view>
     </keep-alive>
   </div>
@@ -96,6 +97,7 @@ if(this.runInterval){
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
+    
     genError(error, displayDialog){
       if(!displayDialog){
         this.invalidClient = false;

@@ -65,7 +65,7 @@ export default {
           ]
         },
         {
-          model: "assigned_to",
+          model: "assignedTo",
           type: "select",
           placeholder: "View shifts assigned to",
           options: this.getDropdownTeamMembers
@@ -80,7 +80,7 @@ export default {
           type: "date"
         },
         {
-          model: "shift_type",
+          model: "type",
           type: "select",
           options: this.returnShiftTypes(null, "value")
         }

@@ -88,9 +88,9 @@ export default {
         createTemplateConfig.unshift({
           name: "Assign Employees",
           placeholder: "Select Team Members",
-          id: "assigned_to",
+          id: "assignedTo",
           "component-type": "select",
-          model: "assigned_to",
+          model: "assignedTo",
           clearable: true,
           options: this.getDropdownTeamMembers,
           multiple: true
@@ -103,7 +103,7 @@ export default {
   methods: {
     computeForm(val) {
       console.log(val);
-      let { assigned_to } = val;
+      let { assignedTo } = val;
 
       for (let i = 0; i < 5; i++) {
         // Generate shift for everyday of the week
@@ -122,7 +122,7 @@ export default {
         let shiftBuilder = {
           startDate,
           endDate,
-          assigned_to,
+          assignedTo,
           admin_gen: true
         };
         console.log(shiftBuilder);

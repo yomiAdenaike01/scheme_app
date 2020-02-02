@@ -46,6 +46,7 @@ export default {
     Vue.set(state, "globalLoader", payload);
   },
   REMOVE_USER(state) {
+    
     Vue.set(state, "currentUser", {});
     Vue.set(state, "token", {});
 
@@ -62,13 +63,13 @@ export default {
 
   UPDATE_NOTIFICATIONS(state, notification) {
     notification.showClose = false;
-    if (notification["type"] == "success") {
-      notification["title"] = "Opeartion Successful";
+    if (notification.type == "success") {
+      notification.title = "Opeartion Successful";
       sounds.methods.playSuccessSound();
-    } else if (notification["type"] == "error") {
-      notification["title"] = "Operation Unsuccessful";
-      if (typeof notification["message"] == "object") {
-        state["criticalNetworkError"] = true;
+    } else if (notification.type == "error") {
+      notification.title = "Operation Unsuccessful";
+      if (typeof notification.message == "object") {
+        state.criticalNetworkError = true;
       }
     }
     Vue.set(state, "notifications", [notification, ...state.notifications]);

@@ -1,11 +1,12 @@
 <template>
-  <el-dialog :visible.sync="view" v-loading="loading">
+  <el-dialog :visible.sync="view">
     <Tabs
       :tabs="tabs"
       @fileContent="fileContent = $event"
       @deleteContent="fileContent = $event"
-      @val="employeeForm = $event"
+      @val="createOneEmployee"
       :disableForm="fileContent != null"
+       v-loading="loading"
     >
       <div slot="header_content">
         <Title
@@ -29,22 +30,27 @@ import CreateEmeployeeOptions from "./CreateEmployeeOptions";
 import Title from "@/components/Title";
 import ValidationUnit from "@/components/ValidationUnit";
 const csvtojson = require("csvtojson");
+
 export default {
   name: "CreateEmployee",
+
   data() {
     return {
       loading: false,
       fileContent: null,
       fileError: null,
-      convertedData: {}
+      convertedData: {},
+      createEmployeeForm: {}
     };
   },
 
   props: {
     display: Boolean
   },
+
   computed: {
-  ...mapState(["clientInformation"]),
+    ...mapState(["clientInformation"]),
+
     renderValidationUnit() {
       return {
         success: {
@@ -63,7 +69,7 @@ export default {
     },
 
     genPwd() {
-      return this.employeeForm.name
+      return this.createEmployeeForm.name
         .trim()
         .toLowerCase()
         .replace(" ", "");
@@ -84,6 +90,7 @@ export default {
         }
       ];
     },
+
     formItems() {
       return [
         {
@@ -124,13 +131,13 @@ export default {
         {
           name: "phoneNumber",
           "component-type": "text",
-          model: "phone_number",
+          model: "phoneNumber",
           clearable: true,
           placeholder: "Phone Number"
         },
         {
           name: "employeeType",
-          model: "employee_type",
+          model: "employeeType",
           placeholder: "Employee type",
           "component-type": "select",
           options: [
@@ -150,6 +157,7 @@ export default {
         }
       ];
     },
+
     view: {
       get() {
         return this.display;
@@ -159,23 +167,49 @@ export default {
       }
     }
   },
+
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+
+    createOneEmployee(employee){
+      this.loading = true;
+         this.request({
+          method: "POST",
+          url:"users/register/one",
+          data: { ...employee,clientID:this.clientInformation._id, adminGen:true }
+        })
+          .then(response => {
+            this.loading = false;
+            this.view = false;
+          })
+          .catch(error => {
+            this.loading = false;
+            console.error(error);
+            return error
+            });
+    },
+
     async cleanData(JSONData) {
       let JSONContent = await csvtojson().fromString(JSONData);
+
       let schema = {
         name: null,
         email: "",
         gender: "",
-        phone_number: "",
+        phoneNumber: "",
         password: ""
       };
+
       const len = JSONContent.length;
+
       for (let i = 0; i < len; i++) {
         let employee = JSONContent[i];
-        employee["client_id"] = this.client._id;
+        employee.clientID = this.clientInformation._id;
+
         for (let property in schema) {
+          property = property.toLowerCase().trim();
+
           if (!employee[property]) {
             this.fileError = true;
             return Promise.reject("Missing parameters for employee timesheet");
@@ -186,14 +220,23 @@ export default {
       this.fileError = false;
       return Promise.resolve(JSONContent);
     },
-    async createEmployees(employees) {
-      await this.request({
-        method: "POST",
-        url: "users/register/multiple",
-        data: { employees: employees }
+
+    createEmployees(employees) {
+      return new Promise((resolve, reject) => {
+        let url = "users/register/multiple";
+
+      
+        this.request({
+          method: "POST",
+          url,
+          data: { employees }
+        })
+          .then(response => resolve(response))
+          .catch(error => reject(error));
       });
     }
   },
+
   components: {
     Title,
     UploadFile,
@@ -202,19 +245,23 @@ export default {
     CreateEmeployeeOptions,
     ValidationUnit
   },
+
   watch: {
     fileContent(val) {
       this.loading = true;
       this.cleanData(val)
+
         .then(response => {
           this.createEmployees(response).then(response => {
             this.fileError = false;
             this.loading = false;
           });
         })
+
         .catch(error => {
           this.loading = false;
           this.fileError = true;
+
           this.UPDATE_NOTIFICATIONS({
             title: "Error when processing the employee sheet",
             "component-type": "info",

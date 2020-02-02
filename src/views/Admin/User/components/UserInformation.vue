@@ -1,20 +1,21 @@
 <template>
   <el-col class="shadow p-4 current_user_column mr-4">
-    <header class="flex_center columns">
+    <header>
       <Avatar :name="currentUser.name" />
-      <strong>{{currentUser.name}}</strong>
-      <span class="mb-4">{{currentUser.employee_type}}</span>
-      <span>{{currentUser.email}}</span>
+      <p class="bold">{{currentUser.name}}</p>
+      <p>{{employeeTypes[currentUser.employeeType - 1].name}}</p>
     </header>
-    <el-divider></el-divider>
-    <Tabs
-      v-model.number="changeTabs"
-      :tabs="renderTabs"
-      :disable="true"
-      position="right"
-      class="w-100"
-    />
-    {{currentUser}}
+    <div class="mt-4">
+    <p class="p-1" v-for="(property,value) in cleanCurrentUser" :key="property">
+
+      {{`${value}: ${property}`}}
+      <el-divider></el-divider>
+
+    </p>
+    <div class="p-1 flex align-center">
+   <span class="mr-2">Colour Settings:</span> <ColourUnit :colour="colourSettings"/>
+   </div>
+    </div>
   </el-col>
 </template>
 
@@ -22,47 +23,45 @@
 import { mapState } from "vuex";
 import Tabs from "@/components/Tabs";
 import Avatar from "@/components/Avatar";
+import ColourUnit from "@/components/ColourUnit";
+
+
 export default {
   name: "UserInformation",
-  data() {
-    return {
-      tabs: 0
-    };
-  },
   computed: {
     ...mapState(["currentUser"]),
-    changeTabs: {
-      get() {
-        return;
-      },
-      set(val) {
-        this.$emit("input", val);
-      }
+    ...mapState('Admin',['employeeTypes']),
+    
+    colourSettings(){
+      return this.currentUser.settings.colourSettings.accent
     },
-    renderTabs() {
-      return [
-        {
-          label: "Team Members",
-          view: {
-            component: ""
-          }
-        },
-        {
-          label: "Tab",
-          view: {
-            component: ""
-          }
-        }
-      ];
-    }
+    
+    cleanCurrentUser(){
+      
+      let {name,email,dateOfBirth,settings} = this.currentUser;
+      let {accent}  = settings.colourSettings;
+      
+
+      return {
+        'Name':name,
+        'Email':email,
+        'Date of birth':dateOfBirth,
+      }
+     },
+
+
   },
   components: {
     Tabs,
-    Avatar
+    Avatar,
+    ColourUnit
   }
 };
 </script>
 <style lang="scss" scoped>
+header{
+  line-height: 1.3em;
+}
 .current_user_column {
   width: 100%;
   .el-tabs__item {

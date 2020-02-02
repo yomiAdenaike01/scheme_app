@@ -15,6 +15,9 @@ export default {
   computed: {
     ...mapState("Admin", ["team", "shifts"]),
     ...mapState(["currentUser"]),
+    renderReportsConfig(){
+      
+    },
     tabs() {
       return [
         {

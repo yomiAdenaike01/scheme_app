@@ -48,10 +48,10 @@ export default {
       "client"
     ]),
 
-    ...mapGetters(["getCompanyColours", "getClient", "getSidebarColour"]),
+    ...mapGetters(["getClientColours", "getClient", "getSidebarColour"]),
 
     getPrimaryColour() {
-      return this.getCompanyColours.find(colour => {
+      return this.getClientColours.find(colour => {
         return colour.label == "Primary";
       }).colour;
     },

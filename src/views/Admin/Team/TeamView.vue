@@ -30,7 +30,7 @@
         text="No team members detected, hover over the button below for more information."
         icon="el-icon-user"
       >
-        <el-button round type="primary" size="mini">Create Team Member</el-button>
+        <el-button round type="primary" @click="$router.push({name:'schedule'})" size="mini">Create Team Member</el-button>
       </Nocontent>
     </el-row>
   </el-col>
@@ -60,7 +60,7 @@ export default {
     ...mapGetters(["getIsAdmin", "getOnlineTeam"]),
     onlineTeam() {
       return this.team.filter(member => {
-        return member.is_online;
+        return member.isOnline;
       });
     },
     items() {

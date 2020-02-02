@@ -90,7 +90,7 @@ export default {
         url: "users/update",
         data: {
           update: {
-            employee_type: 1
+            employeeType: 1
           }
         }
       })

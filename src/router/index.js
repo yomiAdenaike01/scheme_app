@@ -38,7 +38,6 @@ const routes = [
             name: "dashboard",
             component: dashboard,
             meta: {
-              title: "Dashboard",
               authRequired: true
             }
           },
@@ -47,7 +46,6 @@ const routes = [
             name: "schedule",
             component: schedule,
             meta: {
-              title: "Schedule",
               authRequired: true
             }
           },
@@ -56,7 +54,6 @@ const routes = [
             name: "reports",
             component: reports,
             meta: {
-              title: "Reports",
               authRequired: true
             }
           },
@@ -65,7 +62,6 @@ const routes = [
             name: "user",
             component: user,
             meta: {
-              title: "User Management",
               authRequired: true
             }
           }
@@ -89,7 +85,6 @@ const routes = [
             name: "messenger",
             component: messenger,
             meta: {
-              title: "Messenger",
               authRequired: true
             }
           }
@@ -101,17 +96,13 @@ const routes = [
     path: "/auth/user",
     name: "login",
     component: UserAuth,
-    meta: {
-      title: "User Authentication"
-    }
+   
   },
   {
     path: "/auth/client",
     name: "register",
     component: ClientAuth,
-    meta: {
-      title: "Client Authentication"
-    }
+   
   }
 ];
 
@@ -119,25 +110,15 @@ const router = new VueRouter({
   routes
 });
 
-function genTitle({title}){
-  let { hostname } = window.location;
-  hostname = hostname.split(".")[0];
-
-  let {clientInformation} = store.state
-  
-  if(Object.keys(clientInformation).length > 0){
-    // if valid client display powered by
-    document.title = `${clientInformation.clientName} - Powered By SchemeCloud`;
-  }else{
-    document.title = title;
-  }
-}
 
 router.beforeEach((to, from, next) => {
+
   const authRequired = to.matched.some(route => route.meta.authRequired);
   const isLoggedIn = Object.keys(store.state.currentUser).length > 0;
-
-  genTitle(to.meta)
+  let { hostname } = window.location;
+  hostname = hostname.split(".")[0];
+  document.title = `${hostname} - Powered By Schemeapp.cloud`;
+  
 
   if (authRequired) {
     if (!isLoggedIn) {
