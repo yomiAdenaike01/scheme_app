@@ -8,7 +8,7 @@
 
     <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
 
-    <ScheduleCalendar
+    <Cal
       @refreshShift="getShifts"
       @displayCreateShift="modals['create_event'] = $event"
       :ScheduleFilters="filters['schedule_view']"
@@ -42,7 +42,7 @@ import CreateEmployee from "./components/CreateEmployee";
 import Toolbar from "./components/Toolbar";
 import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";
-import ScheduleCalendar from "./components/ScheduleCalendar";
+import Cal from "./components/Cal";
 import Title from "@/components/Title";
 import ScheduleFilters from "./components/ScheduleFilters";
 export default {
@@ -211,7 +211,7 @@ export default {
 
   components: {
     Title,
-    ScheduleCalendar,
+    Cal,
     CreateShift,
     Dropdown,
     Popover,

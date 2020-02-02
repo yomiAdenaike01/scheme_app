@@ -29,7 +29,7 @@ import "vue-cal/dist/vuecal.css";
 import ViewShift from "./ViewShift";
 import moment from "moment";
 export default {
-  name: "ScheduleCalendar",
+  name: "Cal",
 
   data() {
     return {
@@ -45,17 +45,16 @@ export default {
     }
   },
 
-
   computed: {
-    ...mapState("Admin", ["shifts", "team","shiftTypes"]),
+    ...mapState("Admin", ["shifts", "team", "shiftTypes"]),
     ...mapState(["currentUser"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getTeamMember","getAllShifts"]),
+    ...mapGetters("Admin", ["getTeamMember", "getAllShifts"]),
 
     // isMine() {
     //   return this.returnShiftDetails._id == this.currentUser._id
     // },
- 
+
     returnCalendarOptions() {
       return [
         {
@@ -91,25 +90,22 @@ export default {
 
       // Check that the assigned to is a string or array
 
-    
-      shifts =  shifts.map(shift=>{
-        
-        let{isApproved,startDate,_id,endDate, assignedTo,type}= shift
-        type = type - 1
+      shifts = shifts.map(shift => {
+        let { isApproved, startDate, _id, endDate, assignedTo, type } = shift;
+        type = type - 1;
         type = this.shiftTypes[type].name;
-        startDate = moment(startDate).format(format)
+        startDate = moment(startDate).format(format);
         endDate = moment(endDate).format(format);
 
-        let shiftClass = type.replace(" ","_").toLowerCase();
+        let shiftClass = type.replace(" ", "_").toLowerCase();
         let text = type;
-        
 
-        if(Array.isArray(assignedTo)){
-          text=`Multiple team member's ${type}`
+        if (Array.isArray(assignedTo)) {
+          text = `Multiple team member's ${type}`;
         }
 
-        return{
-           id: _id,
+        return {
+          id: _id,
           start: startDate,
           end: endDate,
           content: text,
@@ -117,7 +113,7 @@ export default {
           isApproved,
           assignedTo,
           type
-        }
+        };
       });
       return shifts;
     },
@@ -250,7 +246,8 @@ export default {
     color: #f56c6c;
     border-top: 2px solid #f56c6c;
   }
-  &.time_off,&.sick_leave {
+  &.time_off,
+  &.sick_leave {
     background: #fdf6ec;
     color: #f2c678;
     border-top: 2px solid #f2c678;
