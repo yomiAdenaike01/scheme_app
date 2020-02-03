@@ -1,5 +1,6 @@
 <template>
   <div class="main_wrapper">
+    <nprogress-container></nprogress-container>
     <AppBar />
     <el-row type="flex" style="height:100%">
       <el-col style="flex:1">
@@ -27,6 +28,7 @@ import moment, * as moments from "moment";
 import ServerHealth from "@/components/ServerHealth";
 import CriticalError from "@/components/CriticalError";
 import InvalidClient from "@/components/InvalidClient";
+import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
 export default {
   name: "Main",
