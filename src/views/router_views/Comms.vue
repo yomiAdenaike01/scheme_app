@@ -1,5 +1,5 @@
 <template>
-  <keep-alive :key="currentUser._id">
+  <keep-alive :key="userInformation._id">
     <router-view></router-view>
   </keep-alive>
 </template>
@@ -26,7 +26,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["currentUser", "criticalNetworkError"])
+    ...mapState(["userInformation", "criticalNetworkError"])
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),

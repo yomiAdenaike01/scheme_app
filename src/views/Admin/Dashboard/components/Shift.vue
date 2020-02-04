@@ -70,12 +70,15 @@ export default {
     shift: Object
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapState("Admin", ["employeeTypes", "shiftTypes", "team"]),
     shiftActionItems() {
       let actions = [];
-      if (this.shift.assignedTo == this.currentUser._id || this.getIsAdmin) {
+      if (
+        this.shift.assignedTo == this.userInformation._id ||
+        this.getIsAdmin
+      ) {
         actions.push(
           {
             name: "Delete Shift",

@@ -1,0 +1,187 @@
+<template>
+  <el-col class="m-4">
+    <!-- Task progress container -->
+    <el-card shadow="none">
+      <div class="tasks_widget_container flex_center columns">
+        <p class="light txt_center mb-1">Total Task Progress</p>
+        <small class="grey"
+          >This is the total progress of all of your tasks</small
+        >
+        <el-progress
+          class="mb-3 mt-3"
+          :width="200"
+          type="circle"
+          :percentage="progressIndicator.percentage"
+          :status="progressIndicator.status"
+        ></el-progress>
+
+        <el-button plain @click="$router.push({ name: 'utilities' })"
+          >View Todos</el-button
+        >
+      </div>
+    </el-card>
+
+    <!-- Metrics widgets -->
+    <div class="flex_center">
+      <el-col
+        class="metrics_summary_container"
+        type="flex"
+        v-for="(content, key) in weeklyTotals"
+        :key="key"
+      >
+        <el-card class="m-1 h-100 flex_center" shadow="none">
+          <div class="flex_center columns">
+            <h3 class="m-0 p-0">
+              {{
+                content.result.hasOwnProperty("name")
+                  ? content.result.name
+                  : content.result
+              }}
+            </h3>
+            <Title defaultClass="m-0" :subtitle="content.label" />
+          </div>
+        </el-card>
+      </el-col>
+    </div>
+    <!-- Google calendar -->
+    <GoogleCalWidget />
+  </el-col>
+</template>
+
+<script>
+import Title from "@/components/Title";
+import Chart from "@/components/Chart";
+import GoogleCalWidget from "./GoogleCalWidget";
+
+import moment from "moment";
+import { mapState, mapGetters, mapActions } from "vuex";
+export default {
+  name: "Widgets",
+  data() {
+    return {
+      weeklyTotals: {}
+    };
+  },
+  created() {
+    this.request({
+      method: "GET",
+      url: "reports/weekly"
+    })
+      .then(response => {
+        this.weeklyTotals = response;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+  computed: {
+    ...mapState(["clientInformation"]),
+    ...mapState("Admin", ["tasks"]),
+
+    progressIndicator() {
+      const {
+        completeCount,
+        totalCount,
+        tasksRemaining
+      } = this.tasksCategorised;
+
+      let percentageComplete =
+        completeCount > 0 && totalCount > 0
+          ? (completeCount / totalCount) * 100
+          : 0;
+
+      let status = "";
+
+      let progressionIndication = {
+        percentage: percentageComplete
+      };
+
+      if (percentageComplete <= 25) {
+        status = "exception";
+      }
+
+      if (percentageComplete > 50) {
+        status = "warning";
+      }
+
+      if (percentageComplete > 70) {
+        status = "success";
+      }
+
+      return progressionIndication;
+    },
+
+    tasksCategorised() {
+      let tasks = [],
+        completedtasks = [];
+
+      if (this.tasks.length > 0) {
+        tasks = this.tasks;
+
+        completedtasks = tasks.filter(task => {
+          return task.state == "complete";
+        });
+      }
+      return {
+        completedCount: completedtasks.length,
+        totalCount: tasks.length,
+        tasksRemaining: tasks.length - completedtasks.length
+      };
+    },
+    today() {
+      let now = moment();
+      return {
+        now,
+        nowISO: now.toISOString()
+      };
+    },
+    practiceChartData() {
+      return {
+        data: {
+          labels: ["January", "February", "March"],
+          datasets: [
+            {
+              label: "Data One",
+              data: [40, 20, 50]
+            },
+            {
+              label: "Data Two",
+              data: [40, 50, 50]
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      };
+    }
+  },
+  methods: {
+    ...mapActions(["request"])
+  },
+  components: {
+    Title,
+    Chart,
+    GoogleCalWidget
+  }
+};
+
+/**
+ * Hours this week
+ * Hours this month
+ * On leave
+ * On shift
+ * On holiday
+ *
+ */
+</script>
+
+<style lang="scss" scoped>
+.metrics_summary_container {
+  height: 300px;
+}
+.tasks_widget_container {
+  line-height: 2em;
+}
+</style>

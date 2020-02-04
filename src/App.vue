@@ -30,7 +30,8 @@ export default {
       clientName: "",
       clientInterval: null,
       invalidClient: false,
-      windowClient: window.location.hostname.toString().split(".")
+      windowClient: window.location.hostname.toString().split("."),
+      runLoading:true
     };
   },
   async created() {
@@ -63,7 +64,7 @@ export default {
     ...mapState([
       "requestIntervals",
       "notifications",
-      "currentUser",
+      "userInformation",
       "defaultSize",
       "clientInformation",
       "criticalNetworkError"

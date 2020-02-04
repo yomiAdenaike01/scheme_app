@@ -36,7 +36,7 @@ export default {
   activated() {
     this.checkServerHealth();
 
-    let isVerified = this.currentUser.verified;
+    let isVerified = this.userInformation.verified;
     if (!isVerified) {
       this.UPDATE_NOTIFICATIONS({
         title: "Activate account",
@@ -56,7 +56,7 @@ export default {
     ...mapState([
       "notifications",
       "globalLoader",
-      "currentUser",
+      "userInformation",
       "userNotifications",
       "viewMobileMenu",
       "defaultSize",
@@ -146,7 +146,8 @@ export default {
     Navigation,
     AppBar,
     NotificationsCenter,
-    ServerHealth
+    ServerHealth,
+    NprogressContainer
   },
   watch: {
     criticalNetworkError: {

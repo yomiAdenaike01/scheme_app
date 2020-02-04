@@ -15,8 +15,8 @@ export default {
       ? "http://localhost:7070/"
       : "https://schemeapi.now.sh/",
   token: localStorage.getItem("token"),
-  currentUser: localStorage.getItem("currentUser")
-    ? JSON.parse(localStorage.getItem("currentUser"))
+  userInformation: localStorage.getItem("userInformation")
+    ? JSON.parse(localStorage.getItem("userInformation"))
     : {},
   globalLoader: false,
   notifications: [],

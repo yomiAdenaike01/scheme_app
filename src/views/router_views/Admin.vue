@@ -21,7 +21,7 @@ export default {
     ...mapState([
       "localSettings",
       "userNotifications",
-      "currentUser",
+      "userInformation",
       "criticalNetworkError"
     ])
   },

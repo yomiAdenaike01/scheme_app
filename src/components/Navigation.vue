@@ -50,6 +50,11 @@ export default {
           name: "Reports (BETA)",
           path: "/admin/reports",
           icon: "el-icon-notebook-1"
+        },
+        {
+          name: "Utilities (BETA)",
+          path: "/admin/utilities",
+          icon: "el-icon-s-opportunity"
         }
       ]
     };

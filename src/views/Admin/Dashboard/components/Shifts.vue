@@ -62,7 +62,7 @@ export default {
   },
   mixins: [dates, employeeMethods],
   computed: {
-    ...mapState(["currentUser", "userNotifications"]),
+    ...mapState(["userInformation", "userNotifications"]),
     ...mapState("Admin", ["shifts", "team", "shiftTypes", "employeeTypes"]),
     ...mapGetters(["getIsAdmin"]),
     categorisedShifts() {

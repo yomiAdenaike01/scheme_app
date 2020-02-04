@@ -7,6 +7,12 @@ $border: 1px solid #ebeef5;
 
 .overflow {
   overflow: auto;
+  &:after{
+    content:"";
+    display:block;
+    margin-bottom: 100%;
+  }
+
 }
 .rounded {
   border-radius: $border_radius;
@@ -66,12 +72,12 @@ $border: 1px solid #ebeef5;
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f3f3f3;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: #f4f4f4;
   border-radius: 20px;
 }
 

@@ -50,18 +50,18 @@ export default {
     Vue.set(state, "globalLoader", payload);
   },
   REMOVE_USER(state) {
-    Vue.set(state, "currentUser", {});
+    Vue.set(state, "userInformation", {});
     Vue.set(state, "token", {});
 
     localStorage.removeItem("token");
-    localStorage.removeItem("currentUser");
+    localStorage.removeItem("userInformation");
   },
   UPDATE_USER(state, { user, token }) {
     Vue.set(state, "token", token);
-    Vue.set(state, "currentUser", user);
+    Vue.set(state, "userInformation", user);
 
     localStorage.setItem("token", token);
-    localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("userInformation", JSON.stringify(user));
   },
 
   UPDATE_NOTIFICATIONS(state, notification) {

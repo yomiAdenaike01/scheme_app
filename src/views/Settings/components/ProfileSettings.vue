@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ currentUser }}
+    {{ userInformation }}
   </div>
 </template>
 
@@ -9,7 +9,7 @@ import { mapState, mapActions } from 'vuex'
 export default {
   name: 'ProfileSettings',
   computed: {
-    ...mapState(['currentUser'])
+    ...mapState(['userInformation'])
   },
   methods: {}
 }

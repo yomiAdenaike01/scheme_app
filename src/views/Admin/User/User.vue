@@ -20,7 +20,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapState("Admin", ["team","employeeTypes"]),
     
     tableTeam(){

@@ -47,12 +47,12 @@ export default {
 
   computed: {
     ...mapState("Admin", ["shifts", "team", "shiftTypes"]),
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getTeamMember", "getAllShifts"]),
 
     // isMine() {
-    //   return this.returnShiftDetails._id == this.currentUser._id
+    //   return this.returnShiftDetails._id == this.userInformation._id
     // },
 
     returnCalendarOptions() {
@@ -147,7 +147,7 @@ export default {
 
     changeShiftTime(shift) {
       const canEdit =
-        shift.assignedTo == this.currentUser._id || this.getIsAdmin;
+        shift.assignedTo == this.userInformation._id || this.getIsAdmin;
 
       if (canEdit) {
         let confirmResponse = this.confirmShiftChangeTime(shift);

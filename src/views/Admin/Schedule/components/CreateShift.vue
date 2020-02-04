@@ -72,7 +72,7 @@ export default {
   computed: {
     ...mapGetters(["getIsAdmin", "getInstructions", "getName"]),
     ...mapState("Admin", ["team", "shiftTypes"]),
-    ...mapState(["token", "currentUser", "weeklyTimesheetUploaded"]),
+    ...mapState(["token", "userInformation", "weeklyTimesheetUploaded"]),
     ...mapGetters("Admin", ["getTeamMember", "getDropdownTeamMembers"]),
 
     isNotShiftOrHoliday() {
@@ -210,7 +210,7 @@ export default {
         };
 
         let isAdmin = this.getIsAdmin;
-        let currentUser = this.currentUser.name.trim().toLowerCase();
+        let userInformation = this.userInformation.name.trim().toLowerCase();
         const len = fileData.length;
 
         for (let i = 0; i < len; i++) {

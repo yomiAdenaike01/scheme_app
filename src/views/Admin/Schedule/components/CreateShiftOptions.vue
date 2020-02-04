@@ -82,7 +82,7 @@ export default {
   },
   mixins: [uploadContent],
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     noTemplateOptions() {
       return {
         text: "No templates found, press more information for find out more.",

@@ -1,6 +1,46 @@
 export default {
   // SHIFT METHODS
-
+  getNotes(context, id) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch(
+          "request",
+          {
+            method: "GET",
+            url: "notes/get"
+          },
+          { root: true }
+        )
+        .then(response => {
+          console.log(response);
+          context.commit("UPDATE_NOTES", response);
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  getTasks(context, id) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch(
+          "request",
+          {
+            method: "GET",
+            url: "tasks/get"
+          },
+          { root: true }
+        )
+        .then(response => {
+          context.commit("UPDATE_TASKS", response);
+          resolve()
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
   deleteShift(context, id) {
     return new Promise((resolve, reject) => {
       context

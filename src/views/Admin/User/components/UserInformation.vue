@@ -1,12 +1,12 @@
 <template>
   <el-col class="shadow p-4 current_user_column mr-4">
     <header>
-      <Avatar :name="currentUser.name" />
-      <p class="bold">{{currentUser.name}}</p>
-      <p>{{employeeTypes[currentUser.employeeType - 1].name}}</p>
+      <Avatar :name="userInformation.name" />
+      <p class="bold">{{userInformation.name}}</p>
+      <p>{{employeeTypes[userInformation.employeeType - 1].name}}</p>
     </header>
     <div class="mt-4">
-    <p class="p-1" v-for="(property,value) in cleanCurrentUser" :key="property">
+    <p class="p-1" v-for="(property,value) in cleanuserInformation" :key="property">
 
       {{`${value}: ${property}`}}
       <el-divider></el-divider>
@@ -29,16 +29,16 @@ import ColourUnit from "@/components/ColourUnit";
 export default {
   name: "UserInformation",
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapState('Admin',['employeeTypes']),
     
     colourSettings(){
-      return this.currentUser.settings.colourSettings.accent
+      return this.userInformation.settings.colourSettings.accent
     },
     
-    cleanCurrentUser(){
+    cleanuserInformation(){
       
-      let {name,email,dateOfBirth,settings} = this.currentUser;
+      let {name,email,dateOfBirth,settings} = this.userInformation;
       let {accent}  = settings.colourSettings;
       
 

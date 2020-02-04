@@ -1,11 +1,9 @@
 <template>
   <div class="h-100">
     <el-row class="h-100">
-      <Todos />
-
       <el-row :type="$mq == 'lg' ? 'flex' : null" class="h-100 pl-2">
         <Shifts />
-        <Utils />
+        <Widgets />
         <TeamView />
       </el-row>
     </el-row>
@@ -15,32 +13,21 @@
 <script>
 import Shifts from "./components/Shifts";
 import TeamView from "../Team/TeamView";
-import Utils from "./components/Utils";
-import Todos from "./components/Todos";
+import Widgets from "./components/Widgets/Widgets";
 import { mapActions } from "vuex";
 export default {
   name: "Dashboard",
   activated() {
-    this.getTodos();
+    this.getTasks();
+    this.getNotes();
   },
-  deactivated() {},
-  computed: {},
   methods: {
-    ...mapActions(["request"]),
-    getTodos() {
-      this.request({
-        method: "GET",
-        url: "todos/get"
-      }).then(response => {
-        console.log(response);
-      });
-    }
+    ...mapActions("Admin", ["getNotes", "getTasks"])
   },
   components: {
     TeamView,
     Shifts,
-    Utils,
-    Todos
+    Widgets
   }
 };
 /**

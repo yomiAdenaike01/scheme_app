@@ -10,7 +10,7 @@
           />
 
           <SettingsSelection @prefChange="view = $event" :selection="returnSettings" />
-          <div @click="verifyEmail" v-loading="loading" v-if="!currentUser.verified">
+          <div @click="verifyEmail" v-loading="loading" v-if="!userInformation.verified">
             <el-alert
               class="mt-4 activate_account_alert"
               :class="{ disabled: type == 'error' }"
@@ -72,7 +72,7 @@ export default {
     this.view = this.returnSettings[0].label;
   },
   computed: {
-    ...mapState(["currentUser", "localSettings"]),
+    ...mapState(["userInformation", "localSettings"]),
     returnAlert() {
       let alert = {
         desc:
@@ -101,8 +101,8 @@ export default {
         }
       ];
     },
-    currentUserViewConfig() {
-      let cUser = this.currentUser;
+    userInformationViewConfig() {
+      let cUser = this.userInformation;
       let arr = [];
       return arr;
     },

@@ -19,7 +19,7 @@ import Nocontent from "@/components/Nocontent"
 export default {
   name: "TeamShiftInfo",
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapState("Admin", ["shifts", "viewTeamMember"]),
     ...mapGetters(["getIsAdmin"]),
     noContent() {

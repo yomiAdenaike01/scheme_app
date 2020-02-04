@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="none" class="flex_center columns google_cal_sync_container">
     <Nocontent v-bind="noGoogleCal">
-      <el-button size="mini" @click="initGoogleAPI"
+      <el-button size="mini" plain @click="initGoogleAPI"
         >Configure Google calendar</el-button
       >
     </Nocontent>

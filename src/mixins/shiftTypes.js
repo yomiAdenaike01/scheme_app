@@ -2,13 +2,13 @@ import { mapState } from "vuex";
 
 export default {
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapState("Admin", ["shiftTypes"])
   },
   methods: {
     returnShiftTypes(toRemove, property) {
       const types = this.shiftTypes;
-      let { employeeType } = this.currentUser;
+      let { employeeType } = this.userInformation;
 
       let _types = [];
       const len = types.length;

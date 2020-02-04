@@ -14,7 +14,7 @@ export default {
   name: "Reports",
   computed: {
     ...mapState("Admin", ["team", "shifts"]),
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     renderReportsConfig(){
       
     },

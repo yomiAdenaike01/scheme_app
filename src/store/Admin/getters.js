@@ -17,8 +17,8 @@ export default {
       });
       if (foundTeamMember) {
         return foundTeamMember;
-      } else if (toMatch == rootState.currentUser[teamMemberProperty]) {
-        return rootState.currentUser;
+      } else if (toMatch == rootState.userInformation[teamMemberProperty]) {
+        return rootState.userInformation;
       } else {
         return null;
       }

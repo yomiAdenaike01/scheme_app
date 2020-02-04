@@ -14,13 +14,13 @@ export default {
     }
   },
   getPreferences(state) {
-    return state.currentUser.preferences;
+    return state.userInformation.preferences;
   },
   getContentLoaded(state) {
     return false;
   },
   getIsAdmin(state) {
-    const employeeType = state.currentUser.employeeType;
+    const employeeType = state.userInformation.employeeType;
     return employeeType == 1 || employeeType == "Admin";
   },
   getClientColours(state) {
@@ -28,7 +28,7 @@ export default {
     
   },
   getName(state) {
-    return state.currentUser.name.trim().toLowerCase();
+    return state.userInformation.name.trim().toLowerCase();
   },
   getGuide() {
     return guide;

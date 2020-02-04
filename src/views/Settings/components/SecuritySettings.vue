@@ -1,13 +1,13 @@
 <template>
   <el-collapse v-model="activeName" accordion class="mt-3">
-    <el-collapse-item name="1" :disabled="currentUser.verified">
+    <el-collapse-item name="1" :disabled="userInformation.verified">
       <template slot="title">
         <div style="width:90%;display:flex;justify-content:space-between;align-items:center;">
           Change Email Address
-          <span style="color:#999">{{ currentUser.email }}</span>
-          <el-tag :type="currentUser.verified ? 'success' : 'warning'">
+          <span style="color:#999">{{ userInformation.email }}</span>
+          <el-tag :type="userInformation.verified ? 'success' : 'warning'">
             {{
-            currentUser.verified ? 'Activated' : 'Not Activated'
+            userInformation.verified ? 'Activated' : 'Not Activated'
             }}
           </el-tag>
         </div>
@@ -73,11 +73,11 @@ export default {
     };
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
 
-    currentUserConfig() {
-      for (let prop in this.currentUser) {
+    userInformationConfig() {
+      for (let prop in this.userInformation) {
       }
     }
   },

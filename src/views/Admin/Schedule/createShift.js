@@ -4,7 +4,7 @@ export default {
   methods: {
     async getEmployeeID(name) {
       if (name.trim().toLowerCase() == this.getName) {
-        return this.currentUser._id;
+        return this.userInformation._id;
       } else if (!this.getIsAdmin) {
         return Promise.reject(
           "You cannot have other teammate names when you are not an admin"

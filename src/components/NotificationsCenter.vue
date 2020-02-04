@@ -39,7 +39,7 @@ export default {
     ...mapState([
       "viewNotificationsCenter",
       "userNotifications",
-      "currentUser"
+      "userInformation"
     ]),
     noContent() {
       return {

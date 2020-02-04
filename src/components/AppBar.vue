@@ -9,7 +9,7 @@
     <el-col>
       <div class="profile_container">
         <Dropdown :items="items" @method="handleCommands" :icon="false">
-          <Avatar :name="currentUser.name" />
+          <Avatar :name="userInformation.name" />
         </Dropdown>
         <el-badge :value="userNotifications.length" class="item ml-2 mt-1 primary">
           <el-button
@@ -42,7 +42,7 @@ export default {
   },
   computed: {
     ...mapState([
-      "currentUser",
+      "userInformation",
       "userNotifications",
       "viewMobileMenu",
       "client"

@@ -127,7 +127,7 @@ export default {
   },
   computed: {
     ...mapState("Admin", ["team", "shiftTypes"]),
-    ...mapState(["currentUser"]),
+    ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
   
 
@@ -252,7 +252,7 @@ export default {
         canDrop: false
       };
 
-      let { name } = this.currentUser;
+      let { name } = this.userInformation;
       let { is_pickup } = this.shift;
       let foundUser;
 
