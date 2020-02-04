@@ -1,9 +1,9 @@
 <template>
   <el-row type="flex" class="user_container p-4">
-    <UserInformation class="ml-4"  />
-    <el-col class="shadow" >
- <UserTeamMember v-for="member in team" :key="member._id" :data="member"/>   
-  </el-col>
+    <UserInformation class="ml-4" />
+    <el-col class="shadow">
+      <UserTeamMember v-for="member in team" :key="member._id" :data="member" />
+    </el-col>
   </el-row>
 </template>
 
@@ -15,24 +15,21 @@ import UserInformation from "./components/UserInformation";
 export default {
   name: "User",
   data() {
-    return {
-     
-    };
+    return {};
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["team","employeeTypes"]),
-    
-    tableTeam(){
+    ...mapState("Admin", ["team", "employeeTypes"]),
+
+    tableTeam() {
       let team = [...this.team];
-      return team.map(member=>{
-        let {employeeType} = member;
+      return team.map(member => {
+        let { employeeType } = member;
         return {
           ...member,
-          employeeType:this.employeeTypes[employeeType].name
-        }
-      })
-      
+          employeeType: this.employeeTypes[employeeType].name
+        };
+      });
     }
   },
   components: {
@@ -43,6 +40,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.user_container {
+  font-size: 0.9em;
+}
 .current_user_column {
   width: 30%;
 }

@@ -1,6 +1,6 @@
 <template>
   <el-col class="team_wrapper h-100" v-loading="false">
-    <el-row class="team_container h-100">
+    <el-row class="team_container h-100 ">
       <!-- Display if in mobile view -->
       <Title
         style="text-align:center"

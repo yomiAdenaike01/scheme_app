@@ -1,11 +1,15 @@
 <template>
   <div
+    v-if="Object.values(task).length > 1"
     class="taskitem_container flex p-3 align_center columns"
-    :class="{ mine: isOwnedByMe }"
+    :class="{ enabled: isOwnedByMe && taskData.state != 'complete'}"
   >
+  <div class="flex flex--start mb-3">
+  <el-button v-if="task.state == 'complete'" circle type="success" size="mini" icon="el-icon-check" :disabled="true"></el-button>
+    </div>
     <!-- Content -->
     <div class="flex align_center flex--space-between">
-      <h5 class="description light" :class="[{ overdue: isOverdue }]">
+      <h5 class="description light task_content" :class="[{ overdue: isOverdue }]">
         {{ task.content }}
       </h5>
     </div>
@@ -54,9 +58,9 @@
 
     <el-collapse-transition>
       <div class="dates_container mt-3 grey" v-if="viewingMore">
-        <small>Due Date {{ formattedDates.dueDate }}</small>
+        <small>Due date {{ formattedDates.dueDate }}</small>
         <br />
-        <small>Date Created {{ formattedDates.dateCreated }}</small>
+        <small>Date created {{ formattedDates.dateCreated }}</small>
       </div>
     </el-collapse-transition>
   </div>
@@ -168,8 +172,8 @@ export default {
 
     formattedDates() {
       return {
-        dueDate: moment(this.taskData.dueDate).format("DD/MM/YYYY"),
-        dateCreated: moment(this.taskData.createdDate).format("DD/MM/YYYY")
+        dueDate: moment(this.taskData.dueDate).calendar(),
+        dateCreated: moment(this.taskData.createdDate).calendar()
       };
     },
 
@@ -242,7 +246,9 @@ export default {
           isChanged = true;
         }
 
-        console.log(isChanged);
+       if(isChanged){
+         this.$emit("taskItemChange",val);
+       }
       }
     }
   }
@@ -255,9 +261,15 @@ export default {
   border-bottom: $border;
   opacity: 0.5;
   cursor: not-allowed;
+  text-decoration: line-through;
+  pointer-events: none;
 
-  &.mine {
-    opacity: 1;
+  
+
+  &.enabled {
+    opacity:1;
+    text-decoration: initial;
+    
     cursor: initial;
   }
 }
@@ -273,4 +285,6 @@ small {
 .view_more_indicator {
   cursor: pointer;
 }
+
+
 </style>

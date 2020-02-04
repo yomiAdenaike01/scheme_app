@@ -16,16 +16,71 @@
         ></el-option>
       </el-select>
 
-      <!-- Title bar displaying adding the tasks +  -->
+      <!-- Title bar displaying adding the tasks  -->
       <div class="tasks_container flex flex--space-between align_center mt-3 ">
         <h5 class="grey light">Viewing tasks</h5>
-        <el-button type="text" icon="el-icon-plus" size="mini"></el-button>
+
+        <!-- Popover display -->
+        <Popover title="Create Task" position="right-start"  trigger="click">
+          <div class="create_new_task_container" slot="content">
+            <el-input placeholder="Task title or content" v-model="task.content" size="mini"></el-input>
+
+            <!-- Displaying the categories -->
+            <el-select
+              v-model="task.category"
+              size="mini"
+              class="category_dropdown"
+              placeholder="Select category"
+            >
+              <el-option
+                v-for="option in allCategories"
+                :value="option.value"
+                :key="option.value"
+                :label="option.label"
+              ></el-option>
+            </el-select>
+            <br>
+
+<!-- Displaying team members -->
+   <el-select
+   v-if="getIsAdmin"
+              v-model="task.assignedTo"
+              size="mini"
+              class="category_dropdown"
+              placeholder="Assign to team member"
+            >
+              <el-option
+                v-for="option in allCategories"
+                :value="option.value"
+                :key="option.value"
+                :label="option.label"
+              ></el-option>
+            </el-select>
+            <br>
+
+
+
+<div class="button_container flex--end flex">
+            <el-button round type="primary" @click="runTaskRequest" :disabled="task.content.length == 0" size="mini"
+              >Create task</el-button
+            >
+            </div>
+          </div>
+
+          <el-button
+            icon="el-icon-plus"
+            size="mini"
+            circle
+            slot="trigger"
+          ></el-button>
+        </Popover>
       </div>
 
       <!-- Filtering tasks -->
 
       <div v-if="filteredTasks.length > 0">
         <TaskItem
+        @taskItemChange="runTaskRequest"
           v-for="task in filteredTasks"
           :categories="allCategories"
           :taskData="task"
@@ -45,20 +100,31 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 import TaskItem from "./components/TaskItem";
 import { SlideXLeftTransition } from "vue2-transitions";
 import Nocontent from "@/components/Nocontent";
+import Popover from "@/components/Popover";
 export default {
   name: "Tasks",
   data() {
     return {
-      selectedCategory: "Default"
+      selectedCategory: "Default",
+      task: {
+        content: "",
+        category:"",
+        assignedTo:""
+      }
     };
   },
   computed: {
     ...mapState("Admin", ["tasks"]),
     ...mapState(["userInformation"]),
+    ...mapGetters(['getIsAdmin']),
+
+    teamMembersDropdown(){
+
+    },
 
     noContent() {
       return {
@@ -233,10 +299,35 @@ export default {
     }
   },
 
+  methods: {
+      ...mapActions('Admin',['getTasks']),
+    // Pushes a new todo
+    runTaskRequest(taskData){
+        let url="task/create",method="POST",data = this.task;
+
+        if(taskData){
+            url="task/update"
+            data = {update:{...taskData}}
+        }
+
+        this.request({
+            url,
+            data,
+            method
+        }).then(response=>{
+            console.log(response);
+            this.getTasks();
+        })
+
+
+    }
+  },
+
   components: {
     TaskItem,
     SlideXLeftTransition,
-    Nocontent
+    Nocontent,
+    Popover
   }
 };
 </script>
@@ -247,4 +338,8 @@ export default {
   box-shadow: $box_shadow;
   max-width: 15%;
 }
+.create_new_task_container{
+    line-height: 3em;
+}
+
 </style>

@@ -15,7 +15,10 @@
           :status="progressIndicator.status"
         ></el-progress>
 
-        <el-button plain @click="$router.push({ name: 'utilities' })"
+        <el-button
+          plain
+          size="small"
+          @click="$router.push({ name: 'utilities' })"
           >View Todos</el-button
         >
       </div>

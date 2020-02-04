@@ -1,7 +1,7 @@
-<template>
+]<template>
   <div
     class="mb-3 shift_container rounded shadow"
-    @click="$router.push({ name: 'schedule' })"
+    :class="{ myShift: isShiftMine }"
   >
     <el-row type="flex">
       <el-col class="shift_details_container details_unit p-2">
@@ -73,6 +73,11 @@ export default {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapState("Admin", ["employeeTypes", "shiftTypes", "team"]),
+    isShiftMine() {
+      return (
+        this.shift.assignedTo == this.userInformation._id || this.getIsAdmin
+      );
+    },
     shiftActionItems() {
       let actions = [];
       if (
@@ -81,12 +86,12 @@ export default {
       ) {
         actions.push(
           {
-            name: "Delete Shift",
-            command: "delete_shift"
-          },
-          {
             name: "Update Shift",
             command: "update_shift"
+          },
+          {
+            name: "Delete Shift",
+            command: "delete_shift"
           }
         );
       } else {
@@ -174,6 +179,7 @@ export default {
         }
         case "update_shift": {
           this.displayViewShift = true;
+          this.$router.push({ name: "schedule" });
 
           break;
         }
@@ -206,8 +212,14 @@ export default {
 <style lang="scss" scoped>
 .shift_container {
   border-radius: 10px;
-  border: $border;
   line-height: 2.1em;
+  font-weight: 300;
+  font-size: 0.9em;
+  cursor: pointer;
+  opacity: 0.5;
+  &.myShift {
+    opacity: 1;
+  }
 }
 
 .shift_times {

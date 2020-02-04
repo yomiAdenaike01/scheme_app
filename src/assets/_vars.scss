@@ -7,12 +7,22 @@ $border: 1px solid #ebeef5;
 
 .overflow {
   overflow: auto;
-  &:after{
-    content:"";
-    display:block;
+  &:after {
+    content: "";
+    display: block;
     margin-bottom: 100%;
   }
-
+}
+p,
+span,
+small,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 300;
 }
 .rounded {
   border-radius: $border_radius;
