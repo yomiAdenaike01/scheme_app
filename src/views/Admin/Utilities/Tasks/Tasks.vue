@@ -3,7 +3,7 @@
     <div class="todos_container p-3 overflow h-100">
       <!-- Displaying the categories -->
       <el-select
-        v-model="selectedCategory"
+        v-model="filters.categoryFilter"
         size="mini"
         class="category_dropdown w-100"
         placeholder="Select Category View"
@@ -15,7 +15,7 @@
           :label="option.label"
         ></el-option>
       </el-select>
-
+    
       <!-- Title bar displaying adding the tasks  -->
       <div class="tasks_container flex flex--space-between align_center mt-3 ">
         <h5 class="grey light">Viewing tasks</h5>
@@ -64,7 +64,7 @@
 
 <!-- Create task button -->
 <div class="button_container flex--end flex">
-            <el-button round type="primary" @click="runTaskRequest" :disabled="task.content.length == 0" size="mini"
+            <el-button round type="primary" @click="runTaskRequest()" :disabled="task.content.length == 0" size="mini"
               >Create task</el-button
             >
             </div>
@@ -113,6 +113,13 @@ export default {
   data() {
     return {
       selectedCategory: "Default",
+      filters: {
+          assignedToFilter:"",
+          contentFilter:"",
+          createdByFilter:"",
+          stateFilter:"",
+          categoryFilter:""
+      },
       task: {
         content: "",
         category:"",
@@ -139,6 +146,22 @@ export default {
     },
 
     filteredTasks() {
+        let filteredTasks = [];
+        let {stateFilter,contentFilter,assignedToFilter,createdBy,categoryFilter} = this.filters;
+        for (let i = 0, len = this.returnTasks.length; i < len; i++) {
+            
+            let task = this.returnTasks[i];
+            const {category,state,content,assignedTo,createdBy} = this.returnTasks[i];
+
+            if(category != categoryFilter && categoryFilter == 'create_new_category'){
+                continue;
+            }
+
+            filteredTasks.push(task);
+
+
+            
+        }
       return this.returnTasks.filter(task => {
         return task.category == this.selectedCategory;
       });
@@ -306,18 +329,20 @@ export default {
       ...mapActions('Admin',['getTasks']),
     // Pushes a new todo
     runTaskRequest(taskData){
-        
+        console.error(taskData);
         let url="task/create",method="POST",data = this.task;
 
         if(taskData){
+
             url="task/update"
             data = {update:{...taskData}}
         }
 
         if(this.task.newCategory.length > 0){
             data.category = this.task.newCategory
+            delete data.newCategory;
         }
-
+        return console.log({url,data,method});
         this.request({
             url,
             data,
