@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="Object.values(task).length > 1"
-    class="taskitem_container flex p-3 align_center columns"
+    class="taskitem_container flex align_center columns"
     :class="[
       { enabled: isOwnedByMe },
       { disabled: isComplete && !isOwnedByMe }
@@ -293,7 +293,6 @@ export default {
 
 <style lang="scss" scoped>
 .taskitem_container {
-  line-height: 2em;
   border-bottom: $border;
   font-size: 0.8em;
   l &.enabled {

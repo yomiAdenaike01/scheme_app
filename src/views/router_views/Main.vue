@@ -10,9 +10,11 @@
         <!-- Server health -->
         <ServerHealth />
         <!-- Router view -->
-        <keep-alive>
-          <router-view></router-view>
-        </keep-alive>
+        <transition name="fade-transform" mode="out-in">
+          <keep-alive>
+            <router-view :key="key" />
+          </keep-alive>
+        </transition>
       </el-col>
     </el-row>
     <NotificationsCenter />
@@ -53,6 +55,9 @@ export default {
     this.checkIsLocumnWorking();
   },
   computed: {
+    key() {
+      return this.$route.path;
+    },
     ...mapState([
       "notifications",
       "globalLoader",

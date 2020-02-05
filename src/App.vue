@@ -10,9 +10,11 @@
     client instance please wait....`
     "
   >
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <transition name="el-fade-in">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 
@@ -31,7 +33,7 @@ export default {
       clientInterval: null,
       invalidClient: false,
       windowClient: window.location.hostname.toString().split("."),
-      runLoading:true
+      runLoading: true
     };
   },
   async created() {

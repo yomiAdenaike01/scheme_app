@@ -4,6 +4,21 @@ $success_colour: #67c23a;
 $error_colour: #f56c6c;
 $border_radius: 10px;
 $border: 1px solid #ebeef5;
+/* fade-transform */
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
 
 .disabled {
   opacity: 0.5;

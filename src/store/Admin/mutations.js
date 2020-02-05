@@ -1,5 +1,10 @@
 import Vue from "vue";
 export default {
+  // Reports
+
+  UPDATE_REPORTS_METRICS() {},
+
+  // Regular admins
   UPDATE_DISPLAY_NOTE(state, payload, display) {
     if (display) {
       Vue.set(state.viewNote, "display", display);
