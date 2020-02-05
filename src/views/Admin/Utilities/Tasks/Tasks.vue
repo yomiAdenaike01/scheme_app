@@ -22,7 +22,7 @@
 
         <!-- Popover display -->
         <Popover title="Create Task" position="right-start"  trigger="click">
-          <div class="create_new_task_container" slot="content">
+          <div class="create_new_task_container" v-loading="popoverLoading"  slot="content">
             <el-input placeholder="Task title or content" v-model="task.content" size="mini"></el-input>
 
             <!-- Displaying the categories -->
@@ -43,8 +43,15 @@
             </el-select>
             <br>
 <el-input size="mini" v-model="task.newCategory" v-if="task.category == 'create_new_category'" placeholder="New category name"></el-input>
+ <el-date-picker
+ size="mini"
+      v-model="task.dueDate"
+      type="datetime"
+      placeholder="(Optional) Select task due date">
+    </el-date-picker>
+    <br>
+    <!-- Displaying team members -->
 
-<!-- Displaying team members -->
    <el-select
    v-if="getIsAdmin"
               v-model="task.assignedTo"
@@ -108,11 +115,13 @@ import TaskItem from "./components/TaskItem";
 import { SlideXLeftTransition } from "vue2-transitions";
 import Nocontent from "@/components/Nocontent";
 import Popover from "@/components/Popover";
+import moment from "moment";
 export default {
   name: "Tasks",
   data() {
     return {
       selectedCategory: "Default",
+      popoverLoading:false,
       filters: {
           assignedToFilter:"",
           contentFilter:"",
@@ -124,7 +133,8 @@ export default {
         content: "",
         category:"",
         assignedTo:"",
-        newCategory:""
+        newCategory:"",
+        dueDate:""
       }
     };
   },
@@ -192,128 +202,7 @@ export default {
       return allCategories;
     },
     returnTasks() {
-      return [
-        {
-          id: 1,
-          dueDate: "2019-11-17T02:49:31Z",
-          createdBy: "5e360b8dfbf269a23807a944",
-          assignedTo: "5e3607cc63ad74945c5cbb0f",
-          state: "complete",
-          content:
-            "Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi.",
-          completeDate: "2019-08-16T04:47:35Z",
-          dateCreated: "2019-12-03T06:43:25Z",
-          category: "Default"
-        },
-        {
-          id: 2,
-          dueDate: "2019-06-02T10:27:38Z",
-          createdBy: "5e3607cc63ad74945c5cbb0f",
-          assignedTo: "d20a49c5-0f72-4a13-a52a-b4d2a11b26dd",
-          state: "incomplete",
-          content:
-            "In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.",
-          completeDate: "2020-06-30T00:49:15Z",
-          dateCreated: "2020-05-23T16:16:25Z",
-          category: "Default"
-        },
-        {
-          id: 2,
-          dueDate: "2019-06-02T10:27:38Z",
-          createdBy: "5e3607cc63ad74945c5cbb0f",
-          assignedTo: "d20a49c5-0f72-4a13-a52a-b4d2a11b26dd",
-          state: "incomplete",
-          content:
-            "In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.",
-          completeDate: "2020-06-30T00:49:15Z",
-          dateCreated: "2020-05-23T16:16:25Z",
-          category: "Default"
-        },
-        {
-          id: 3,
-          dueDate: "2019-12-07T12:54:40Z",
-          createdBy: "5e3607cc63ad74945c5cbb0f",
-          assignedTo: "e8160bc8-2b9a-42c3-b8e7-5ec27131361e",
-          state: "complete",
-          content:
-            "Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.",
-          completeDate: "2020-04-24T08:09:55Z",
-          dateCreated: "2019-09-09T13:47:21Z",
-          category: "Default"
-        },
-        {
-          id: 4,
-          dueDate: "2020-01-16T17:44:43Z",
-          createdBy: "5e360b8dfbf269a23807a944",
-          assignedTo: "5e3607cc63ad74945c5cbb0f",
-          state: "incomplete",
-          content:
-            "Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.\n\nPhasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.\n\nProin eu mi. Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem.",
-          completeDate: "2020-11-12T02:25:41Z",
-          dateCreated: "2019-06-08T08:26:58Z",
-          category: "Default"
-        },
-        {
-          id: 1,
-          dueDate: "2019-11-17T02:49:31Z",
-          createdBy: "5e360b8dfbf269a23807a944",
-          assignedTo: "5e3607cc63ad74945c5cbb0f",
-          state: "complete",
-          content:
-            "Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi.",
-          completeDate: "2019-08-16T04:47:35Z",
-          dateCreated: "2019-12-03T06:43:25Z",
-          category: "Default"
-        },
-        {
-          id: 2,
-          dueDate: "2019-06-02T10:27:38Z",
-          createdBy: "5e3607cc63ad74945c5cbb0f",
-          assignedTo: "d20a49c5-0f72-4a13-a52a-b4d2a11b26dd",
-          state: "incomplete",
-          content:
-            "In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.",
-          completeDate: "2020-06-30T00:49:15Z",
-          dateCreated: "2020-05-23T16:16:25Z",
-          category: "Default"
-        },
-        {
-          id: 2,
-          dueDate: "2019-06-02T10:27:38Z",
-          createdBy: "5e3607cc63ad74945c5cbb0f",
-          assignedTo: "d20a49c5-0f72-4a13-a52a-b4d2a11b26dd",
-          state: "incomplete",
-          content:
-            "In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.",
-          completeDate: "2020-06-30T00:49:15Z",
-          dateCreated: "2020-05-23T16:16:25Z",
-          category: "Default"
-        },
-        {
-          id: 3,
-          dueDate: "2019-12-07T12:54:40Z",
-          createdBy: "5e3607cc63ad74945c5cbb0f",
-          assignedTo: "e8160bc8-2b9a-42c3-b8e7-5ec27131361e",
-          state: "complete",
-          content:
-            "Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.",
-          completeDate: "2020-04-24T08:09:55Z",
-          dateCreated: "2019-09-09T13:47:21Z",
-          category: "Default"
-        },
-        {
-          id: 4,
-          dueDate: "2020-01-16T17:44:43Z",
-          createdBy: "5e360b8dfbf269a23807a944",
-          assignedTo: "5e3607cc63ad74945c5cbb0f",
-          state: "incomplete",
-          content:
-            "Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.\n\nPhasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.\n\nProin eu mi. Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem.",
-          completeDate: "2020-11-12T02:25:41Z",
-          dateCreated: "2019-06-08T08:26:58Z",
-          category: "Default"
-        }
-      ];
+     return this.tasks;
     },
     options() {
       return [
@@ -327,29 +216,38 @@ export default {
 
   methods: {
       ...mapActions('Admin',['getTasks']),
+      ...mapActions(['request']),
     // Pushes a new todo
     runTaskRequest(taskData){
-        console.error(taskData);
-        let url="task/create",method="POST",data = this.task;
+        this.popoverLoading = true;
+        let url="tasks/create",method="POST",data = this.task;
 
         if(taskData){
 
-            url="task/update"
+            url="tasks/update"
             data = {update:{...taskData}}
+        }
+
+        if(this.task.dueDate){
+            data.dueDate = moment(data.dueDate).toISOString();
         }
 
         if(this.task.newCategory.length > 0){
             data.category = this.task.newCategory
             delete data.newCategory;
         }
-        return console.log({url,data,method});
         this.request({
             url,
             data,
             method
         }).then(response=>{
+            this.popoverLoading = false;
             console.log(response);
             this.getTasks();
+        }).catch(err=>{
+            this.$set(this,'task',{});
+            this.popoverLoading = false;
+            console.error(err);
         })
 
 
