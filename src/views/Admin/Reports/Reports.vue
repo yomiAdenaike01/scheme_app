@@ -39,7 +39,9 @@ export default {
       method: "GET",
       url: "reports/dashboard",
       params: this.filters
-    }).then(response => {});
+    }).then(response => {
+      console.log(response);
+    });
   },
   data() {
     return {
@@ -104,14 +106,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .reports_container {
   width: 100%;
   line-height: 2em;
   font-size: 1.3em;
 }
 .form_container {
-  .form > .el-form-item__content {
+  .el-form-item__content {
     width: 100%;
   }
 }

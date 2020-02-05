@@ -4,15 +4,12 @@
     <el-card shadow="none">
       <div class="tasks_widget_container flex_center columns">
         <p class="light txt_center mb-1">Total Task Progress</p>
-        <small class="grey"
-          >This is the total progress of all of your tasks</small
-        >
+        <small class="grey">Total percentage of all completed tasks</small>
         <el-progress
           class="mb-3 mt-3"
           :width="200"
           type="circle"
-          :percentage="progressIndicator.percentage"
-          :status="progressIndicator.status"
+          :percentage="progressIndicator"
         ></el-progress>
 
         <el-button
@@ -83,40 +80,19 @@ export default {
 
     progressIndicator() {
       const {
-        completeCount,
+        completedCount,
         totalCount,
         tasksRemaining
       } = this.tasksCategorised;
 
-      let percentageComplete =
-        completeCount > 0 && totalCount > 0
-          ? (completeCount / totalCount) * 100
-          : 0;
+      let percentageComplete = Math.round((completedCount / totalCount) * 100);
 
-      let status = "";
-
-      let progressionIndication = {
-        percentage: percentageComplete
-      };
-
-      if (percentageComplete <= 25) {
-        status = "exception";
-      }
-
-      if (percentageComplete > 50) {
-        status = "warning";
-      }
-
-      if (percentageComplete > 70) {
-        status = "success";
-      }
-
-      return progressionIndication;
+      return percentageComplete;
     },
 
     tasksCategorised() {
-      let tasks = [],
-        completedtasks = [];
+      let tasks = [];
+      let completedtasks = [];
 
       if (this.tasks.length > 0) {
         tasks = this.tasks;
