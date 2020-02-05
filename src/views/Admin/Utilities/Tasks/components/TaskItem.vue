@@ -2,7 +2,7 @@
   <div
     v-if="Object.values(task).length > 1"
     class="taskitem_container flex p-3 align_center columns"
-    :class="{ enabled: isOwnedByMe && taskData.state != 'complete'}"
+    :class="[{ enabled: isOwnedByMe},{disabled:isComplete && !isOwnedByMe}]"
   >
   <div class="flex flex--start mb-3">
   <el-button v-if="task.state == 'complete'" circle type="success" size="mini" icon="el-icon-check" :disabled="true"></el-button>
@@ -189,7 +189,7 @@ export default {
     },
 
     isComplete() {
-      return this.status == "complete";
+      return this.task.state == "complete";
     },
 
     findTeamMember() {
@@ -259,17 +259,15 @@ export default {
 .taskitem_container {
   line-height: 1.5em;
   border-bottom: $border;
-  opacity: 0.5;
-  cursor: not-allowed;
-  text-decoration: line-through;
-  pointer-events: none;
 
-  
+  &.disabled{
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
 
   &.enabled {
     opacity:1;
-    text-decoration: initial;
-    
     cursor: initial;
   }
 }

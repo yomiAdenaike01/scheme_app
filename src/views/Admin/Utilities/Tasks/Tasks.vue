@@ -31,6 +31,8 @@
               size="mini"
               class="category_dropdown"
               placeholder="Select category"
+              :disabled="task.category == 'create_new_category'"
+
             >
               <el-option
                 v-for="option in allCategories"
@@ -40,26 +42,27 @@
               ></el-option>
             </el-select>
             <br>
+<el-input size="mini" v-model="task.newCategory" v-if="task.category == 'create_new_category'" placeholder="New category name"></el-input>
 
 <!-- Displaying team members -->
    <el-select
    v-if="getIsAdmin"
               v-model="task.assignedTo"
               size="mini"
+              multiple
               class="category_dropdown"
               placeholder="Assign to team member"
             >
               <el-option
-                v-for="option in allCategories"
-                :value="option.value"
+                v-for="option in team"
+                :value="option._id"
                 :key="option.value"
-                :label="option.label"
+                :label="option.name"
               ></el-option>
             </el-select>
             <br>
 
-
-
+<!-- Create task button -->
 <div class="button_container flex--end flex">
             <el-button round type="primary" @click="runTaskRequest" :disabled="task.content.length == 0" size="mini"
               >Create task</el-button
@@ -113,12 +116,13 @@ export default {
       task: {
         content: "",
         category:"",
-        assignedTo:""
+        assignedTo:"",
+        newCategory:""
       }
     };
   },
   computed: {
-    ...mapState("Admin", ["tasks"]),
+    ...mapState("Admin", ["tasks","team"]),
     ...mapState(["userInformation"]),
     ...mapGetters(['getIsAdmin']),
 
@@ -142,12 +146,7 @@ export default {
 
     allCategories() {
       let allCategories = [
-        [
-          {
-            label: "Create new category",
-            value: "create_new_category"
-          }
-        ]
+        
       ];
 
       this.returnTasks.map(task => {
@@ -163,6 +162,10 @@ export default {
           : null;
       });
 
+        allCategories.push({
+            label:'+ Create new category',
+            value:'create_new_category'
+        })
       return allCategories;
     },
     returnTasks() {
@@ -303,11 +306,16 @@ export default {
       ...mapActions('Admin',['getTasks']),
     // Pushes a new todo
     runTaskRequest(taskData){
+        
         let url="task/create",method="POST",data = this.task;
 
         if(taskData){
             url="task/update"
             data = {update:{...taskData}}
+        }
+
+        if(this.task.newCategory.length > 0){
+            data.category = this.task.newCategory
         }
 
         this.request({
