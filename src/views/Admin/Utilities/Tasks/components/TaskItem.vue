@@ -2,23 +2,49 @@
   <div
     v-if="Object.values(task).length > 1"
     class="taskitem_container flex p-3 align_center columns"
-    :class="[{ enabled: isOwnedByMe},{disabled:isComplete && !isOwnedByMe}]"
+    :class="[
+      { enabled: isOwnedByMe },
+      { disabled: isComplete && !isOwnedByMe }
+    ]"
   >
-  <div class="flex flex--start mb-3">
-  <el-button v-if="task.state == 'complete'" circle type="success" size="mini" icon="el-icon-check" :disabled="true"></el-button>
+    <div class="flex flex--start mb-3">
+      <el-button
+        v-if="task.state == 'complete'"
+        circle
+        type="success"
+        size="mini"
+        icon="el-icon-check"
+        :disabled="true"
+      ></el-button>
     </div>
     <!-- Content -->
     <div class="flex align_center flex--space-between">
-      <h5 class="description light task_content" :class="[{ overdue: isOverdue }]">
+      <h4
+        v-if="!displayContentEdit"
+        @click="displayContentEdit = !displayContentEdit"
+        class="description light task_content"
+        :class="[{ overdue: isOverdue }]"
+      >
         {{ task.content }}
-      </h5>
+      </h4>
+      <el-input
+        size="p"
+        v-if="displayContentEdit"
+        v-click-outside="
+          () => {
+            displayContentEdit = false;
+          }
+        "
+        v-model="task.content"
+      ></el-input>
     </div>
 
-    <div class="more_details_container mt-3">
+    <div class="more_details_container ">
       <!-- Assigned To -->
-      <small class="grey"
-        >Assigned to <span class="black">{{ findTeamMember }}</span></small
-      >
+      <p class="grey">
+        Assigned to
+        <span class="black">{{ findTeamMember }}</span>
+      </p>
       <br />
       <!-- Category -->
       <Dropdown
@@ -26,12 +52,12 @@
         :items="dropDownCategories"
         @method="categoryDropdownController"
       >
-        <small class="grey"
-          >Category
-          <span :style="{ color: clientInformation.colours }">{{
-            task.category
-          }}</span></small
-        >
+        <span class="grey">
+          Category
+          <span :style="{ color: clientInformation.colours }">
+            {{ task.category }}
+          </span>
+        </span>
       </Dropdown>
       <br />
 
@@ -41,28 +67,39 @@
         :items="dropDownStates"
         @method="stateDropdownController"
       >
-        <el-tag :type="stateColour" class="capitalize mt-1" size="small">{{
-          task.state
-        }}</el-tag>
+        <el-tag :type="stateColour" class="capitalize mt-2" size="mini">
+          {{ task.state }}
+        </el-tag>
       </Dropdown>
     </div>
 
     <!-- Dates with view more -->
-    <small class="view_more_indicator mt-4" @click="viewingMore = !viewingMore"
-      >View More
+    <p class="view_more_indicator mt-4" @click="viewingMore = !viewingMore">
+      View More
       <i
-        class=" rotate_icon el-icon-arrow-right"
+        class="rotate_icon el-icon-arrow-right"
         :class="{ active: viewingMore }"
-      ></i
-    ></small>
-
+      ></i>
+    </p>
+    <!-- Dates display -->
     <el-collapse-transition>
       <div class="dates_container mt-3 grey" v-if="viewingMore">
-        <small>Due date {{ formattedDates.dueDate }}</small>
+        <p>Due date {{ formattedDates.dueDate }}</p>
         <br />
-        <small>Date created {{ formattedDates.dateCreated }}</small>
+        <p>Date created {{ formattedDates.dateCreated }}</p>
       </div>
     </el-collapse-transition>
+
+    <div class="flex flex--end">
+      <el-button
+        round
+        size="mini"
+        plain
+        @click="requestChanges"
+        v-if="hasChanged && manualOverrideHasChanged"
+        >Update</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -77,6 +114,8 @@ export default {
     return {
       now: moment(),
       viewingMore: false,
+      displayContentEdit: false,
+      manualOverrideHasChanged: true,
       task: {}
     };
   },
@@ -89,6 +128,16 @@ export default {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapState("Admin", ["team"]),
+
+    hasChanged() {
+      let hasChanged;
+      for (let property in this.task) {
+        if (this.task[property] != this.taskData[property]) {
+          hasChanged = true;
+        }
+      }
+      return hasChanged;
+    },
 
     isOwnedByMe() {
       return (
@@ -208,6 +257,10 @@ export default {
     }
   },
   methods: {
+    requestChanges() {
+      this.$emit("taskItemChange", this.task);
+      this.$set(this, "manualOverrideHasChanged", false);
+    },
     categoryDropdownController(command) {
       this.$set(this.task, "category", command);
     },
@@ -234,46 +287,21 @@ export default {
   },
   components: {
     Dropdown
-  },
-  watch: {
-    task(val) {
-      let isChanged = false;
-
-      for (let property in val) {
-        let taskDataValue = val[property];
-
-        if (taskDataValue != this.task[property]) {
-          isChanged = true;
-        }
-
-       if(isChanged){
-         this.$emit("taskItemChange",val);
-       }
-      }
-    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .taskitem_container {
-  line-height: 1.5em;
+  line-height: 2em;
   border-bottom: $border;
-
-  &.disabled{
-    cursor: not-allowed;
-    text-decoration: line-through;
-    opacity: 0.5;
-  }
-
-  &.enabled {
-    opacity:1;
+  font-size: 0.8em;
+  l &.enabled {
+    opacity: 1;
     cursor: initial;
   }
 }
-small {
-  font-size: 0.8em;
-}
+
 .rotate_icon {
   transition: 0.25s linear transform;
   &.active {
@@ -283,6 +311,4 @@ small {
 .view_more_indicator {
   cursor: pointer;
 }
-
-
 </style>

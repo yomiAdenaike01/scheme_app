@@ -5,6 +5,13 @@ $error_colour: #f56c6c;
 $border_radius: 10px;
 $border: 1px solid #ebeef5;
 
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  &.line-through {
+    text-decoration: line-through;
+  }
+}
 .overflow {
   overflow: auto;
   &:after {

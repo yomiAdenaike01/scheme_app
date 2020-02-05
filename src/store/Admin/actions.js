@@ -33,8 +33,9 @@ export default {
           { root: true }
         )
         .then(response => {
+          console.warn(response);
           context.commit("UPDATE_TASKS", response);
-          resolve()
+          resolve();
         })
         .catch(error => {
           reject(error);

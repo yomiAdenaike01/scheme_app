@@ -16,10 +16,9 @@ import NotesDisplay from "./Notes/components/NotesDisplay";
 export default {
   name: "Utilities",
   activated() {
-  //  this.getTasks();
+    this.getTasks();
 
-      this.getNotes();
-    
+    this.getNotes();
   },
 
   methods: {

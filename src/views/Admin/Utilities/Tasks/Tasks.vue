@@ -15,15 +15,23 @@
           :label="option.label"
         ></el-option>
       </el-select>
-    
+
       <!-- Title bar displaying adding the tasks  -->
-      <div class="tasks_container flex flex--space-between align_center mt-3 ">
+      <div class="tasks_container flex flex--space-between align_center mt-3">
         <h5 class="grey light">Viewing tasks</h5>
 
         <!-- Popover display -->
-        <Popover title="Create Task" position="right-start"  trigger="click">
-          <div class="create_new_task_container" v-loading="popoverLoading"  slot="content">
-            <el-input placeholder="Task title or content" v-model="task.content" size="mini"></el-input>
+        <Popover title="Create Task" position="right-start" trigger="click">
+          <div
+            class="create_new_task_container"
+            v-loading="popoverLoading"
+            slot="content"
+          >
+            <el-input
+              placeholder="Task title or content"
+              v-model="task.content"
+              size="mini"
+            ></el-input>
 
             <!-- Displaying the categories -->
             <el-select
@@ -32,7 +40,6 @@
               class="category_dropdown"
               placeholder="Select category"
               :disabled="task.category == 'create_new_category'"
-
             >
               <el-option
                 v-for="option in allCategories"
@@ -41,19 +48,24 @@
                 :label="option.label"
               ></el-option>
             </el-select>
-            <br>
-<el-input size="mini" v-model="task.newCategory" v-if="task.category == 'create_new_category'" placeholder="New category name"></el-input>
- <el-date-picker
- size="mini"
-      v-model="task.dueDate"
-      type="datetime"
-      placeholder="(Optional) Select task due date">
-    </el-date-picker>
-    <br>
-    <!-- Displaying team members -->
+            <br />
+            <el-input
+              size="mini"
+              v-model="task.newCategory"
+              v-if="task.category == 'create_new_category'"
+              placeholder="New category name"
+            ></el-input>
+            <el-date-picker
+              size="mini"
+              v-model="task.dueDate"
+              type="datetime"
+              placeholder="(Optional) Select task due date"
+            ></el-date-picker>
+            <br />
+            <!-- Displaying team members -->
 
-   <el-select
-   v-if="getIsAdmin"
+            <el-select
+              v-if="getIsAdmin"
               v-model="task.assignedTo"
               size="mini"
               multiple
@@ -67,13 +79,18 @@
                 :label="option.name"
               ></el-option>
             </el-select>
-            <br>
+            <br />
 
-<!-- Create task button -->
-<div class="button_container flex--end flex">
-            <el-button round type="primary" @click="runTaskRequest()" :disabled="task.content.length == 0" size="mini"
-              >Create task</el-button
-            >
+            <!-- Create task button -->
+            <div class="button_container flex--end flex">
+              <el-button
+                round
+                type="primary"
+                @click="runTaskRequest()"
+                :disabled="task.content.length == 0"
+                size="mini"
+                >Create task</el-button
+              >
             </div>
           </div>
 
@@ -90,14 +107,14 @@
 
       <div v-if="filteredTasks.length > 0">
         <TaskItem
-        @taskItemChange="runTaskRequest"
+          @taskItemChange="runTaskRequest"
           v-for="task in filteredTasks"
           :categories="allCategories"
           :taskData="task"
           :key="task._id"
         />
       </div>
-
+      <!-- No content display on tasks -->
       <div class="h-100 flex_center" v-else>
         <Nocontent v-bind="noContent">
           <el-button size="mini" round
@@ -121,31 +138,28 @@ export default {
   data() {
     return {
       selectedCategory: "Default",
-      popoverLoading:false,
+      popoverLoading: false,
       filters: {
-          assignedToFilter:"",
-          contentFilter:"",
-          createdByFilter:"",
-          stateFilter:"",
-          categoryFilter:""
+        assignedToFilter: "",
+        contentFilter: "",
+        createdByFilter: "",
+        stateFilter: "",
+        categoryFilter: ""
       },
       task: {
         content: "",
-        category:"",
-        assignedTo:"",
-        newCategory:"",
-        dueDate:""
+        category: "",
+        assignedTo: "",
+        newCategory: "",
+        dueDate: ""
       }
     };
   },
+
   computed: {
-    ...mapState("Admin", ["tasks","team"]),
+    ...mapState("Admin", ["tasks", "team"]),
     ...mapState(["userInformation"]),
-    ...mapGetters(['getIsAdmin']),
-
-    teamMembersDropdown(){
-
-    },
+    ...mapGetters(["getIsAdmin"]),
 
     noContent() {
       return {
@@ -156,31 +170,41 @@ export default {
     },
 
     filteredTasks() {
-        let filteredTasks = [];
-        let {stateFilter,contentFilter,assignedToFilter,createdBy,categoryFilter} = this.filters;
-        for (let i = 0, len = this.returnTasks.length; i < len; i++) {
-            
-            let task = this.returnTasks[i];
-            const {category,state,content,assignedTo,createdBy} = this.returnTasks[i];
+      let filteredTasks = [];
 
-            if(category != categoryFilter && categoryFilter == 'create_new_category'){
-                continue;
-            }
+      let {
+        stateFilter,
+        contentFilter,
+        assignedToFilter,
+        createdBy,
+        categoryFilter
+      } = this.filters;
 
-            filteredTasks.push(task);
+      for (let i = 0, len = this.returnTasks.length; i < len; i++) {
+        let task = this.returnTasks[i];
+        const {
+          category,
+          state,
+          content,
+          assignedTo,
+          createdBy
+        } = this.returnTasks[i];
 
-
-            
+        if (
+          category != categoryFilter &&
+          categoryFilter == "create_new_category"
+        ) {
+          continue;
         }
-      return this.returnTasks.filter(task => {
-        return task.category == this.selectedCategory;
-      });
+
+        filteredTasks.push(task);
+      }
+
+      return filteredTasks;
     },
 
     allCategories() {
-      let allCategories = [
-        
-      ];
+      let allCategories = [];
 
       this.returnTasks.map(task => {
         let optionsObject = {
@@ -195,14 +219,14 @@ export default {
           : null;
       });
 
-        allCategories.push({
-            label:'+ Create new category',
-            value:'create_new_category'
-        })
+      allCategories.push({
+        label: "+ Create new category",
+        value: "create_new_category"
+      });
       return allCategories;
     },
     returnTasks() {
-     return this.tasks;
+      return this.tasks;
     },
     options() {
       return [
@@ -215,42 +239,44 @@ export default {
   },
 
   methods: {
-      ...mapActions('Admin',['getTasks']),
-      ...mapActions(['request']),
+    ...mapActions("Admin", ["getTasks"]),
+    ...mapActions(["request"]),
     // Pushes a new todo
-    runTaskRequest(taskData){
-        this.popoverLoading = true;
-        let url="tasks/create",method="POST",data = this.task;
+    runTaskRequest(taskData) {
+      this.popoverLoading = true;
 
-        if(taskData){
+      let url = "tasks/create",
+        method = "POST",
+        data = this.task;
 
-            url="tasks/update"
-            data = {update:{...taskData}}
-        }
+      if (taskData) {
+        url = "tasks/edit";
+        data = { _id: taskData._id, update: { ...taskData } };
+      }
 
-        if(this.task.dueDate){
-            data.dueDate = moment(data.dueDate).toISOString();
-        }
+      if (this.task.dueDate) {
+        data.dueDate = moment(data.dueDate).toISOString();
+      }
 
-        if(this.task.newCategory.length > 0){
-            data.category = this.task.newCategory
-            delete data.newCategory;
-        }
-        this.request({
-            url,
-            data,
-            method
-        }).then(response=>{
-            this.popoverLoading = false;
-            console.log(response);
-            this.getTasks();
-        }).catch(err=>{
-            this.$set(this,'task',{});
-            this.popoverLoading = false;
-            console.error(err);
+      if (this.task.newCategory.length > 0) {
+        data.category = this.task.newCategory;
+        delete data.newCategory;
+      }
+      this.request({
+        url,
+        data,
+        method
+      })
+        .then(response => {
+          this.popoverLoading = false;
+          console.log(response);
+          this.getTasks();
         })
-
-
+        .catch(err => {
+          this.$set(this, "task", {});
+          this.popoverLoading = false;
+          console.error(err);
+        });
     }
   },
 
@@ -267,10 +293,10 @@ export default {
 .todos_container {
   scroll-padding: 40px 0;
   box-shadow: $box_shadow;
-  max-width: 15%;
+  max-width: 20%;
+  min-width: 15%;
 }
-.create_new_task_container{
-    line-height: 3em;
+.create_new_task_container {
+  line-height: 3em;
 }
-
 </style>

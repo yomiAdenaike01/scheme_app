@@ -33,8 +33,7 @@ export default {
     state.notes.push(payload);
   },
   UPDATE_TASKS(state, payload) {
-    console.log(payload);
-    // Vue.set(state, "tasks", payload);
+    Vue.set(state, "tasks", payload);
     // if (Array.isArray(payload)) {
     //   Vue.set(state, "tasks", payload);
     // }
