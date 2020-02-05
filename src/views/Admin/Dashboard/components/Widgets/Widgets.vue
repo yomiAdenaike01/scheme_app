@@ -87,6 +87,10 @@ export default {
 
       let percentageComplete = Math.round((completedCount / totalCount) * 100);
 
+      if (isNaN(percentageComplete)) {
+        percentageComplete = 0;
+      }
+
       return percentageComplete;
     },
 
