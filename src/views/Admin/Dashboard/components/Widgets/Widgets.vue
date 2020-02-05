@@ -19,7 +19,7 @@
           plain
           size="small"
           @click="$router.push({ name: 'utilities' })"
-          >View Todos</el-button
+          >View Tasks</el-button
         >
       </div>
     </el-card>
