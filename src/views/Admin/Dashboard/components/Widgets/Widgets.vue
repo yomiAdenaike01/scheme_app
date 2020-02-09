@@ -43,30 +43,51 @@
         </el-card>
       </el-col>
     </div>
-    <!-- Google calendar -->
-    <GoogleCalWidget />
+    <el-card
+      shadow="none"
+      class="flex_center columns google_cal_sync_container"
+    >
+      <Nocontent v-if="true" v-bind="errorDisplay">
+        <el-button size="mini" plain @click="configGoogleCal"
+          >Configure Google calendar</el-button
+        >
+      </Nocontent>
+      <div class="flex_center columns" v-else>
+        <el-button
+          class="no_events medium_icon"
+          circle
+          type="success"
+          icon="el-icon-check"
+        ></el-button>
+        <br />
+        <p>Successfully synced with google calendar</p>
+      </div>
+    </el-card>
   </el-col>
 </template>
 
 <script>
 import Title from "@/components/Title";
-import Chart from "@/components/Chart";
-import GoogleCalWidget from "./GoogleCalWidget";
-
+import Nocontent from "@/components/Nocontent";
 import moment from "moment";
 import { mapState, mapGetters, mapActions } from "vuex";
 export default {
   name: "Widgets",
+
   data() {
     return {
       weeklyTotals: {}
     };
   },
+
   created() {
-    this.request({
-      method: "GET",
-      url: "reports/weekly"
-    })
+    this.request(
+      {
+        method: "GET",
+        url: "reports/weekly"
+      },
+      false
+    )
       .then(response => {
         this.weeklyTotals = response;
       })
@@ -75,8 +96,19 @@ export default {
       });
   },
   computed: {
-    ...mapState(["clientInformation"]),
+    ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Admin", ["tasks"]),
+    hasGcal() {
+      return this.userInformation.gcalToken;
+    },
+    errorDisplay() {
+      return {
+        text:
+          "You have encountered a critical server error, to proceed please contact support so that this can be fixed",
+        icon: "el-icon-warning-outline",
+        buttonText: "Hello"
+      };
+    },
 
     progressIndicator() {
       const {
@@ -141,12 +173,25 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"])
+    ...mapActions(["request"]),
+    configGoogleCal() {
+      this.request({
+        method: "POST",
+        url: "services/googlecal",
+        data: { id: this.userInformation._id, returnPath: window.location.href }
+      })
+        .then(response => {
+          window.location.href = response;
+          // console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
   components: {
     Title,
-    Chart,
-    GoogleCalWidget
+    Nocontent
   }
 };
 

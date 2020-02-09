@@ -18,7 +18,7 @@
       <el-col v-for="(element, i) in panel" :key="i + index">
       
       </el-col>
-    </el-row> -->
+    </el-row>-->
   </div>
 </template>
 
@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       filters: {
-        assignedTo: "",
+        assignedTo: [],
         startDate: moment().toISOString(),
         endDate: moment().toISOString()
       }

@@ -32,7 +32,7 @@ $border: 1px solid #ebeef5;
   &:after {
     content: "";
     display: block;
-    margin-bottom: 100%;
+    margin-bottom: 10%;
   }
 }
 p,
@@ -65,6 +65,9 @@ h6 {
 .large_icon {
   font-size: 3em;
 }
+.medium_icon {
+  font-size: 2em;
+}
 .capitalize {
   text-transform: capitalize;
 }
@@ -73,6 +76,9 @@ h6 {
 }
 .l-height-large {
   line-height: 1.6em;
+}
+.no_events {
+  pointer-events: none;
 }
 #app {
   overflow: hidden;

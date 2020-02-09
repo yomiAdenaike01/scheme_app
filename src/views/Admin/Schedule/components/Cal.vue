@@ -6,6 +6,7 @@
       :events="returnShiftEvents"
       :default-view="ScheduleFilters"
       :on-event-click="viewShift"
+      events-on-month-view="short"
       editable-events
       @event-duration-change="changeShiftTime"
       :cell-click-hold="false"
@@ -100,9 +101,11 @@ export default {
         let shiftClass = type.replace(" ", "_").toLowerCase();
         let text = type;
 
-        if (Array.isArray(assignedTo)) {
-          text = `Multiple team member's ${type}`;
-        }
+        text = `${this.team.map(member => {
+          if (member._id == assignedTo) {
+            return member.name;
+          }
+        })} ${type}`;
 
         return {
           id: _id,

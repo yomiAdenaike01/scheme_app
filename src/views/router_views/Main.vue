@@ -10,7 +10,7 @@
         <!-- Server health -->
         <ServerHealth />
         <!-- Router view -->
-        <transition name="fade-transform" mode="out-in">
+        <transition tag="div" name="fade-transform" mode="out-in">
           <keep-alive>
             <router-view :key="key" />
           </keep-alive>
@@ -31,6 +31,7 @@ import ServerHealth from "@/components/ServerHealth";
 import CriticalError from "@/components/CriticalError";
 import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
+import { SlideXLeftTransition } from "vue2-transitions";
 
 export default {
   name: "Main",
@@ -152,7 +153,8 @@ export default {
     AppBar,
     NotificationsCenter,
     ServerHealth,
-    NprogressContainer
+    NprogressContainer,
+    SlideXLeftTransition
   },
   watch: {
     criticalNetworkError: {

@@ -1,8 +1,8 @@
 <template>
   <el-row
     class="schedule_container"
-    v-loading="false"
-    element-loading-text="Loading team members please wait..."
+    v-loading="loading"
+    element-loading-text="Loading team members and shifts please wait..."
   >
     <Title title="Schedule" subtitle="View your calendar" />
 
@@ -47,8 +47,11 @@ import Title from "@/components/Title";
 import ScheduleFilters from "./components/ScheduleFilters";
 export default {
   name: "Schedule",
-  deactivated() {
-    this.$destroy();
+  activated() {
+    this.loading = true;
+    Promise.all([this.getShifts(), this.getTeam()]).then(response => {
+      this.loading = false;
+    });
   },
   data() {
     return {
@@ -142,7 +145,7 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapActions("Admin", ["getShifts"]),
+    ...mapActions("Admin", ["getShifts", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
     refreshShifts() {

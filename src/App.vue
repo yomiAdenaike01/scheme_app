@@ -10,11 +10,17 @@
     client instance please wait....`
     "
   >
-    <transition name="el-fade-in">
+    <div class="h-100" v-if="!invalidClient && !criticalNetworkError">
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
-    </transition>
+    </div>
+
+    <InvalidClient
+      :invalidClient="invalidClient"
+      @getClient="getClient"
+      @toggle="invalidClient = $event"
+    />
   </div>
 </template>
 
@@ -75,9 +81,15 @@ export default {
     ...mapGetters(["isValidClient"]),
     loading() {
       // Check team and schedule
-      return (
-        this.team.length == 0 && Object.keys(this.clientInformation).length == 0
-      );
+      let res;
+      if (this.invalidClient || this.criticalNetworkError) {
+        res = false;
+      } else {
+        res =
+          this.team.length == 0 &&
+          Object.keys(this.clientInformation).length == 0;
+      }
+      return res;
     },
     runInterval() {
       return this.$route.name != "register" && this.isValidClient;
