@@ -47,7 +47,7 @@
       shadow="none"
       class="flex_center columns google_cal_sync_container"
     >
-      <Nocontent v-if="true" v-bind="errorDisplay">
+      <Nocontent v-if="!hasGcal" v-bind="errorDisplay">
         <el-button size="mini" plain @click="configGoogleCal"
           >Configure Google calendar</el-button
         >
@@ -99,7 +99,7 @@ export default {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Admin", ["tasks"]),
     hasGcal() {
-      return this.userInformation.gcalToken;
+      return Object.keys(this.userInformation.gcalToken).length > 0;
     },
     errorDisplay() {
       return {
