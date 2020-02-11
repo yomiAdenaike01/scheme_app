@@ -1,6 +1,5 @@
 <template>
   <el-row type="flex" class="user_container p-4">
-    <UserInformation class="ml-4" />
     <Group v-if="team.length > 0">
       <el-col>
         <UserTeamMember v-for="member in team" :key="member._id" :data="member" />

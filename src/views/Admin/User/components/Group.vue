@@ -48,6 +48,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .group_container {
-  width: 40%;
+  width: 100%;
 }
 </style>
