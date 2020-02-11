@@ -3,7 +3,7 @@
     <div v-if="clientInformation">
       <span class="desc">{{personalisationText}}</span>
     </div>
-    <ThemeSelection :colours="predefinedColours">
+    <ThemeSelection :predefineColors="predefinedColours">
       <!-- Display a row for the sidebar and the other colours -->
       <ColourUnit :colour="colour" v-for="colour in predefinedColours" :key="colour" />
     </ThemeSelection>
@@ -22,11 +22,14 @@ export default {
   name: "CompanyPersonalisation",
   props: {
     definedColours: Array | String,
-    predefinedColours: Array | String,
+    predefinedColours: {
+      type: Array,
+      default: []
+    },
     method: Function
   },
   computed: {
-    ...mapState(["clientInformation"]),
+    ...mapState(["clientInformation", "defaultCustomColours"]),
     hasCompanyImage() {
       return this.clientInformation.hasOwnProperty("image");
     },

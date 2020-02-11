@@ -12,7 +12,7 @@
       <!-- Notes header -->
       <div class="note_header p-3 flex_center">
         <Avatar :name="assignedTo.name" />
-        <span class="grey">{{assignedTo.employeeType}}</span>
+        <span class="grey">{{assignedTo.groupID}}</span>
       </div>
 
       <!-- Notes body -->
@@ -27,7 +27,7 @@ import Avatar from "@/components/Avatar";
 export default {
   name: "NoteItem",
   computed: {
-    ...mapState("Admin", ["team", "employeeTypes"]),
+    ...mapState("Admin", ["team", "groupIDs"]),
 
     isPrivate() {
       return this.note.public;
@@ -49,13 +49,11 @@ export default {
 
       if (teamMember) {
         assignedTo = teamMember;
-        assignedTo.employeeType = this.employeeTypes[
-          assignedTo.employeeType - 1
-        ].name;
+        assignedTo.groupID = this.groupIDs[assignedTo.groupID - 1].name;
       } else {
         assignedTo = {
           name: "John Doe",
-          employeeType: this.employeeTypes[1].name
+          groupID: this.groupIDs[1].name
         };
       }
       return assignedTo;

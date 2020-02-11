@@ -20,10 +20,6 @@
       @createEvent="createEvent"
       :display="modals['create_event']"
     />
-    <CreateEmployee
-      @toggle="modals['create_employee'] = $event"
-      :display="modals['create_employee']"
-    />
 
     <!-- Shift and calendar view -->
     <ScheduleFilters
@@ -38,7 +34,6 @@
 import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import CreateShift from "./components/CreateShift";
-import CreateEmployee from "./components/CreateEmployee";
 import Toolbar from "./components/Toolbar";
 import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";
@@ -218,7 +213,6 @@ export default {
     CreateShift,
     Dropdown,
     Popover,
-    CreateEmployee,
     Toolbar,
     ScheduleFilters
   }

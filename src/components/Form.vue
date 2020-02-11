@@ -1,15 +1,26 @@
 <template>
-  <el-form class="p-1" :inline="inline" :disabled="disableForm" :size="size">
-    <el-form-item
-      v-for="(input, index) in config"
-      :key="index"
-      :prop="input.name"
-      :label="input.label"
+  <div @keyup.enter="submitForm">
+    <el-form
+      class="p-1"
+      :inline="inline"
+      :disabled="disableForm"
+      :size="size"
+      ref="form"
+      :rules="form.validate"
+      :model="formContent"
     >
-      <component
-        :size="size"
-        class="dialog_item"
-        :is="
+      <el-form-item
+        v-for="(input, index) in form.formData"
+        :key="index"
+        :prop="input.name"
+        :label="input.label || ' '"
+        :required="!input.optional"
+        :rules="input.rules ? input.rules : null"
+      >
+        <component
+          :size="size"
+          class="dialog_item"
+          :is="
           input['component-type'] == 'text' ||
           input['component-type'] == 'password'
             ? 'el-input'
@@ -21,12 +32,12 @@
             ? 'el-input-number'
             : null
         "
-        v-model="formContent[input.model]"
-        :value-key="input.text || input.name"
-        :show-password="input['component-type'] == 'password'"
-        :min="input.min"
-        :max="input.max"
-        :type="
+          v-model="formContent[input.model]"
+          :value-key="input.text || input.name"
+          :show-password="input['component-type'] == 'password'"
+          :min="input.min"
+          :max="input.max"
+          :type="
           input['input-type'] == 'date'
             ? 'date'
             : input['input-type'] == 'date-time-range'
@@ -37,38 +48,36 @@
             ? 'datetime'
             : null
         "
-        v-bind="input"
-        :required="input.required"
-        :disabled="input.disabled"
-        :start-placeholder="input.start_placeholder"
-        :end-placeholder="input.end_placeholder"
-        :multiple="input.multiple"
-        :clearable="true"
-      >
-        <el-option
-          v-for="option in input.options"
-          :label="option.text || option.name"
-          :key="option.value"
-          :value="option.value ? option.value : option.text || option.name"
-          >{{ option.text || option.name }}</el-option
+          v-bind="input"
+          :disabled="input.disabled"
+          :start-placeholder="input.start_placeholder"
+          :end-placeholder="input.end_placeholder"
+          :multiple="input.multiple"
+          :clearable="true"
         >
-      </component>
-      <!-- Hint -->
-      <small class="description" v-if="input.hint" v-html="input.hint"></small>
-    </el-form-item>
+          <el-option
+            v-for="option in input.options"
+            :label="option.text || option.name"
+            :key="option.value"
+            :value="option.value ? option.value : option.text || option.name"
+          >{{ option.text || option.name }}</el-option>
+        </component>
+        <!-- Hint -->
+        <small class="description" v-if="input.hint" v-html="input.hint"></small>
+      </el-form-item>
 
-    <!-- Submit button -->
-    <div class="button_container mt-4" v-if="!disable">
-      <el-button
-        size="mini"
-        type="primary"
-        class="button_text"
-        round
-        @click="submitForm"
-        >{{ submitText }}</el-button
-      >
-    </div>
-  </el-form>
+      <!-- Submit button -->
+      <div class="button_container mt-4" v-if="!disable">
+        <el-button
+          size="mini"
+          type="primary"
+          class="button_text"
+          round
+          @click="submitForm"
+        >{{ submitText }}</el-button>
+      </div>
+    </el-form>
+  </div>
 </template>
 
 <script>
@@ -107,8 +116,7 @@ export default {
       default: "Submit"
     },
     config: {
-      type: Array,
-      default: null
+      type: Array
     },
     customMethod: {
       type: Function,
@@ -123,10 +131,57 @@ export default {
       default: false
     }
   },
+  computed: {
+    form() {
+      let validate = {};
+      let form = [...this.config];
+      for (let i = 0, len = form.length; i < len; i++) {
+        let formItem = form[i];
+        let formItemName = formItem.hasOwnProperty("name")
+          ? formItem.name
+          : formItem.model;
+        if (!formItem.hasOwnProperty("optional")) {
+          let validArr = [];
+          let validObj = {
+            required: true,
+            trigger: "blur",
+            message: "Please fill in the following",
+            name: formItemName
+          };
+
+          if (!formItem.hasOwnProperty("name")) {
+            formItem.name = formItem.model;
+          }
+
+          validArr.push(validObj);
+
+          validate[formItem.name] = validArr;
+        }
+      }
+      return {
+        formData: this.config,
+        validate
+      };
+    }
+  },
   methods: {
-    submitForm() {
+    resetForm() {
+      this.$refs.form.resetFields();
+    },
+    runValidation() {
+      return new Promise((resolve, reject) => {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            resolve(valid);
+          } else {
+            reject(false);
+          }
+        });
+      });
+    },
+    completeForm() {
       this.$emit("val", this.formContent);
-      // comments
+
       if (this.customMethod) {
         this.customMethod();
       }
@@ -134,6 +189,15 @@ export default {
       if (this.nextTab) {
         this.$emit("changeTab");
       }
+    },
+    submitForm() {
+      this.runValidation()
+        .then(response => {
+          this.completeForm();
+        })
+        .catch(error => {
+          return error;
+        });
     }
   },
   watch: {

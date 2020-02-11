@@ -27,6 +27,18 @@ $border: 1px solid #ebeef5;
     text-decoration: line-through;
   }
 }
+
+.logo {
+  padding: 5px 19px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    rgba(42, 104, 212, 1) 0%,
+    rgba(42, 140, 212, 1) 80%
+  );
+  color: white;
+  font-weight: bold;
+}
 .overflow {
   overflow: auto;
   &:after {
@@ -195,6 +207,9 @@ a {
 }
 .rounded_image {
   border-radius: 10px;
+}
+.borderless {
+  border: none;
 }
 .flex {
   display: flex;

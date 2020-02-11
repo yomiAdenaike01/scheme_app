@@ -20,17 +20,19 @@ export default {
     return false;
   },
   getIsAdmin(state) {
-    const employeeType = state.userInformation.employeeType;
-    return employeeType == 1 || employeeType == "Admin";
+    const groupID = state.userInformation.groupID;
+    return groupID == 1 || groupID == "Admin";
   },
   getClientColours(state) {
     return state.clientInformation.colours;
-    
   },
   getName(state) {
     return state.userInformation.name.trim().toLowerCase();
   },
   getGuide() {
     return guide;
+  },
+  getDefaultColour(state) {
+    return state.defaultCustomColours[0];
   }
 };

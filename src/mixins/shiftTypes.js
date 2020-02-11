@@ -8,7 +8,7 @@ export default {
   methods: {
     returnShiftTypes(toRemove, property) {
       const types = this.shiftTypes;
-      let { employeeType } = this.userInformation;
+      let { groupID } = this.userInformation;
 
       let _types = [];
       const len = types.length;
@@ -22,7 +22,7 @@ export default {
           }
         }
 
-        if (value == 2 && employeeType != 2) {
+        if (value == 2 && groupID != 2) {
           continue;
         }
 
@@ -30,7 +30,6 @@ export default {
           name,
           [property]: value
         });
-        
       }
       return _types;
     }

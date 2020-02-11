@@ -1,8 +1,5 @@
 ]<template>
-  <div
-    class="mb-3 shift_container rounded shadow"
-    :class="{ myShift: isShiftMine }"
-  >
+  <div class="mb-3 shift_container rounded shadow" :class="{ myShift: isShiftMine }">
     <el-row type="flex">
       <el-col class="shift_details_container details_unit p-2">
         <h5 class="member_name">{{ getShiftType }}</h5>
@@ -14,28 +11,22 @@
           v-if="approval.boolean"
           :value="approval.text"
           type="success"
-          >{{ approval.text }}</el-tag
-        >
-        <el-tag v-else effect="dark" size="small" type="danger"
-          >Not approved</el-tag
-        >
+        >{{ approval.text }}</el-tag>
+        <el-tag v-else effect="dark" size="small" type="danger">Not approved</el-tag>
 
-        <el-tag effect="dark" size="small" class="capitalize" type="primary">{{
+        <el-tag effect="dark" size="small" class="capitalize" type="primary">
+          {{
           shift.timeTag
-        }}</el-tag>
+          }}
+        </el-tag>
       </el-col>
 
       <el-col :class="['shift_times flex details_unit', shift.class]">
         <div class="flex_center">
           <span class="date">{{ formattedDates.start }}</span>
           <div class="flex_center columns">
-            <i
-              style="font-size:1.3em"
-              class="el-icon el-icon-right p-0 m-0 grey"
-            ></i>
-            <span class="time_diff grey"
-              >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
-            >
+            <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
+            <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
           </div>
           <span class="date">{{ formattedDates.end }}</span>
         </div>
@@ -72,7 +63,7 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapState("Admin", ["employeeTypes", "shiftTypes", "team"]),
+    ...mapState("Admin", ["groupIDs", "shiftTypes", "team"]),
     isShiftMine() {
       return (
         this.shift.assignedTo == this.userInformation._id || this.getIsAdmin
@@ -157,8 +148,8 @@ export default {
       let type = this.shift.type - 1;
       return this.shiftTypes[type].name;
     },
-    getEmployeeType() {
-      return this.convertEmployeeType(this.shift.user);
+    getgroupID() {
+      return this.convertgroupID(this.shift.user);
     }
   },
   methods: {

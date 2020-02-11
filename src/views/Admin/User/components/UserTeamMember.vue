@@ -1,6 +1,6 @@
 <template>
   <div
-    class="team_member flex p-4 "
+    class="team_member flex p-4 mt-1"
     @click="UPDATE_VIEW_TEAM_MEMBER({ view: true, id: data._id })"
   >
     <Avatar :name="data.name" />
@@ -8,7 +8,7 @@
     <div class="flex columns">
       <div class="text_content ml-2">
         <p class="rbold m-0 p-0">{{ data.name }}</p>
-        <small>{{ employeeTypes[data.employeeType - 1].name }}</small>
+        <small>{{ groupIDs[data.groupID - 1].name }}</small>
       </div>
     </div>
   </div>
@@ -25,7 +25,7 @@ export default {
     data: Object
   },
   computed: {
-    ...mapState("Admin", ["employeeTypes"])
+    ...mapState("Admin", ["groupIDs"])
   },
   methods: {
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"])
@@ -39,7 +39,7 @@ export default {
 
 <style lang="scss" scoped>
 .team_member {
-  border-bottom: $border;
+  border: $border;
   overflow-x: hidden;
   transition: 0.56s ease background;
   cursor: pointer;

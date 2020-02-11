@@ -6,6 +6,7 @@ import state from "./state";
 import actions from "./actions";
 import getters from "./getters";
 import mutations from "./mutations";
+import VuexReset from "@ianwalter/vuex-reset";
 
 Vue.use(Vuex);
 
@@ -16,6 +17,6 @@ export default new Vuex.Store({
   actions: actions,
   getters: getters,
 
-  modules: { Comms, Admin }
-  // plugins: [VuexReset({ trigger: 'REMOVE_USER' })]
+  modules: { Comms, Admin },
+  plugins: [VuexReset({ trigger: "REMOVE_USER" })]
 });

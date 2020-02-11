@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     ...mapGetters(["isValidClient"]),
-  ...mapState(["clientInformation"]),
+    ...mapState(["clientInformation"]),
     selectedForm() {
       if (this.tabIndex == "0") {
         return "login";
@@ -132,18 +132,19 @@ export default {
         forgotPassword: [
           {
             name: "email",
-"component-type":"text",            placeholder: "Email",
+            "component-type": "text",
+            placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-           "component-type":"password",
+            "component-type": "password",
             placeholder: "Password",
             model: "password"
           },
           {
             name: "Verify password",
-           "component-type":"password",
+            "component-type": "password",
             placeholder: "Verify Password",
             model: "verify_password"
           }
@@ -151,12 +152,13 @@ export default {
         login: [
           {
             name: "email",
-"component-type":"text",            placeholder: "Email",
+            "component-type": "text",
+            placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-           "component-type":"password",
+            "component-type": "password",
             placeholder: "Password",
             model: "password"
           }
@@ -164,18 +166,20 @@ export default {
         register: [
           {
             name: "name",
-"component-type":"text",            placeholder: "First and last name",
+            "component-type": "text",
+            placeholder: "First and last name",
             model: "name"
           },
           {
             name: "email",
-"component-type":"text",            placeholder: "Email",
+            "component-type": "text",
+            placeholder: "Email",
             model: "email"
           },
 
           {
             name: "password",
-           "component-type":"password",
+            "component-type": "password",
             placeholder: "New password",
             model: "password"
           },
@@ -211,7 +215,7 @@ export default {
             name: "locumn",
             type: "select",
             placeholder: "Are you a locumn ?",
-            model: "employeeType",
+            model: "groupID",
             options: [
               {
                 text: "Yes",
@@ -282,9 +286,9 @@ export default {
         this.forgotPassword();
       } else if (this.selectedForm == "register") {
         //Change employee type
-        this.formModel.login.employeeType == "Yes"
-          ? this.$set(this.formModel.register, "employeeType", 3)
-          : this.$set(this.formModel.register, "employeeType", 2);
+        this.formModel.login.groupID == "Yes"
+          ? this.$set(this.formModel.register, "groupID", 3)
+          : this.$set(this.formModel.register, "groupID", 2);
       }
       this.loading = true;
 

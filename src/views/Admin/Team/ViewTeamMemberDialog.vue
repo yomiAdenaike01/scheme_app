@@ -1,9 +1,5 @@
 <template>
-  <el-dialog
-    :visible.sync="toggleView"
-    v-if="getUserInfo"
-    custom-class="teamMemberDialogContainer"
-  >
+  <el-dialog :visible.sync="toggleView" v-if="getUserInfo" custom-class="teamMemberDialogContainer">
     <el-row type="flex">
       <el-col>
         <Sidebar
@@ -13,10 +9,7 @@
           :tabItems="tabItems"
         >
           <div class="content_body">
-            <component
-              :is="returnCorrectData.component"
-              :data="returnCorrectData.props"
-            />
+            <component :is="returnCorrectData.component" :data="returnCorrectData.props" />
           </div>
         </Sidebar>
       </el-col>
@@ -109,7 +102,7 @@ export default {
     },
     getSimilarTeamMembers() {
       return this.team.filter(member => {
-        return member.employeeType == this.getUserInfo.employeeType;
+        return member.groupID == this.getUserInfo.groupID;
       });
     }
   },

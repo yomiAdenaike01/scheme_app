@@ -5,7 +5,7 @@
         title="Events"
         subtitle="View all categorised events below. Feel free to make updates as you see fit."
       />
-      <el-card class=" mt-3 rounded" v-if="!returnAnyShifts" shadow="none">
+      <el-card class="mt-3 rounded" v-if="!returnAnyShifts" shadow="none">
         <Title
           :title="noShiftsContent.title"
           :subtitle="noShiftsContent.subtitle"
@@ -16,17 +16,13 @@
             size="small"
             plain
             @click="$router.push({ name: 'schedule' })"
-            >{{ noShiftsContent.buttonText }}</el-button
-          >
+          >{{ noShiftsContent.buttonText }}</el-button>
         </Title>
       </el-card>
 
       <!-- SHIFTS IN CATEGORIES -->
       <transition-group name="el-fade-in" tag="div">
-        <el-col
-          v-for="(category, index) in categorisedShifts"
-          :key="index"
-        >
+        <el-col v-for="(category, index) in categorisedShifts" :key="index">
           <Shift v-for="(shift, key) in category" :key="key" :shift="shift" />
         </el-col>
       </transition-group>
@@ -63,7 +59,7 @@ export default {
   mixins: [dates, employeeMethods],
   computed: {
     ...mapState(["userInformation", "userNotifications"]),
-    ...mapState("Admin", ["shifts", "team", "shiftTypes", "employeeTypes"]),
+    ...mapState("Admin", ["shifts", "team", "shiftTypes", "groupIDs"]),
     ...mapGetters(["getIsAdmin"]),
     categorisedShifts() {
       let { today, upcoming, previous } = this.shifts;

@@ -6,7 +6,7 @@
       @deleteContent="fileContent = $event"
       @val="createOneEmployee"
       :disableForm="fileContent != null"
-       v-loading="loading"
+      v-loading="loading"
     >
       <div slot="header_content">
         <Title
@@ -136,8 +136,8 @@ export default {
           placeholder: "Phone Number"
         },
         {
-          name: "employeeType",
-          model: "employeeType",
+          name: "groupID",
+          model: "groupID",
           placeholder: "Employee type",
           "component-type": "select",
           options: [
@@ -172,22 +172,26 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
-    createOneEmployee(employee){
+    createOneEmployee(employee) {
       this.loading = true;
-         this.request({
-          method: "POST",
-          url:"users/register/one",
-          data: { ...employee,clientID:this.clientInformation._id, adminGen:true }
+      this.request({
+        method: "POST",
+        url: "users/register/one",
+        data: {
+          ...employee,
+          clientID: this.clientInformation._id,
+          adminGen: true
+        }
+      })
+        .then(response => {
+          this.loading = false;
+          this.view = false;
         })
-          .then(response => {
-            this.loading = false;
-            this.view = false;
-          })
-          .catch(error => {
-            this.loading = false;
-            console.error(error);
-            return error
-            });
+        .catch(error => {
+          this.loading = false;
+          console.error(error);
+          return error;
+        });
     },
 
     async cleanData(JSONData) {
@@ -225,7 +229,6 @@ export default {
       return new Promise((resolve, reject) => {
         let url = "users/register/multiple";
 
-      
         this.request({
           method: "POST",
           url,

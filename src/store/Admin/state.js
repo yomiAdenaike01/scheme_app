@@ -67,7 +67,7 @@ export default {
   requests: [],
   viewTeamMember: { view: false, id: null },
   // 1 (admin), 2(Normal), 3(Locumn)
-  employeeTypes: [
+  groupIDs: [
     {
       name: "System Administrator",
       value: 1

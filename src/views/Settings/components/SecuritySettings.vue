@@ -90,7 +90,7 @@ export default {
         url: "users/update",
         data: {
           update: {
-            employeeType: 1
+            groupID: 1
           }
         }
       })

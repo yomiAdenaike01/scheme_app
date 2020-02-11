@@ -47,7 +47,7 @@ export default {
         userInformation: {},
         clientInformation: {}
       },
-      colourOptions: "",
+      colourOptions: [],
       loading: false,
       imageFile: ""
     };
@@ -97,7 +97,7 @@ export default {
           view: {
             component: CompanyPersonlisation,
             props: {
-              predefinedColours: [this.colourOptions],
+              predefinedColours: this.colourOptions,
               method: this.registerNewClient
             }
           }
@@ -115,9 +115,11 @@ export default {
         {
           model: "phone",
           "component-type": "text",
-          placeholder: "Company Phone Number"
+          placeholder: "Company Phone Number",
+          type: "number"
         },
         {
+          optional: true,
           model: "subdomain",
           "component-type": "text",
           placeholder: ".schemeapp.cloud",
@@ -127,7 +129,6 @@ export default {
     },
 
     returnRegisterForm() {
-      let clientInformation = {};
       return [
         {
           name: "name",
@@ -186,9 +187,11 @@ export default {
         Vibrant.from(this.imageFileContent).getPalette((err, palette) => {
           if (!err) {
             this.loading = false;
-            this.colourOptions = palette.Vibrant.hex;
+            this.colourOptions.push(palette.Vibrant.hex);
           }
         });
+      } else {
+        return "rgba(42, 104, 212, 1)";
       }
     },
 
@@ -197,43 +200,46 @@ export default {
 
       let { clientInformation } = this.clientRegForm;
 
-      clientInformation.name = clientInformation.name
-        .replace(" ", "")
-        .toLowerCase();
-
       clientInformation.colours = this.colourOptions;
 
-      this.upload({
-        ref: { folder: "clients", file: null },
-        content: this.imageFileContent
+      if (this.imageFileContent) {
+        this.upload({
+          ref: { folder: "clients", file: null },
+          content: this.imageFileContent
+        })
+          .then(response => {
+            clientInformation.image = response.url;
+            clientInformation.storageRef = response.ref;
+
+            this.submitClient(this.clientRegForm);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else {
+        this.submitClient(this.clientRegForm);
+      }
+    },
+    submitClient(form) {
+      this.request({
+        method: "POST",
+        url: "clients/create",
+        data: form
       })
         .then(response => {
-          clientInformation.image = response.url;
-          clientInformation.storageRef = response.ref;
-
-          this.request({
-            method: "POST",
-            url: "clients/create",
-            data: this.clientRegForm
-          })
-            .then(response => {
-              // log them in
-              this.loading = false;
-              this.processNewClient(response);
-            })
-            .catch(error => {
-              this.loading = false;
-              console.error(error);
-            });
+          // log them in
+          this.loading = false;
+          this.processNewClient();
         })
         .catch(error => {
+          this.loading = false;
           console.error(error);
         });
     },
-    processNewClient(response) {
-      this.refactorWindowLocation(
-        this.clientRegForm.clientInformation.subdomain.replace(" ", "").toLowerCase()
-      );
+    processNewClient() {
+      let { name } = this.clientRegForm.clientInformation;
+      let subdomain = name.toLowerCase().trim();
+      this.refactorWindowLocation(subdomain);
     }
   },
   components: {

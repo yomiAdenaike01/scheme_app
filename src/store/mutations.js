@@ -1,6 +1,7 @@
 import sounds from "@/mixins/playSound";
 import alterTheme from "@/mixins/alterTheme";
 import Vue from "vue";
+import router from "../router";
 Vue.mixin(alterTheme);
 
 export default {
@@ -20,6 +21,10 @@ export default {
 
       document.head.appendChild(styleTag);
     }
+  },
+  UPDATE_INVALID_CLIENT(state, payload) {
+    Vue.set(state, "invalidClient", payload);
+    router.push({ name: "clientIntro" });
   },
   UPDATE_CLIENT(state, payload) {
     Vue.set(state, "clientInformation", payload);

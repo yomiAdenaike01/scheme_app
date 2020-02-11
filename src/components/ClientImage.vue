@@ -1,14 +1,10 @@
 <template>
   <div :class="['image_wrapper', { flex_center: center }]">
     <transition name="el-fade-in">
-      <el-image
-        v-if="getClient || image"
-        :src="showClient ? getClient.image : image"
-        fit="cover"
-      >
-        <!-- <div slot="error" class="error_image_slot">
-          <i :class="[`error_icon ${icon}`]"></i>
-        </div> -->
+      <el-image v-if="getClient || image" :src="showClient ? getClient.image : image" fit="cover">
+        <div slot="error" class="error_image_slot">
+          <FullLogo />
+        </div>
       </el-image>
     </transition>
   </div>
@@ -16,6 +12,7 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
+import FullLogo from "./FullLogo";
 export default {
   name: "ClientImage",
   data() {
@@ -48,6 +45,9 @@ export default {
   },
   computed: {
     ...mapGetters(["getClient"])
+  },
+  components: {
+    FullLogo
   }
 };
 </script>
@@ -55,7 +55,7 @@ export default {
 <style lang="scss" scoped>
 .image_wrapper {
   .el-image {
-    max-width: 100px;
+    max-width: 300px;
   }
 }
 .flex_center {

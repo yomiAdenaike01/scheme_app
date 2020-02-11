@@ -3,14 +3,10 @@
     <header>
       <Avatar :name="userInformation.name" />
       <p class="bold">{{ userInformation.name }}</p>
-      <p>{{ employeeTypes[userInformation.employeeType - 1].name }}</p>
+      <p>{{ groupIDs[userInformation.groupID - 1].name }}</p>
     </header>
     <div class="mt-4">
-      <p
-        class="p-1"
-        v-for="(property, value) in cleanuserInformation"
-        :key="property"
-      >
+      <p class="p-1" v-for="(property, value) in cleanuserInformation" :key="property">
         {{ `${value}: ${property}` }}
         <el-divider></el-divider>
       </p>
@@ -32,7 +28,7 @@ export default {
   name: "UserInformation",
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["employeeTypes"]),
+    ...mapState("Admin", ["groupIDs"]),
 
     colourSettings() {
       return this.userInformation.settings.colourSettings.accent;

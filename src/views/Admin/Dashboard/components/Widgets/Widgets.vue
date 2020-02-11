@@ -5,62 +5,38 @@
       <div class="tasks_widget_container flex_center columns">
         <p class="light txt_center mb-1">Total Task Progress</p>
         <small class="grey">Total percentage of all completed tasks</small>
-        <el-progress
-          class="mb-3 mt-3"
-          :width="200"
-          type="circle"
-          :percentage="progressIndicator"
-        ></el-progress>
+        <el-progress class="mb-3 mt-3" :width="200" type="circle" :percentage="progressIndicator"></el-progress>
 
-        <el-button
-          plain
-          size="small"
-          @click="$router.push({ name: 'utilities' })"
-          >View Tasks</el-button
-        >
+        <el-button plain size="small" @click="$router.push({ name: 'utilities' })">View Tasks</el-button>
       </div>
     </el-card>
 
     <!-- Metrics widgets -->
-    <div class="flex_center">
-      <el-col
-        class="metrics_summary_container"
-        type="flex"
-        v-for="(content, key) in weeklyTotals"
-        :key="key"
-      >
-        <el-card class="m-1 h-100 flex_center" shadow="none">
+    <el-row type="flex" class="flex_center">
+      <el-col class="metrics_summary_container" v-for="(content, key) in weeklyTotals" :key="key">
+        <el-card class="mt-1 ml-2 h-100 flex_center" shadow="none">
           <div class="flex_center columns">
             <h3 class="m-0 p-0">
               {{
-                content.result.hasOwnProperty("name")
-                  ? content.result.name
-                  : content.result
+              content.result.hasOwnProperty("name")
+              ? content.result.name
+              : content.result
               }}
             </h3>
             <Title defaultClass="m-0" :subtitle="content.label" />
           </div>
         </el-card>
       </el-col>
-    </div>
-    <el-card
-      shadow="none"
-      class="flex_center columns google_cal_sync_container"
-    >
-      <Nocontent v-if="!hasGcal" v-bind="errorDisplay">
-        <el-button size="mini" plain @click="configGoogleCal"
-          >Configure Google calendar</el-button
-        >
+    </el-row>
+    <!-- Google cal widgets -->
+    <el-card shadow="none" class="flex_center columns mt-3">
+      <Nocontent v-if="true" v-bind="errorDisplay">
+        <el-button size="mini" plain @click="configGoogleCal">Configure Google calendar</el-button>
       </Nocontent>
       <div class="flex_center columns" v-else>
-        <el-button
-          class="no_events medium_icon"
-          circle
-          type="success"
-          icon="el-icon-check"
-        ></el-button>
+        <el-button class="no_events medium_icon" circle type="success" icon="el-icon-check"></el-button>
         <br />
-        <p>Successfully synced with google calendar</p>
+        <small>Successfully synced with google calendar</small>
       </div>
     </el-card>
   </el-col>
@@ -99,14 +75,13 @@ export default {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Admin", ["tasks"]),
     hasGcal() {
-      return Object.keys(this.userInformation.gcalToken).length > 0;
+      return this.userInformation.gcalToken;
     },
     errorDisplay() {
       return {
         text:
-          "You have encountered a critical server error, to proceed please contact support so that this can be fixed",
-        icon: "el-icon-warning-outline",
-        buttonText: "Hello"
+          "You have not integrated google calendar with scheme cloud click the button to sync",
+        icon: "el-icon-warning-outline"
       };
     },
 

@@ -1,63 +1,63 @@
 export default {
   methods: {
-    convertEmployeeType(type) {
-      let employeeTitle
+    convertgroupID(type) {
+      let employeeTitle;
       switch (type) {
         case 1: {
-          employeeTitle = 'Admin'
-          break
+          employeeTitle = "Admin";
+          break;
         }
         case 2: {
-          employeeTitle = 'Regular Staff'
+          employeeTitle = "Regular Staff";
 
-          break
+          break;
         }
         case 3: {
-          employeeTitle = 'Locumn'
+          employeeTitle = "Locumn";
 
-          break
+          break;
         }
         default:
-          break
+          break;
       }
-      return employeeTitle
+      return employeeTitle;
     },
     convertShift(type) {
-      let shiftTitle, shiftClass
+      let shiftTitle, shiftClass;
       switch (type) {
         case 1: {
-          shiftClass = 'normal_staff'
-          shiftTitle = 'Regular shift'
-          break
+          shiftClass = "normal_staff";
+          shiftTitle = "Regular shift";
+          break;
         }
         case 2: {
-          shiftClass = 'locumn'
-          shiftTitle = 'Locumn shift'
+          shiftClass = "locumn";
+          shiftTitle = "Locumn shift";
 
-          break
+          break;
         }
         case 3: {
-          shiftClass = 'holiday'
-          shiftTitle = 'Holiday'
+          shiftClass = "holiday";
+          shiftTitle = "Holiday";
 
-          break
+          break;
         }
         case 4: {
-          shiftClass = 'time_off'
-          shiftTitle = 'Time off'
+          shiftClass = "time_off";
+          shiftTitle = "Time off";
 
-          break
+          break;
         }
         case 5: {
-          shiftClass = 'sick_leave'
-          shiftTitle = 'Sick leave'
+          shiftClass = "sick_leave";
+          shiftTitle = "Sick leave";
 
-          break
+          break;
         }
         default:
-          break
+          break;
       }
-      return { title: shiftTitle, class: shiftClass }
+      return { title: shiftTitle, class: shiftClass };
     }
   }
-}
+};

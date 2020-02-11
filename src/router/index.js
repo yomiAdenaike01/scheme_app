@@ -10,6 +10,8 @@ const messenger = () => import("@/views/Comms/Messenger");
 const reports = () => import("@/views/Admin/Reports/Reports");
 const user = () => import("@/views/Admin/User/User");
 const utilities = () => import("@/views/Admin/Utilities/Utilities");
+const clientIntro = () => import("@/components/ClientIntro");
+
 // const featurerequest = () => import("@/views/Admin/FeatureRequest");
 
 // Router views
@@ -23,6 +25,11 @@ const routes = [
   {
     path: "/",
     redirect: { name: "login" }
+  },
+  {
+    path: "/intro",
+    name: "clientIntro",
+    component: clientIntro
   },
   {
     path: "/main",

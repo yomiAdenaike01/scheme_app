@@ -16,8 +16,7 @@
             ? button.method
             : null
         "
-        >{{ button.label }}</el-button
-      >
+      >{{ button.label }}</el-button>
     </el-col>
   </el-row>
 </template>
@@ -60,14 +59,6 @@ export default {
           icon: this.renderCreateEventButton.icon
         }
       ];
-      if (this.getIsAdmin) {
-        buttons.push({
-          label: "Create employee",
-          emit: "create_employee",
-          round: true,
-          icon: "el-icon-user"
-        });
-      }
       return buttons;
     }
   }

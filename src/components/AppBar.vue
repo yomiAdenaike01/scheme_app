@@ -1,7 +1,9 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
     <el-col class="client_indicator" :style="{ borderRight: `1.5px solid #efefef` }">
-      <ClientImage v-if="$mq == 'lg'" :responsive="true" :center="true" />
+      <div class="client_image_container p-2" v-if="$mq == 'lg'">
+        <ClientImage :responsive="true" :center="true" />
+      </div>
       <div v-else class="nav_toggle" @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)">
         <i class="el-icon el-icon-menu"></i>
       </div>

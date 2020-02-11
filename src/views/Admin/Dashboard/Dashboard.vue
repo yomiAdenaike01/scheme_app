@@ -1,5 +1,5 @@
 <template>
-  <div class="h-100">
+  <div class="h-100 overflow">
     <el-row class="h-100">
       <el-row :type="$mq == 'lg' ? 'flex' : null" class="h-100 pl-2">
         <Shifts />

@@ -10,17 +10,11 @@
     client instance please wait....`
     "
   >
-    <div class="h-100" v-if="!invalidClient && !criticalNetworkError">
+    <div class="h-100" v-if="!criticalNetworkError">
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
     </div>
-
-    <InvalidClient
-      :invalidClient="invalidClient"
-      @getClient="getClient"
-      @toggle="invalidClient = $event"
-    />
   </div>
 </template>
 
@@ -28,16 +22,16 @@
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
-import InvalidClient from "@/components/InvalidClient";
 import alterTheme from "@/mixins/alterTheme";
 import CriticalError from "@/components/CriticalError";
+import ClientIntro from "@/components/ClientIntro";
+
 export default {
   name: "app",
   data() {
     return {
       clientName: "",
       clientInterval: null,
-      invalidClient: false,
       windowClient: window.location.hostname.toString().split("."),
       runLoading: true
     };
@@ -53,7 +47,7 @@ export default {
           let response = await this.getClient();
           this.UPDATE_CLIENT(response);
         } catch (error) {
-          this.genError(error);
+          console.log(error);
         }
       }, this.requestIntervals.client);
     } else {
@@ -61,7 +55,8 @@ export default {
         let response = await this.getClient();
         this.UPDATE_CLIENT(response);
       } catch (error) {
-        this.genError(error, false);
+        this.UPDATE_INVALID_CLIENT({ display: true, error: true });
+        console.log(error);
       }
     }
   },
@@ -75,43 +70,35 @@ export default {
       "userInformation",
       "defaultSize",
       "clientInformation",
-      "criticalNetworkError"
+      "criticalNetworkError",
+      "invalidClient"
     ]),
     ...mapState("Admin", ["team", "shifts"]),
+
     ...mapGetters(["isValidClient"]),
+
     loading() {
       // Check team and schedule
       let res;
-      if (this.invalidClient || this.criticalNetworkError) {
+      if (this.criticalNetworkError || this.invalidClient.display) {
         res = false;
       } else {
-        res =
-          this.team.length == 0 &&
-          Object.keys(this.clientInformation).length == 0;
+        res = Object.keys(this.clientInformation).length == 0;
       }
       return res;
     },
     runInterval() {
-      return this.$route.name != "register" && this.isValidClient;
+      return (
+        this.$route.name != "register" && this.isValidClient && !this.noClient
+      );
     }
   },
   mixins: [refactorLocation, alterTheme],
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
+    ...mapMutations(["UPDATE_CLIENT", "UPDATE_INVALID_CLIENT", "SET_THEME"]),
 
-    genError(error, displayDialog) {
-      if (!displayDialog) {
-        this.invalidClient = false;
-      }
-      this.clientInterval = null;
-      this.loading = false;
-      this.invalidClient = true;
-
-      console.error(error);
-    },
-
-    getClient() {
+    getClient(clientName) {
       return new Promise((resolve, reject) => {
         let currentHostname = window.location.hostname.split(".");
 
@@ -131,6 +118,7 @@ export default {
               resolve(response);
             })
             .catch(error => {
+              this.UPDATE_INVALID_CLIENT({ display: true, error: true });
               reject(error);
             });
         } else {
@@ -141,8 +129,8 @@ export default {
   },
   components: {
     Title,
-    InvalidClient,
-    CriticalError
+    CriticalError,
+    ClientIntro
   },
 
   watch: {
