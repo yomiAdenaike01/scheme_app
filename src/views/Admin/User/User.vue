@@ -1,5 +1,7 @@
 <template>
   <el-row type="flex" class="user_container p-4">
+    <Group addNew @createUser="createEmployee = $event" />
+
     <Group v-if="team.length > 0">
       <el-col>
         <UserTeamMember v-for="member in team" :key="member._id" :data="member" />
@@ -74,7 +76,7 @@ export default {
 <style lang="scss" scoped>
 .user_container {
   font-size: 0.9em;
-  height: 50%;
+  height: 90%;
 }
 .current_user_column {
   max-width: 30%;

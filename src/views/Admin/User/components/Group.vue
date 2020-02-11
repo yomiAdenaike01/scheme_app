@@ -1,5 +1,5 @@
 <template>
-  <div class="group_container shadow m-3 p-3">
+  <div class="group_container shadow m-4">
     <div class="flex_center columns">
       <div v-if="!addNew">
         <el-button class="grey large_icon no_events borderless" icon="el-icon-user"></el-button>
@@ -48,6 +48,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .group_container {
-  width: 100%;
+  width: 50%;
 }
 </style>
