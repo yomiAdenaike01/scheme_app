@@ -7,9 +7,7 @@
         { healthy: serverHealth.healthy },
         { unhealthy: !serverHealth.healthy }
       ]"
-    >
-      {{ displayText }}
-    </div>
+    >{{ displayText }}</div>
   </transition>
 </template>
 
@@ -40,7 +38,12 @@ export default {
   background: whitesmoke;
   color: white;
   &.healthy {
-    background: $success_colour;
+    // background: #13547a;
+    background-image: linear-gradient(
+      150deg,
+      $primary_colour 10%,
+      #80d0c7 200%
+    );
   }
   &.unhealthy {
     background: $error_colour;

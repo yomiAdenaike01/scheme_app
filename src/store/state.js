@@ -49,7 +49,7 @@ export default {
     isError: false
   },
   defaultCustomColours: [
-    "rgba(42, 104, 212, 1)",
+    vars.default,
     "#ff4500",
     "#ff8c00",
     "#ffd700",

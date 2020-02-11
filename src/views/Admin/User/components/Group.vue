@@ -9,16 +9,15 @@
 
     <div v-if="addNew" class="flex_center columns new_group_container h-100">
       <Icon class="large_icon grey mb-5" icon="el-icon-user" :bg="getDefaultColour" />
-      <h2 class="large">Create new user group</h2>
-      <small class="grey">Creating a new user group means new tasks and new shift groups</small>
+      <h2 class="large">Create User Group</h2>
+      <small class="grey">Create a new user group and assign users</small>
       <el-button
-        size="mini"
         class="mt-4"
-        type="primary"
         icon="el-icon-plus"
-        round
+        circle
+        type="primary"
         @click="$emit('createUser',true)"
-      >Create new user group</el-button>
+      ></el-button>
     </div>
   </div>
 </template>
@@ -48,9 +47,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.new_group_indicator {
-  color: rgb(226, 226, 226);
-}
-.new_group_container {
+.group_container {
+  width: 40%;
 }
 </style>

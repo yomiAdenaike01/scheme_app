@@ -19,6 +19,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .icon_container {
+  background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
+
   border-radius: 50%;
   padding: 5px 14px;
   i {
