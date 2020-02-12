@@ -53,7 +53,6 @@ export default {
     }
 
     this.displayWeeklyTimesheetNotification();
-    this.checkIsLocumnWorking();
   },
   computed: {
     key() {
@@ -102,30 +101,6 @@ export default {
       }
     },
 
-    checkIsLocumnWorking() {
-      this.shifts.all.map(shift => {
-        // Is Today
-        let shiftStartTime = shift.startDate;
-        let type = shift.type;
-        if (
-          shiftStartTime == moment(shiftStartTime).isSame(new Date(), "day")
-        ) {
-          if (type == 2) {
-            this.UPDATE_NOTIFICATIONS({
-              title: "No locumn shift detected.",
-              message: "Please go to schedule to book a new locumn shift.",
-              type: "warning",
-              onClick: () => {
-                this.$router.push({ name: "schedule" });
-              }
-            });
-          }
-        }
-      });
-    },
-    /**
-     * Create notification at the start of the week asking them to upload a timesheet
-     */
     displayWeeklyTimesheetNotification() {
       if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek)
         this.UPDATE_NOTIFICATIONS({
@@ -133,19 +108,6 @@ export default {
           message: "Start the new week off by uploading a new weekly timesheet",
           title: "Upload Timesheet"
         });
-    },
-    displayRedirectBox() {
-      // Redirect to login;
-      let msg = "A critical network error has occured.",
-        title = "Critical Error!";
-
-      this.$confirm(msg, title, {
-        confirmButtonText: "Log out",
-        type: "error"
-      }).then(() => {
-        this.REMOVE_USER();
-        this.$router.push({ name: "login" });
-      });
     }
   },
   components: {
@@ -155,16 +117,6 @@ export default {
     ServerHealth,
     NprogressContainer,
     SlideXLeftTransition
-  },
-  watch: {
-    criticalNetworkError: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          this.displayRedirectBox();
-        }
-      }
-    }
   }
 };
 </script>

@@ -23,19 +23,6 @@ export default {
   criticalNetworkError: false,
   weeklyTimesheetUploaded: false,
   hasSeenNotifications: false,
-
-  localSettings: {
-    general: {
-      liveSchedule: true,
-      liveNotifications: true,
-      liveDashboard: true,
-      notificationAlerts: true
-    },
-    security: {},
-    colours: {
-      sidebar: vars.default
-    }
-  },
   viewNotificationsCenter: false,
   userNotifications: [],
   currentInterval: "",

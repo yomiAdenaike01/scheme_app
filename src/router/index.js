@@ -11,6 +11,7 @@ const reports = () => import("@/views/Admin/Reports/Reports");
 const user = () => import("@/views/Admin/User/User");
 const utilities = () => import("@/views/Admin/Utilities/Utilities");
 const clientIntro = () => import("@/components/ClientIntro");
+const error = () => import("@/components/Error");
 
 // const featurerequest = () => import("@/views/Admin/FeatureRequest");
 
@@ -30,6 +31,11 @@ const routes = [
     path: "/intro",
     name: "clientIntro",
     component: clientIntro
+  },
+  {
+    path: "/error",
+    name: "error",
+    component: error
   },
   {
     path: "/main",

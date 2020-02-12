@@ -24,7 +24,7 @@
           <el-col v-if="settingsView == 'security'">
             <SecuritySettings />
           </el-col>
-          
+
           <el-col v-else-if="settingsView == 'profile'">
             <ProfileSettings />
           </el-col>
@@ -72,7 +72,7 @@ export default {
     this.view = this.returnSettings[0].label;
   },
   computed: {
-    ...mapState(["userInformation", "localSettings"]),
+    ...mapState(["userInformation"]),
     returnAlert() {
       let alert = {
         desc:
@@ -92,7 +92,6 @@ export default {
     },
     returnSettings() {
       return [
-     
         {
           label: "Security"
         },
@@ -121,6 +120,7 @@ export default {
   methods: {
     ...mapActions(["updateSettings", "request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "REMOVE_USER"]),
+
     verifyEmail() {
       this.loading = true;
       this.request({
@@ -150,8 +150,6 @@ export default {
       this.updateSettings()
         .then(response => (this.loading = false))
         .catch(err => (this.loading = false));
-
-      this.$forceUpdate();
     }
   },
   components: {
@@ -165,7 +163,7 @@ export default {
   mixins: [responsive],
 
   watch: {
-    localSettings: {
+    "userInformation.settings": {
       deep: true,
       handler(val) {
         this.settingsUpdated = true;

@@ -68,7 +68,10 @@ export default {
     localStorage.setItem("token", token);
     localStorage.setItem("userInformation", JSON.stringify(user));
   },
-
+  UPDATE_USER_PREFERENCES(state, { index, data }) {
+    let { settings } = state.userInformation;
+    Vue.set(settings, index, data);
+  },
   UPDATE_NOTIFICATIONS(state, notification) {
     notification.showClose = false;
     if (notification.type == "success") {
@@ -80,6 +83,7 @@ export default {
       notification.title = "Operation Unsuccessful";
       if (typeof notification.message == "object") {
         state.criticalNetworkError = true;
+        router.push({ name: "error" });
       }
     }
     Vue.set(state, "notifications", [notification, ...state.notifications]);
