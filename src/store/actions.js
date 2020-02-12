@@ -76,7 +76,8 @@ export default {
         response = response.data;
 
         if (response.hasOwnProperty("success")) {
-          if (typeof response.content == "string") {
+          if (typeof response.content == "string" && !disableNotification) {
+            console.log(disableNotification);
             context.commit("UPDATE_NOTIFICATIONS", {
               message: response.content,
               type: "success"

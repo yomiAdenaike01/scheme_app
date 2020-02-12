@@ -17,19 +17,54 @@
             : null
         "
       >{{ button.label }}</el-button>
+      <el-button
+        :icon="hasGcal ? 'el-icon-check' :'el-icon-refresh'"
+        :disabled="hasGcal"
+        round
+        type="primary"
+        size="small"
+        @click="initGcal"
+      >{{!hasGcal ? 'Integrate with google calendar' : 'Successfully integrated with google calendar '}}</el-button>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
   name: "Toolbar",
-  methods: {},
+
+  methods: {
+    ...mapActions(["request"]),
+
+    initGcal() {
+      this.request(
+        {
+          method: "POST",
+          url: "services/googlecal",
+          data: {
+            id: this.userInformation._id,
+            returnPath: window.location.href
+          }
+        },
+        true
+      )
+        .then(response => {
+          window.location.href = response;
+          // console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  },
   computed: {
     ...mapGetters(["getIsAdmin"]),
-
+    ...mapState(["userInformation"]),
+    hasGcal() {
+      return this.userInformation.gcalToken;
+    },
     renderCreateEventButton() {
       let render = {
         text: "Create request",

@@ -28,23 +28,11 @@
         </el-card>
       </el-col>
     </el-row>
-    <!-- Google cal widgets -->
-    <el-card shadow="none" class="flex_center columns mt-3">
-      <Nocontent v-if="true" v-bind="errorDisplay">
-        <el-button size="mini" plain @click="configGoogleCal">Configure Google calendar</el-button>
-      </Nocontent>
-      <div class="flex_center columns" v-else>
-        <el-button class="no_events medium_icon" circle type="success" icon="el-icon-check"></el-button>
-        <br />
-        <small>Successfully synced with google calendar</small>
-      </div>
-    </el-card>
   </el-col>
 </template>
 
 <script>
 import Title from "@/components/Title";
-import Nocontent from "@/components/Nocontent";
 import moment from "moment";
 import { mapState, mapGetters, mapActions } from "vuex";
 export default {
@@ -148,25 +136,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
-    configGoogleCal() {
-      this.request({
-        method: "POST",
-        url: "services/googlecal",
-        data: { id: this.userInformation._id, returnPath: window.location.href }
-      })
-        .then(response => {
-          window.location.href = response;
-          // console.log(response);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
+    ...mapActions(["request"])
   },
   components: {
-    Title,
-    Nocontent
+    Title
   }
 };
 

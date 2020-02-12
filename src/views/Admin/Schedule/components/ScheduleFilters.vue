@@ -1,12 +1,7 @@
 <template>
-  <el-dialog :visible.sync="viewController">
-    <div class="schedule_view_container">
-      <!--Filter content  -->
-      <Tabs :tabs="tabs" tabType="card" @val="closeApplyFilters">
-        <Title title="Title" class="m-0" subtitle="subtitle" />
-      </Tabs>
-    </div>
-  </el-dialog>
+  <el-col class="filters_container">
+    <h1>Filters</h1>
+  </el-col>
 </template>
 
 <script>
@@ -109,3 +104,9 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.filters_container {
+  width: 20%;
+  background: whitesmoke;
+}
+</style>

@@ -72,8 +72,10 @@ export default {
   UPDATE_NOTIFICATIONS(state, notification) {
     notification.showClose = false;
     if (notification.type == "success") {
-      notification.title = "Opeartion Successful";
-      sounds.methods.playSuccessSound();
+      notification.title = "Operation Successful";
+      if (state.userInformation.settings.general.sounds) {
+        sounds.methods.playSuccessSound();
+      }
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
       if (typeof notification.message == "object") {

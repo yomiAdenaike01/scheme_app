@@ -1,32 +1,35 @@
 <template>
   <el-row
-    class="schedule_container"
+    class="schedule_container w-100"
+    type="flex"
     v-loading="loading"
     element-loading-text="Loading team members and shifts please wait..."
   >
-    <Title title="Schedule" subtitle="View your calendar" />
-
-    <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
-
-    <Cal
-      @refreshShift="getShifts"
-      @displayCreateShift="modals['create_event'] = $event"
-      :ScheduleFilters="filters['schedule_view']"
-      class="schedule_cal_container"
-    />
-    <!-- Create views -->
-    <CreateShift
-      @toggle="modals['create_event'] = $event"
-      @createEvent="createEvent"
-      :display="modals['create_event']"
-    />
-
     <!-- Shift and calendar view -->
     <ScheduleFilters
       @toggle="modals['schedule_view'] = $event"
       :view="modals['schedule_view']"
       @updateFilters="filters = $event"
     />
+
+    <el-col>
+      <Title title="Schedule" subtitle="View your calendar" />
+
+      <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
+
+      <Cal
+        @refreshShift="getShifts"
+        @displayCreateShift="modals['create_event'] = $event"
+        :ScheduleFilters="filters['schedule_view']"
+        class="schedule_cal_container"
+      />
+      <!-- Create views -->
+      <CreateShift
+        @toggle="modals['create_event'] = $event"
+        @createEvent="createEvent"
+        :display="modals['create_event']"
+      />
+    </el-col>
   </el-row>
 </template>
 
@@ -47,6 +50,18 @@ export default {
     Promise.all([this.getShifts(), this.getTeam()]).then(response => {
       this.loading = false;
     });
+    if (this.userInformation.gcalToken) {
+      this.request({
+        method: "GET",
+        url: "users/gcal"
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
   },
   data() {
     return {
