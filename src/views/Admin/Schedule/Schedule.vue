@@ -6,11 +6,7 @@
     element-loading-text="Loading team members and shifts please wait..."
   >
     <!-- Shift and calendar view -->
-    <ScheduleFilters
-      @toggle="modals['schedule_view'] = $event"
-      :view="modals['schedule_view']"
-      @updateFilters="filters = $event"
-    />
+    <ScheduleFilters />
 
     <el-col>
       <Title title="Schedule" subtitle="View your calendar" />
@@ -50,7 +46,7 @@ export default {
     Promise.all([this.getShifts(), this.getTeam()]).then(response => {
       this.loading = false;
     });
-    if (this.userInformation.gcalToken) {
+    if ("gcalToken" in this.userInformation) {
       this.request({
         method: "GET",
         url: "users/gcal"
@@ -90,6 +86,7 @@ export default {
 
   computed: {
     ...mapState("Admin", ["team"]),
+    ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     filteredTeam() {
       return this.team.filter(x => {

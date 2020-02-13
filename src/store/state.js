@@ -1,4 +1,4 @@
-import vars from "@/assets/_vars.scss";
+import vars from "@/assets/Styles/defaults.scss";
 export default {
   theme: localStorage.getItem("cssText"),
   serverHealth: {},

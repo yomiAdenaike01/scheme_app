@@ -2,23 +2,33 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "./../store";
 
-const UserAuth = () => import("@/views/Auth/UserAuth");
-const ClientAuth = () => import("@/views/Auth/ClientAuth");
-const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
-const schedule = () => import("@/views/Admin/Schedule/Schedule");
-const messenger = () => import("@/views/Comms/Messenger");
-const reports = () => import("@/views/Admin/Reports/Reports");
-const user = () => import("@/views/Admin/User/User");
-const utilities = () => import("@/views/Admin/Utilities/Utilities");
 const clientIntro = () => import("@/components/ClientIntro");
-const error = () => import("@/components/Error");
 
-// const featurerequest = () => import("@/views/Admin/FeatureRequest");
 
 // Router views
 const mainApp = () => import("@/views/router_views/Main");
 const admin = () => import("@/views/router_views/Admin");
 const comms = () => import("@/views/router_views/Comms");
+const support = () => import("@/views/router_views/Support")
+
+// sub views
+const UserAuth = () => import("@/views/Auth/UserAuth");
+const ClientAuth = () => import("@/views/Auth/ClientAuth");
+
+const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
+const schedule = () => import("@/views/Admin/Schedule/Schedule");
+const reports = () => import("@/views/Admin/Reports/Reports");
+const UserManagement = () => import("@/views/Admin/User/UserManagement");
+const utilities = () => import("@/views/Admin/Utilities/Utilities");
+
+// Comms
+const messenger = () => import("@/views/Comms/Messenger");
+
+// Support
+const faqs = () => import("@/views/Support/FAQs");
+const error = () => import("@/views/Support/CriticalError");
+
+
 
 Vue.use(VueRouter);
 
@@ -32,10 +42,23 @@ const routes = [
     name: "clientIntro",
     component: clientIntro
   },
+ 
   {
-    path: "/error",
-    name: "error",
-    component: error
+    path: "/support",
+    name: "support",
+    component: support,
+    children: [
+      {
+        path: "error",
+        name: "error",
+        component: error
+      },
+      {
+        path: "faqs",
+        name: "faqs",
+        component: faqs
+      }
+    ]
   },
   {
     path: "/main",
@@ -82,7 +105,7 @@ const routes = [
           {
             path: "user",
             name: "user",
-            component: user,
+            component: UserManagement,
             meta: {
               authRequired: true
             }

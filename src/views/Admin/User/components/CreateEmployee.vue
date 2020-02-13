@@ -108,15 +108,15 @@ export default {
           options: [
             {
               value: "male",
-              text: "Male"
+              name: "Male"
             },
             {
               value: "female",
-              text: "Female"
+              name: "Female"
             },
             {
               value: "other",
-              text: "Other"
+              name: "Other"
             }
           ]
         },
@@ -136,24 +136,11 @@ export default {
           placeholder: "Phone Number"
         },
         {
-          name: "groupID",
+          placeholder: "Group",
           model: "groupID",
-          placeholder: "Employee type",
           "component-type": "select",
-          options: [
-            {
-              value: 1,
-              text: "Admin"
-            },
-            {
-              value: 2,
-              text: "General Staff"
-            },
-            {
-              value: 3,
-              text: "Locumn"
-            }
-          ]
+          options: this.clientInformation.userGroups,
+          optional: true
         }
       ];
     },

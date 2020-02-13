@@ -21,6 +21,7 @@
             icon="el-icon-bell trigger"
           ></el-button>
         </el-badge>
+        <el-button icon="el-icon-bangzhu" circle size="small" class="item ml-2 mt-1" @click="$router.push({name:'support'})"></el-button> 
       </div>
     </el-col>
 

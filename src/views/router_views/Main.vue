@@ -1,20 +1,18 @@
 <template>
   <div class="main_wrapper">
-    <nprogress-container></nprogress-container>
+    <NprogressContainer/>
     <AppBar />
     <el-row type="flex" style="height:100%">
       <el-col style="flex:1">
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </el-col>
       <el-col>
-        <!-- Server health -->
         <ServerHealth />
-        <!-- Router view -->
-        <transition name="fade-transform" mode="out-in">
+        <RouterTransition>
           <keep-alive>
             <router-view :key="key" />
           </keep-alive>
-        </transition>
+        </RouterTransition>
       </el-col>
     </el-row>
     <NotificationsCenter />
@@ -31,8 +29,7 @@ import ServerHealth from "@/components/ServerHealth";
 import CriticalError from "@/components/CriticalError";
 import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
-import { SlideXLeftTransition } from "vue2-transitions";
-
+import RouterTransition from "@/components/RouterTransition";
 export default {
   name: "Main",
 
@@ -47,12 +44,12 @@ export default {
         message: "Open settings to activate account."
       });
     }
-    let general = this.localSettings.general;
+    let { general } = this.userInformation.settings;
     if (Notification.permission != "granted") {
       this.requestNotificationPermission();
     }
 
-    this.displayWeeklyTimesheetNotification();
+    this.displayWeeklyNotification();
   },
   computed: {
     key() {
@@ -101,7 +98,7 @@ export default {
       }
     },
 
-    displayWeeklyTimesheetNotification() {
+    displayWeeklyNotification() {
       if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek)
         this.UPDATE_NOTIFICATIONS({
           type: "info",
@@ -116,7 +113,7 @@ export default {
     NotificationsCenter,
     ServerHealth,
     NprogressContainer,
-    SlideXLeftTransition
+    RouterTransition
   }
 };
 </script>

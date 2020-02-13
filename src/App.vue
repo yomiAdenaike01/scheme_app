@@ -10,7 +10,7 @@
     client instance please wait....`
     "
   >
-    <div class="h-100" v-if="!criticalNetworkError">
+    <div class="h-100">
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
@@ -139,45 +139,12 @@ export default {
     },
     notifications(val) {
       this.$notify(val[0]);
+    },
+    criticalNetworkError(val){
+      if(val){
+      clearInterval(this.clientInterval)
+      }
     }
   }
 };
 </script>
-
-<style lang="scss">
-#app {
-  height: 100%;
-  overflow: hidden;
-  /**
-  _   _  _  ___ _  _    ___
-  | \_/ |/ \| o ) || |  | __|
-  | \_/ ( o ) o \ || |_ | _|
-  |_| |_|\_/|___/_||___||___|
-
-*/
-  &.mobile {
-    overflow: scroll;
-    .el-drawer__body {
-      overflow-y: scroll;
-    }
-  }
-}
-.trigger {
-  cursor: pointer;
-}
-html,
-body {
-  height: 100%;
-}
-
-@import "./assets/spacing";
-@import url("https://fonts.googleapis.com/css?family=Open+Sans&display=swap");
-
-* {
-  font-family: "Open Sans", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin: 0;
-  padding: 0;
-}
-</style>

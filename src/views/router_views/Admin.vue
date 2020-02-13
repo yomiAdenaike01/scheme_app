@@ -35,7 +35,7 @@ export default {
         this.getTeam();
         this.getNotifications();
         this.getShifts();
-      }, 5000);
+      }, 60 * 3000);
       if (this.userNotifications.length > 0) {
         this.displayNewNotification();
       }
@@ -54,6 +54,11 @@ export default {
   },
   components: {
     ViewTeamMemberDialog
+  },
+  watch:{
+    criticalNetworkError(){
+        clearInterval(this.adminInterval);
+    }
   }
 };
 </script>

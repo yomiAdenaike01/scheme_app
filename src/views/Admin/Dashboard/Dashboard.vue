@@ -33,7 +33,7 @@ export default {
     this.getTasks();
     this.getNotes();
 
-    Promise.all([this.getTasks(), this.getNotes()])
+    Promise.all([this.getTasks(), this.getNotes(), this.getTeam()])
       .then(response => {
         this.loading = false;
       })
@@ -45,7 +45,7 @@ export default {
     ...mapState(["userInformation"])
   },
   methods: {
-    ...mapActions("Admin", ["getNotes", "getTasks"]),
+    ...mapActions("Admin", ["getNotes", "getTasks", "getTeam"]),
     ...mapActions(["request"])
   },
   components: {

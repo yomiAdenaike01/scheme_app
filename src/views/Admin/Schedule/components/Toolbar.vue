@@ -16,15 +16,21 @@
             ? button.method
             : null
         "
-      >{{ button.label }}</el-button>
+        >{{ button.label }}</el-button
+      >
       <el-button
-        :icon="hasGcal ? 'el-icon-check' :'el-icon-refresh'"
+        :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
         round
         type="primary"
         size="small"
         @click="initGcal"
-      >{{!hasGcal ? 'Integrate with google calendar' : 'Successfully integrated with google calendar '}}</el-button>
+        >{{
+          !hasGcal
+            ? "Integrate with google calendar"
+            : "Successfully integrated with google calendar "
+        }}</el-button
+      >
     </el-col>
   </el-row>
 </template>
@@ -63,7 +69,7 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapState(["userInformation"]),
     hasGcal() {
-      return this.userInformation.gcalToken;
+      return "gcalToken" in this.userInformation;
     },
     renderCreateEventButton() {
       let render = {
@@ -81,12 +87,6 @@ export default {
 
     buttons() {
       let buttons = [
-        {
-          label: "Schedule filters",
-          emit: "schedule_view",
-          round: true,
-          icon: "el-icon-setting"
-        },
         {
           label: this.renderCreateEventButton.text,
           emit: "create_event",

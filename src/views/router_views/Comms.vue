@@ -32,6 +32,11 @@ export default {
     ...mapActions("Comms", ["getTranscripts"]),
     ...mapActions("Admin", ["getTeam"]),
     ...mapActions(["getNotifications"])
+  },
+    watch:{
+    criticalNetworkError(){
+        clearInterval(this.commsInterval);
+    }
   }
 };
 </script>

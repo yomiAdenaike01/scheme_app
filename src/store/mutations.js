@@ -1,8 +1,6 @@
 import sounds from "@/mixins/playSound";
-import alterTheme from "@/mixins/alterTheme";
 import Vue from "vue";
 import router from "../router";
-Vue.mixin(alterTheme);
 
 export default {
   UPDATE_SERVER_HEALTH_STATUS(state, payload) {
@@ -24,7 +22,7 @@ export default {
   },
   UPDATE_INVALID_CLIENT(state, payload) {
     Vue.set(state, "invalidClient", payload);
-    router.push({ name: "clientIntro" });
+
   },
   UPDATE_CLIENT(state, payload) {
     Vue.set(state, "clientInformation", payload);
@@ -81,9 +79,13 @@ export default {
       }
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
+     
       if (typeof notification.message == "object") {
         state.criticalNetworkError = true;
-        router.push({ name: "error" });
+        
+        if(router.currentRoute.name != "error"){
+          router.push({name:'error'});
+        }
       }
     }
     Vue.set(state, "notifications", [notification, ...state.notifications]);

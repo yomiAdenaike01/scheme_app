@@ -1,9 +1,7 @@
 <template>
-  <div class="group_container shadow m-4">
-    <div class="flex_center columns">
-      <div v-if="!addNew">
-        <el-button class="grey large_icon no_events borderless" icon="el-icon-user"></el-button>
-      </div>
+  <div class="group_container shadow m-4" :class="{new_group:addNew}">
+    <div class="columns">
+      <div v-if="!addNew"></div>
       <slot></slot>
     </div>
 
@@ -48,6 +46,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 .group_container {
-  width: 50%;
+  width: 70%;
+  &.new_group {
+    width: 20%;
+  }
 }
 </style>

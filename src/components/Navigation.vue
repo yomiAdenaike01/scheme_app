@@ -7,7 +7,7 @@
     mode="vertical"
     :collapse="true"
     text-color="#fff"
-    :background-color="getSidebarColour"
+    :background-color="getDefaultColour"
     :active-text-color="lightColour"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
@@ -61,10 +61,10 @@ export default {
   },
   computed: {
     ...mapState(["client", "localSettings"]),
-    ...mapGetters(["getSidebarColour"]),
+    ...mapGetters(["getDefaultColour"]),
 
     lightColour() {
-      let baseColour = tinycolor(this.getSidebarColour);
+      let baseColour = tinycolor(this.getDefaultColour);
       if (baseColour.isLight()) {
         return baseColour.darken(10).toString();
       } else {

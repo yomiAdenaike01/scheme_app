@@ -3,8 +3,11 @@ export default {
   isValidClient(state, getters) {
     return Object.keys(state.clientInformation).length > 0;
   },
-  getSidebarColour(state) {
-    return state.localSettings.colours.sidebar;
+  isValidUser(state) {
+    return Object.keys(state.userInformation).length > 0;
+  },
+  getUserSettings(state) {
+    return state.userInformation.settings;
   },
   getClient(state, getters) {
     if (getters.isValidClient) {

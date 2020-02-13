@@ -3,7 +3,7 @@
     <!-- Task progress container -->
     <el-card shadow="none">
       <div class="tasks_widget_container flex_center columns">
-        <p class="light txt_center mb-1">Total Task Progress</p>
+        <h2 class="light txt_center mb-1">Total Task Progress</h2>
         <small class="grey">Total percentage of all completed tasks</small>
         <el-progress class="mb-3 mt-3" :width="200" type="circle" :percentage="progressIndicator"></el-progress>
 
@@ -16,13 +16,11 @@
       <el-col class="metrics_summary_container" v-for="(content, key) in weeklyTotals" :key="key">
         <el-card class="mt-1 ml-2 h-100 flex_center" shadow="none">
           <div class="flex_center columns">
-            <h3 class="m-0 p-0">
+            <h2 class="m-0 p-0">
               {{
-              content.result.hasOwnProperty("name")
-              ? content.result.name
-              : content.result
+              content.result ? content.result : 0
               }}
-            </h3>
+            </h2>
             <Title defaultClass="m-0" :subtitle="content.label" />
           </div>
         </el-card>
