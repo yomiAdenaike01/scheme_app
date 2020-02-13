@@ -12,6 +12,8 @@ body {
 
 h1,h2,h3,h4,h5,h6,p,span{
   font-weight: 300;
+  margin:0;
+  padding:0;
   
 }
   .desc {
@@ -187,6 +189,9 @@ h1,h2,h3,h4,h5,h6,p,span{
   }
   .no_events {
     pointer-events: none;
+  }
+  .w-50{
+    width:50%;
   }
   #app {
     overflow: hidden;

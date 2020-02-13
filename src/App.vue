@@ -11,9 +11,11 @@
     "
   >
     <div class="h-100">
+      <RouterTransition>
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
+      </RouterTransition>
     </div>
   </div>
 </template>
@@ -25,7 +27,7 @@ import refactorLocation from "@/mixins/refactorLocation";
 import alterTheme from "@/mixins/alterTheme";
 import CriticalError from "@/components/CriticalError";
 import ClientIntro from "@/components/ClientIntro";
-
+import RouterTransition from "@/components/RouterTransition";
 export default {
   name: "app",
   data() {
@@ -130,7 +132,8 @@ export default {
   components: {
     Title,
     CriticalError,
-    ClientIntro
+    ClientIntro,
+    RouterTransition
   },
 
   watch: {

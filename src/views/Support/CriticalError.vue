@@ -17,6 +17,7 @@
             round
             type="primary"
             size="mediuim"
+            plain
             @click="$router.push({name:'faqs'})"
           >View FAQ's</el-button>
           <el-button round type="primary" size="mediuim" @click="sendErrorReport">Send Error Report</el-button>
@@ -30,7 +31,7 @@
 <script>
 import Icon from "@/components/Icon";
 import { mapState, mapActions } from "vuex";
-var parser = require("ua-parser-js");
+var UAParser = require("ua-parser-js");
 export default {
   name: "CriticalError",
   data() {
@@ -41,7 +42,7 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     parser() {
-      return new UAParser();
+      return new UAParser().getUA();
     }
   },
   methods: {
