@@ -66,7 +66,7 @@ import Title from "@/components/Title";
 import MoreInformation from "@/components/MoreInformation";
 import Nocontent from "@/components/Nocontent";
 export default {
-  name: "Team",
+  name: "UserView",
   created() {
     this.teamLoaderManager();
   },

@@ -8,7 +8,11 @@
     team please wait....`
     "
   >
-    <UserGroup addNew @createUser="createEmployee = $event" />
+    <UserGroup
+      v-if="getIsAdmin"
+      addNew
+      @createUserGroup="displayDialog = $event"
+    />
 
     <UserGroup v-if="filteredGroupsWithUsers.length > 0">
       <el-row
@@ -25,18 +29,12 @@
               ></el-button>
               {{ group.name }}
             </div>
-            <draggable class="list-group" v-model="list" v-bind="dragOptions">
-              <transition-group
-                type="transition"
-                :name="!drag ? 'flip-list' : null"
-              >
-                <User
-                  v-for="member in group.teamMembers"
-                  :data="{ ...member, groupID: group.value }"
-                  :key="member._id"
-                />
-              </transition-group>
-            </draggable>
+
+            <User
+              v-for="member in group.teamMembers"
+              :data="{ ...member, groupID: group.value }"
+              :key="member._id"
+            />
           </div>
         </el-col>
       </el-row>
@@ -50,9 +48,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import User from "./components/User";
-import UserInformation from "./components/UserInformation";
 import UserManagerDialog from "./components/UserManagerDialog";
 import Draggable from "vuedraggable";
 import UserGroup from "./components/UserGroup";
@@ -77,20 +74,15 @@ export default {
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState("Admin", ["team", "groupIDs"]),
+    ...mapGetters(["getIsAdmin"]),
 
-    dragOptions() {
-      return {
-        animation: 200,
-        disabled: false,
-        ghostClass: "ghost"
-      };
-    },
     filteredGroupsWithUsers() {
       let groups = this.groupsWithUsers;
       for (let i = 0, len = groups.length; i < len; i++) {
         let group = groups[i];
-        if ("teamMember" in group) {
-          if (group.teamMembers.length == 0) {
+
+        if (group && group.hasOwnProperty("teamMembers")) {
+          if (group.teamMembers.length <= 0) {
             groups.splice(i, 1);
           }
         }
@@ -100,11 +92,11 @@ export default {
     groupsWithUsers() {
       let { userGroups } = { ...this.clientInformation };
       let userGroupArr = [];
-
+      let team = [...this.team];
       for (let j = 0, len = userGroups.length; j < len; j++) {
         let userGroup = { ...userGroups[j], teamMembers: [] };
         let { value } = userGroup;
-        this.team.map(member => {
+        team.map(member => {
           if (member.groupID == value) {
             userGroup.teamMembers.push(member);
           }
@@ -122,7 +114,6 @@ export default {
     }
   },
   components: {
-    UserInformation,
     User,
     UserGroup,
     UserManagerDialog,

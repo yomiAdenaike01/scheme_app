@@ -11,7 +11,7 @@
     >
       <el-form-item
         v-for="(input, index) in form.formData"
-        :key="index"
+        :key="`${index}${input.name}`"
         :prop="input.name"
         :label="input.label || ' '"
         :required="!input.optional"
@@ -21,33 +21,33 @@
           :size="size"
           class="dialog_item"
           :is="
-          input['component-type'] == 'text' ||
-          input['component-type'] == 'password'
-            ? 'el-input'
-            : input['component-type'] == 'select'
-            ? 'el-select'
-            : input['component-type'] == 'date-picker'
-            ? 'el-date-picker'
-            : input['component-type'] == 'number'
-            ? 'el-input-number'
-            : null
-        "
+            input['component-type'] == 'text' ||
+            input['component-type'] == 'password'
+              ? 'el-input'
+              : input['component-type'] == 'select'
+              ? 'el-select'
+              : input['component-type'] == 'date-picker'
+              ? 'el-date-picker'
+              : input['component-type'] == 'number'
+              ? 'el-input-number'
+              : null
+          "
           v-model="formContent[input.model]"
           :value-key="input.text || input.name"
           :show-password="input['component-type'] == 'password'"
           :min="input.min"
           :max="input.max"
           :type="
-          input['input-type'] == 'date'
-            ? 'date'
-            : input['input-type'] == 'date-time-range'
-            ? 'datetimerange'
-            : input.hasOwnProperty('textarea')
-            ? 'textarea'
-            : input['input-type'] == 'date-time'
-            ? 'datetime'
-            : null
-        "
+            input['input-type'] == 'date'
+              ? 'date'
+              : input['input-type'] == 'date-time-range'
+              ? 'datetimerange'
+              : input.hasOwnProperty('textarea')
+              ? 'textarea'
+              : input['input-type'] == 'date-time'
+              ? 'datetime'
+              : null
+          "
           v-bind="input"
           :disabled="input.disabled"
           :start-placeholder="input.start_placeholder"
@@ -60,10 +60,15 @@
             :label="option.text || option.name"
             :key="option.value"
             :value="option.value ? option.value : option.text || option.name"
-          >{{ option.text || option.name }}</el-option>
+            >{{ option.text || option.name }}</el-option
+          >
         </component>
         <!-- Hint -->
-        <small class="description" v-if="input.hint" v-html="input.hint"></small>
+        <small
+          class="description"
+          v-if="input.hint"
+          v-html="input.hint"
+        ></small>
       </el-form-item>
 
       <!-- Submit button -->
@@ -74,7 +79,8 @@
           class="button_text"
           round
           @click="submitForm"
-        >{{ submitText }}</el-button>
+          >{{ submitText }}</el-button
+        >
       </div>
     </el-form>
   </div>

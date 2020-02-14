@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import Shift from "./../../Dashboard/components/Shift";
+import Shift from "@/views/Admin/Dashboard/components/Shift";
 import { mapState, mapGetters } from "vuex";
-import Nocontent from "@/components/Nocontent"
+import Nocontent from "@/components/Nocontent";
 export default {
   name: "TeamShiftInfo",
   computed: {

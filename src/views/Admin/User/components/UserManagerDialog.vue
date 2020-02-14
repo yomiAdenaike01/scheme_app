@@ -1,10 +1,11 @@
 <template>
   <el-dialog :visible.sync="view">
     <Tabs
+      v-model.number="currentTab"
       :tabs="tabs"
       @fileContent="fileContent = $event"
       @deleteContent="fileContent = $event"
-      @val="createOneUser"
+      @val="userManagerController"
       :disableForm="fileContent != null"
       v-loading="loading"
     >
@@ -13,9 +14,11 @@
           title="Create employee"
           subtitle="Enter the employee's details. Feel free to upload a csv file of the employee or employees"
         />
-        <div class="flex_center">
-          <ValidationUnit v-bind="renderValidationUnit" />
-        </div>
+        <transition name="el-fade-in">
+          <div class="flex_center" v-if="currentTab > 0">
+            <ValidationUnit v-bind="renderValidationUnit" />
+          </div>
+        </transition>
       </div>
     </Tabs>
   </el-dialog>
@@ -32,10 +35,11 @@ import ValidationUnit from "@/components/ValidationUnit";
 const csvtojson = require("csvtojson");
 
 export default {
-  name: "CreateEmployee",
+  name: "UserManagerDialog",
 
   data() {
     return {
+      currentTab: 0,
       loading: false,
       fileContent: null,
       fileError: null,
@@ -171,6 +175,46 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+
+    createUserGroup(content) {
+      content.value = this.clientInformation.userGroups.length + 1;
+      this.request({
+        method: "POST",
+        url: "clients/update",
+        data: {
+          update: {
+            content
+          }
+        }
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    userManagerController(val) {
+      switch (this.currentTab) {
+        case 0: {
+          this.createUserGroup(val);
+          break;
+        }
+        case 1: {
+          if (!this.fileContent) {
+            this.createOneUser(val);
+          } else {
+            console.log("Creating multiple users");
+            // this.createUsers()
+          }
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    },
 
     createOneUser(employee) {
       this.loading = true;

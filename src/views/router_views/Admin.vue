@@ -3,13 +3,13 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
-    <ViewTeamMemberDialog />
+    <ViewUser />
   </div>
 </template>
 
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
-import ViewTeamMemberDialog from "@/views/Admin/Team/ViewTeamMemberDialog";
+import ViewUser from "@/views/Admin/User/ViewUser/ViewUser";
 export default {
   name: "Admin",
   data() {
@@ -53,11 +53,11 @@ export default {
     }
   },
   components: {
-    ViewTeamMemberDialog
+    ViewUser
   },
-  watch:{
-    criticalNetworkError(){
-        clearInterval(this.adminInterval);
+  watch: {
+    criticalNetworkError() {
+      clearInterval(this.adminInterval);
     }
   }
 };

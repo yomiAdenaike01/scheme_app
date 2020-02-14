@@ -18,7 +18,6 @@
 import Avatar from "@/components/Avatar";
 
 import { mapState, mapMutations } from "vuex";
-import TeamView from "../../Team/TeamView.vue";
 export default {
   name: "User",
   props: {
@@ -31,8 +30,7 @@ export default {
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"])
   },
   components: {
-    Avatar,
-    TeamView
+    Avatar
   }
 };
 </script>

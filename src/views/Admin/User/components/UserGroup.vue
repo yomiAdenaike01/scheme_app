@@ -18,7 +18,7 @@
         icon="el-icon-plus"
         circle
         type="primary"
-        @click="$emit('createUser', true)"
+        @click="$emit('createUserGroup', true)"
       ></el-button>
     </div>
   </div>

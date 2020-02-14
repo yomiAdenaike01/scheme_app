@@ -12,9 +12,9 @@
   >
     <div class="h-100">
       <RouterTransition>
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </RouterTransition>
     </div>
   </div>
@@ -39,6 +39,8 @@ export default {
     };
   },
   async created() {
+    this.loggerController();
+
     if (this.isValidClient) {
       this.SET_THEME();
     }
@@ -99,6 +101,13 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_CLIENT", "UPDATE_INVALID_CLIENT", "SET_THEME"]),
+    loggerController() {
+      if (process.env.NODE_ENV != "development") {
+        window.console.log = function() {};
+        window.console.warn = function() {};
+        window.console.error = function() {};
+      }
+    },
 
     getClient(clientName) {
       return new Promise((resolve, reject) => {
@@ -143,9 +152,9 @@ export default {
     notifications(val) {
       this.$notify(val[0]);
     },
-    criticalNetworkError(val){
-      if(val){
-      clearInterval(this.clientInterval)
+    criticalNetworkError(val) {
+      if (val) {
+        clearInterval(this.clientInterval);
       }
     }
   }

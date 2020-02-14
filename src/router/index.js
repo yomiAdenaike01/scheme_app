@@ -31,10 +31,6 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
-    redirect: { name: "login" }
-  },
-  {
     path: "/intro",
     name: "clientIntro",
     component: clientIntro
@@ -123,6 +119,10 @@ const routes = [
             }
           }
         ]
+      },
+      {
+        path: "/",
+        redirect: { query: { name: "login" } }
       }
     ]
   },
