@@ -3,7 +3,7 @@
     <!-- Task progress container -->
     <el-card shadow="none">
       <div class="tasks_widget_container flex_center columns">
-        <h2 class="light txt_center mb-1">Total Task Progress</h2>
+        <h2 class="txt_center mb-1">Total task progress</h2>
         <small class="grey">Total percentage of all completed tasks</small>
         <el-progress class="mb-3 mt-3" :width="200" type="circle" :percentage="progressIndicator"></el-progress>
 

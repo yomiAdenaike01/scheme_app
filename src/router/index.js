@@ -1,31 +1,18 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "./../store";
+import AdminRoutes from "./AdminRoutes";
+import CommsRoutes from "./CommsRoutes";
+import AuthRoutes from "./AuthRoutes";
+import SupportRoutes from "./SupportRoutes";
 
-const clientIntro = () => import("@/components/ClientIntro");
+const ClientIntro = () => import("@/components/ClientIntro");
 
 // Router views
-const mainApp = () => import("@/views/router_views/Main");
-const admin = () => import("@/views/router_views/Admin");
-const comms = () => import("@/views/router_views/Comms");
-const support = () => import("@/views/router_views/Support");
-
-// sub views
-const UserAuth = () => import("@/views/Auth/UserAuth");
-const ClientAuth = () => import("@/views/Auth/ClientAuth");
-
-const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
-const schedule = () => import("@/views/Admin/Schedule/Schedule");
-const reports = () => import("@/views/Admin/Reports/Reports");
-const userManager = () => import("@/views/Admin/User/UserManager");
-const utilities = () => import("@/views/Admin/Utilities/Utilities");
-
-// Comms
-const messenger = () => import("@/views/Comms/Messenger");
-
-// Support
-const faqs = () => import("@/views/Support/FAQs");
-const error = () => import("@/views/Support/CriticalError");
+const MainApp = () => import("@/views/router_views/Main");
+const Admin = () => import("@/views/router_views/Admin");
+const Comms = () => import("@/views/router_views/Comms");
+const Support = () => import("@/views/router_views/Support");
 
 Vue.use(VueRouter);
 
@@ -33,92 +20,31 @@ const routes = [
   {
     path: "/intro",
     name: "clientIntro",
-    component: clientIntro
+    component: ClientIntro
   },
 
   {
     path: "/support",
     name: "support",
-    component: support,
-    children: [
-      {
-        path: "error",
-        name: "error",
-        component: error
-      },
-      {
-        path: "faqs",
-        name: "faqs",
-        component: faqs
-      }
-    ]
+    component: Support,
+    children: [...SupportRoutes]
   },
   {
     path: "/main",
     name: "main",
-    component: mainApp,
+    component: MainApp,
     children: [
       {
         path: "/admin",
         name: "admin",
-        component: admin,
-        children: [
-          {
-            path: "utilities",
-            name: "utilities",
-            component: utilities,
-            meta: {
-              authRequired: true
-            }
-          },
-          {
-            path: "dashboard",
-            name: "dashboard",
-            component: dashboard,
-            meta: {
-              authRequired: true
-            }
-          },
-          {
-            path: "schedule",
-            name: "schedule",
-            component: schedule,
-            meta: {
-              authRequired: true
-            }
-          },
-          {
-            path: "reports",
-            name: "reports",
-            component: reports,
-            meta: {
-              authRequired: true
-            }
-          },
-          {
-            path: "user",
-            name: "user",
-            component: userManager,
-            meta: {
-              authRequired: true
-            }
-          }
-        ]
+        component: Admin,
+        children: [...AdminRoutes]
       },
       {
         path: "/comms",
         name: "comms",
-        component: comms,
-        children: [
-          {
-            path: "messenger",
-            name: "messenger",
-            component: messenger,
-            meta: {
-              authRequired: true
-            }
-          }
-        ]
+        component: Comms,
+        children: [...CommsRoutes]
       },
       {
         path: "/",
@@ -126,16 +52,7 @@ const routes = [
       }
     ]
   },
-  {
-    path: "/auth/user",
-    name: "login",
-    component: UserAuth
-  },
-  {
-    path: "/auth/client",
-    name: "register",
-    component: ClientAuth
-  }
+  ...AuthRoutes
 ];
 
 const router = new VueRouter({
