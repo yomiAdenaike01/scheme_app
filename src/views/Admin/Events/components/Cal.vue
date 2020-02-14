@@ -15,7 +15,7 @@
     <ViewEvent
       v-if="view"
       :display="view"
-      :shift="shift"
+      :event="event"
       @toggle="view = $event"
       @loading="loading = $event"
       @refreshShift="$emit('refreshShift', null)"
@@ -36,7 +36,7 @@ export default {
     return {
       view: false,
       loading: false,
-      shift: {}
+      event: {}
     };
   },
 
@@ -47,7 +47,7 @@ export default {
   },
 
   computed: {
-    ...mapState("Admin", ["shifts", "team"]),
+    ...mapState("Admin", ["events", "teamInformation"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getTeamMember", "getAllShifts"]),
@@ -95,23 +95,23 @@ export default {
        * formatted time
        * approval
        */
-      let shifts = this.shifts.all;
-      let len = shifts.length;
+      let events = this.events.all;
+      let len = events.length;
       let format = "YYYY-MM-DD HH:mm";
 
       // Check that the assigned to is a string or array
 
-      shifts = shifts.map(shift => {
-        let { isApproved, startDate, _id, endDate, assignedTo, type } = shift;
+      events = events.map(event => {
+        let { isApproved, startDate, _id, endDate, assignedTo, type } = event;
         type = type - 1;
         type = this.eventTypes[type].name;
         startDate = moment(startDate).format(format);
         endDate = moment(endDate).format(format);
 
-        let shiftClass = type.replace(" ", "_").toLowerCase();
+        let eventClass = type.replace(" ", "_").toLowerCase();
         let text = type;
 
-        text = `${this.team.map(member => {
+        text = `${this.teamInformation.map(member => {
           if (member._id == assignedTo) {
             return member.name;
           }
@@ -122,18 +122,18 @@ export default {
           start: startDate,
           end: endDate,
           content: text,
-          class: shiftClass,
+          class: eventClass,
           isApproved,
           assignedTo,
           type
         };
       });
-      return shifts;
+      return events;
     },
 
     returnShiftDetails() {
-      return this.shifts.find(shift => {
-        return shift.id == this.shift_id;
+      return this.events.find(event => {
+        return event.id == this.event_id;
       });
     }
   },
@@ -149,8 +149,8 @@ export default {
       };
     },
 
-    ViewEvent(shift) {
-      this.shift = shift;
+    ViewEvent(event) {
+      this.event = event;
       this.view = true;
     },
 
@@ -158,25 +158,25 @@ export default {
       this.$emit("displayCreateShift", true);
     },
 
-    changeShiftTime(shift) {
+    changeShiftTime(event) {
       const canEdit =
-        shift.assignedTo == this.userInformation._id || this.getIsAdmin;
+        event.assignedTo == this.userInformation._id || this.getIsAdmin;
 
       if (canEdit) {
-        let confirmResponse = this.confirmShiftChangeTime(shift);
+        let confirmResponse = this.confirmShiftChangeTime(event);
 
         if (confirmResponse) {
-          let { startDate, endDate } = shift;
+          let { startDate, endDate } = event;
           this.loading = true;
-          this.updateEvent(shift);
+          this.updateEvent(event);
         }
       } else {
         this.loading = false;
 
         this.UPDATE_NOTIFICATIONS({
-          title: "Error changing shift type",
+          title: "Error changing event type",
           message:
-            "You cannot edit this shift because you are not an admin or this shift is not yours.",
+            "You cannot edit this event because you are not an admin or this event is not yours.",
           type: "info"
         });
 
@@ -184,8 +184,8 @@ export default {
       }
     },
 
-    confirmShiftChangeTime(shift) {
-      let { type, assignedTo, start, end } = shift;
+    confirmShiftChangeTime(event) {
+      let { type, assignedTo, start, end } = event;
 
       return this.$confirm(
         `Are you sure you would like to change ${type.toLowerCase()} from ${start} to ${end}`,
@@ -244,7 +244,7 @@ export default {
 
 .vuecal__event {
   font-size: 0.8em;
-  &.general_shift {
+  &.general_event {
     background: #ecf5ff;
     color: $primary_colour;
     border-top: 2px solid $primary_colour;

@@ -6,12 +6,7 @@
       <h4>{{ returnUsername }}</h4>
     </div>
     <el-tabs tab-position="left" type="card" v-model="selectedTab">
-      <el-tab-pane
-        class="h-100"
-        :key="index"
-        v-for="(tab, index) in tabItems"
-        :label="tab.label"
-      >
+      <el-tab-pane class="h-100" :key="index" v-for="(tab, index) in tabItems" :label="tab.label">
         <slot></slot>
       </el-tab-pane>
     </el-tabs>
@@ -38,7 +33,7 @@ export default {
   },
   computed: {
     returnUsername() {
-      return this.teamMemberData.name;
+      return this.teamInformationMemberData.name;
     }
   },
   components: {

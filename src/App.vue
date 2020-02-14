@@ -77,7 +77,7 @@ export default {
       "criticalNetworkError",
       "invalidClient"
     ]),
-    ...mapState("Admin", ["team", "shifts"]),
+    ...mapState("Admin", ["teamInformation", "shifts"]),
 
     ...mapGetters(["isValidClient"]),
 

@@ -52,14 +52,19 @@ export default {
     clearInterval(this.interval);
   },
   created() {
-    this.getShifts();
+    this.getEvents();
     this.getTeam();
     this.getNotifications();
   },
   mixins: [dates, employeeMethods],
   computed: {
     ...mapState(["userInformation", "userNotifications"]),
-    ...mapState("Admin", ["shifts", "team", "shiftTypes", "groupIDs"]),
+    ...mapState("Admin", [
+      "shifts",
+      "teamInformation",
+      "shiftTypes",
+      "groupIDs"
+    ]),
     ...mapGetters(["getIsAdmin"]),
     categorisedShifts() {
       let { today, upcoming, previous } = this.shifts;
@@ -87,7 +92,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["getShifts", "getTeam"]),
+    ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapActions(["getNotifications"]),
     ...mapMutations(["UPDATE_VIEW_NOTIFICATIONS_CENTER"])
   },

@@ -1,19 +1,15 @@
 <template>
   <el-col class="team_wrapper h-100" v-loading="false">
-    <el-row class="team_container h-100 ">
+    <el-row class="team_container h-100">
       <!-- Display if in mobile view -->
       <Title
         style="text-align:center"
         v-if="$mq != 'lg'"
-        title="Team"
+        title="teamInformation"
         subtitle="View and interact with your team members here"
       />
-      <div v-if="team.length > 0">
-        <el-col
-          v-for="(member, index) in team"
-          :key="index"
-          class="member flex_center"
-        >
+      <div v-if="teamInformation.length > 0">
+        <el-col v-for="(member, index) in teamInformation" :key="index" class="member flex_center">
           <Dropdown
             class="p-2"
             @click.native="hoveredTeamMember = member._id"
@@ -22,11 +18,7 @@
             position="left"
             :icon="false"
           >
-            <el-badge
-              is-dot
-              :type="member.isOnline ? 'success' : 'danger'"
-              class="item"
-            >
+            <el-badge is-dot :type="member.isOnline ? 'success' : 'danger'" class="item">
               <Avatar :name="member.name" />
             </el-badge>
           </Dropdown>
@@ -51,8 +43,7 @@
           type="primary"
           @click="$router.push({ name: 'schedule' })"
           size="mini"
-          >Create Team Member</el-button
-        >
+        >Create Team Member</el-button>
       </Nocontent>
     </el-row>
   </el-col>
@@ -66,7 +57,7 @@ import Title from "@/components/Title";
 import MoreInformation from "@/components/MoreInformation";
 import Nocontent from "@/components/Nocontent";
 export default {
-  name: "UserView",
+  name: "UserSidebar",
   created() {
     this.teamLoaderManager();
   },
@@ -78,10 +69,10 @@ export default {
     };
   },
   computed: {
-    ...mapState("Admin", ["team"]),
+    ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsAdmin", "getOnlineTeam"]),
     onlineTeam() {
-      return this.team.filter(member => {
+      return this.teamInformation.filter(member => {
         return member.isOnline;
       });
     },
@@ -106,7 +97,7 @@ export default {
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
     teamLoaderManager() {
       this.loaderTimeout = setTimeout(() => {
-        if (this.team.length <= 0) {
+        if (this.teamInformation.length <= 0) {
           this.loadingTeam = false;
           this.noTeam = true;
         } else {

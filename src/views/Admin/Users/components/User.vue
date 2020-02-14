@@ -18,7 +18,7 @@
 <script>
 import Avatar from "@/components/Avatar";
 
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 export default {
   name: "User",
   props: {
@@ -30,14 +30,16 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
+    ...mapGetters("Admin", ["getGroupName"]),
+    foundGroupName() {
+      return this.getGroupName("user", this.data.groupID).name;
+    },
     group() {
       let { groupID } = this.data;
       let name = "Group not found";
       if (this.hasEntries(this.clientInformation)) {
         let { userGroups } = this.clientInformation;
-        name = userGroups.find(({ value }) => {
-          return value == groupID;
-        }).name;
+        name = this.foundGroupName;
       }
       return name;
     }

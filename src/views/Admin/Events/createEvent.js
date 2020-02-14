@@ -10,7 +10,7 @@ export default {
           "You cannot have other teammate names when you are not an admin"
         );
       } else {
-        let foundTeamMember = this.team.find(member => {
+        let foundTeamMember = this.teamInformation.find(member => {
           return member.name == name;
         });
         if (foundTeamMember) {

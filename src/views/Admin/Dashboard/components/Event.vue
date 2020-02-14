@@ -63,7 +63,7 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapState("Admin", ["groupIDs", "eventTypes", "team"]),
+    ...mapState("Admin", ["groupIDs", "eventTypes", "teamInformation"]),
     isEventMine() {
       return (
         this.event.assignedTo == this.userInformation._id || this.getIsAdmin
@@ -110,7 +110,7 @@ export default {
       if (Array.isArray(assignedTo) && assignedTo.length > 1) {
         assignedToText = "Multiple Users";
       } else {
-        let foundTeamMember = this.team.find(member => {
+        let foundTeamMember = this.teamInformation.find(member => {
           return member._id == assignedTo[0];
         });
         if (foundTeamMember && foundTeamMember.hasOwnProperty("name")) {

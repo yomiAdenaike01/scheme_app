@@ -33,7 +33,12 @@ export default {
   },
 
   computed: {
-    ...mapState("Admin", ["shifts", "team", "requests", "viewTeamMember"]),
+    ...mapState("Admin", [
+      "shifts",
+      "teamInformation",
+      "requests",
+      "viewTeamMember"
+    ]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getTeamMember"]),
     returnCorrectData() {
@@ -93,15 +98,15 @@ export default {
       }
     },
     getUserInfo() {
-      return this.getTeamMember(this.teamMember, "_id");
+      return this.getTeamMember(this.teamInformationMember, "_id");
     },
     getTeamMemberShifts() {
       return this.shifts.filter(shift => {
-        return shift.assignedTo == this.teamMember;
+        return shift.assignedTo == this.teamInformationMember;
       });
     },
     getSimilarTeamMembers() {
-      return this.team.filter(member => {
+      return this.teamInformation.filter(member => {
         return member.groupID == this.getUserInfo.groupID;
       });
     }
@@ -113,7 +118,7 @@ export default {
     getDocumentation() {
       this.request({
         method: "GET",
-        params: { id: this.teamMember },
+        params: { id: this.teamInformationMember },
         url: "users/documentation"
       })
         .then(response => {

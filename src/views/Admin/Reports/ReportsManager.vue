@@ -53,7 +53,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("Admin", ["team", "reportPanels"]),
+    ...mapState("Admin", ["teamInformation", "reportPanels"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     formConfig() {
@@ -62,7 +62,7 @@ export default {
           model: "assignedTo",
           "component-type": "select",
           multiple: true,
-          options: this.team.map(member => {
+          options: this.teamInformation.map(member => {
             return { value: member._id, text: member.name };
           }),
           placeholder: "Assigned To"

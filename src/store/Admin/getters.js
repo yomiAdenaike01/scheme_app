@@ -21,7 +21,7 @@ export default {
   },
 
   getDropdownTeamMembers(state) {
-    let team = [...state.team];
+    let team = [...state.teamInformation];
     return team.map(({ name, value }) => {
       return {
         name,
@@ -29,9 +29,26 @@ export default {
       };
     });
   },
+
+  getGroupName: (state, getters, { clientInformation }) => (groupType, id) => {
+    let res = {};
+    if (Vue.prototype.hasEntries(clientInformation)) {
+      if (groupType == "user") {
+        groupType = "userGroups";
+      } else {
+        groupType = "eventGroups";
+      }
+
+      res = clientInformation[groupType].find(({ value }) => {
+        return value == id;
+      });
+    }
+    return res;
+  },
+
   getTeamMember(state, getters, rootState) {
     return (toMatch, teamMemberProperty) => {
-      let foundTeamMember = state.team.find(x => {
+      let foundTeamMember = state.teamInformation.find(x => {
         return x[teamMemberProperty] == toMatch;
       });
       if (foundTeamMember) {

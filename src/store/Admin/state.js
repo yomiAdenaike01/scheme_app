@@ -56,10 +56,10 @@ export default {
   viewNote: {
     display: false
   },
-  team: [],
+  teamInformation: [],
   notes: [],
   tasks: [],
-  shifts: {
+  events: {
     all: [],
     upcoming: [],
     today: [],

@@ -40,7 +40,11 @@ export default {
   },
   computed: {
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getTeamMember", "getDropdownTeamMembers", "team"]),
+    ...mapGetters("Admin", [
+      "getTeamMember",
+      "getDropdownTeamMembers",
+      "teamInformation"
+    ]),
     switches() {
       return [
         {
@@ -51,7 +55,7 @@ export default {
     },
     filterAssignedTo() {
       let dropDownTeamMembers = [...this.getDropdownTeamMembers];
-      let team = this.team;
+      let team = this.teamInformation;
       let len = team.length;
       let filteredArray = [];
       // Generate array that finds and adds all their details for filtering
@@ -70,14 +74,14 @@ export default {
         {
           model: "start_date",
           "component-type": "date-picker",
-          'input-type':"date-time",
+          "input-type": "date-time",
           placeholder: "Start date-time",
           disabled: this.configDisplay["start_end_week"]
         },
         {
           model: "end_date",
           "component-type": "date-picker",
-                  'input-type':"date-time",
+          "input-type": "date-time",
 
           placeholder: "End date-time",
           disabled: this.configDisplay["start_end_week"]

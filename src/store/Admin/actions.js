@@ -93,16 +93,16 @@ export default {
       context.commit("UPDATE_USER_NOTIFICATIONS", response, { root: true });
     });
   },
-  getShifts(context) {
+  getEvents(context) {
     return new Promise((resolve, reject) => {
       const payload = {
         method: "GET",
-        url: "/events/all"
+        url: "events/all"
       };
       context
         .dispatch("request", payload, { root: true })
         .then(response => {
-          context.commit("UPDATE_SHIFTS", response);
+          context.commit("UPDATE_EVENTS", response);
           resolve();
         })
         .catch(err => {

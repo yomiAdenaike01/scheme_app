@@ -34,7 +34,7 @@ export default {
       this.adminInterval = setInterval(() => {
         this.getTeam();
         this.getNotifications();
-        this.getShifts();
+        this.getEvents();
       }, 60 * 3000);
       if (this.userNotifications.length > 0) {
         this.displayNewNotification();
@@ -42,7 +42,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["getTeam", "getShifts", "getNotifications"]),
+    ...mapActions("Admin", ["getTeam", "getEvents", "getNotifications"]),
     displayNewNotification() {
       let newNotification = this.userNotifications[0];
       this.UPDATE_NOTIFICATIONS({

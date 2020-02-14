@@ -24,9 +24,7 @@
         @click="displayContentEdit = !displayContentEdit"
         class="description light task_content"
         :class="[{ overdue: isOverdue }]"
-      >
-        {{ task.content }}
-      </h4>
+      >{{ task.content }}</h4>
       <el-input
         size="p"
         v-if="displayContentEdit"
@@ -39,7 +37,7 @@
       ></el-input>
     </div>
 
-    <div class="more_details_container ">
+    <div class="more_details_container">
       <!-- Assigned To -->
       <p class="grey">
         Assigned to
@@ -47,39 +45,24 @@
       </p>
       <br />
       <!-- Category -->
-      <Dropdown
-        :icon="false"
-        :items="dropDownCategories"
-        @method="categoryDropdownController"
-      >
+      <Dropdown :icon="false" :items="dropDownCategories" @method="categoryDropdownController">
         <span class="grey">
           Category
-          <span :style="{ color: clientInformation.colours }">
-            {{ task.category }}
-          </span>
+          <span :style="{ color: clientInformation.colours }">{{ task.category }}</span>
         </span>
       </Dropdown>
       <br />
 
       <!-- Task status -->
-      <Dropdown
-        :icon="false"
-        :items="dropDownStates"
-        @method="stateDropdownController"
-      >
-        <el-tag :type="stateColour" class="capitalize mt-2" size="mini">
-          {{ task.state }}
-        </el-tag>
+      <Dropdown :icon="false" :items="dropDownStates" @method="stateDropdownController">
+        <el-tag :type="stateColour" class="capitalize mt-2" size="mini">{{ task.state }}</el-tag>
       </Dropdown>
     </div>
 
     <!-- Dates with view more -->
     <p class="view_more_indicator mt-4" @click="viewingMore = !viewingMore">
       View More
-      <i
-        class="rotate_icon el-icon-arrow-right"
-        :class="{ active: viewingMore }"
-      ></i>
+      <i class="rotate_icon el-icon-arrow-right" :class="{ active: viewingMore }"></i>
     </p>
     <!-- Dates display -->
     <el-collapse-transition>
@@ -97,8 +80,7 @@
         plain
         @click="requestChanges"
         v-if="hasChanged && manualOverrideHasChanged"
-        >Update</el-button
-      >
+      >Update</el-button>
     </div>
   </div>
 </template>
@@ -127,7 +109,7 @@ export default {
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapState("Admin", ["team"]),
+    ...mapState("Admin", ["teamInformation"]),
 
     hasChanged() {
       let hasChanged;
@@ -245,7 +227,7 @@ export default {
       let foundMember = "John Doe";
 
       if (!this.isAssignedToMe) {
-        let foundTeamMember = this.team.find(member => {
+        let foundTeamMember = this.teamInformation.find(member => {
           return member._id == this.taskData.assignedTo;
         });
 

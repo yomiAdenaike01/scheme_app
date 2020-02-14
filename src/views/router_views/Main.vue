@@ -1,6 +1,6 @@
 <template>
   <div class="main_wrapper">
-    <NprogressContainer/>
+    <NprogressContainer />
     <AppBar />
     <el-row type="flex" style="height:100%">
       <el-col style="flex:1">
@@ -66,7 +66,7 @@ export default {
       "weeklyTimesheetUploaded",
       "localSettings"
     ]),
-    ...mapState("Admin", ["shifts", "team"]),
+    ...mapState("Admin", ["shifts", "teamInformation"]),
     returnIsStartOfWeek() {
       return moment().get("day") <= 1;
     }

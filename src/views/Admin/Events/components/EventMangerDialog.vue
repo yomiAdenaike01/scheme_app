@@ -24,8 +24,15 @@
           title="Event creation"
           subtitle="Select different tabs to create groups or events."
         />
-        <div class="content_container p-3 flex_center">
+        <div class="content_container p-3 flex_center" v-if="currentTab > 0">
           <ValidationUnit v-bind="validationUnitController" />
+        </div>
+      </div>
+
+      <div slot="body_content" v-if="currentTab == 0">
+        <div class="ml-4 mt-4 flex align-center">
+          <ColourUnit v-model="eventData.colour" />
+          <p class="mb-3 ml-4 desc grey">Press to select an event colour (optional):</p>
         </div>
       </div>
     </Tabs>
@@ -46,7 +53,7 @@ import findTeam from "@/mixins/findTeam";
 import createEvent from "../createEvent";
 import moment from "moment";
 import csvtojson from "csvtojson";
-
+import ColourUnit from "@/components/ColourUnit";
 export default {
   name: "EventManagerDialog",
   mixins: [dates, findTeam, createEvent],
@@ -70,7 +77,7 @@ export default {
   },
   computed: {
     ...mapGetters(["getIsAdmin", "getInstructions", "getName"]),
-    ...mapState("Admin", ["team"]),
+    ...mapState("Admin", ["teamInformation"]),
     ...mapState([
       "token",
       "userInformation",
@@ -217,18 +224,20 @@ export default {
       }
     },
     createEventGroup() {
+      let eventData = {
+        ...this.eventData,
+        value: this.clientInformation.eventGroups.length + 1
+      };
       this.request({
         method: "POST",
         url: "clients/group",
-        data: { name: "eventGroups", value: this.eventData }
+        data: { name: "eventGroups", value: eventData }
       })
         .then(response => {
           this.loading = false;
           this.view = false;
-          console.log(response);
         })
         .catch(err => {
-          console.log(err);
           this.loading = false;
           this.view = false;
         });
@@ -354,7 +363,8 @@ export default {
     Tabs,
     EventOptions,
     ValidationUnit,
-    MoreInformation
+    MoreInformation,
+    ColourUnit
   }
 };
 </script>

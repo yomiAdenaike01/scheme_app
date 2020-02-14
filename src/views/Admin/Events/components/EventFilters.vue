@@ -21,7 +21,7 @@
           <el-option v-for="item in group" :key="item.value" :value="item.value" :label="item.name"></el-option>
         </el-select>
       </div>
-      <el-button size="mini" class="mt-3" round type="primary" @click="resetFilters">Reset filters</el-button>
+      <el-button size="mini" class="mt-3" round type="primary">Reset filters</el-button>
     </div>
   </el-col>
 </template>
@@ -42,15 +42,16 @@ export default {
   },
   data() {
     return {
-      localFilters: {},
       selectedTeamMember: "",
-      displayState: false
+      displayState: false,
+      localFilters: {}
     };
   },
 
   computed: {
-    ...mapState("Admin", ["team"]),
+    ...mapState("Admin", ["teamInformation"]),
     ...mapState(["clientInformation"]),
+    ...mapState("Admin", ["eventFilters"]),
 
     groups() {
       let groups = {
@@ -63,20 +64,14 @@ export default {
         groups.event_group = this.clientInformation.eventGroups;
       }
       return groups;
-    },
-    filters() {
-      return [
-        {
-          name: "",
-          value: ""
-        }
-      ];
     }
   },
   methods: {
-    ...mapMutations("Admin", ["UPDATE_EVENT_FILTERS"]),
-    resetFilters() {
-      this.$set(this, "localFilters", {});
+    ...mapMutations("Admin", ["UPDATE_EVENT_FILTERS"])
+  },
+  watch: {
+    localFilters(val) {
+      this.UPDATE_EVENT_FILTERS(val);
     }
   },
 
@@ -84,11 +79,6 @@ export default {
     Title,
     Nocontent,
     Tabs
-  },
-  watch: {
-    localFilters(val) {
-      this.UPDATE_EVENT_FILTERS(val);
-    }
   }
 };
 </script>

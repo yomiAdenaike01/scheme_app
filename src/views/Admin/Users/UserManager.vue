@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
-    ...mapState("Admin", ["team", "groupIDs"]),
+    ...mapState("Admin", ["teamInformation", "groupIDs"]),
     ...mapGetters(["getIsAdmin"]),
 
     filteredGroupsWithUsers() {
@@ -76,7 +76,7 @@ export default {
     groupsWithUsers() {
       let { userGroups } = { ...this.clientInformation };
       let userGroupArr = [];
-      let team = [...this.team];
+      let team = [...this.teamInformation];
       for (let j = 0, len = userGroups.length; j < len; j++) {
         let userGroup = { ...userGroups[j], teamMembers: [] };
         let { value } = userGroup;

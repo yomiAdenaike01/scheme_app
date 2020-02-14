@@ -12,7 +12,7 @@
       <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
 
       <Cal
-        @refreshShift="getShifts"
+        @refreshShift="getEvents"
         @displayCreateEvent="modals.createEvent = $event"
         class="schedule_cal_container"
       />
@@ -40,7 +40,7 @@ export default {
   name: "EventsManager",
   activated() {
     this.loading = true;
-    Promise.all([this.getShifts(), this.getTeam()]).then(response => {
+    Promise.all([this.getEvents(), this.getTeam()]).then(response => {
       this.loading = false;
     });
     if ("gcalToken" in this.userInformation) {
@@ -77,11 +77,11 @@ export default {
   },
 
   computed: {
-    ...mapState("Admin", ["team"]),
+    ...mapState("Admin", ["teamInformation"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     filteredTeam() {
-      return this.team.filter(x => {
+      return this.teamInformation.filter(x => {
         x.name == this.searchedTeamMember;
       });
     },
@@ -144,11 +144,11 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapActions("Admin", ["getShifts", "getTeam"]),
+    ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
     refreshShifts() {
-      this.getShifts();
+      this.getEvents();
     },
 
     createEvent(eventData) {
@@ -198,7 +198,7 @@ export default {
                 "Event successfully created, it will appear in your dashboard and schedule shortly."
             });
           }
-          this.getShifts();
+          this.getEvents();
         })
         .catch(error => {
           this.loading = false;

@@ -1,13 +1,23 @@
-<template functional>
-  <div class="colour_unit" :style="{backgroundColor:props.colour}"></div>
+<template>
+  <div class="colour_unit shadow flex_center" :style="{backgroundColor:colour}">
+    <el-color-picker :predefine="defaultCustomColours" class="inner_picker" v-model="colour"></el-color-picker>
+  </div>
 </template>
 <script>
+import { mapState } from "vuex";
 export default {
   name: "ColourUnit",
-  props: {
-    colour: {
-      type: String,
-      default: "red"
+  data() {
+    return {
+      colour: ""
+    };
+  },
+  computed: {
+    ...mapState(["defaultCustomColours"])
+  },
+  watch: {
+    colour(val) {
+      this.$emit("input", val);
     }
   }
 };
@@ -16,8 +26,10 @@ export default {
 <style lang="scss" scoped>
 .colour_unit {
   border-radius: 50%;
-  box-shadow: $box_shadow;
-  width: 50px;
-  height:50px;
+  width: 60px;
+  height: 60px;
+}
+.inner_picker {
+  opacity: 0;
 }
 </style>

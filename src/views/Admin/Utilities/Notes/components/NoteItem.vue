@@ -27,7 +27,7 @@ import Avatar from "@/components/Avatar";
 export default {
   name: "NoteItem",
   computed: {
-    ...mapState("Admin", ["team", "groupIDs"]),
+    ...mapState("Admin", ["teamInformation", "groupIDs"]),
 
     isPrivate() {
       return this.note.public;
@@ -43,7 +43,7 @@ export default {
 
     returnAssignedTo() {
       let assignedTo;
-      let teamMember = this.team.find(member => {
+      let teamMember = this.teamInformation.find(member => {
         return member._id == note.assignedTo;
       });
 

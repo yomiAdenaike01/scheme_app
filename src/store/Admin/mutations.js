@@ -1,9 +1,8 @@
 import Vue from "vue";
 export default {
   // Reports
-
-  UPDATE_REPORTS_METRICS() {},
   UPDATE_EVENT_FILTERS(state, payload) {
+    console.log(payload);
     Vue.set(state, "eventFilters", payload);
   },
   // Regular admins
@@ -13,8 +12,8 @@ export default {
     }
     Vue.set(state, "viewNote", payload);
   },
-  UPDATE_SHIFTS(state, payload) {
-    Vue.set(state, "shifts", payload);
+  UPDATE_EVENTS(state, payload) {
+    Vue.set(state, "events", payload);
   },
   UPDATE_REQUESTS(state, payload) {
     let unreadRequests = payload.filter(request => {
@@ -28,7 +27,7 @@ export default {
     Vue.set(state, "requests", unreadRequests);
   },
   UPDATE_TEAM(state, payload) {
-    Vue.set(state, "team", payload);
+    Vue.set(state, "teamInformation", payload);
   },
   UPDATE_VIEW_TEAM_MEMBER(state, payload) {
     Vue.set(state, "viewTeamMember", payload);

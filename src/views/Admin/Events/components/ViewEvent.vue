@@ -1,9 +1,6 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <Title
-      title="View Shift"
-      subtitle="Click on more information to display details"
-    >
+    <Title title="View Shift" subtitle="Click on more information to display details">
       <MoreInformation index="admin" instruction="view_shift" />
     </Title>
     <el-row type="flex" v-loading="loading">
@@ -21,8 +18,7 @@
             :key="index"
             @close="removeTeamMemberFromShift(teamMember)"
             :id="teamMember['id']"
-            >{{ teamMember["name"] }}</el-tag
-          >
+          >{{ teamMember["name"] }}</el-tag>
         </div>
         <!-- Shift type -->
 
@@ -37,11 +33,7 @@
             @method="handleChangetype"
             position="right"
           >
-            <el-button
-              round
-              size="small"
-              >{{ shift.type }}</el-button
-            >
+            <el-button round size="small">{{ shift.type }}</el-button>
           </Dropdown>
 
           <el-button
@@ -49,8 +41,7 @@
             v-else
             size="small"
             :type="renderButtonTypes.type"
-            >{{ renderButtonTypes.type.text }}</el-button
-          >
+          >{{ renderButtonTypes.type.text }}</el-button>
         </el-col>
 
         <!-- Approval -->
@@ -85,15 +76,14 @@
         
         v-if="computeRemoveShift.canDrop || computeRemoveShift.canDelete"
         >Edit shift</el-button
-      > -->
+      >-->
       <!-- Remove shift or delete shift button -->
       <el-button
-      plain
-      type="danger"
+        plain
+        type="danger"
         class="flex-1"
         @click="renderDeleteButtonContent['method']"
-        >{{ renderDeleteButtonContent["text"] }}</el-button
-      >
+      >{{ renderDeleteButtonContent["text"] }}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -126,10 +116,9 @@ export default {
     }
   },
   computed: {
-    ...mapState("Admin", ["team", "shiftTypes"]),
+    ...mapState("Admin", ["teamInformation", "shiftTypes"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-  
 
     computeDisplay: {
       get() {
@@ -262,7 +251,7 @@ export default {
 
       if (Array.isArray(this.shift)) {
         foundUser = assignedTo.find((assignee, index) => {
-          return assignee._id == this.team[index]._id;
+          return assignee._id == this.teamInformation[index]._id;
         });
       }
 
@@ -283,7 +272,7 @@ export default {
     },
     renderAssignedTo() {
       let { assignedTo } = this.shift;
-      let team = this.team;
+      let team = this.teamInformation;
       let mappedTeamMemberNames;
 
       if (Array.isArray(assignedTo)) {
@@ -317,7 +306,7 @@ export default {
         // Find the id within the team
 
         let { assignedTo } = this.shift;
-        mappedTeamMemberNames = this.team.find(member => {
+        mappedTeamMemberNames = this.teamInformation.find(member => {
           return member._id == assignedTo;
         });
 
