@@ -1,6 +1,6 @@
 import Vue from "vue";
 
-Vue.prototype.hasValues = function(elem) {
+Vue.prototype.hasEntries = function(elem) {
   if (typeof elem == "object") {
     return Object.keys(elem).length > 0;
   } else if (Array.isArray(elem)) {

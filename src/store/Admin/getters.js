@@ -1,12 +1,31 @@
+import Vue from "vue";
 export default {
-  getAllShifts(state){
+  getAllShifts(state) {
     return state.shifts.all;
   },
+
+  getEnabledEvents(state, getters, { clientInformation, userInformation }) {
+    let hasValues = Vue.prototype.hasEntries(clientInformation);
+    if (hasValues) {
+      let eventGroups = [...clientInformation.eventGroups];
+      let { groupID } = userInformation;
+
+      return eventGroups.filter(evnt => {
+        // enabled for equal to user group
+        let index = evnt.enabledFor.findIndex(enbled => {
+          return enbled == groupID;
+        });
+        return index > -1;
+      });
+    }
+  },
+
   getDropdownTeamMembers(state) {
-    return state["team"].map(member => {
+    let team = [...state.team];
+    return team.map(({ name, value }) => {
       return {
-        text: member["name"].toString(),
-        value: member["_id"].toString()
+        name,
+        value
       };
     });
   },

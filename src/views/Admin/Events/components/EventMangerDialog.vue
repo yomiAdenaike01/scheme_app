@@ -77,7 +77,11 @@ export default {
       "weeklyTimesheetUploaded",
       "clientInformation"
     ]),
-    ...mapGetters("Admin", ["getTeamMember", "getDropdownTeamMembers"]),
+    ...mapGetters("Admin", [
+      "getTeamMember",
+      "getDropdownTeamMembers",
+      "getEnabledEvents"
+    ]),
 
     isNotShiftOrHoliday() {
       let type = this.eventData.type;
@@ -107,7 +111,7 @@ export default {
       let tabs = [
         {
           label: this.getIsAdmin ? "Create event" : "Create Request",
-          formContent: this.returnCreateShiftConfig
+          formContent: this.createEventForm
         },
         {
           label: "Timesheets",
@@ -139,14 +143,14 @@ export default {
         }
       ];
     },
-    returnCreateShiftConfig() {
+    createEventForm() {
       let isShiftOrHoliday = this.isNotShiftOrHoliday;
 
       let createShiftConfig = [
         {
           "component-type": "select",
           placeholder: "Select event type",
-          options: this.clientInformation.userGroups,
+          options: this.getEnabledEvents,
           required: true,
           model: "type"
         },

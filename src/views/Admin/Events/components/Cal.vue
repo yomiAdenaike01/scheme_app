@@ -58,7 +58,7 @@ export default {
     eventTypes() {
       let eventTypes = [];
       if (
-        this.hasValues(this.clientInformation) &&
+        this.hasEntries(this.clientInformation) &&
         "eventGroups" in this.clientInformation
       ) {
         eventTypes = this.clientInformation.eventGroups;

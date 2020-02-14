@@ -58,7 +58,7 @@ export default {
         event_group: {}
       };
 
-      if (this.hasValues(this.clientInformation)) {
+      if (this.hasEntries(this.clientInformation)) {
         groups.user_group = this.clientInformation.userGroups;
         groups.event_group = this.clientInformation.eventGroups;
       }
