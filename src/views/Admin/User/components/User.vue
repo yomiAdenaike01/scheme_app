@@ -20,7 +20,7 @@ import Avatar from "@/components/Avatar";
 import { mapState, mapMutations } from "vuex";
 import TeamView from "../../Team/TeamView.vue";
 export default {
-  name: "UserTeamMember",
+  name: "User",
   props: {
     data: Object
   },

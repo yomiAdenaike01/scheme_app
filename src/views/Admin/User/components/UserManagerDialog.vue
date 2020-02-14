@@ -4,7 +4,7 @@
       :tabs="tabs"
       @fileContent="fileContent = $event"
       @deleteContent="fileContent = $event"
-      @val="createOneEmployee"
+      @val="createOneUser"
       :disableForm="fileContent != null"
       v-loading="loading"
     >
@@ -26,7 +26,7 @@ import { mapActions, mapMutations, mapState } from "vuex";
 import UploadFile from "@/components/UploadFile";
 import ToggleSlideDown from "@/components/ToggleSlideDown";
 import Tabs from "@/components/Tabs";
-import CreateEmeployeeOptions from "./CreateEmployeeOptions";
+import CreateUserOptions from "./CreateUserOptions";
 import Title from "@/components/Title";
 import ValidationUnit from "@/components/ValidationUnit";
 const csvtojson = require("csvtojson");
@@ -40,7 +40,7 @@ export default {
       fileContent: null,
       fileError: null,
       convertedData: {},
-      createEmployeeForm: {}
+      createUserForm: {}
     };
   },
 
@@ -69,7 +69,7 @@ export default {
     },
 
     genPwd() {
-      return this.createEmployeeForm.name
+      return this.createUserForm.name
         .trim()
         .toLowerCase()
         .replace(" ", "");
@@ -78,6 +78,10 @@ export default {
     tabs() {
       return [
         {
+          label: "Create User Group",
+          formContent: this.userGroupForm
+        },
+        {
           label: "Create Employee",
           formContent: this.formItems
         },
@@ -85,12 +89,21 @@ export default {
           label: "Upload Employees",
           view: {
             props: "",
-            component: CreateEmeployeeOptions
+            component: CreateUserOptions
           }
         }
       ];
     },
-
+    userGroupForm() {
+      return [
+        {
+          "component-type": "text",
+          clearable: true,
+          placeholder: "Name",
+          model: "name"
+        }
+      ];
+    },
     formItems() {
       return [
         {
@@ -159,7 +172,7 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
-    createOneEmployee(employee) {
+    createOneUser(employee) {
       this.loading = true;
       this.request({
         method: "POST",
@@ -212,7 +225,7 @@ export default {
       return Promise.resolve(JSONContent);
     },
 
-    createEmployees(employees) {
+    createUsers(employees) {
       return new Promise((resolve, reject) => {
         let url = "users/register/multiple";
 
@@ -232,7 +245,7 @@ export default {
     UploadFile,
     ToggleSlideDown,
     Tabs,
-    CreateEmeployeeOptions,
+    CreateUserOptions,
     ValidationUnit
   },
 
@@ -242,7 +255,7 @@ export default {
       this.cleanData(val)
 
         .then(response => {
-          this.createEmployees(response).then(response => {
+          this.createUsers(response).then(response => {
             this.fileError = false;
             this.loading = false;
           });

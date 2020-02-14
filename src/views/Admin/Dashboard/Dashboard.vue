@@ -4,7 +4,7 @@
     v-loading="loading"
     element-loading-background="rgba(255, 255, 255, 1)"
     :element-loading-text="
-      `Creating
+      `Optimising
     dashboard please wait....`
     "
   >

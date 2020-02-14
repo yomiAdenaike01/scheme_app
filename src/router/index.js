@@ -4,12 +4,11 @@ import store from "./../store";
 
 const clientIntro = () => import("@/components/ClientIntro");
 
-
 // Router views
 const mainApp = () => import("@/views/router_views/Main");
 const admin = () => import("@/views/router_views/Admin");
 const comms = () => import("@/views/router_views/Comms");
-const support = () => import("@/views/router_views/Support")
+const support = () => import("@/views/router_views/Support");
 
 // sub views
 const UserAuth = () => import("@/views/Auth/UserAuth");
@@ -18,7 +17,7 @@ const ClientAuth = () => import("@/views/Auth/ClientAuth");
 const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
 const schedule = () => import("@/views/Admin/Schedule/Schedule");
 const reports = () => import("@/views/Admin/Reports/Reports");
-const UserManagement = () => import("@/views/Admin/User/UserManagement");
+const userManager = () => import("@/views/Admin/User/UserManager");
 const utilities = () => import("@/views/Admin/Utilities/Utilities");
 
 // Comms
@@ -27,8 +26,6 @@ const messenger = () => import("@/views/Comms/Messenger");
 // Support
 const faqs = () => import("@/views/Support/FAQs");
 const error = () => import("@/views/Support/CriticalError");
-
-
 
 Vue.use(VueRouter);
 
@@ -42,7 +39,7 @@ const routes = [
     name: "clientIntro",
     component: clientIntro
   },
- 
+
   {
     path: "/support",
     name: "support",
@@ -105,7 +102,7 @@ const routes = [
           {
             path: "user",
             name: "user",
-            component: UserManagement,
+            component: userManager,
             meta: {
               authRequired: true
             }
@@ -152,16 +149,24 @@ router.beforeEach((to, from, next) => {
   hostname = hostname.split(".")[0];
   document.title = `${hostname} - Powered By Schemeapp.cloud`;
 
+  function redirect(name) {
+    next({
+      name,
+      query: { redirect: to.fullPath }
+    });
+  }
+
   if (authRequired) {
     if (!isLoggedIn) {
-      next({
-        name: "login",
-        query: { redirect: to.fullPath }
-      });
+      redirect("login");
     } else {
       next();
     }
   } else {
+    if (to.name == "login" && isLoggedIn) {
+      redirect("dashboard");
+    }
+
     next();
   }
 });
