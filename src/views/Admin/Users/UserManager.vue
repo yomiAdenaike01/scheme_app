@@ -8,27 +8,16 @@
     team please wait....`
     "
   >
-    <UserGroup
-      v-if="getIsAdmin"
-      addNew
-      @createUserGroup="displayDialog = $event"
-    />
+    <UserGroup addNew @createUserGroup="displayDialog = $event" />
 
     <UserGroup v-if="filteredGroupsWithUsers.length > 0">
-      <el-row
-        v-for="(count, i) in filteredGroupsWithUsers"
-        :key="`${count}${i}`"
-      >
+      <el-row v-for="(count, i) in filteredGroupsWithUsers" :key="`${count}${i}`">
         <el-col :span="11" v-for="(group, index) in count" :key="index">
           <div class="p-2">
             <div class="title_container">
-              <el-button
-                class="large_icon no_events borderless"
-                icon="el-icon-user"
-              ></el-button>
+              <el-button class="large_icon no_events borderless" icon="el-icon-user"></el-button>
               <span class="capitalize">{{ group.name }}</span>
             </div>
-
             <User
               v-for="member in group.teamMembers"
               :data="{ ...member, groupID: group.value }"
@@ -39,10 +28,7 @@
       </el-row>
     </UserGroup>
     <!-- User manager dialog -->
-    <UserManagerDialog
-      :display="displayDialog"
-      @toggle="displayDialog = $event"
-    />
+    <UserManagerDialog :display="displayDialog" @toggle="displayDialog = $event" />
   </el-row>
 </template>
 
@@ -51,6 +37,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 import User from "./components/User";
 import UserManagerDialog from "./components/UserManagerDialog";
 import UserGroup from "./components/UserGroup";
+
 export default {
   name: "UserManager",
   activated() {

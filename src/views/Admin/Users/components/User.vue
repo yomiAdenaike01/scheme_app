@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="hasEntries(data)"
     class="team_member flex p-4 mt-1"
     @click="UPDATE_VIEW_TEAM_MEMBER({ view: true, id: data._id })"
   >
@@ -8,7 +9,7 @@
     <div class="flex columns">
       <div class="text_content ml-2">
         <p class="rbold m-0 p-0">{{ data.name }}</p>
-        <small>{{ groupIDs[data.groupID - 1].name }}</small>
+        <small>{{ group }}</small>
       </div>
     </div>
   </div>
@@ -21,10 +22,25 @@ import { mapState, mapMutations } from "vuex";
 export default {
   name: "User",
   props: {
-    data: Object
+    data: {
+      type: Object,
+      default: () => {},
+      required: true
+    }
   },
   computed: {
-    ...mapState("Admin", ["groupIDs"])
+    ...mapState(["clientInformation"]),
+    group() {
+      let { groupID } = this.data;
+      let name = "Group not found";
+      if (this.hasEntries(this.clientInformation)) {
+        let { userGroups } = this.clientInformation;
+        name = userGroups.find(({ value }) => {
+          return value == groupID;
+        }).name;
+      }
+      return name;
+    }
   },
   methods: {
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"])

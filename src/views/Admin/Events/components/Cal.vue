@@ -217,7 +217,7 @@ export default {
       };
 
       return this.request({
-        url: "shifts/update",
+        url: "events/update",
         method: "POST",
         data: payload
       })

@@ -14,8 +14,6 @@
         :key="`${index}${input.name}`"
         :prop="input.name"
         :label="input.label || ' '"
-        :required="!input.optional"
-        :rules="input.rules ? input.rules : null"
       >
         <component
           :size="size"
@@ -60,15 +58,10 @@
             :label="option.text || option.name"
             :key="option.value"
             :value="option.value ? option.value : option.text || option.name"
-            >{{ option.text || option.name }}</el-option
-          >
+          >{{ option.text || option.name }}</el-option>
         </component>
         <!-- Hint -->
-        <small
-          class="description"
-          v-if="input.hint"
-          v-html="input.hint"
-        ></small>
+        <small class="description" v-if="input.hint" v-html="input.hint"></small>
       </el-form-item>
 
       <!-- Submit button -->
@@ -79,8 +72,7 @@
           class="button_text"
           round
           @click="submitForm"
-          >{{ submitText }}</el-button
-        >
+        >{{ submitText }}</el-button>
       </div>
     </el-form>
   </div>
@@ -146,13 +138,38 @@ export default {
         let formItemName = formItem.hasOwnProperty("name")
           ? formItem.name
           : formItem.model;
+
         if (!formItem.hasOwnProperty("optional")) {
           let validArr = [];
+          let compType = formItem["component-type"];
+          let trigger = "blur",
+            type;
+          if (compType == "date" || compType == "select") {
+            trigger = "change";
+          }
+
+          if (compType == "date-picker") {
+            type = "date";
+            trigger = "change";
+          }
+
+          if (compType == "select" && formItem.hasOwnProperty("multiple")) {
+            type = "array";
+          } else if (
+            compType == "select" &&
+            "validType" in formItem &&
+            formItem.validType == "number"
+          ) {
+            type = "number";
+          }
+
+          console.log({ trigger, type, name: formItemName });
           let validObj = {
             required: true,
-            trigger: "blur",
+            trigger,
             message: "Please fill in the following",
-            name: formItemName
+            name: formItemName,
+            type
           };
 
           if (!formItem.hasOwnProperty("name")) {

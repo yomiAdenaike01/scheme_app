@@ -41,7 +41,7 @@ export default {
       try {
         await this.request({
           method: "POST",
-          url: "shifts/timesheet",
+          url: "events/timesheet",
           data: { timesheet }
         });
         return Promise.resolve();
@@ -64,7 +64,7 @@ export default {
       };
       this.request({
         method: "POST",
-        url: "shifts/create",
+        url: "events/create",
         data: this.eventData
       })
         .then(response => {

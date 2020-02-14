@@ -5,8 +5,8 @@
       :tabs="tabs"
       @uploadFileContent="fileContent = $event"
       @removeContent="(fileContent = ''), (timeSheetError = null)"
-      @val="eventData = $event"
-      :disable="currentTab == 1"
+      @val="eventManagerController"
+      :disable="currentTab > 1"
       v-model.number="currentTab"
       :liveChange="true"
       size="mini"
@@ -131,28 +131,30 @@ export default {
       return [
         {
           "component-type": "text",
-          placeholder: "Event Name",
+          placeholder: "Event group name",
           required: true,
-          model: "eventName"
+          model: "name"
         },
         {
           "component-type": "select",
           options: this.clientInformation.userGroups,
-          placeholder: "Enable for (specify users who can select it)",
-          model: "enableFor"
+          placeholder: "(Optional) Enable for user group",
+          model: "enabledFor",
+          multiple: true
         }
       ];
     },
     createEventForm() {
       let isShiftOrHoliday = this.isNotShiftOrHoliday;
 
-      let createShiftConfig = [
+      let createEventConfig = [
         {
           "component-type": "select",
           placeholder: "Select event type",
           options: this.getEnabledEvents,
           required: true,
-          model: "type"
+          model: "type",
+          validType: "number"
         },
         {
           "component-type": "date-picker",
@@ -168,18 +170,15 @@ export default {
       // Check if it is an admin or not
       let isAdmin = this.getIsAdmin;
       if (isAdmin) {
-        createShiftConfig.unshift(
+        createEventConfig.unshift(
           {
-            name: "Employee",
             placeholder: "Select Team Member",
-            id: "assignedTo",
             "component-type": "select",
             model: "assignedTo",
             options: this.getDropdownTeamMembers,
             multiple: true
           },
           {
-            name: "repeat_for",
             placeholder: "Repeat For (in days)",
             id: "repeat_days",
             "component-type": "text",
@@ -187,19 +186,8 @@ export default {
           }
         );
       }
-      // Add reasons for being sick
-      if (this.isNotShiftOrHoliday) {
-        createShiftConfig.push({
-          type: "text",
-          textarea: true,
-          placeholder:
-            "Optional: Please enter reason for sick leave or time-off",
-          model: "notes",
-          required: true
-        });
-      }
 
-      return createShiftConfig;
+      return createEventConfig;
     },
     //  control the current view
     view: {
@@ -215,6 +203,36 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
+    eventManagerController(val) {
+      this.eventData = val;
+      switch (this.currentTab) {
+        case 0:
+          this.createEventGroup();
+          break;
+        case 1:
+          console.log(this.eventData);
+
+        default:
+          break;
+      }
+    },
+    createEventGroup() {
+      this.request({
+        method: "POST",
+        url: "clients/group",
+        data: { name: "eventGroups", value: this.eventData }
+      })
+        .then(response => {
+          this.loading = false;
+          this.view = false;
+          console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.loading = false;
+          this.view = false;
+        });
+    },
     resetData() {
       this.timeSheetError = null;
       this.fileContent = "";

@@ -49,7 +49,7 @@ export default {
           "request",
           {
             method: "DELETE",
-            url: "shifts/delete",
+            url: "events/delete",
             data: {
               id
             }
@@ -71,7 +71,7 @@ export default {
           "request",
           {
             method: "POST",
-            url: "shifts/update",
+            url: "events/update",
             data: { id, update }
           },
           { root: true }
@@ -97,7 +97,7 @@ export default {
     return new Promise((resolve, reject) => {
       const payload = {
         method: "GET",
-        url: "/shifts/all"
+        url: "/events/all"
       };
       context
         .dispatch("request", payload, { root: true })

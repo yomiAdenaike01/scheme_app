@@ -1,12 +1,16 @@
 import Vue from "vue";
 
 Vue.prototype.hasEntries = function(elem) {
-  if (typeof elem == "object") {
-    return Object.keys(elem).length > 0;
-  } else if (Array.isArray(elem)) {
-    return elem.length > 0;
+  if (typeof elem != undefined) {
+    if (typeof elem == "object") {
+      return Object.keys(elem).length > 0;
+    } else if (Array.isArray(elem)) {
+      return elem.length > 0;
+    } else {
+      throw new Error(`Element must be an object or array not ${typeof elem}.`);
+    }
   } else {
-    throw new Error(`Element must be an object or array not ${typeof elem}.`);
+    return false;
   }
 };
 

@@ -177,7 +177,7 @@ export default {
       }
 
       const payload = {
-        url: "/shifts/create",
+        url: "/events/create",
         method: "POST",
         data: {
           startDate: start,
