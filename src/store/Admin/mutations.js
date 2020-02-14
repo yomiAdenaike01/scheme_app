@@ -3,7 +3,9 @@ export default {
   // Reports
 
   UPDATE_REPORTS_METRICS() {},
-
+  UPDATE_EVENT_FILTERS(state, payload) {
+    Vue.set(state, "eventFilters", payload);
+  },
   // Regular admins
   UPDATE_DISPLAY_NOTE(state, payload, display) {
     if (display) {
@@ -38,15 +40,14 @@ export default {
     state.notes.push(payload);
   },
   UPDATE_TASKS(state, payload) {
-    Vue.set(state, "tasks", payload);
-    // if (Array.isArray(payload)) {
-    //   Vue.set(state, "tasks", payload);
-    // }
-    // let index = state.tasks.findIndex(todo => {
-    //   return (todo.title = payload.title);
-    // });
-    // if (index == -1) {
-    //   state.tasks.push(payload);
-    // }
+    if (Array.isArray(payload)) {
+      Vue.set(state, "tasks", payload);
+    }
+    let index = state.tasks.findIndex(todo => {
+      return (todo.title = payload.title);
+    });
+    if (index == -1) {
+      state.tasks.push(payload);
+    }
   }
 };

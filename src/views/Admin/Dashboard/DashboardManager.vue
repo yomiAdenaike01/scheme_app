@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import Shifts from "./components/Shifts";
 import UserSidebar from "./components/UserSidebar";
 import Widgets from "./components/Widgets/Widgets";
 import { mapActions, mapState } from "vuex";
@@ -50,7 +49,6 @@ export default {
   },
   components: {
     UserSidebar,
-    Shifts,
     Widgets
   }
 };

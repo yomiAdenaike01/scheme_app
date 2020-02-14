@@ -16,8 +16,7 @@
             ? button.method
             : null
         "
-        >{{ button.label }}</el-button
-      >
+      >{{ button.label }}</el-button>
       <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
@@ -25,12 +24,13 @@
         type="primary"
         size="small"
         @click="initGcal"
-        >{{
-          !hasGcal
-            ? "Integrate with google calendar"
-            : "Successfully integrated with google calendar "
-        }}</el-button
       >
+        {{
+        !hasGcal
+        ? "Integrate with google calendar"
+        : "Successfully integrated with google calendar "
+        }}
+      </el-button>
     </el-col>
   </el-row>
 </template>
@@ -89,7 +89,7 @@ export default {
       let buttons = [
         {
           label: this.renderCreateEventButton.text,
-          emit: "create_event",
+          emit: "createEvent",
           round: true,
           icon: this.renderCreateEventButton.icon
         }

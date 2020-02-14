@@ -11,6 +11,9 @@ import "./plugins/element";
 import "./plugins/firebase";
 import "./plugins/clickOutside";
 
+// Prototypes
+import "./plugins/prototypes";
+
 const nprogress = new NProgress({
   showSpinner: false
 });

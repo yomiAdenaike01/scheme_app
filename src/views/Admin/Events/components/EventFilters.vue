@@ -4,45 +4,24 @@
       class="hide_show_indicator shadow pl-3 pr-3 pt-2 pb-2"
       @click="displayState = !displayState"
     >
-      <i
-        class="el-icon-arrow-right active_arrow"
-        :class="{ ' el-icon-arrow-left': !displayState }"
-      ></i>
+      <i class="el-icon-arrow-right active_arrow" :class="{ ' el-icon-arrow-left': !displayState }"></i>
     </div>
     <div class="inner_filter_container" :class="{ active: displayState }">
       <div class="title_container">
         <h4>Filters</h4>
-        <small class="grey filter_desc"
-          >Select from dropdowns to filter the schedule.</small
-        >
-
+        <small class="grey filter_desc">Select from dropdowns to filter the schedule.</small>
         <el-select
+          v-model="localFilters[key]"
+          v-for="(group, key) in groups"
+          :key="key"
+          :placeholder="`Select ${makePretty(key)} group`"
+          class="mt-3"
           size="small"
-          v-model="selectedTeamMember"
-          placeholder="Filter by team member"
-          class="mb-3 mt-3"
         >
-          <el-option
-            v-for="member in team"
-            :key="member._id"
-            :value="member._id"
-            :label="member.name"
-          ></el-option>
-        </el-select>
-
-        <el-select
-          v-model="selectedTeamMember"
-          size="small"
-          placeholder="Filter by group"
-        >
-          <el-option
-            v-for="item in groups"
-            :key="item.value"
-            :value="item.value"
-            :label="item.name"
-          ></el-option>
+          <el-option v-for="item in group" :key="item.value" :value="item.value" :label="item.name"></el-option>
         </el-select>
       </div>
+      <el-button size="mini" class="mt-3" round type="primary" @click="resetFilters">Reset filters</el-button>
     </div>
   </el-col>
 </template>
@@ -51,13 +30,16 @@
 import Title from "@/components/Title";
 import Nocontent from "@/components/Nocontent";
 import Tabs from "@/components/Tabs";
-import shiftTypes from "@/mixins/shiftTypes";
-import { mapGetters, mapState } from "vuex";
+import { mapGetters, mapState, mapMutations } from "vuex";
 
 export default {
-  name: "ScheduleFilters",
-  mixins: [shiftTypes],
-
+  name: "EventFilters",
+  props: {
+    view: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       localFilters: {},
@@ -71,21 +53,15 @@ export default {
     ...mapState(["clientInformation"]),
 
     groups() {
-      let groups = [
-        {
-          name: "Admins",
-          value: 1
-        },
-        {
-          name: "General Staff",
-          value: 2
-        }
-      ];
+      let groups = {
+        user_group: {},
+        event_group: {}
+      };
 
-      if ("userGroups" in this.clientInformation) {
-        groups = this.clientInformation.userGroups;
+      if (this.hasValues(this.clientInformation)) {
+        groups.user_group = this.clientInformation.userGroups;
+        groups.event_group = this.clientInformation.eventGroups;
       }
-
       return groups;
     },
     filters() {
@@ -97,11 +73,10 @@ export default {
       ];
     }
   },
-
-  props: {
-    view: {
-      type: Boolean,
-      default: false
+  methods: {
+    ...mapMutations("Admin", ["UPDATE_EVENT_FILTERS"]),
+    resetFilters() {
+      this.$set(this, "localFilters", {});
     }
   },
 
@@ -109,6 +84,11 @@ export default {
     Title,
     Nocontent,
     Tabs
+  },
+  watch: {
+    localFilters(val) {
+      this.UPDATE_EVENT_FILTERS(val);
+    }
   }
 };
 </script>

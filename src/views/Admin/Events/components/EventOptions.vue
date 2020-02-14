@@ -6,7 +6,7 @@
       <div class="flex columns" v-if="templates.length > 0" v-loading="templateLoading">
         <el-input v-model="templateNamesSearch" placeholder="Seach Templates" size="mini"></el-input>
 
-        <ShiftTemplate
+        <EventTemplate
           @deleteTemplate="deleteTemplate"
           v-for="template in templates"
           :key="template._id"
@@ -61,7 +61,7 @@ import ToggleSlideDown from "@/components/ToggleSlideDown";
 import UploadFile from "@/components/UploadFile";
 import uploadContent from "@/mixins/uploadContent";
 import Title from "@/components/Title";
-import ShiftTemplate from "./ShiftTemplate";
+import EventTemplate from "./EventTemplate";
 import MoreInformation from "@/components/MoreInformation";
 import { mapState, mapActions } from "vuex";
 import Nocontent from "@/components/Nocontent";
@@ -124,7 +124,7 @@ export default {
     ToggleSlideDown,
     UploadFile,
     Title,
-    ShiftTemplate,
+    EventTemplate,
     MoreInformation,
     Nocontent,
     CreateTemplate

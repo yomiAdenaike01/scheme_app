@@ -21,8 +21,8 @@
       <div slot="header_content">
         <Title
           defaultClass="m-0"
-          :title="getIsAdmin ? 'Create event' : 'Create request'"
-          subtitle="Fill in the following form to create a new event"
+          title="Event creation"
+          subtitle="Select different tabs to create groups or events."
         />
         <div class="content_container p-3 flex_center">
           <ValidationUnit v-bind="validationUnitController" />
@@ -35,22 +35,21 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import dates from "@/mixins/dates";
-import ShiftTemplate from "./ShiftTemplate";
+import EventTemplate from "./EventTemplate";
 import UploadFile from "@/components/UploadFile";
 import Title from "@/components/Title";
 import Tabs from "@/components/Tabs";
-import CreateShiftOptions from "./CreateShiftOptions";
+import EventOptions from "./EventOptions";
 import ValidationUnit from "@/components/ValidationUnit";
 import MoreInformation from "@/components/MoreInformation";
 import findTeam from "@/mixins/findTeam";
-import createShift from "../createShift";
+import createEvent from "../createEvent";
 import moment from "moment";
 import csvtojson from "csvtojson";
-import shiftTypes from "@/mixins/shiftTypes";
 
 export default {
-  name: "CreateShift",
-  mixins: [dates, findTeam, createShift, shiftTypes],
+  name: "EventManagerDialog",
+  mixins: [dates, findTeam, createEvent],
   data() {
     return {
       eventData: {},
@@ -71,8 +70,13 @@ export default {
   },
   computed: {
     ...mapGetters(["getIsAdmin", "getInstructions", "getName"]),
-    ...mapState("Admin", ["team", "shiftTypes"]),
-    ...mapState(["token", "userInformation", "weeklyTimesheetUploaded"]),
+    ...mapState("Admin", ["team"]),
+    ...mapState([
+      "token",
+      "userInformation",
+      "weeklyTimesheetUploaded",
+      "clientInformation"
+    ]),
     ...mapGetters("Admin", ["getTeamMember", "getDropdownTeamMembers"]),
 
     isNotShiftOrHoliday() {
@@ -100,7 +104,7 @@ export default {
       };
     },
     tabs() {
-      return [
+      let tabs = [
         {
           label: this.getIsAdmin ? "Create event" : "Create Request",
           formContent: this.returnCreateShiftConfig
@@ -108,12 +112,33 @@ export default {
         {
           label: "Timesheets",
           view: {
-            component: CreateShiftOptions
+            component: EventOptions
           }
         }
       ];
-    },
 
+      tabs.unshift({
+        label: "Create Event Group",
+        formContent: this.createEventGroupForm
+      });
+      return tabs;
+    },
+    createEventGroupForm() {
+      return [
+        {
+          "component-type": "text",
+          placeholder: "Event Name",
+          required: true,
+          model: "eventName"
+        },
+        {
+          "component-type": "select",
+          options: this.clientInformation.userGroups,
+          placeholder: "Enable for (specify users who can select it)",
+          model: "enableFor"
+        }
+      ];
+    },
     returnCreateShiftConfig() {
       let isShiftOrHoliday = this.isNotShiftOrHoliday;
 
@@ -121,7 +146,7 @@ export default {
         {
           "component-type": "select",
           placeholder: "Select event type",
-          options: this.returnShiftTypes(null, "value"),
+          options: this.clientInformation.userGroups,
           required: true,
           model: "type"
         },
@@ -154,7 +179,7 @@ export default {
             placeholder: "Repeat For (in days)",
             id: "repeat_days",
             "component-type": "text",
-            model: "repeat_days",
+            model: "repeat_days"
           }
         );
       }
@@ -302,10 +327,10 @@ export default {
   },
   components: {
     Title,
-    ShiftTemplate,
+    EventTemplate,
     UploadFile,
     Tabs,
-    CreateShiftOptions,
+    EventOptions,
     ValidationUnit,
     MoreInformation
   }

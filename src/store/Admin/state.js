@@ -1,4 +1,5 @@
 export default {
+  eventFilters: {},
   reportPanels: [
     {
       name: "daily_shift_report",
@@ -65,16 +66,5 @@ export default {
     previous: []
   },
   requests: [],
-  viewTeamMember: { view: false, id: null },
-  // 1 (admin), 2(Normal), 3(Locumn)
-  groupIDs: [
-    {
-      name: "System Administrator",
-      value: 1
-    },
-    {
-      name: "General Staff",
-      value: 2
-    }
-  ]
+  viewTeamMember: { view: false, id: null }
 };

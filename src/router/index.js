@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "./../store";
+
 import AdminRoutes from "./AdminRoutes";
 import CommsRoutes from "./CommsRoutes";
 import AuthRoutes from "./AuthRoutes";
@@ -45,10 +46,6 @@ const routes = [
         name: "comms",
         component: Comms,
         children: [...CommsRoutes]
-      },
-      {
-        path: "/",
-        redirect: { query: { name: "login" } }
       }
     ]
   },

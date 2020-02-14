@@ -5,22 +5,17 @@
       <div class="tasks_widget_container flex_center columns">
         <h2 class="txt_center mb-1">Total task progress</h2>
         <small class="grey">Total percentage of all completed tasks</small>
-        <el-progress class="mb-3 mt-3" :width="200" type="circle" :percentage="progressIndicator"></el-progress>
+        <el-progress class="mb-3 mt-3" :width="200" type="circle" :percentage="10"></el-progress>
 
         <el-button plain size="small" @click="$router.push({ name: 'utilities' })">View Tasks</el-button>
       </div>
     </el-card>
-
     <!-- Metrics widgets -->
     <el-row type="flex" class="flex_center">
       <el-col class="metrics_summary_container" v-for="(content, key) in weeklyTotals" :key="key">
         <el-card class="mt-1 ml-2 h-100 flex_center" shadow="none">
           <div class="flex_center columns">
-            <h2 class="m-0 p-0">
-              {{
-              content.result ? content.result : 0
-              }}
-            </h2>
+            <h2 class="m-0 p-0">{{ content.result ? content.result : 0 }}</h2>
             <Title defaultClass="m-0" :subtitle="content.label" />
           </div>
         </el-card>
@@ -52,6 +47,7 @@ export default {
     )
       .then(response => {
         this.weeklyTotals = response;
+        console.log(response);
       })
       .catch(error => {
         console.log(error);

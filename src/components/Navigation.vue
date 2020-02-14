@@ -6,13 +6,12 @@
     :router="true"
     mode="vertical"
     :collapse="true"
-    text-color="#fff"
     :background-color="getDefaultColour"
     :active-text-color="lightColour"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
       <i :class="route.icon" class="home_icon"></i>
-      <span slot="title">{{ route.name }}</span>
+      <small class="m-2" slot="title">{{ route.name }}</small>
     </el-menu-item>
   </el-menu>
 </template>
@@ -32,8 +31,8 @@ export default {
           icon: "el-icon-s-data"
         },
         {
-          name: "Schedule",
-          path: "/admin/schedule",
+          name: "Events",
+          path: "/admin/events",
           icon: "el-icon-date"
         },
         {
@@ -47,12 +46,12 @@ export default {
           icon: "el-icon-user"
         },
         {
-          name: "Reports (BETA)",
+          name: "Reports",
           path: "/admin/reports",
           icon: "el-icon-notebook-1"
         },
         {
-          name: "Utilities (BETA)",
+          name: "Utilities",
           path: "/admin/utilities",
           icon: "el-icon-s-opportunity"
         }

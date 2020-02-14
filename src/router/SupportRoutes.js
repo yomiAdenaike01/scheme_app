@@ -1,5 +1,5 @@
 // Support
-const SupportCentre = () => import("@/views/Support/SupportCentre");
+const SupportCentre = () => import("@/views/Support/SupportManager");
 
 const FAQs = () => import("@/views/Support/FAQs");
 const CriticalError = () => import("@/views/Support/CriticalError");

@@ -1,8 +1,8 @@
-const Dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
-const Schedule = () => import("@/views/Admin/Schedule/Schedule");
-const Reports = () => import("@/views/Admin/Reports/Reports");
-const UserManager = () => import("@/views/Admin/User/UserManager");
-const Utilities = () => import("@/views/Admin/Utilities/Utilities");
+const Dashboard = () => import("@/views/Admin/Dashboard/DashboardManager");
+const EventsManager = () => import("@/views/Admin/Events/EventsManager");
+const Reports = () => import("@/views/Admin/Reports/ReportsManager");
+const UserManager = () => import("@/views/Admin/Users/UserManager");
+const Utilities = () => import("@/views/Admin/Utilities/UtilitiesManager");
 export default [
   {
     path: "utilities",
@@ -21,9 +21,9 @@ export default [
     }
   },
   {
-    path: "schedule",
-    name: "schedule",
-    component: Schedule,
+    path: "events",
+    name: "events",
+    component: EventsManager,
     meta: {
       authRequired: true
     }

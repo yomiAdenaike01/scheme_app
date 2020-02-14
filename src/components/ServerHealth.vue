@@ -1,7 +1,6 @@
 <template>
   <transition name="el-fade-in">
     <div
-      v-loading="loading"
       class="p-2 server_health_container flex_center"
       :class="[
         { healthy: serverHealth.healthy },
@@ -17,9 +16,7 @@ export default {
   name: "ServerHealth",
   computed: {
     ...mapState(["serverHealth"]),
-    loading() {
-      return Object.keys(this.serverHealth).length == 0;
-    },
+
     displayText() {
       let { healthy } = this.serverHealth;
       if (healthy) {

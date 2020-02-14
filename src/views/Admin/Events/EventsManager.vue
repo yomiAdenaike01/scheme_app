@@ -3,27 +3,24 @@
     class="schedule_container w-100"
     type="flex"
     v-loading="loading"
-    element-loading-text="Loading team members and shifts please wait..."
+    element-loading-text="Loading team members and events please wait..."
   >
     <!-- Shift and calendar view -->
-    <ScheduleFilters />
+    <EventFilters />
 
     <el-col>
-      <Title title="Schedule" subtitle="View your calendar" />
-
       <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
 
       <Cal
         @refreshShift="getShifts"
-        @displayCreateShift="modals['create_event'] = $event"
-        :ScheduleFilters="filters['schedule_view']"
+        @displayCreateEvent="modals.createEvent = $event"
         class="schedule_cal_container"
       />
-      <!-- Create views -->
-      <CreateShift
-        @toggle="modals['create_event'] = $event"
+
+      <EventMangerDialog
+        @toggle="modals.createEvent = $event"
         @createEvent="createEvent"
-        :display="modals['create_event']"
+        :display="modals.createEvent"
       />
     </el-col>
   </el-row>
@@ -32,15 +29,15 @@
 <script>
 import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
-import CreateShift from "./components/CreateShift";
+import EventMangerDialog from "./components/EventMangerDialog";
 import Toolbar from "./components/Toolbar";
 import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";
 import Cal from "./components/Cal";
 import Title from "@/components/Title";
-import ScheduleFilters from "./components/ScheduleFilters";
+import EventFilters from "./components/EventFilters";
 export default {
-  name: "Schedule",
+  name: "EventsManager",
   activated() {
     this.loading = true;
     Promise.all([this.getShifts(), this.getTeam()]).then(response => {
@@ -70,13 +67,8 @@ export default {
       },
 
       modals: {
-        create_event: false,
-        edit_event: false,
-        view_profile: false,
-        export_profile: false,
-        export_schedule: false,
-        create_employee: false,
-        schedule_view: false
+        createEvent: false,
+        view_profile: false
       },
 
       currentView: "",
@@ -222,11 +214,11 @@ export default {
   components: {
     Title,
     Cal,
-    CreateShift,
+    EventMangerDialog,
     Dropdown,
     Popover,
     Toolbar,
-    ScheduleFilters
+    EventFilters
   }
 };
 </script>

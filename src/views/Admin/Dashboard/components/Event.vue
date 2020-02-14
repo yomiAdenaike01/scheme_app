@@ -1,8 +1,8 @@
 ]<template>
-  <div class="mb-3 shift_container rounded shadow" :class="{ myShift: isShiftMine }">
+  <div class="mb-3 event_container rounded shadow" :class="{ myEvent: isEventMine }">
     <el-row type="flex">
-      <el-col class="shift_details_container details_unit p-2">
-        <h5 class="member_name">{{ getShiftType }}</h5>
+      <el-col class="event_details_container details_unit p-2">
+        <h5 class="member_name">{{ getEventType }}</h5>
         <p class="member_name">{{ assignedToText }}</p>
         <el-tag
           class="mr-1"
@@ -16,12 +16,12 @@
 
         <el-tag effect="dark" size="small" class="capitalize" type="primary">
           {{
-          shift.timeTag
+          event.timeTag
           }}
         </el-tag>
       </el-col>
 
-      <el-col :class="['shift_times flex details_unit', shift.class]">
+      <el-col :class="['event_times flex details_unit', event.class]">
         <div class="flex_center">
           <span class="date">{{ formattedDates.start }}</span>
           <div class="flex_center columns">
@@ -32,8 +32,8 @@
         </div>
       </el-col>
 
-      <el-col class="flex_center shift_controls_wrapper">
-        <Dropdown :items="shiftActionItems" @method="handleShiftActions" />
+      <el-col class="flex_center event_controls_wrapper">
+        <Dropdown :items="eventActionItems" @method="handleEventActions" />
       </el-col>
     </el-row>
   </div>
@@ -44,68 +44,68 @@ import { mapState, mapActions, mapGetters } from "vuex";
 import employeeMethods from "@/mixins/employeeMethods";
 import dates from "@/mixins/dates";
 import Dropdown from "@/components/Dropdown";
-import ViewShift from "../../Schedule/components/ViewShift";
+import ViewEvent from "../../Events/components/ViewEvent";
 import moment from "moment";
 export default {
-  name: "Shift",
+  name: "Event",
   mixins: [employeeMethods, dates],
 
   data() {
     return {
       viewDetails: false,
       startEndTimeDiffType: "hours",
-      displayViewShift: false
+      displayViewEvent: false
     };
   },
   props: {
-    shift: Object
+    event: Object
   },
   computed: {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapState("Admin", ["groupIDs", "shiftTypes", "team"]),
-    isShiftMine() {
+    ...mapState("Admin", ["groupIDs", "eventTypes", "team"]),
+    isEventMine() {
       return (
-        this.shift.assignedTo == this.userInformation._id || this.getIsAdmin
+        this.event.assignedTo == this.userInformation._id || this.getIsAdmin
       );
     },
-    shiftActionItems() {
+    eventActionItems() {
       let actions = [];
       if (
-        this.shift.assignedTo == this.userInformation._id ||
+        this.event.assignedTo == this.userInformation._id ||
         this.getIsAdmin
       ) {
         actions.push(
           {
-            name: "Update Shift",
-            command: "update_shift"
+            name: "Update Event",
+            command: "update_event"
           },
           {
-            name: "Delete Shift",
-            command: "delete_shift"
+            name: "Delete Event",
+            command: "delete_event"
           }
         );
       } else {
         actions.push({
-          name: "View Shift",
-          command: "view_shift"
+          name: "View Event",
+          command: "view_event"
         });
       }
       return actions;
     },
     approval() {
-      let approved = this.shift.isApproved.admin == 1;
+      let approved = this.event.isApproved.admin == 1;
       return {
         boolean: approved,
         text: approved ? "Approved" : "Not Approved"
       };
     },
-    shiftTypeText() {
-      let { type } = this.shift;
-      return this.shiftTypes[type - 1].name;
+    eventTypeText() {
+      let { type } = this.event;
+      return this.eventTypes[type - 1].name;
     },
     assignedToText() {
-      let { assignedTo } = this.shift;
+      let { assignedTo } = this.event;
       let assignedToText;
       if (Array.isArray(assignedTo) && assignedTo.length > 1) {
         assignedToText = "Multiple Users";
@@ -124,7 +124,7 @@ export default {
 
     formattedDates() {
       const format = "ddd-MM HH:mm";
-      let { startDate, endDate } = this.shift;
+      let { startDate, endDate } = this.event;
       return {
         start: moment(startDate).format(format),
         end: moment(endDate).format(format)
@@ -132,7 +132,7 @@ export default {
     },
 
     startAndEndTimeDiff() {
-      let { startDate, endDate, type } = this.shift;
+      let { startDate, endDate, type } = this.event;
 
       let diff = this.duration(endDate, startDate).as("hours");
       if (diff > 23) {
@@ -144,32 +144,32 @@ export default {
 
       return Math.floor(diff);
     },
-    getShiftType() {
-      let type = this.shift.type - 1;
-      return this.shiftTypes[type].name;
+    getEventType() {
+      let type = this.event.type - 1;
+      return this.eventTypes[type].name;
     },
     getgroupID() {
-      return this.convertgroupID(this.shift.user);
+      return this.convertgroupID(this.event.user);
     }
   },
   methods: {
     ...mapActions(["request"]),
-    confirmDeleteShift() {
-      return this.$confirm("Are you sure you want to delete this shift ? ");
+    confirmDeleteEvent() {
+      return this.$confirm("Are you sure you want to delete this event ? ");
     },
-    handleShiftActions(command) {
+    handleEventActions(command) {
       switch (command) {
-        case "delete_shift": {
-          this.deleteShift();
+        case "delete_event": {
+          this.deleteEvent();
           break;
         }
 
-        case "view_shift": {
-          this.displayViewShift = true;
+        case "view_event": {
+          this.displayViewEvent = true;
           break;
         }
-        case "update_shift": {
-          this.displayViewShift = true;
+        case "update_event": {
+          this.displayViewEvent = true;
           this.$router.push({ name: "schedule" });
 
           break;
@@ -179,15 +179,15 @@ export default {
           break;
       }
     },
-    async deleteShift() {
+    async deleteEvent() {
       try {
-        let confirmShift = await this.confirmDeleteShift();
+        let confirmEvent = await this.confirmDeleteEvent();
         let deleteRequest = await this.request({
           method: "DELETE",
-          url: "shifts/delete",
-          data: { id: this.shift._id }
+          url: "events/delete",
+          data: { id: this.event._id }
         });
-        await Promise.all([confirmShift, deleteRequest]);
+        await Promise.all([confirmEvent, deleteRequest]);
       } catch (error) {
         return error;
       }
@@ -195,30 +195,30 @@ export default {
   },
   components: {
     Dropdown,
-    ViewShift
+    ViewEvent
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.shift_container {
+.event_container {
   border-radius: 10px;
   line-height: 2.1em;
   font-weight: 300;
   font-size: 0.9em;
   cursor: pointer;
   opacity: 0.5;
-  &.myShift {
+  &.myEvent {
     opacity: 1;
   }
 }
 
-.shift_times {
+.event_times {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.shift_details_container {
+.event_details_container {
   width: 30%;
 }
 
@@ -231,7 +231,7 @@ export default {
   text-transform: uppercase;
   font-size: 0.8em;
 }
-.shift_controls_wrapper {
+.event_controls_wrapper {
   width: 10%;
 }
 .date {

@@ -5,14 +5,14 @@
       v-loading="loading"
       :events="returnShiftEvents"
       :default-view="ScheduleFilters"
-      :on-event-click="viewShift"
+      :on-event-click="ViewEvent"
       events-on-month-view="short"
       editable-events
       @event-duration-change="changeShiftTime"
       :cell-click-hold="false"
     />
 
-    <ViewShift
+    <ViewEvent
       v-if="view"
       :display="view"
       :shift="shift"
@@ -27,7 +27,7 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import ViewShift from "./ViewShift";
+import ViewEvent from "./ViewEvent";
 import moment from "moment";
 export default {
   name: "Cal",
@@ -47,7 +47,7 @@ export default {
   },
 
   computed: {
-    ...mapState("Admin", ["shifts", "team", "shiftTypes"]),
+    ...mapState("Admin", ["shifts", "team"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getTeamMember", "getAllShifts"]),
@@ -55,6 +55,16 @@ export default {
     // isMine() {
     //   return this.returnShiftDetails._id == this.userInformation._id
     // },
+    eventTypes() {
+      let eventTypes = [];
+      if (
+        this.hasValues(this.clientInformation) &&
+        "eventGroups" in this.clientInformation
+      ) {
+        eventTypes = this.clientInformation.eventGroups;
+      }
+      return eventTypes;
+    },
 
     returnCalendarOptions() {
       return [
@@ -94,7 +104,7 @@ export default {
       shifts = shifts.map(shift => {
         let { isApproved, startDate, _id, endDate, assignedTo, type } = shift;
         type = type - 1;
-        type = this.shiftTypes[type].name;
+        type = this.eventTypes[type].name;
         startDate = moment(startDate).format(format);
         endDate = moment(endDate).format(format);
 
@@ -133,13 +143,13 @@ export default {
 
     returntype(name, type) {
       return {
-        text: `${name}'s ${this.shiftTypes[type].name}`,
-        type: this.shiftTypes[type].name,
-        eventClass: this.shiftTypes[type].name.trim().toLowerCase()
+        text: `${name}'s ${this.eventTypes[type].name}`,
+        type: this.eventTypes[type].name,
+        eventClass: this.eventTypes[type].name.trim().toLowerCase()
       };
     },
 
-    viewShift(shift) {
+    ViewEvent(shift) {
       this.shift = shift;
       this.view = true;
     },
@@ -158,7 +168,7 @@ export default {
         if (confirmResponse) {
           let { startDate, endDate } = shift;
           this.loading = true;
-          this.updateShift(shift);
+          this.updateEvent(shift);
         }
       } else {
         this.loading = false;
@@ -194,7 +204,7 @@ export default {
         });
     },
 
-    updateShift({ startDate, endDate, _id }) {
+    updateEvent({ startDate, endDate, _id }) {
       startDate = startDate.toISOString();
       endDate = endDate.toISOString();
 
@@ -207,7 +217,7 @@ export default {
       };
 
       return this.request({
-        url: "/shifts/update",
+        url: "shifts/update",
         method: "POST",
         data: payload
       })
@@ -222,7 +232,7 @@ export default {
   },
   components: {
     VueCal,
-    ViewShift
+    ViewEvent
   }
 };
 </script>
@@ -239,11 +249,7 @@ export default {
     color: $primary_colour;
     border-top: 2px solid $primary_colour;
   }
-  &.locumn {
-    background: #f0f9eb;
-    color: #67c23a;
-    border-top: 2px solid #67c23a;
-  }
+
   &.holiday {
     background: #fef0f0;
     color: #f56c6c;

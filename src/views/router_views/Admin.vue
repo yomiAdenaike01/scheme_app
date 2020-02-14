@@ -9,7 +9,7 @@
 
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
-import ViewUser from "@/views/Admin/User/ViewUser/ViewUser";
+import ViewUser from "@/views/Admin/Users/ViewUser/ViewUser";
 export default {
   name: "Admin",
   data() {

@@ -1,9 +1,5 @@
 <template>
-  <el-dialog
-    :visible.sync="toggleView"
-    v-if="getUserInfo"
-    custom-class="teamMemberDialogContainer"
-  >
+  <el-dialog :visible.sync="toggleView" v-if="getUserInfo" custom-class="teamMemberDialogContainer">
     <el-row type="flex">
       <el-col>
         <Sidebar
@@ -13,10 +9,7 @@
           :tabItems="tabItems"
         >
           <div class="content_body">
-            <component
-              :is="returnCorrectData.component"
-              :data="returnCorrectData.props"
-            />
+            <component :is="returnCorrectData.component" :data="returnCorrectData.props" />
           </div>
         </Sidebar>
       </el-col>
@@ -27,7 +20,7 @@
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import UserInfo from "./components/UserInfo";
-import UserShifts from "./components/UserShifts";
+import UserEvents from "./components/UserEvents";
 import Sidebar from "./components/Sidebar";
 export default {
   name: "ViewUser",
@@ -55,7 +48,7 @@ export default {
         }
         // Display user shifts
         case "1": {
-          component = UserShifts;
+          component = UserEvents;
           props = "";
           break;
         }
@@ -134,7 +127,7 @@ export default {
   components: {
     UserInfo,
     Sidebar,
-    UserShifts
+    UserEvents
   }
 };
 </script>
