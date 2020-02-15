@@ -26,11 +26,6 @@ export default {
       isCollapse: true,
       routes: [
         {
-          name: "Dashboard",
-          path: "/admin/dashboard",
-          icon: "el-icon-s-data"
-        },
-        {
           name: "Events",
           path: "/admin/events",
           icon: "el-icon-date"

@@ -50,7 +50,7 @@ export default {
     ...mapState("Admin", ["events", "teamInformation"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getTeamMember", "getAllShifts"]),
+    ...mapGetters("Admin", ["getTeamMember", "getAllEvents"]),
 
     // isMine() {
     //   return this.returnShiftDetails._id == this.userInformation._id

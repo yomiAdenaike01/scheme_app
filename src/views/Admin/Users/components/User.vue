@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="hasEntries(data)"
     class="team_member flex p-4 mt-1"
     @click="UPDATE_VIEW_TEAM_MEMBER({ view: true, id: data._id })"
   >

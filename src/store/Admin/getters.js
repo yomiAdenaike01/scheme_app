@@ -1,7 +1,13 @@
 import Vue from "vue";
 export default {
-  getAllShifts(state) {
-    return state.shifts.all;
+  getAllEvents({ events }) {
+    return events.all;
+  },
+
+  getUsersEvents: ({ events }) => id => {
+    return events.filter(event => {
+      return event.assignedTo == id;
+    });
   },
 
   getEnabledEvents(state, getters, { clientInformation, userInformation }) {

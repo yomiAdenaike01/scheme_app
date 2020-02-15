@@ -58,7 +58,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const authRequired = to.matched.some(route => route.meta.authRequired);
-  const isLoggedIn = Object.keys(store.state.userInformation).length > 0;
+  const isLoggedIn = Vue.prototype.hasEntries(store.state.userInformation);
   let { hostname } = window.location;
   hostname = hostname.split(".")[0];
   document.title = `${hostname} - Powered By Schemeapp.cloud`;
@@ -78,7 +78,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (to.name == "login" && isLoggedIn) {
-      redirect("dashboard");
+      redirect("events");
     }
 
     next();

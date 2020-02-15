@@ -2,7 +2,6 @@ import Vue from "vue";
 export default {
   // Reports
   UPDATE_EVENT_FILTERS(state, payload) {
-    console.log(payload);
     Vue.set(state, "eventFilters", payload);
   },
   // Regular admins

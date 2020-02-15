@@ -1,7 +1,6 @@
 <template>
   <div class="group_container shadow m-4" :class="{ new_group: addNew }">
     <div class="columns">
-      <div v-if="!addNew"></div>
       <slot></slot>
     </div>
 

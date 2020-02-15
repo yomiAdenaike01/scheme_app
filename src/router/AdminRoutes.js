@@ -12,14 +12,7 @@ export default [
       authRequired: true
     }
   },
-  {
-    path: "dashboard",
-    name: "dashboard",
-    component: Dashboard,
-    meta: {
-      authRequired: true
-    }
-  },
+
   {
     path: "events",
     name: "events",

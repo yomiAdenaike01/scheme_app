@@ -74,15 +74,6 @@ export default {
         },
         {
           label: "Shifts"
-        },
-        {
-          label: "Timesheets"
-        },
-        {
-          label: "Leave/Holiday"
-        },
-        {
-          label: "Notes (BETA)"
         }
       ];
     },

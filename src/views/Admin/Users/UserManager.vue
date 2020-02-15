@@ -15,7 +15,7 @@
         <el-col :span="11" v-for="(group, index) in count" :key="index">
           <div class="p-2">
             <div class="title_container">
-              <el-button class="large_icon no_events borderless" icon="el-icon-user"></el-button>
+              <el-button class="large_icon no_events mr-1 borderless" icon="el-icon-user"></el-button>
               <span class="capitalize">{{ group.name }}</span>
             </div>
             <User
