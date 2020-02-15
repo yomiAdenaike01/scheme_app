@@ -26,7 +26,7 @@ export default {
       isCollapse: true,
       routes: [
         {
-          name: "Events",
+          name: "Events management",
           path: "/admin/events",
           icon: "el-icon-date"
         },
@@ -36,7 +36,7 @@ export default {
           icon: "el-icon-chat-round"
         },
         {
-          name: "User",
+          name: "User management",
           path: "/admin/user",
           icon: "el-icon-user"
         },
