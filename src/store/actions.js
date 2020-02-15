@@ -1,4 +1,6 @@
 import axios from "axios";
+import Vue from "vue";
+
 if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:7070/";
 } else {
@@ -14,6 +16,23 @@ const sortPayload = (state, payload) => {
 };
 
 export default {
+  confirmBox(context, { text, title, type }) {
+    return new Promise((resolve, reject) => {
+      Vue.prototype
+        .$confirm(text, title, {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type,
+          round: true
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch(() => {
+          reject();
+        });
+    });
+  },
   checkServerHealth(context) {
     context
       .dispatch("request", {
@@ -57,7 +76,7 @@ export default {
   getNotifications(context) {
     context
       .dispatch("request", {
-        url: "/notifications/all",
+        url: "notifications/all",
         method: "GET"
       })
       .then(response => {
@@ -77,7 +96,6 @@ export default {
 
         if (response.hasOwnProperty("success")) {
           if (typeof response.content == "string" && !disableNotification) {
-            console.log(disableNotification);
             context.commit("UPDATE_NOTIFICATIONS", {
               message: response.content,
               type: "success"
@@ -89,6 +107,18 @@ export default {
         }
       })
       .catch(error => {
+        const { status } = error.request;
+
+        // Web token error
+        if (status === 401) {
+          context.commit("UPDATE_NOTIFICATIONS", {
+            message:
+              "Your session has expired, you will need to login click to refresh",
+            type: "info"
+          });
+          context.commit("REMOVE_USER");
+        }
+
         if (error.hasOwnProperty("data")) {
           error = error.data.content;
         }

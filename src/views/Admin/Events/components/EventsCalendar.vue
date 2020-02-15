@@ -30,7 +30,7 @@ import "vue-cal/dist/vuecal.css";
 import ViewEvent from "./ViewEvent";
 import moment from "moment";
 export default {
-  name: "Cal",
+  name: "EventsCalendar",
 
   data() {
     return {

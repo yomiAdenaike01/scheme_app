@@ -1,5 +1,13 @@
 import Vue from "vue";
 
+function checkType(elem, determinedType) {
+  if (typeof elem != undefined && typeof elem != determinedType) {
+    throw new Error(`Element type is wrong ${typeof elem}.`);
+  } else {
+    return true;
+  }
+}
+
 Vue.prototype.hasEntries = function(elem) {
   if (typeof elem != undefined) {
     if (typeof elem == "object") {
@@ -15,9 +23,21 @@ Vue.prototype.hasEntries = function(elem) {
 };
 
 Vue.prototype.makePretty = function(elem) {
-  if (typeof elem != "string") {
-    throw new Error(`Element must be a string not ${typeof elem}.`);
+  if (checkType(elem, "string")) {
+    return elem.replace("_", " ");
   }
+};
 
-  return elem.replace("_", " ");
+Vue.prototype.makeUgly = function(elem) {
+  if (checkType(elem, "string")) {
+    return elem.replace(" ", "_").toLowerCase();
+  }
+};
+Vue.prototype.truncate = function(elem, len) {
+  if (!len) {
+    len = 10;
+  }
+  if (checkType(elem, "string")) {
+    return elem.length > len ? `${elem.substr(0, len)} ...` : elem;
+  }
 };

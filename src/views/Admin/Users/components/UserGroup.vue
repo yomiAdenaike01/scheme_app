@@ -6,13 +6,9 @@
     </div>
 
     <div v-if="addNew" class="flex_center columns new_group_container h-100">
-      <Icon
-        class="large_icon grey mb-5"
-        icon="el-icon-user"
-        :bg="getDefaultColour"
-      />
-      <h2 class="large">Create User Group</h2>
-      <small class="grey">Create a new user group and assign users</small>
+      <Icon class="large_icon grey mb-5" icon="el-icon-user" :bg="getDefaultColour" />
+      <h2 class="large">Manager users</h2>
+      <small class="grey">Create, edit, remove users / groups.</small>
       <el-button
         class="mt-4"
         icon="el-icon-plus"

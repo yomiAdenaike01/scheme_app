@@ -10,10 +10,7 @@
       v-loading="loading"
     >
       <div slot="header_content">
-        <Title
-          title="Create employee"
-          subtitle="Enter the employee's details. Feel free to upload a csv file of the employee or employees"
-        />
+        <Title title="Manager users" subtitle="Manage all users and groups here." />
         <transition name="el-fade-in">
           <div class="flex_center" v-if="currentTab > 0">
             <ValidationUnit v-bind="renderValidationUnit" />
@@ -32,6 +29,7 @@ import Tabs from "@/components/Tabs";
 import CreateUserOptions from "./CreateUserOptions";
 import Title from "@/components/Title";
 import ValidationUnit from "@/components/ValidationUnit";
+import ManageUserGroups from "./ManageUserGroups";
 const csvtojson = require("csvtojson");
 
 export default {
@@ -59,15 +57,15 @@ export default {
       return {
         success: {
           condition: this.fileError == true,
-          text: "Employee timesheet passed tests ready to upload"
+          text: "User file passed tests ready to upload"
         },
         danger: {
           condition: this.fileError == true,
-          text: "Employee timesheet passed tests ready to upload"
+          text: "User timesheet passed tests ready to upload"
         },
         info: {
           condition: this.fileError == null,
-          text: "Upload employee file"
+          text: "Upload users file"
         }
       };
     },
@@ -82,15 +80,18 @@ export default {
     tabs() {
       return [
         {
-          label: "Create User Group",
-          formContent: this.userGroupForm
+          label: "Manage user groups",
+          view: {
+            component: ManageUserGroups,
+            props: ""
+          }
         },
         {
-          label: "Create Employee",
+          label: "Create users",
           formContent: this.formItems
         },
         {
-          label: "Upload Employees",
+          label: "Upload users",
           view: {
             props: "",
             component: CreateUserOptions
@@ -98,16 +99,7 @@ export default {
         }
       ];
     },
-    userGroupForm() {
-      return [
-        {
-          "component-type": "text",
-          clearable: true,
-          placeholder: "Name",
-          model: "name"
-        }
-      ];
-    },
+
     formItems() {
       return [
         {
@@ -176,31 +168,8 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
-    createUserGroup(content) {
-      content.value = this.clientInformation.userGroups.length + 1;
-      this.request({
-        method: "POST",
-        url: "clients/update",
-        data: {
-          update: {
-            content
-          }
-        }
-      })
-        .then(response => {
-          console.log(response);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-
     userManagerController(val) {
       switch (this.currentTab) {
-        case 0: {
-          this.createUserGroup(val);
-          break;
-        }
         case 1: {
           if (!this.fileContent) {
             this.createOneUser(val);
@@ -290,7 +259,8 @@ export default {
     ToggleSlideDown,
     Tabs,
     CreateUserOptions,
-    ValidationUnit
+    ValidationUnit,
+    ManageUserGroups
   },
 
   watch: {

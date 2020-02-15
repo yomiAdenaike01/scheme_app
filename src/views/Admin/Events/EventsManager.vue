@@ -11,7 +11,7 @@
     <el-col>
       <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
 
-      <Cal
+      <EventsCalendar
         @refreshShift="getEvents"
         @displayCreateEvent="modals.createEvent = $event"
         class="schedule_cal_container"
@@ -33,7 +33,7 @@ import EventMangerDialog from "./components/EventMangerDialog";
 import Toolbar from "./components/Toolbar";
 import Dropdown from "@/components/Dropdown.vue";
 import Popover from "@/components/Popover";
-import Cal from "./components/Cal";
+import EventsCalendar from "./components/EventsCalendar";
 import Title from "@/components/Title";
 import EventFilters from "./components/EventFilters";
 export default {
@@ -213,7 +213,7 @@ export default {
 
   components: {
     Title,
-    Cal,
+    EventsCalendar,
     EventMangerDialog,
     Dropdown,
     Popover,

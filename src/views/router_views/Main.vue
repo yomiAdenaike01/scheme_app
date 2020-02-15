@@ -8,11 +8,11 @@
       </el-col>
       <el-col>
         <ServerHealth />
-        <RouterTransition>
+        <DefaultTransition>
           <keep-alive>
             <router-view :key="key" />
           </keep-alive>
-        </RouterTransition>
+        </DefaultTransition>
       </el-col>
     </el-row>
     <NotificationsCenter />
@@ -29,7 +29,7 @@ import ServerHealth from "@/components/ServerHealth";
 import CriticalError from "@/components/CriticalError";
 import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
-import RouterTransition from "@/components/RouterTransition";
+import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "Main",
 
@@ -113,7 +113,7 @@ export default {
     NotificationsCenter,
     ServerHealth,
     NprogressContainer,
-    RouterTransition
+    DefaultTransition
   }
 };
 </script>
