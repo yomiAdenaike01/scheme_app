@@ -1,24 +1,4 @@
 export default {
-  sendEmail(context, emailContent) {
-    return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          {
-            method: "POST",
-            url: "extensions/send",
-            data: emailContent
-          },
-          { root: true }
-        )
-        .then(response => {
-          resolve(response);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  },
   getNotes(context, id) {
     return new Promise((resolve, reject) => {
       context

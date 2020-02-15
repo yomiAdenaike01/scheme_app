@@ -86,16 +86,41 @@ export default {
         return error;
       });
   },
-
+  sendEmail(context, emailContent) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch("request", {
+          method: "POST",
+          url: "extensions/send",
+          data: emailContent
+        })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
   request(context, payload, enableNotifications) {
     payload = sortPayload(context.state, payload);
+
+    if (typeof enableNotifications == undefined) {
+      enableNotifications = true;
+    } else {
+      enableNotifications = false;
+    }
 
     return axios(payload)
       .then(response => {
         response = response.data;
 
         if (response.hasOwnProperty("success")) {
-          if (typeof response.content == "string" && enableNotifications) {
+          console.log(enableNotifications);
+          if (
+            typeof response.content == "string" &&
+            enableNotifications == false
+          ) {
             context.commit("UPDATE_NOTIFICATIONS", {
               message: response.content,
               type: "success"

@@ -34,8 +34,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["sendEmail"]),
-    ...mapActions(["request"]),
+    ...mapActions(["sendEmail"]),
     requestSendEmail() {
       let emailContent = {
         to: "adenaikeyomi@gmail.com",
