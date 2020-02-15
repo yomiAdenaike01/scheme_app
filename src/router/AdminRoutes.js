@@ -1,4 +1,3 @@
-const Dashboard = () => import("@/views/Admin/Dashboard/DashboardManager");
 const EventsManager = () => import("@/views/Admin/Events/EventsManager");
 const Reports = () => import("@/views/Admin/Reports/ReportsManager");
 const UserManager = () => import("@/views/Admin/Users/UserManager");

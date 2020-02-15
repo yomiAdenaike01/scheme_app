@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Event from "@/views/Admin/Dashboard/components/Event";
+import Event from "@/views/Admin/Events/components/Event";
 import { mapState, mapGetters } from "vuex";
 import Nocontent from "@/components/Nocontent";
 export default {

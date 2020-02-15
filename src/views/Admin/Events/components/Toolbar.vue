@@ -54,7 +54,7 @@ export default {
             returnPath: window.location.href
           }
         },
-        true
+        false
       )
         .then(response => {
           window.location.href = response;

@@ -9,7 +9,7 @@
     <EventFilters />
 
     <el-col>
-      <Toolbar @modalChanges="self['modals'][$event] = true" class="m-3" />
+      <Toolbar @modalChanges="self.modals[$event] = true" class="m-3" />
 
       <EventsCalendar
         @refreshShift="getEvents"
@@ -23,6 +23,7 @@
         :display="modals.createEvent"
       />
     </el-col>
+    <UserSidebar />
   </el-row>
 </template>
 
@@ -36,6 +37,7 @@ import Popover from "@/components/Popover";
 import EventsCalendar from "./components/EventsCalendar";
 import Title from "@/components/Title";
 import EventFilters from "./components/EventFilters";
+import UserSidebar from "./components/UserSidebar";
 export default {
   name: "EventsManager",
   activated() {
@@ -218,7 +220,8 @@ export default {
     Dropdown,
     Popover,
     Toolbar,
-    EventFilters
+    EventFilters,
+    UserSidebar
   }
 };
 </script>
@@ -228,6 +231,6 @@ export default {
   // overflow-y: auto;
 }
 .schedule_cal_container {
-  height: 75%;
+  height: 84%;
 }
 </style>

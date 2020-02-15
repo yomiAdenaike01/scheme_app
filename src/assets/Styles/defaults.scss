@@ -1,48 +1,28 @@
-@import  "vars","classes","spacing";
+@import "vars", "classes", "spacing";
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f3f3f3;
+  background: white;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #f9f9f9;
+  background: rgba(144, 147, 153, 0.3);
   border-radius: 20px;
+  transition: 0.56s ease-in-out background;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #999;
-}
-
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f8f8f8;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 20px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: rgb(210, 210, 210);
+  cursor: pointer;
 }
 
 :export {
   default: $default_colour;
 }
-

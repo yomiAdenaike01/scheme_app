@@ -1,11 +1,15 @@
 <template>
   <el-dialog :visible.sync="toggleView">
-    <div v-if="team.length > 0">
-      <Title title="Start new chat." subtitle="Select a team member to chat to." />
+    <div v-if="hasEntries(teamInformation)">
+      <Title
+        defaultClass="m-0"
+        title="Start new chat."
+        subtitle="Select a team member to chat to."
+      />
       <!-- Select team member -->
       <el-select v-model="initContent.reciever_id" filterable>
         <el-option
-          v-for="member in team"
+          v-for="member in teamInformation"
           :value="member._id"
           :label="member.name"
           :key="member._id"

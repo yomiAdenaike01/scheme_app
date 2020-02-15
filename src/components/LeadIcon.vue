@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "Icon",
+  name: "LeadIcon",
   props: {
     bg: {
       type: String

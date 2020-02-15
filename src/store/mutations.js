@@ -22,7 +22,6 @@ export default {
   },
   UPDATE_INVALID_CLIENT(state, payload) {
     Vue.set(state, "invalidClient", payload);
-
   },
   UPDATE_CLIENT(state, payload) {
     Vue.set(state, "clientInformation", payload);
@@ -75,16 +74,17 @@ export default {
     if (notification.type == "success") {
       notification.title = "Operation Successful";
       if (state.userInformation.settings.general.sounds) {
-        sounds.methods.playSuccessSound();
+        // sounds.methods.playSuccessSound();
+        console.log("play sound");
       }
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
-     
+
       if (typeof notification.message == "object") {
         state.criticalNetworkError = true;
-        
-        if(router.currentRoute.name != "error"){
-          router.push({name:'error'});
+
+        if (router.currentRoute.name != "error") {
+          router.push({ name: "error" });
         }
       }
     }

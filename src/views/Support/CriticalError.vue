@@ -1,35 +1,39 @@
 <template>
   <transition name="fade-transform" mode="out-in" tag="div">
     <div class="h-100 p-4">
-   
-    <div class="error_container flex_center h-100" >
-      <!-- Text container for what to do on errors -->
-      <div class="text_container flex_center columns">
-        <Icon class="large_icon" icon="el-icon-warning-outline" />
-        <br />
-        <p class="grey">
-          An error has occured with your schemeapp instance, please contact your
-          assigned systems administrator to get this resolved. If you don't want
-          to do this please click the button below to view the FAQ's.
-        </p>
-        <div class="button_container flex_center mt-3">
-          <el-button
-            round
-            type="primary"
-            size="mediuim"
-            plain
-            @click="$router.push({name:'faqs'})"
-          >View FAQ's</el-button>
-          <el-button round type="primary" size="mediuim" @click="sendErrorReport">Send Error Report</el-button>
+      <div class="error_container flex_center h-100">
+        <!-- Text container for what to do on errors -->
+        <div class="text_container flex_center columns">
+          <LeadIcon class="large_icon" icon="el-icon-warning-outline" />
+          <br />
+          <p class="grey">
+            An error has occured with your schemeapp instance, please contact your
+            assigned systems administrator to get this resolved. If you don't want
+            to do this please click the button below to view the FAQ's.
+          </p>
+          <div class="button_container flex_center mt-3">
+            <el-button
+              round
+              type="primary"
+              size="mediuim"
+              plain
+              @click="$router.push({name:'faqs'})"
+            >View FAQ's</el-button>
+            <el-button
+              round
+              type="primary"
+              size="mediuim"
+              @click="sendErrorReport"
+            >Send Error Report</el-button>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   </transition>
 </template>
 
 <script>
-import Icon from "@/components/Icon";
+import LeadIcon from "@/components/LeadIcon";
 import { mapState, mapActions } from "vuex";
 var UAParser = require("ua-parser-js");
 export default {
@@ -68,7 +72,7 @@ export default {
     }
   },
   components: {
-    Icon
+    LeadIcon
   }
 };
 </script>

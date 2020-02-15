@@ -87,7 +87,7 @@ export default {
       });
   },
 
-  request(context, payload, disableNotification) {
+  request(context, payload, enableNotifications) {
     payload = sortPayload(context.state, payload);
 
     return axios(payload)
@@ -95,7 +95,7 @@ export default {
         response = response.data;
 
         if (response.hasOwnProperty("success")) {
-          if (typeof response.content == "string" && !disableNotification) {
+          if (typeof response.content == "string" && enableNotifications) {
             context.commit("UPDATE_NOTIFICATIONS", {
               message: response.content,
               type: "success"
@@ -122,7 +122,7 @@ export default {
         if (error.hasOwnProperty("data")) {
           error = error.data.content;
         }
-        if (!disableNotification) {
+        if (enableNotifications) {
           context.commit("UPDATE_NOTIFICATIONS", {
             message: error,
             type: "error"
