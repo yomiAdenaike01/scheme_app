@@ -1,11 +1,11 @@
 import Vue from "vue";
 export default {
-  getAllEvents({ events }) {
-    return events.all;
+  getAllEvents({ eventsInformation }) {
+    return eventsInformation.all;
   },
 
-  getUsersEvents: ({ events }) => id => {
-    return events.filter(event => {
+  getUsersEvents: ({ eventsInformation }) => id => {
+    return eventsInformation.filter(event => {
       return event.assignedTo == id;
     });
   },
@@ -28,10 +28,10 @@ export default {
 
   getDropdownTeamMembers(state) {
     let team = [...state.teamInformation];
-    return team.map(({ name, value }) => {
+    return team.map(({ name, _id }) => {
       return {
         name,
-        value
+        value: _id
       };
     });
   },

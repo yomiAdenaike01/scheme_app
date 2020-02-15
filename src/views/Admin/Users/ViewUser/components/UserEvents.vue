@@ -18,7 +18,7 @@ export default {
   name: "TeamEventInfo",
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["Events", "viewTeamMember"]),
+    ...mapState("Admin", ["eventsInformation", "viewTeamMember"]),
     ...mapGetters(["getIsAdmin"]),
     noContent() {
       return {
@@ -29,7 +29,7 @@ export default {
     },
     userEvents() {
       let { id } = this.viewTeamMember;
-      return this.Events.all.filter(Event => {
+      return eventsInformation.all.filter(Event => {
         return Event.assignedTo == id;
       });
     }

@@ -1,5 +1,4 @@
 export default {
-  // SHIFT METHODS
   getNotes(context, id) {
     return new Promise((resolve, reject) => {
       context

@@ -10,11 +10,6 @@
       v-model.number="currentTab"
       :liveChange="true"
       size="mini"
-      :customMethod="
-        !timeSheetError && fileContent.length > 0
-          ? submitWithTimeSheet
-          : submitOneShift
-      "
       :disableForm="fileContent.length > 0"
     >
       <!-- Confirmation unit for a template or csv content -->
@@ -29,8 +24,8 @@
         </div>
       </div>
 
-      <div slot="body_content" v-if="currentTab == 0">
-        <div class="ml-4 mt-4 flex align-center">
+      <div slot="body_content">
+        <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 0">
           <ColourUnit v-model="eventData.colour" />
           <p class="mb-3 ml-4 desc grey">Press to select an event colour (optional):</p>
         </div>
@@ -65,7 +60,8 @@ export default {
       currentTab: 0,
       timeSheetError: null,
       timeSheetData: "",
-      userTemplates: null
+      userTemplates: null,
+      syncWithGcal: false
     };
   },
   props: {
@@ -170,7 +166,7 @@ export default {
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",
           model: "date",
-          required: true
+          optional: true
         }
       ];
 
@@ -210,17 +206,30 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
+    createEventController() {
+      if (this.hasEntries(this.fileContent)) {
+        this.createEventWithTimeSheet();
+      } else {
+        this.createOneEvent();
+      }
+    },
+
     eventManagerController(val) {
       this.eventData = val;
       switch (this.currentTab) {
-        case 0:
+        case 0: {
           this.createEventGroup();
           break;
-        case 1:
-          console.log(this.eventData);
+        }
 
-        default:
+        case 1: {
+          this.createEventController();
           break;
+        }
+
+        default: {
+          break;
+        }
       }
     },
     createEventGroup() {

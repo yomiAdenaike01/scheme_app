@@ -1,4 +1,4 @@
-]<template>
+<template>
   <div class="mb-3 event_container rounded shadow" :class="{ myEvent: isEventMine }">
     <el-row type="flex">
       <el-col class="event_details_container details_unit p-2">
@@ -44,7 +44,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 import employeeMethods from "@/mixins/employeeMethods";
 import dates from "@/mixins/dates";
 import Dropdown from "@/components/Dropdown";
-import ViewEvent from "../../Events/components/ViewEvent";
+import ViewEventDialog from "../../Events/components/ViewEventDialog";
 import moment from "moment";
 export default {
   name: "Event",
@@ -195,7 +195,7 @@ export default {
   },
   components: {
     Dropdown,
-    ViewEvent
+    ViewEventDialog
   }
 };
 </script>

@@ -3,16 +3,15 @@
     <vue-cal
       xsmall
       v-loading="loading"
-      :events="returnShiftEvents"
-      :default-view="ScheduleFilters"
-      :on-event-click="ViewEvent"
+      :events="allEvents"
+      :on-event-click="viewEvent"
       events-on-month-view="short"
       editable-events
       @event-duration-change="changeShiftTime"
       :cell-click-hold="false"
     />
 
-    <ViewEvent
+    <ViewEventDialog
       v-if="view"
       :display="view"
       :event="event"
@@ -27,7 +26,7 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import ViewEvent from "./ViewEvent";
+import ViewEventDialog from "./ViewEventDialog";
 import moment from "moment";
 export default {
   name: "EventsCalendar",
@@ -36,34 +35,42 @@ export default {
     return {
       view: false,
       loading: false,
-      event: {}
+      event: {},
+      format: "YYYY-MM-DD HH:mm",
+
+      gcalEvents: []
     };
   },
-
-  props: {
-    ScheduleFilters: {
-      type: String
+  activated() {
+    if ("gcalToken" in this.userInformation) {
+      this.request({
+        method: "GET",
+        url: "users/gcal"
+      })
+        .then(({ events }) => {
+          this.gcalEvents = events;
+        })
+        .catch(err => {
+          console.error(err);
+        });
     }
   },
-
   computed: {
-    ...mapState("Admin", ["events", "teamInformation"]),
+    ...mapState("Admin", [
+      "eventsInformation",
+      "teamInformation",
+      "eventFilters"
+    ]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getTeamMember", "getAllEvents"]),
+    ...mapGetters("Admin", ["getTeamMember", "getAllEvents", "getGroupName"]),
 
-    // isMine() {
-    //   return this.returnShiftDetails._id == this.userInformation._id
-    // },
-    eventTypes() {
-      let eventTypes = [];
-      if (
-        this.hasEntries(this.clientInformation) &&
-        "eventGroups" in this.clientInformation
-      ) {
-        eventTypes = this.clientInformation.eventGroups;
+    eventGroup() {
+      let eventGroup = [];
+      if (this.hasEntries(this.clientInformation)) {
+        eventGroup = this.clientInformation.eventGroups;
       }
-      return eventTypes;
+      return eventGroup;
     },
 
     returnCalendarOptions() {
@@ -86,7 +93,40 @@ export default {
         }
       ];
     },
-    returnShiftEvents() {
+    allEvents() {
+      return this.gcalEventsFormatted.concat(this.returnEvents);
+    },
+    gcalEventsFormatted() {
+      if (this.hasEntries(this.gcalEvents)) {
+        let gcalEvents = [...this.gcalEvents];
+        return gcalEvents.map(event => {
+          let {
+            summary,
+            start,
+            end,
+            htmlLink,
+            creator,
+            organizer,
+            status
+          } = event;
+          start = start.date;
+          end = end.date;
+          start = moment(start).format(this.format);
+
+          end = moment(end).format(this.format);
+
+          return {
+            start: start,
+            end: end,
+            content: summary,
+            class: "gcal"
+          };
+        });
+      } else {
+        return [];
+      }
+    },
+    returnEvents() {
       /**
        * title,
        * name,
@@ -95,27 +135,34 @@ export default {
        * formatted time
        * approval
        */
-      let events = this.events.all;
+      let events = this.eventsInformation.all;
       let len = events.length;
-      let format = "YYYY-MM-DD HH:mm";
 
       // Check that the assigned to is a string or array
 
       events = events.map(event => {
+        let eventData = {};
         let { isApproved, startDate, _id, endDate, assignedTo, type } = event;
-        type = type - 1;
-        type = this.eventTypes[type].name;
-        startDate = moment(startDate).format(format);
-        endDate = moment(endDate).format(format);
 
-        let eventClass = type.replace(" ", "_").toLowerCase();
-        let text = type;
+        assignedTo = [...assignedTo];
+        let formattedAssignedTo = [];
 
-        text = `${this.teamInformation.map(member => {
-          if (member._id == assignedTo) {
-            return member.name;
-          }
-        })} ${type}`;
+        assignedTo = assignedTo.map(assignee => {
+          this.teamInformation.map(({ _id, name }) => {
+            if (assignee == _id) {
+              formattedAssignedTo.push(name);
+            }
+          });
+        });
+
+        type = this.getGroupName("event", type).name;
+        startDate = moment(startDate).format(this.format);
+        endDate = moment(endDate).format(this.format);
+
+        let eventClass = type.replace(/\s/g, "_").toLowerCase();
+        let additionalText =
+          assignedTo.length > 1 ? `+${assignedTo.length - 1} others` : "";
+        let text = `${formattedAssignedTo[0]} ${additionalText}`;
 
         return {
           id: _id,
@@ -131,8 +178,8 @@ export default {
       return events;
     },
 
-    returnShiftDetails() {
-      return this.events.find(event => {
+    returnEventDetails() {
+      return this.eventsInformation.find(event => {
         return event.id == this.event_id;
       });
     }
@@ -141,15 +188,7 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
-    returntype(name, type) {
-      return {
-        text: `${name}'s ${this.eventTypes[type].name}`,
-        type: this.eventTypes[type].name,
-        eventClass: this.eventTypes[type].name.trim().toLowerCase()
-      };
-    },
-
-    ViewEvent(event) {
+    viewEvent(event) {
       this.event = event;
       this.view = true;
     },
@@ -232,7 +271,7 @@ export default {
   },
   components: {
     VueCal,
-    ViewEvent
+    ViewEventDialog
   }
 };
 </script>
@@ -244,11 +283,10 @@ export default {
 
 .vuecal__event {
   font-size: 0.8em;
-  &.general_event {
-    background: #ecf5ff;
-    color: $primary_colour;
-    border-top: 2px solid $primary_colour;
-  }
+
+  background: #ecf5ff;
+  color: $primary_colour;
+  border-top: 2px solid $primary_colour;
 
   &.holiday {
     background: #fef0f0;

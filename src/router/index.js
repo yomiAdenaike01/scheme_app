@@ -19,6 +19,10 @@ Vue.use(VueRouter);
 
 const routes = [
   {
+    path: "/",
+    redirect: { name: "events" }
+  },
+  {
     path: "/intro",
     name: "clientIntro",
     component: ClientIntro

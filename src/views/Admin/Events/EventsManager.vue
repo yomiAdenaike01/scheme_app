@@ -45,18 +45,6 @@ export default {
     Promise.all([this.getEvents(), this.getTeam()]).then(response => {
       this.loading = false;
     });
-    if ("gcalToken" in this.userInformation) {
-      this.request({
-        method: "GET",
-        url: "users/gcal"
-      })
-        .then(response => {
-          console.log(response);
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
   },
   data() {
     return {

@@ -12,7 +12,7 @@ export default {
     Vue.set(state, "viewNote", payload);
   },
   UPDATE_EVENTS(state, payload) {
-    Vue.set(state, "events", payload);
+    Vue.set(state, "eventsInformation", payload);
   },
   UPDATE_REQUESTS(state, payload) {
     let unreadRequests = payload.filter(request => {

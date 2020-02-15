@@ -1,39 +1,39 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <Title title="View Shift" subtitle="Click on more information to display details">
-      <MoreInformation index="admin" instruction="view_shift" />
+    <Title title="View Event" subtitle="Click on more information to display details">
+      <MoreInformation index="admin" instruction="view_event" />
     </Title>
     <el-row type="flex" v-loading="loading">
       <!-- FIRST COLUMN -->
 
-      <el-col class="view_shift_col">
+      <el-col class="view_event_col">
         <!-- Assigned to (tags)-->
-        <div class="view_shift_dialog_item">
+        <div class="view_event_dialog_item">
           <h4>Assigned to</h4>
           <el-tag
             class="m-1"
             type="info"
-            :closable="computeRemoveShift.canDelete"
+            :closable="computeRemoveEvent.canDelete"
             v-for="(teamMember, index) in renderAssignedTo"
             :key="index"
-            @close="removeTeamMemberFromShift(teamMember)"
+            @close="removeTeamMemberFromEvent(teamMember)"
             :id="teamMember['id']"
           >{{ teamMember["name"] }}</el-tag>
         </div>
-        <!-- Shift type -->
+        <!-- Event type -->
 
-        <el-col class="view_shift_dialog_item">
-          <h4>Shift / Event type</h4>
+        <el-col class="view_event_dialog_item">
+          <h4>Event / Event type</h4>
 
-          <!-- Conditional drop down to change the shift type (if yours) -->
+          <!-- Conditional drop down to change the event type (if yours) -->
           <Dropdown
             :icon="false"
-            v-if="computeRemoveShift.canDelete"
-            :items="returnShiftTypes(shift.type, 'command')"
+            v-if="computeRemoveEvent.canDelete"
+            :items="returnEventTypes(event.type, 'command')"
             @method="handleChangetype"
             position="right"
           >
-            <el-button round size="small">{{ shift.type }}</el-button>
+            <el-button round size="small">{{ event.type }}</el-button>
           </Dropdown>
 
           <el-button
@@ -45,8 +45,8 @@
         </el-col>
 
         <!-- Approval -->
-        <el-col class="view_shift_dialog_item">
-          <h4>Shift / Event approval</h4>
+        <el-col class="view_event_dialog_item">
+          <h4>Event / Event approval</h4>
           <el-button
             circle
             :icon="renderButtonTypes.approval.icon"
@@ -56,28 +56,28 @@
       </el-col>
 
       <!-- SECOND COLUMN -->
-      <el-col class="view_shift_col">
+      <el-col class="view_event_col">
         <!-- Date content-->
 
-        <div class="view_shift_dialog_item">
+        <div class="view_event_dialog_item">
           <h4>Start date</h4>
           <p class="mb-2">{{ renderDateContent.start }}</p>
         </div>
-        <div class="view_shift_dialog_item">
+        <div class="view_event_dialog_item">
           <h4>End date</h4>
           <p>{{ renderDateContent.end }}</p>
         </div>
       </el-col>
     </el-row>
-    <div class="view_shift_dialog_item no_border flex_center">
-      <!-- Edit shift button -->
+    <div class="view_event_dialog_item no_border flex_center">
+      <!-- Edit event button -->
       <!-- <el-button
         class="flex-1"
         
-        v-if="computeRemoveShift.canDrop || computeRemoveShift.canDelete"
-        >Edit shift</el-button
+        v-if="computeRemoveEvent.canDrop || computeRemoveEvent.canDelete"
+        >Edit event</el-button
       >-->
-      <!-- Remove shift or delete shift button -->
+      <!-- Remove event or delete event button -->
       <el-button
         plain
         type="danger"
@@ -94,17 +94,15 @@ import Title from "@/components/Title";
 import MoreInformation from "@/components/MoreInformation";
 import moment from "moment";
 import Dropdown from "@/components/Dropdown";
-import shiftTypes from "@/mixins/shiftTypes";
 export default {
-  name: "ViewShift",
-  mixins: [shiftTypes],
+  name: "ViewEventDialog",
   data() {
     return {
       loading: false
     };
   },
   props: {
-    shift: {
+    event: {
       type: Object,
       default: () => {
         return {};
@@ -116,7 +114,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("Admin", ["teamInformation", "shiftTypes"]),
+    ...mapState("Admin", ["teamInformation"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
 
@@ -129,7 +127,7 @@ export default {
       }
     },
     renderButtonTypes() {
-      let { type } = this.shift;
+      let { type } = this.event;
       let isApproved = this.returnIsApproved;
       let buttonContent = {
         type: {
@@ -161,7 +159,7 @@ export default {
         case 1: {
           buttonContent["type"] = {
             type: "primary",
-            text: "Normal Shift"
+            text: "Normal Event"
           };
           break;
         }
@@ -196,7 +194,7 @@ export default {
       return buttonContent;
     },
     returnIsApproved() {
-      let { admin } = this.shift.isApproved;
+      let { admin } = this.event.isApproved;
       let approved = false;
       if (admin == 1) {
         approved = true;
@@ -205,7 +203,7 @@ export default {
     },
 
     renderDateContent() {
-      let { startDate, endDate } = this.shift;
+      let { startDate, endDate } = this.event;
       const format = "DD/MM/YYYY HH:mm";
       startDate = moment(startDate).format(format);
       endDate = moment(endDate).format(format);
@@ -215,10 +213,10 @@ export default {
       };
     },
 
-    // Render the content of the button when a user can remove or drop of a shift
+    // Render the content of the button when a user can remove or drop of a event
 
     renderDeleteButtonContent() {
-      let { canDelete, canDrop } = this.computeRemoveShift;
+      let { canDelete, canDrop } = this.computeRemoveEvent;
       let buttonContent = {
         text: "",
         method: ""
@@ -226,30 +224,30 @@ export default {
       if (canDelete) {
         buttonContent.method = () => {
           this.loading = true;
-          this.deleteShift(this.returnShiftID);
+          this.deleteEvent(this.returnEventID);
           this.loading = false;
           this.closeDialog();
         };
-        buttonContent.text = "Delete shift";
+        buttonContent.text = "Delete event";
       }
       return buttonContent;
     },
 
-    computeRemoveShift() {
-      let shiftRemoval = {
+    computeRemoveEvent() {
+      let eventRemoval = {
         canDelete: false,
         canDrop: false
       };
 
       let { name } = this.userInformation;
-      let { is_pickup } = this.shift;
+      let { is_pickup } = this.event;
       let foundUser;
 
       name = name.trim().toLowerCase();
 
-      let { assignedTo } = this.shift;
+      let { assignedTo } = this.event;
 
-      if (Array.isArray(this.shift)) {
+      if (Array.isArray(this.event)) {
         foundUser = assignedTo.find((assignee, index) => {
           return assignee._id == this.teamInformation[index]._id;
         });
@@ -260,74 +258,58 @@ export default {
       }
 
       if (this.getIsAdmin) {
-        shiftRemoval["canDelete"] = true;
+        eventRemoval["canDelete"] = true;
       } else if (foundUser.name == name) {
-        shiftRemoval["canDelete"] = true;
+        eventRemoval["canDelete"] = true;
 
         if (is_pickup) {
-          shiftRemoval["canDrop"] = true;
+          eventRemoval["canDrop"] = true;
         }
       }
-      return shiftRemoval;
+      return eventRemoval;
     },
     renderAssignedTo() {
-      let { assignedTo } = this.shift;
+      let { assignedTo } = this.event;
       let team = this.teamInformation;
       let mappedTeamMemberNames;
 
-      if (Array.isArray(assignedTo)) {
-        // Loop assigned to and replace them with names
+      // Loop assigned to and replace them with names
 
-        const len = assignedTo.length;
-        mappedTeamMemberNames = [];
-        // Return the team member names if its an array
+      const len = assignedTo.length;
+      mappedTeamMemberNames = [];
+      // Return the team member names if its an array
 
-        for (let i = 0; i < len; i++) {
-          let assignedTeamMember = assignedTo[i];
-          const teamLen = team.length;
+      for (let i = 0; i < len; i++) {
+        let assignedTeamMember = assignedTo[i];
+        const teamLen = team.length;
 
-          for (let j = 0; j < teamLen; j++) {
-            let teamMember = team[j];
-            let teamMemberID = teamMember._id;
+        for (let j = 0; j < teamLen; j++) {
+          let teamMember = team[j];
+          let teamMemberID = teamMember._id;
 
-            if (
-              assignedTeamMember &&
-              teamMemberID &&
-              assignedTeamMember == teamMemberID
-            ) {
-              mappedTeamMemberNames.push({
-                name: teamMember["name"],
-                id: teamMemberID
-              });
-            }
+          if (
+            assignedTeamMember &&
+            teamMemberID &&
+            assignedTeamMember == teamMemberID
+          ) {
+            mappedTeamMemberNames.push({
+              name: teamMember["name"],
+              id: teamMemberID
+            });
           }
         }
-      } else {
-        // Find the id within the team
-
-        let { assignedTo } = this.shift;
-        mappedTeamMemberNames = this.teamInformation.find(member => {
-          return member._id == assignedTo;
-        });
-
-        if (mappedTeamMemberNames) {
-          mappedTeamMemberNames = mappedTeamMemberNames["name"];
-        } else {
-          mappedTeamMemberNames = {
-            name: "John Doe"
-          };
-        }
       }
+
       return mappedTeamMemberNames;
     },
 
-    returnShiftID() {
-      return this.shift.id;
+    returnEventID() {
+      return this.event.id;
     }
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapActions("Admin", ["deleteShift", "updateShift"]),
+    ...mapActions("Admin", ["deleteEvent", "updateEvent"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
 
@@ -335,42 +317,42 @@ export default {
       this.$nextTick(() => {
         this.loading = false;
         this.$emit("toggle", false);
-        this.$emit("refreshShift", null);
+        this.$emit("refreshEvent", null);
       });
     },
 
-    // Just update the shift without their name
-    async removeTeamMemberFromShift({ name, id }) {
+    // Just update the event without their name
+    async removeTeamMemberFromEvent({ name, id }) {
       // Confirm that this is what they want
       try {
-        let confirmShiftPrompt = {
+        let confirmEventPrompt = {
           message: `Are you sure that you want to remove ${name} from this event ?`,
           title: "Confirm Update"
         };
 
-        let response = await this.confirmShiftChanges(confirmShiftPrompt);
+        let response = await this.confirmEventChanges(confirmEventPrompt);
 
-        let shiftTeamMembers = [];
+        let eventTeamMembers = [];
 
         const len = this.renderAssignedTo.length;
 
         for (let i = 0; i < len; i++) {
-          let teamMemberAssignedToShift = this.renderAssignedTo[i];
+          let teamMemberAssignedToEvent = this.renderAssignedTo[i];
 
-          teamMemberAssignedToShift = teamMemberAssignedToShift["id"];
+          teamMemberAssignedToEvent = teamMemberAssignedToEvent["id"];
 
-          if (teamMemberAssignedToShift == id) {
+          if (teamMemberAssignedToEvent == id) {
             continue;
           }
 
-          shiftTeamMembers.push(teamMemberAssignedToShift);
+          eventTeamMembers.push(teamMemberAssignedToEvent);
         }
 
         if (response == "confirm") {
           this.loading = true;
-          await this.updateShift({
-            update: { assignedTo: shiftTeamMembers },
-            id: this.returnShiftID
+          await this.updateEvent({
+            update: { assignedTo: eventTeamMembers },
+            id: this.returnEventID
           });
 
           this.closeDialog();
@@ -382,21 +364,21 @@ export default {
     },
     /**
      * For deletion: (NOT DONE YET)
-     *   "Are you sure you want to delete the shift/event ?",
+     *   "Are you sure you want to delete the event/event ?",
         "Delete Confirmation"
      */
-    async confirmShiftChanges({ message, title }) {
+    async confirmEventChanges({ message, title }) {
       return await this.$confirm(message, title);
     },
 
-    // View the user that the shift is assigned to
+    // View the user that the event is assigned to
     toggleViewTeamMember() {
-      this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.shift.assignedTo });
+      this.UPDATE_VIEW_TEAM_MEMBER({ view: true, id: this.event.assignedTo });
     },
     async handleChangetype(type) {
       this.loading = true;
-      await this.updateShift({
-        id: this.returnShiftID,
+      await this.updateEvent({
+        id: this.returnEventID,
         update: { type }
       });
       this.loading = false;
@@ -412,7 +394,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.view_shift_dialog_item {
+.view_event_dialog_item {
   margin: 1em;
   border: 1.2px solid whitesmoke;
   padding: 1em;
@@ -425,7 +407,7 @@ export default {
 h4 {
   margin-bottom: 10px;
 }
-.view_shift_col {
+.view_event_col {
   margin: 1em;
 }
 </style>

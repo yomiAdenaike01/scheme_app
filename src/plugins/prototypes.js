@@ -12,10 +12,8 @@ Vue.prototype.hasEntries = function(elem) {
   if (typeof elem != undefined) {
     if (typeof elem == "object") {
       return Object.keys(elem).length > 0;
-    } else if (Array.isArray(elem)) {
+    } else if (Array.isArray(elem) || typeof elem == "string") {
       return elem.length > 0;
-    } else {
-      throw new Error(`Element must be an object or array not ${typeof elem}.`);
     }
   } else {
     return false;

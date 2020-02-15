@@ -304,10 +304,10 @@ export default {
                 "Your password is insecure, please consider changing it in the user settings."
             });
 
-            this.$router.push({ name: "dashboard" });
+            this.$router.push({ name: "events" });
           }
 
-          this.$router.push({ name: "dashboard" });
+          this.$router.push({ name: "events" });
 
           this.loading = false;
           // this.changeTab("login");

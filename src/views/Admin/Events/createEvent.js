@@ -49,8 +49,9 @@ export default {
         return Promise.reject(error);
       }
     },
-    // Submit one shift
-    submitOneShift() {
+
+    // Submit one event
+    createOneEvent() {
       this.loading = true;
       let { date } = this.eventData;
 
@@ -69,9 +70,10 @@ export default {
       })
         .then(response => {
           this.loading = false;
+          this.view = false;
           this.UPDATE_NOTIFICATIONS({
             type: "success",
-            message: "Shift successfully created"
+            message: "Event successfully created"
           });
           return response;
         })
@@ -99,7 +101,7 @@ export default {
     /**
      * Submit with new timesheet
      */
-    async submitWithTimeSheet() {
+    async createEventWithTimeSheet() {
       this.loading = true;
       try {
         let { value } = await this.createMessagePrompt();

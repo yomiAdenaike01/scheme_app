@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       selectedTeamMember: "",
-      displayState: false,
+      displayState: true,
       localFilters: {}
     };
   },

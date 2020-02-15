@@ -59,7 +59,7 @@ export default {
   teamInformation: [],
   notes: [],
   tasks: [],
-  events: {
+  eventsInformation: {
     all: [],
     upcoming: [],
     today: [],

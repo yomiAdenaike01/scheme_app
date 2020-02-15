@@ -14,6 +14,7 @@
         :key="`${index}${input.name}`"
         :prop="input.name"
         :label="input.label || ' '"
+        :required="!input.hasOwnProperty('ignoreRequired')"
       >
         <component
           :size="size"
@@ -142,16 +143,17 @@ export default {
         if (!formItem.hasOwnProperty("optional")) {
           let validArr = [];
           let compType = formItem["component-type"];
+          let inputType = formItem["input-type"];
           let trigger = "blur",
             type;
-          if (compType == "date" || compType == "select") {
+          if (compType == "date-picker" || compType == "select") {
             trigger = "change";
           }
 
-          if (compType == "date-picker") {
-            type = "date";
-            trigger = "change";
-          }
+          // if (compType == "date-picker") {
+          //   type = "date";
+          //   trigger = "change";
+          // }
 
           if (compType == "select" && formItem.hasOwnProperty("multiple")) {
             type = "array";
