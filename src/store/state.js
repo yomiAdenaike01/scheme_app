@@ -35,15 +35,18 @@ export default {
     display: false,
     isError: false
   },
+
   defaultCustomColours: [
     vars.default,
-    "#ff4500",
-    "#ff8c00",
-    "#ffd700",
-    "#90ee90",
-    "#00ced1",
-    "#1e90ff",
-    "#c71585",
-    "#c7158577"
+    "#5e72e4",
+    "#5603ad",
+    "#8965e0",
+    "#f3a4b5",
+    "#f5365c",
+    "#fb6340",
+    "#ffd600",
+    "#2dce89",
+    "#11cdef",
+    "#2bffc6"
   ]
 };

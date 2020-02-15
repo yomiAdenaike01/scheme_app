@@ -17,11 +17,7 @@ export default {
   props: {
     data: {
       type: Object,
-      default: () => {
-        return {
-          name: "John Doe"
-        };
-      }
+      default: () => {}
     }
   },
   computed: {

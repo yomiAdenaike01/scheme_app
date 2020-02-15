@@ -29,8 +29,9 @@
 <script>
 import Avatar from "@/components/Avatar";
 import { mapGetters } from "vuex";
+
 export default {
-  name: "Sidebar",
+  name: "ViewUserWrapper",
 
   props: {
     userData: {

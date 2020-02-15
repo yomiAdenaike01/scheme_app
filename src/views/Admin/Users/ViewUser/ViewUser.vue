@@ -6,7 +6,7 @@
   >
     <el-row type="flex">
       <el-col>
-        <Sidebar
+        <ViewUserWrapper
           :userData="getUserInfo"
           @changedTab="selectedTab = $event"
           :tabItems="tabItems"
@@ -19,7 +19,7 @@
               @toggle="UPDATE_VIEW_TEAM_MEMBER({ view: false, id: null })"
             />
           </div>
-        </Sidebar>
+        </ViewUserWrapper>
       </el-col>
     </el-row>
   </el-dialog>
@@ -29,7 +29,7 @@
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import UserInfo from "./components/UserInfo";
 import UserEvents from "./components/UserEvents";
-import Sidebar from "./components/Sidebar";
+import ViewUserWrapper from "./components/ViewUserWrapper";
 
 export default {
   name: "ViewUser",
@@ -131,7 +131,7 @@ export default {
   },
   components: {
     UserInfo,
-    Sidebar,
+    ViewUserWrapper,
     UserEvents
   }
 };

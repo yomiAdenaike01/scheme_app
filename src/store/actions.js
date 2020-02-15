@@ -116,7 +116,6 @@ export default {
         response = response.data;
 
         if (response.hasOwnProperty("success")) {
-          console.log(enableNotifications);
           if (
             typeof response.content == "string" &&
             enableNotifications == false

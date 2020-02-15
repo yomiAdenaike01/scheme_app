@@ -5,22 +5,18 @@
   >
     <el-row type="flex">
       <el-col class="event_details_container details_unit p-2">
-        <h5 class="member_name">{{ getEventType }}</h5>
-        <p class="member_name">{{ assignedToText }}</p>
+        <h4 class="member_name">{{ getEventType }}</h4>
+        <p class="member_name black">{{ assignedToText }}</p>
         <el-tag
           class="mr-1"
-          effect="dark"
-          size="small"
           v-if="approval.boolean"
           :value="approval.text"
           type="success"
           >{{ approval.text }}</el-tag
         >
-        <el-tag v-else effect="dark" size="small" type="danger"
-          >Not approved</el-tag
-        >
+        <el-tag v-else effect="dark" type="danger">Not approved</el-tag>
 
-        <el-tag effect="dark" size="small" class="capitalize" type="primary">
+        <el-tag class="capitalize" type="primary">
           {{ event.timeTag }}
         </el-tag>
       </el-col>
@@ -216,7 +212,14 @@ export default {
   align-items: center;
 }
 .event_details_container {
-  width: 30%;
+  min-width: 30%;
+  max-width: 40%;
+  &/deep/ {
+    .el-tag {
+      min-width: 100px;
+      text-align: center;
+    }
+  }
 }
 
 .details_unit {
