@@ -1,5 +1,8 @@
 <template>
-  <div class="mb-3 event_container rounded shadow" :class="{ myEvent: isEventMine }">
+  <div
+    class="mb-3 event_container rounded shadow"
+    :class="{ myEvent: isEventMine }"
+  >
     <el-row type="flex">
       <el-col class="event_details_container details_unit p-2">
         <h5 class="member_name">{{ getEventType }}</h5>
@@ -11,13 +14,14 @@
           v-if="approval.boolean"
           :value="approval.text"
           type="success"
-        >{{ approval.text }}</el-tag>
-        <el-tag v-else effect="dark" size="small" type="danger">Not approved</el-tag>
+          >{{ approval.text }}</el-tag
+        >
+        <el-tag v-else effect="dark" size="small" type="danger"
+          >Not approved</el-tag
+        >
 
         <el-tag effect="dark" size="small" class="capitalize" type="primary">
-          {{
-          event.timeTag
-          }}
+          {{ event.timeTag }}
         </el-tag>
       </el-col>
 
@@ -25,8 +29,13 @@
         <div class="flex_center">
           <span class="date">{{ formattedDates.start }}</span>
           <div class="flex_center columns">
-            <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
-            <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
+            <i
+              style="font-size:1.3em"
+              class="el-icon el-icon-right p-0 m-0 grey"
+            ></i>
+            <span class="time_diff grey"
+              >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
+            >
           </div>
           <span class="date">{{ formattedDates.end }}</span>
         </div>
@@ -63,10 +72,13 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapState("Admin", ["groupIDs", "eventTypes", "teamInformation"]),
+    ...mapGetters("Admin", ["getGroupName", "getEventAssignedTo"]),
+    ...mapState("Admin", ["groupIDs", "teamInformation"]),
     isEventMine() {
       return (
-        this.event.assignedTo == this.userInformation._id || this.getIsAdmin
+        this.event.assignedTo.some(e => {
+          return e == this.userInformation._id;
+        }) || this.getIsAdmin
       );
     },
     eventActionItems() {
@@ -105,21 +117,7 @@ export default {
       return this.eventTypes[type - 1].name;
     },
     assignedToText() {
-      let { assignedTo } = this.event;
-      let assignedToText;
-      if (Array.isArray(assignedTo) && assignedTo.length > 1) {
-        assignedToText = "Multiple Users";
-      } else {
-        let foundTeamMember = this.teamInformation.find(member => {
-          return member._id == assignedTo[0];
-        });
-        if (foundTeamMember && foundTeamMember.hasOwnProperty("name")) {
-          assignedToText = foundTeamMember.name;
-        } else {
-          assignedToText = "No team member found";
-        }
-      }
-      return assignedToText;
+      return this.getEventAssignedTo(this.event.assignedTo).text;
     },
 
     formattedDates() {
@@ -145,8 +143,7 @@ export default {
       return Math.floor(diff);
     },
     getEventType() {
-      let type = this.event.type - 1;
-      return this.eventTypes[type].name;
+      return this.getGroupName("event", this.event.type).name;
     },
     getgroupID() {
       return this.convertgroupID(this.event.user);

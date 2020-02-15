@@ -1,15 +1,23 @@
 <template>
-  <el-dialog :visible.sync="toggleView" v-if="getUserInfo" custom-class="teamMemberDialogContainer">
+  <el-dialog
+    :visible.sync="toggleView"
+    class="view_user_container"
+    v-if="hasEntries(getUserInfo)"
+  >
     <el-row type="flex">
       <el-col>
         <Sidebar
-          v-if="getUserInfo.name"
-          :teamMemberData="getUserInfo"
-          @changedTab="selectedTab = $event.toString()"
+          :userData="getUserInfo"
+          @changedTab="selectedTab = $event"
           :tabItems="tabItems"
+          :currentTab="selectedTab"
         >
           <div class="content_body">
-            <component :is="returnCorrectData.component" :data="returnCorrectData.props" />
+            <component
+              :is="returnComponents.component"
+              :data="returnComponents.props"
+              @toggle="UPDATE_VIEW_TEAM_MEMBER({ view: false, id: null })"
+            />
           </div>
         </Sidebar>
       </el-col>
@@ -22,26 +30,27 @@ import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import UserInfo from "./components/UserInfo";
 import UserEvents from "./components/UserEvents";
 import Sidebar from "./components/Sidebar";
+
 export default {
   name: "ViewUser",
   data() {
     return {
       documentation: [],
       self: this,
-      selectedTab: 0
+      selectedTab: "0"
     };
   },
 
   computed: {
     ...mapState("Admin", [
-      "shifts",
+      "eventsInformation",
       "teamInformation",
-      "requests",
+      "requestsInformation",
       "viewTeamMember"
     ]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getTeamMember"]),
-    returnCorrectData() {
+    ...mapGetters("Admin", ["getUserInformation", "getUsersEvents"]),
+    returnComponents() {
       let selectedTab = this.selectedTab;
       let component, props;
       switch (selectedTab) {
@@ -54,7 +63,7 @@ export default {
         // Display user shifts
         case "1": {
           component = UserEvents;
-          props = "";
+          props = this.associatedUserEvents;
           break;
         }
 
@@ -73,11 +82,11 @@ export default {
           label: "Personal Details"
         },
         {
-          label: "Shifts"
+          label: "Events"
         }
       ];
     },
-    teamMember() {
+    userID() {
       return this.viewTeamMember.id;
     },
     toggleView: {
@@ -89,17 +98,17 @@ export default {
       }
     },
     getUserInfo() {
-      return this.getTeamMember(this.teamInformationMember, "_id");
+      let teamInfo = this.getUserInformation(this.userID);
+      return teamInfo;
     },
-    getTeamMemberShifts() {
-      return this.shifts.filter(shift => {
-        return shift.assignedTo == this.teamInformationMember;
-      });
-    },
+
     getSimilarTeamMembers() {
       return this.teamInformation.filter(member => {
         return member.groupID == this.getUserInfo.groupID;
       });
+    },
+    associatedUserEvents() {
+      return this.getUsersEvents(this.userID);
     }
   },
   methods: {

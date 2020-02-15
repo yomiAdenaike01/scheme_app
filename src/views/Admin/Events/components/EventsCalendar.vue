@@ -63,7 +63,12 @@ export default {
     ]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getTeamMember", "getAllEvents", "getGroupName"]),
+    ...mapGetters("Admin", [
+      "getTeamMember",
+      "getAllEvents",
+      "getGroupName",
+      "getEventAssignedTo"
+    ]),
 
     eventGroup() {
       let eventGroup = [];
@@ -127,6 +132,7 @@ export default {
       }
     },
     returnEvents() {
+      let { event_group, user_group } = this.eventFilters;
       /**
        * title,
        * name,
@@ -136,46 +142,39 @@ export default {
        * approval
        */
       let events = this.eventsInformation.all;
-      let len = events.length;
-
+      let filteredEvents = [];
       // Check that the assigned to is a string or array
 
-      events = events.map(event => {
-        let eventData = {};
+      for (let i = 0, len = events.length; i < len; i++) {
+        let event = events[i];
+
+        if (!event == event_group) {
+          continue;
+        }
+
         let { isApproved, startDate, _id, endDate, assignedTo, type } = event;
 
-        assignedTo = [...assignedTo];
-        let formattedAssignedTo = [];
-
-        assignedTo = assignedTo.map(assignee => {
-          this.teamInformation.map(({ _id, name }) => {
-            if (assignee == _id) {
-              formattedAssignedTo.push(name);
-            }
-          });
-        });
+        assignedTo = this.getEventAssignedTo([...assignedTo], true);
 
         type = this.getGroupName("event", type).name;
         startDate = moment(startDate).format(this.format);
         endDate = moment(endDate).format(this.format);
 
         let eventClass = type.replace(/\s/g, "_").toLowerCase();
-        let additionalText =
-          assignedTo.length > 1 ? `+${assignedTo.length - 1} others` : "";
-        let text = `${formattedAssignedTo[0]} ${additionalText}`;
 
-        return {
+        filteredEvents.push({
           id: _id,
           start: startDate,
           end: endDate,
-          content: text,
+          content: assignedTo.text,
           class: eventClass,
           isApproved,
-          assignedTo,
+          assignedTo: assignedTo.arr,
           type
-        };
-      });
-      return events;
+        });
+      }
+
+      return filteredEvents;
     },
 
     returnEventDetails() {

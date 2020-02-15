@@ -1,12 +1,45 @@
 import Vue from "vue";
+
 export default {
+  getEventAssignedTo: ({ teamInformation }) => (assignedTo, truncate) => {
+    let assignedToData = {
+      arr: [],
+      text: ""
+    };
+    let formattedAssignedTo = [];
+    if (Vue.prototype.hasEntries(teamInformation)) {
+      assignedTo = assignedTo.map(assignee => {
+        teamInformation.map(teamMember => {
+          let { _id, name, groupID } = teamMember;
+
+          if (assignee == _id) {
+            formattedAssignedTo.push(name);
+          }
+        });
+      });
+    }
+
+    if (Vue.prototype.hasEntries(formattedAssignedTo)) {
+      assignedToData.arr = formattedAssignedTo;
+      let text =
+        formattedAssignedTo.length > 1
+          ? `+${formattedAssignedTo.length - 1} others`
+          : "";
+
+      assignedToData.text = `${formattedAssignedTo[0]} ${text}`;
+    }
+    return assignedToData;
+  },
+
   getAllEvents({ eventsInformation }) {
     return eventsInformation.all;
   },
 
   getUsersEvents: ({ eventsInformation }) => id => {
-    return eventsInformation.filter(event => {
-      return event.assignedTo == id;
+    return eventsInformation.all.filter(event => {
+      return event.assignedTo.some(a => {
+        return a == id;
+      });
     });
   },
 
@@ -52,18 +85,18 @@ export default {
     return res;
   },
 
-  getTeamMember(state, getters, rootState) {
-    return (toMatch, teamMemberProperty) => {
-      let foundTeamMember = state.teamInformation.find(x => {
-        return x[teamMemberProperty] == toMatch;
+  getUserInformation: (
+    { teamInformation },
+    getters,
+    { userInformation }
+  ) => userID => {
+    let teams;
+    if (Vue.prototype.hasEntries(teamInformation)) {
+      teams = teamInformation.find(member => {
+        return member._id == userID;
       });
-      if (foundTeamMember) {
-        return foundTeamMember;
-      } else if (toMatch == rootState.userInformation[teamMemberProperty]) {
-        return rootState.userInformation;
-      } else {
-        return null;
-      }
-    };
+      console.log(teams);
+    }
+    return teams;
   }
 };

@@ -1,11 +1,18 @@
 <template>
   <div>
-    <div v-if="userEvents.length > 0">
+    <div v-if="hasEntries(data)">
       <h5 class="mb-2">All Events</h5>
-      <Event v-for="event in userEvents" :event="Event" :key="event._id" />
+      <Event v-for="event in data" :event="event" :key="event._id" />
     </div>
     <Nocontent v-bind="noContent" v-else>
-      <el-button v-if="getIsAdmin" @click="$router.push({ name: 'schedule' })">Go to schedule</el-button>
+      <el-button
+        v-if="getIsAdmin"
+        @click="
+          $router.push({ name: 'events' });
+          $emit('toggle');
+        "
+        >Go to events</el-button
+      >
     </Nocontent>
   </div>
 </template>
@@ -15,7 +22,13 @@ import Event from "@/views/Admin/Events/components/Event";
 import { mapState, mapGetters } from "vuex";
 import Nocontent from "@/components/Nocontent";
 export default {
-  name: "TeamEventInfo",
+  name: "UserEvents",
+  props: {
+    data: {
+      type: Object | Array,
+      default: () => {}
+    }
+  },
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Admin", ["eventsInformation", "viewTeamMember"]),
@@ -23,15 +36,9 @@ export default {
     noContent() {
       return {
         text:
-          "No Events are detected for this user, you can create a Event for them below",
+          "No events are detected for this user, you can create a event for them below",
         icon: "el-icon-s-management"
       };
-    },
-    userEvents() {
-      let { id } = this.viewTeamMember;
-      return eventsInformation.all.filter(Event => {
-        return Event.assignedTo == id;
-      });
     }
   },
   components: {

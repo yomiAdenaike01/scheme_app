@@ -20,6 +20,10 @@ Vue.prototype.hasEntries = function(elem) {
   }
 };
 
+Vue.prototype.hasObjVals = function(elem) {
+  return Object.values(elem).length > 0;
+};
+
 Vue.prototype.makePretty = function(elem) {
   if (checkType(elem, "string")) {
     return elem.replace("_", " ");

@@ -65,6 +65,6 @@ export default {
     today: [],
     previous: []
   },
-  requests: [],
+  requestsInformation: [],
   viewTeamMember: { view: false, id: null }
 };
