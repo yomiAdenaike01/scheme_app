@@ -7,7 +7,6 @@
       `Getting
     team please wait....`
     "
-    :gutter="10"
   >
     <UserGroup addNew @createUserGroup="displayDialog = $event" />
 
@@ -18,7 +17,7 @@
           v-for="(count, i) in filteredGroupsWithUsers"
           :key="`${count}${i}`"
         >
-          <el-col :span="10" v-for="(group, index) in count" :key="index">
+          <el-col :span="8" v-for="(group, index) in count" :key="index">
             <div class="p-4 m-1 user_group_container">
               <div class=" icon_text_container flex_center mb-3">
                 <i class="bx bx-user user_group_icon"></i>
@@ -37,37 +36,35 @@
     </UserGroup>
 
     <!-- Quick actions -->
-    <el-col class=" quick_actions_wrapper">
-      <el-card class="quick_action h-90">
-        <div
-          v-loading="id == quickActionLoading"
-          class="quick_action_container"
-          v-for="({ icon, title, subtitle, click, id }, index) in quickActions"
-          :key="index"
-          @click="click"
-        >
-          <div class="flex_center columns txt_center p-4">
-            <div class="icons mb-3">
-              <i
-                v-if="isSuccess.length == 0"
-                :class="icon"
-                class="quick_action_icon "
-              />
-
-              <div v-if="isSuccess == id" class="check_container">
-                <i class="bx bx-check"></i>
-              </div>
-            </div>
-            <Title
-              tag="h4"
-              defaultClass="m-0"
-              :title="title"
-              :subtitle="subtitle"
+    <el-card class=" m-3 quick_actions_wrapper quick_action">
+      <div
+        v-loading="id == quickActionLoading"
+        class="quick_action_container"
+        v-for="({ icon, title, subtitle, click, id }, index) in quickActions"
+        :key="index"
+        @click="click"
+      >
+        <div class="flex_center columns txt_center p-4">
+          <div class="icons mb-3">
+            <i
+              v-if="isSuccess.length == 0"
+              :class="icon"
+              class="quick_action_icon "
             />
+
+            <div v-if="isSuccess == id" class="check_container">
+              <i class="bx bx-check"></i>
+            </div>
           </div>
+          <Title
+            tag="h4"
+            defaultClass="m-0"
+            :title="title"
+            :subtitle="subtitle"
+          />
         </div>
-      </el-card>
-    </el-col>
+      </div>
+    </el-card>
     <!-- User manager dialog -->
     <UserManagerDialog
       :display="displayDialog"
