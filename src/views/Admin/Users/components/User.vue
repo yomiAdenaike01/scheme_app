@@ -69,7 +69,7 @@ export default {
   border-radius: 10px;
   border: 1px solid #ebeef5;
   overflow-x: hidden;
-  transition: 0.56s ease background;
+  transition: $default_transition background;
   cursor: pointer;
   &:hover {
     background: #f9f9f9;
