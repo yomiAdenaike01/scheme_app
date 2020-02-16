@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar_wrapper">
+  <div class="view_user_container">
     <!-- Display the avatar -->
     <div class="avatar_info_container flex_center columns">
       <Avatar :name="returnUsername" class="sidebar_avatar" />
@@ -57,6 +57,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.avatar_info_container {
+  background: rgb(250, 250, 250);
+  padding: 20px;
+  margin-bottom: 20px;
+}
 .sidebar_avatar {
   &/deep/ {
     .el-avatar {

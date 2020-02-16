@@ -8,13 +8,7 @@
       <LeadIcon class="large_icon grey mb-5" icon="el-icon-user" />
       <h2 class="large">Manager users</h2>
       <small class="grey">Create, edit, remove users / groups.</small>
-      <el-button
-        class="mt-4"
-        icon="el-icon-plus"
-        circle
-        type="primary"
-        @click="$emit('createUserGroup', true)"
-      ></el-button>
+      <el-button class="mt-4" icon="el-icon-plus" circle @click="$emit('createUserGroup', true)"></el-button>
     </div>
   </div>
 </template>

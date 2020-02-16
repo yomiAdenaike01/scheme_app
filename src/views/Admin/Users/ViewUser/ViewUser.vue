@@ -1,9 +1,5 @@
 <template>
-  <el-dialog
-    :visible.sync="toggleView"
-    class="view_user_container"
-    v-if="hasEntries(getUserInfo)"
-  >
+  <el-dialog :visible.sync="toggleView" class="view_user_container" v-if="hasEntries(getUserInfo)">
     <el-row type="flex">
       <el-col>
         <ViewUserWrapper
@@ -12,7 +8,7 @@
           :tabItems="tabItems"
           :currentTab="selectedTab"
         >
-          <div class="content_body">
+          <div class="p-4">
             <component
               :is="returnComponents.component"
               :data="returnComponents.props"
@@ -138,15 +134,12 @@ export default {
 </script>
 
 <style lang="scss">
-.teamMemberDialogContainer {
-  .el-dialog__body {
-    padding: 0;
-    margin: 0;
+.view_user_container {
+  &/deep/ {
+    .el-dialog__body {
+      margin: 0;
+      padding: 0;
+    }
   }
-}
-</style>
-<style lang="scss" scoped>
-.content_body {
-  padding: 1.1em;
 }
 </style>

@@ -7,12 +7,12 @@
     <Nocontent v-bind="noContent" v-else>
       <el-button
         v-if="getIsAdmin"
+        :disabled="$route.name == 'events'"
         @click="
           $router.push({ name: 'events' });
           $emit('toggle');
         "
-        >Go to events</el-button
-      >
+      >{{$route.name == 'events' ? 'Already in events' : 'Go to events'}}</el-button>
     </Nocontent>
   </div>
 </template>
