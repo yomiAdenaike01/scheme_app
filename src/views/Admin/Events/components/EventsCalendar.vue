@@ -6,7 +6,6 @@
       :events="allEvents"
       :on-event-click="viewEvent"
       events-on-month-view="short"
-      editable-events
       @event-duration-change="changeShiftTime"
       :cell-click-hold="false"
     />

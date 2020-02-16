@@ -1,5 +1,5 @@
 import Vue from "vue";
-
+import moment from "moment";
 function checkType(elem, determinedType) {
   if (typeof elem != undefined && typeof elem != determinedType) {
     throw new Error(`Element type is wrong ${typeof elem}.`);
@@ -42,4 +42,11 @@ Vue.prototype.truncate = function(elem, len) {
   if (checkType(elem, "string")) {
     return elem.length > len ? `${elem.substr(0, len)} ...` : elem;
   }
+};
+
+Vue.prototype.initMoment = function(date) {
+  return moment(date);
+};
+Vue.prototype.formatDate = function(date) {
+  return moment(date).format("DD/MM/YYYY HH:mm");
 };

@@ -9,6 +9,7 @@
         :type="button.type ? button.type : 'primary'"
         :key="key"
         size="small"
+        :plain="button.plain"
         @click="
           button.emit
             ? $emit('modalChanges', button.emit)
@@ -16,7 +17,8 @@
             ? button.method
             : null
         "
-      >{{ button.label }}</el-button>
+        >{{ button.label }}</el-button
+      >
       <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
@@ -24,11 +26,13 @@
         type="primary"
         size="small"
         @click="initGcal"
+        plain
+        v-if="!hasGcal"
       >
         {{
-        !hasGcal
-        ? "Integrate with google calendar"
-        : "Successfully integrated with google calendar "
+          !hasGcal
+            ? "Integrate with google calendar"
+            : "Integrated with google calendar"
         }}
       </el-button>
     </el-col>
@@ -78,7 +82,7 @@ export default {
       };
       if (this.getIsAdmin) {
         render = {
-          text: "Create Event",
+          text: "Event Management",
           icon: "el-icon-date"
         };
       }
@@ -91,6 +95,8 @@ export default {
           label: this.renderCreateEventButton.text,
           emit: "createEvent",
           round: true,
+          plain: true,
+          type: "primary",
           icon: this.renderCreateEventButton.icon
         }
       ];

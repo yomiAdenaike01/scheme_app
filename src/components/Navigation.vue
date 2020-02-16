@@ -33,22 +33,27 @@ export default {
         {
           name: "Messenger",
           path: "/comms/messenger",
-          icon: "el-icon-chat-round"
+          icon: "bx bx-message-rounded-edit"
         },
         {
           name: "User management",
           path: "/admin/user",
-          icon: "el-icon-user"
+          icon: "bx bx-group"
         },
         {
           name: "Reports",
           path: "/admin/reports",
-          icon: "el-icon-notebook-1"
+          icon: "bx bx-bar-chart-alt-2"
         },
         {
           name: "Utilities",
           path: "/admin/utilities",
-          icon: "el-icon-s-opportunity"
+          icon: "bx bx-task"
+        },
+        {
+          name: "Intergrations",
+          path: "/admin/integrations",
+          icon: "bx bx-extension"
         }
       ]
     };

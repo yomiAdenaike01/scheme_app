@@ -2,6 +2,7 @@
   <div
     class="mb-3 event_container rounded shadow"
     :class="{ myEvent: isEventMine }"
+    @click="displayMoreDetails = !displayMoreDetails"
   >
     <el-row type="flex">
       <el-col class="event_details_container details_unit p-2">
@@ -38,9 +39,24 @@
       </el-col>
 
       <el-col class="flex_center event_controls_wrapper">
-        <Dropdown :items="eventActionItems" @method="handleEventActions" />
+        <i
+          class="el-icon-arrow-right more_details_indicator"
+          :class="{ displayMore: displayMoreDetails }"
+        ></i>
       </el-col>
     </el-row>
+    <el-collapse-transition>
+      <div class="p-2" v-if="displayMoreDetails">
+        <el-button
+          type="danger"
+          plain
+          size="small"
+          class="w-100"
+          @click="deleteEvent"
+          >Delete event</el-button
+        >
+      </div>
+    </el-collapse-transition>
   </div>
 </template>
 
@@ -59,7 +75,8 @@ export default {
     return {
       viewDetails: false,
       startEndTimeDiffType: "hours",
-      displayViewEvent: false
+      displayViewEvent: false,
+      displayMoreDetails: false
     };
   },
   props: {
@@ -77,30 +94,7 @@ export default {
         }) || this.getIsAdmin
       );
     },
-    eventActionItems() {
-      let actions = [];
-      if (
-        this.event.assignedTo == this.userInformation._id ||
-        this.getIsAdmin
-      ) {
-        actions.push(
-          {
-            name: "Update Event",
-            command: "update_event"
-          },
-          {
-            name: "Delete Event",
-            command: "delete_event"
-          }
-        );
-      } else {
-        actions.push({
-          name: "View Event",
-          command: "view_event"
-        });
-      }
-      return actions;
-    },
+
     approval() {
       let approved = this.event.isApproved.admin == 1;
       return {
@@ -117,7 +111,7 @@ export default {
     },
 
     formattedDates() {
-      const format = "ddd-MM HH:mm";
+      const format = "dddd DD MMM HH:mm";
       let { startDate, endDate } = this.event;
       return {
         start: moment(startDate).format(format),
@@ -150,28 +144,7 @@ export default {
     confirmDeleteEvent() {
       return this.$confirm("Are you sure you want to delete this event ? ");
     },
-    handleEventActions(command) {
-      switch (command) {
-        case "delete_event": {
-          this.deleteEvent();
-          break;
-        }
 
-        case "view_event": {
-          this.displayViewEvent = true;
-          break;
-        }
-        case "update_event": {
-          this.displayViewEvent = true;
-          this.$router.push({ name: "schedule" });
-
-          break;
-        }
-
-        default:
-          break;
-      }
-    },
     async deleteEvent() {
       try {
         let confirmEvent = await this.confirmDeleteEvent();
@@ -239,5 +212,12 @@ export default {
 }
 .approved {
   color: green;
+}
+.more_details_indicator {
+  transition: $default_transition transform;
+  will-transform: rotate;
+  &.displayMore {
+    transform: rotate(90deg);
+  }
 }
 </style>
