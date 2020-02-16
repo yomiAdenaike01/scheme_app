@@ -20,8 +20,8 @@
         >
           <el-col :span="10" v-for="(group, index) in count" :key="index">
             <div class="p-4 m-1 user_group_container">
-              <div class="flex_center mb-3">
-                <i class="bx bx-user grey user_group_icon"></i>
+              <div class=" icon_text_container flex_center mb-3">
+                <i class="bx bx-user user_group_icon"></i>
                 <span class="capitalize">{{ `${group.name}s` }}</span>
               </div>
               <User
@@ -233,5 +233,12 @@ export default {
 }
 .quick_action_icon {
   font-size: 1.5em;
+}
+.icon_text_container {
+  border-radius: 10px;
+  background: rgb(245, 245, 245);
+  padding: 10px;
+  color: #222;
+  font-size: 0.9em;
 }
 </style>
