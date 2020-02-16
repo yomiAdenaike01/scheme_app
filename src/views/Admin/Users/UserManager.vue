@@ -236,8 +236,8 @@ export default {
 }
 .icon_text_container {
   border-radius: 10px;
-  background: rgb(245, 245, 245);
-  padding: 10px;
+  background: rgb(250, 250, 250);
+  padding: 10px 0px;
   color: #222;
   font-size: 0.9em;
 }
