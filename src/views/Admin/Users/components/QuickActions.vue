@@ -130,13 +130,7 @@ export default {
 .quick_action_icon {
   font-size: 1.5em;
 }
-.icon_text_container {
-  border-radius: 10px;
-  background: rgb(250, 250, 250);
-  padding: 10px 0px;
-  color: #222;
-  font-size: 0.9em;
-}
+
 .check_container {
   border-radius: 50%;
   background: $success_colour;

@@ -45,8 +45,6 @@ export default {
     "#f5365c",
     "#fb6340",
     "#ffd600",
-    "#2dce89",
-    "#11cdef",
-    "#2bffc6"
+    "#2dce89"
   ]
 };

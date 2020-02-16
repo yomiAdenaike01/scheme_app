@@ -6,8 +6,18 @@
       <h3 class="mt-4 mb-2 capitalize">{{ returnUsername }}</h3>
       <h4 class="grey">{{ returnGroupName }}</h4>
     </div>
-    <el-tabs tab-position="top" stretch class="tab_container" v-model="selectedTab">
-      <el-tab-pane class="h-100" :key="index" v-for="(tab, index) in tabItems" :label="tab.label">
+    <el-tabs
+      tab-position="top"
+      stretch
+      class="tab_container"
+      v-model="selectedTab"
+    >
+      <el-tab-pane
+        class="h-100"
+        :key="index"
+        v-for="(tab, index) in tabItems"
+        :label="tab.label"
+      >
         <slot></slot>
       </el-tab-pane>
     </el-tabs>
@@ -58,7 +68,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .avatar_info_container {
-  background: rgb(250, 250, 250);
+  background: $hover_grey;
   padding: 20px;
   margin-bottom: 20px;
 }
