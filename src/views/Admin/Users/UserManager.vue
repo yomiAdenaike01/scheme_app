@@ -1,6 +1,6 @@
 <template>
   <el-row
-    type="flex"
+    :type="$mq != 'mob' ? 'flex' : ''"
     class="user_container p-4 h-100"
     v-loading="loading"
     :element-loading-text="
