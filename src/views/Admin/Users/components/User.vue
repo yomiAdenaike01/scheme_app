@@ -72,7 +72,7 @@ export default {
   transition: $default_transition background;
   cursor: pointer;
   &:hover {
-    background: #f9f9f9;
+    background: $hover_grey;
   }
 }
 </style>

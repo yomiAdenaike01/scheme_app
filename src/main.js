@@ -10,7 +10,7 @@ import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
 import "./plugins/clickOutside";
-
+import "boxicons";
 // Prototypes
 import "./plugins/prototypes";
 

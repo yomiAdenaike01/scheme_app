@@ -16,20 +16,20 @@ const sortPayload = (state, payload) => {
 };
 
 export default {
-  confirmBox(context, { text, title, type }) {
+  genPromptBox(context, { boxType, text, title, type }) {
     return new Promise((resolve, reject) => {
-      Vue.prototype
-        .$confirm(text, title, {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type,
-          round: true
+      boxType ? boxType : "confirm";
+      Vue.prototype[`$${boxType}`](text, title, {
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancel",
+        type,
+        round: true
+      })
+        .then(response => {
+          resolve(response);
         })
-        .then(() => {
-          resolve();
-        })
-        .catch(() => {
-          reject();
+        .catch(err => {
+          reject(err);
         });
     });
   },
@@ -86,7 +86,23 @@ export default {
         return error;
       });
   },
-  sendEmail(context, emailContent) {
+  /**
+   * 
+        to: "adenaikeyomi@gmail.com",
+        subject: "even diff Contact",
+        context: {
+          test: "Hello from the render",
+          body (optional) :"""
+          footer (optional) :""
+        }
+   */
+  genEmail(context, emailContent) {
+    emailContent.to == "all"
+      ? (emailContent.to = context.admin.state.teamInformation.map(member => {
+          return member.email;
+        }))
+      : emailContent.to;
+
     return new Promise((resolve, reject) => {
       context
         .dispatch("request", {

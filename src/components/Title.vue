@@ -1,6 +1,6 @@
 <template>
   <div class="title_wrapper" :class="defaultClass">
-    <h2 v-if="title">{{ title }}</h2>
+    <component v-if="title" :is="tag">{{ title }}</component>
     <p v-if="subtitle" class="desc mb-2">{{ subtitle }}</p>
     <slot></slot>
   </div>
@@ -10,7 +10,12 @@
 import { mapState } from "vuex";
 export default {
   name: "Title",
+
   props: {
+    tag: {
+      type: String,
+      default: "h2"
+    },
     defaultClass: {
       type: String,
       default: "m-3"

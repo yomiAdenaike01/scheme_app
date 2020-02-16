@@ -11,4 +11,5 @@ $default_gradient: linear-gradient(
   #2c5364
 ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 $element_colour: #2f9599;
-$default_transition: 0.56s ease-in-out;
+$default_transition: 0.16s linear;
+$hover_grey: rgb(252, 252, 252);

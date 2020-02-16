@@ -1,6 +1,6 @@
 <template>
   <div class="icon_container" :style="{ backgroundColor: bg }">
-    <i :class="icon"></i>
+    <i class="lead_icon" :class="icon"></i>
   </div>
 </template>
 
@@ -24,7 +24,7 @@ export default {
   text-align: center;
   border-radius: 50%;
   padding: 5px 14px;
-  i {
+  .lead_icon {
     color: white;
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="user_info_container">
     <div class="flex flex--end align-center">
-      <el-button round @click="requestSendEmail">Contact</el-button>
+      <el-button round @click="requestgenEmail">Contact</el-button>
     </div>
     <h5>User Info</h5>
     <p v-for="(property, index) in removeUnwantedProperties" :key="index">
@@ -30,8 +30,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["sendEmail"]),
-    requestSendEmail() {
+    ...mapActions(["genEmail"]),
+    requestgenEmail() {
       let emailContent = {
         to: "adenaikeyomi@gmail.com",
         subject: "even diff Contact",
@@ -39,7 +39,7 @@ export default {
           test: "Hello from the render"
         }
       };
-      this.sendEmail(emailContent)
+      this.genEmail(emailContent)
         .then(response => {
           console.log(response);
         })

@@ -96,7 +96,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "confirmBox"]),
+    ...mapActions(["request", "genPromptBox"]),
     inArray(item) {
       return this.toDelete.indexOf(item) > -1;
     },
@@ -146,7 +146,7 @@ export default {
       });
 
       if (assignedUserIndex > -1) {
-        this.confirmBox({
+        this.genPromptBox({
           text: "Users are assigned to this group this may cause errors.",
           title: "User group warning",
           type: "warning"

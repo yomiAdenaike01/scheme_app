@@ -4,7 +4,7 @@
       <MoreInformation index="admin" instruction="view_event" />
     </Title>
     <p>{{event}}</p>
-
+    <el-button round>Remind of this event</el-button>
   </el-dialog>
 </template>
 
@@ -34,10 +34,10 @@ export default {
     }
   },
   computed: {
-    ...mapState("Admin", ["teamInformation","eventsInformation"]),
+    ...mapState("Admin", ["teamInformation", "eventsInformation"]),
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters('Admin',['getEventAssginedTo']),
+    ...mapGetters("Admin", ["getEventAssginedTo"]),
 
     computeDisplay: {
       get() {
@@ -46,10 +46,9 @@ export default {
       set(val) {
         this.$emit("toggle", val);
       }
-    },
-
+    }
   },
- 
+
   components: {
     Title,
     MoreInformation,

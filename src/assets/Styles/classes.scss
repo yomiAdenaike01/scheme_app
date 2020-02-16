@@ -162,7 +162,7 @@ span {
   font-weight: bold;
 }
 .overflow {
-  overflow: auto;
+  overflow-x: hidden;
   &:after {
     content: "";
     display: block;
@@ -185,6 +185,9 @@ span {
 
 .h-100 {
   height: 100%;
+}
+.h-90 {
+  height: 90%;
 }
 .large_icon {
   font-size: 3em;
