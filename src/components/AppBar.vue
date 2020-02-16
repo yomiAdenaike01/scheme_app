@@ -172,7 +172,7 @@ export default {
   height: 100%;
 }
 .client_container {
-  background: $primary_colour;
+  background: $element_colour;
   color: white;
 }
 .username {

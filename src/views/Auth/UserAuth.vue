@@ -349,7 +349,7 @@ export default {
   min-width: 25%;
 }
 .switch_button {
-  border: 1px solid $primary_colour;
+  border: 1px solid $element_colour;
 }
 .new_client_button_container {
   display: flex;

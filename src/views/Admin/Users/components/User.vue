@@ -3,11 +3,19 @@
     class="team_member flex p-4 mt-1"
     @click="UPDATE_VIEW_TEAM_MEMBER({ view: true, id: data._id })"
   >
-    <Avatar :name="data.name" />
+    <el-badge
+      v-if="displayPrescence"
+      is-dot
+      :type="data.isOnline ? 'success' : 'danger'"
+      class="item"
+    >
+      <Avatar :name="data.name" />
+    </el-badge>
+    <Avatar v-else :name="data.name" />
 
     <div class="flex columns">
       <div class="text_content ml-2">
-        <p class="rbold m-0 p-0">{{ data.name }}</p>
+        <p class="member_name m-0 p-0">{{ data.name }}</p>
         <small>{{ group }}</small>
       </div>
     </div>
@@ -21,6 +29,10 @@ import { mapState, mapMutations, mapGetters } from "vuex";
 export default {
   name: "User",
   props: {
+    displayPrescence: {
+      type: Boolean,
+      default: true
+    },
     data: {
       type: Object,
       default: () => {},
@@ -54,7 +66,8 @@ export default {
 
 <style lang="scss" scoped>
 .team_member {
-  border: $border;
+  border-radius: 10px;
+  border: 1px solid #ebeef5;
   overflow-x: hidden;
   transition: 0.56s ease background;
   cursor: pointer;

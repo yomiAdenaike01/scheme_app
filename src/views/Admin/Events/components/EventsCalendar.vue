@@ -277,15 +277,15 @@ export default {
 
 <style lang="scss">
 .vuecal__now-line {
-  color: $primary_colour;
+  color: $element_colour;
 }
 
 .vuecal__event {
   font-size: 0.8em;
 
   background: #ecf5ff;
-  color: $primary_colour;
-  border-top: 2px solid $primary_colour;
+  color: $element_colour;
+  border-top: 2px solid $element_colour;
 
   &.holiday {
     background: #fef0f0;

@@ -7,7 +7,7 @@
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </el-col>
       <el-col>
-        <ServerHealth />
+        <!-- <ServerHealth /> -->
         <DefaultTransition>
           <keep-alive>
             <router-view :key="key" />

@@ -1,7 +1,7 @@
 <template>
-  <el-avatar :style="{ background: randColour }">
-    {{ initials }}
-  </el-avatar>
+  <div class="shadow_border flex_center">
+    <el-avatar :style="{ background: randColour }">{{ initials }}</el-avatar>
+  </div>
 </template>
 
 <script>
@@ -39,4 +39,3 @@ export default {
 };
 </script>
 
-<style></style>

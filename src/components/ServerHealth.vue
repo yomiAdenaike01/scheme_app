@@ -35,12 +35,12 @@ export default {
   background: whitesmoke;
   color: white;
   &.healthy {
-    // background: #13547a;
-    background-image: linear-gradient(
-      150deg,
-      $primary_colour 10%,
-      #80d0c7 200%
-    );
+    background: #99B898   ;
+   // background-image: linear-gradient(
+    //   150deg,
+    //   $element_colour 10%,
+    //   #80d0c7 200%
+    // );
   }
   &.unhealthy {
     background: $error_colour;

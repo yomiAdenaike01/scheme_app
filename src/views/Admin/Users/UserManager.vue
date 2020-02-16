@@ -11,17 +11,11 @@
     <UserGroup addNew @createUserGroup="displayDialog = $event" />
 
     <UserGroup v-if="filteredGroupsWithUsers.length > 0">
-      <el-row
-        v-for="(count, i) in filteredGroupsWithUsers"
-        :key="`${count}${i}`"
-      >
+      <el-row v-for="(count, i) in filteredGroupsWithUsers" :key="`${count}${i}`">
         <el-col :span="11" v-for="(group, index) in count" :key="index">
-          <div class="p-2">
+          <div class="p-4 m-4 user_group_container">
             <div class="title_container">
-              <el-button
-                class="large_icon no_events mr-1 borderless"
-                icon="el-icon-user"
-              ></el-button>
+              <el-button class="no_events mr-1 borderless" icon="el-icon-user"></el-button>
               <span class="capitalize">{{ group.name }}</span>
             </div>
             <User
@@ -35,10 +29,7 @@
       </el-row>
     </UserGroup>
     <!-- User manager dialog -->
-    <UserManagerDialog
-      :display="displayDialog"
-      @toggle="displayDialog = $event"
-    />
+    <UserManagerDialog :display="displayDialog" @toggle="displayDialog = $event" />
   </el-row>
 </template>
 
@@ -151,6 +142,6 @@ export default {
   cursor: pointer;
 }
 .user_group_container {
-  border: 2px solid whitesmoke;
+  // border: 0.5px solid whitesmoke;
 }
 </style>

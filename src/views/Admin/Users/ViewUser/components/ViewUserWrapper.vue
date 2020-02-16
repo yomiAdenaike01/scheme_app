@@ -2,24 +2,12 @@
   <div class="sidebar_wrapper">
     <!-- Display the avatar -->
     <div class="avatar_info_container flex_center columns">
-      <div class="avatar_border shadow p-2">
-        <Avatar :name="returnUsername" class="sidebar_avatar" />
-      </div>
+      <Avatar :name="returnUsername" class="sidebar_avatar" />
       <h3 class="mt-4 mb-2 capitalize">{{ returnUsername }}</h3>
       <h4 class="grey">{{ returnGroupName }}</h4>
     </div>
-    <el-tabs
-      tab-position="top"
-      stretch
-      class="tab_container"
-      v-model="selectedTab"
-    >
-      <el-tab-pane
-        class="h-100"
-        :key="index"
-        v-for="(tab, index) in tabItems"
-        :label="tab.label"
-      >
+    <el-tabs tab-position="top" stretch class="tab_container" v-model="selectedTab">
+      <el-tab-pane class="h-100" :key="index" v-for="(tab, index) in tabItems" :label="tab.label">
         <slot></slot>
       </el-tab-pane>
     </el-tabs>
@@ -69,16 +57,17 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.avatar_border {
-  border-radius: 50%;
-}
 .sidebar_avatar {
-  width: 60px;
-  height: 60px;
-  font-size: 30px;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  &/deep/ {
+    .el-avatar {
+      width: 60px;
+      height: 60px;
+      font-size: 30px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
 </style>

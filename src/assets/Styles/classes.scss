@@ -41,7 +41,7 @@ span {
   color: $error_colour;
 }
 .primary {
-  color: $primary_colour;
+  color: $element_colour;
 }
 .columns {
   flex-direction: column;
@@ -49,7 +49,11 @@ span {
 .caps {
   text-transform: uppercase;
 }
-
+.shadow_border {
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: $box_shadow;
+}
 .member_name {
   text-transform: capitalize;
 }
@@ -148,7 +152,11 @@ span {
 .logo {
   padding: 5px 19px;
   border-radius: 50%;
-  background-image: linear-gradient(340deg, $primary_colour 0%, #80d0c7 100%);
+  background-image: linear-gradient(
+    340deg,
+    $default_colour 0%,
+    $element_colour 100%
+  );
 
   color: white;
   font-weight: bold;
