@@ -40,14 +40,24 @@
     <el-col class=" quick_actions_wrapper">
       <el-card class="quick_action h-90">
         <div
+          v-loading="id == quickActionLoading"
           class="quick_action_container"
-          v-for="({ icon, title, subtitle, click }, index) in quickActions"
+          v-for="({ icon, title, subtitle, click, id }, index) in quickActions"
           :key="index"
           @click="click"
         >
           <div class="flex_center columns txt_center p-4">
-            <i :class="icon" class="quick_action_icon mb-3" />
+            <div class="icons mb-3">
+              <i
+                v-if="isSuccess.length == 0"
+                :class="icon"
+                class="quick_action_icon "
+              />
 
+              <div v-if="isSuccess == id" class="check_container">
+                <i class="bx bx-check"></i>
+              </div>
+            </div>
             <Title
               tag="h4"
               defaultClass="m-0"
@@ -87,7 +97,10 @@ export default {
     return {
       displayDialog: false,
       loading: true,
-      viewUser: false
+      viewUser: false,
+      isSuccess: "",
+      isSuccessInterval: "",
+      quickActionLoading: ""
     };
   },
   computed: {
@@ -100,26 +113,10 @@ export default {
         {
           icon: "bx bx-volume-full",
           title: "Create announcement",
+          id: "create_announcement",
+
           click: () => {
-            this.genPromptBox({
-              boxType: "prompt",
-              title: "Create annoucement",
-              text:
-                "You are about to create a system annoucement, this will send an email to all users, please enter the content of the email below",
-              type: "info"
-            })
-              .then(response => {
-                this.genEmail({
-                  subject: "Annoucement",
-                  to: "adenaikeyomi@gmail.com",
-                  context: {
-                    body: response.value
-                  }
-                });
-              })
-              .catch(err => {
-                return err;
-              });
+            this.createAnnoucement();
           },
           subtitle:
             "Create a system wide notification that will notify all users this can be through email or scheme messenger"
@@ -161,6 +158,34 @@ export default {
   methods: {
     ...mapActions("Admin", ["getTeam"]),
     ...mapActions(["genPromptBox", "genEmail"]),
+
+    createAnnoucement() {
+      this.genPromptBox({
+        boxType: "prompt",
+        title: "Create annoucement",
+        text:
+          "You are about to create a system annoucement, this will send an email to all users, please enter the content of the email below",
+        type: "info"
+      })
+        .then(response => {
+          this.quickActionLoading = "create_announcement";
+          this.genEmail({
+            subject: "Annoucement",
+            to: "adenaikeyomi@gmail.com",
+            context: {
+              body: response.value
+            }
+          })
+            .then(response => {
+              this.isSuccess = "create_announcement";
+            })
+            .catch(err => {});
+        })
+        .catch(err => {
+          return err;
+        });
+    },
+
     logChanges(e) {
       console.log(e);
     }
@@ -172,8 +197,12 @@ export default {
     UserManagerDialog
   },
   watch: {
-    localUserGroup(val) {
+    isSuccess(val) {
       console.log(val);
+      this.isSuccessInterval = setTimeout(() => {
+        this.isSuccess = "";
+        this.quickActionLoading = "";
+      }, 1000);
     }
   }
 };
@@ -240,5 +269,12 @@ export default {
   padding: 10px 0px;
   color: #222;
   font-size: 0.9em;
+}
+.check_container {
+  border-radius: 50%;
+  background: $success_colour;
+  color: white;
+  font-size: 20px;
+  padding: 10px 13px;
 }
 </style>
