@@ -27,5 +27,10 @@ export default {
     events (number of events in total, break down of type(pie),)
    
    */
-  analyticsInformation: []
+  analyticsPresentation: {
+    barPercentage: 0.5,
+    barThickness: 6,
+    maxBarThickness: 8,
+    minBarLength: 2
+  }
 };
