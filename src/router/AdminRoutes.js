@@ -1,7 +1,9 @@
 const EventsManager = () => import("@/views/Admin/Events/EventsManager");
-const Reports = () => import("@/views/Admin/Reports/ReportsManager");
+const Analytics = () => import("@/views/Admin/Analytics/AnalyticsManager");
 const UserManager = () => import("@/views/Admin/Users/UserManager");
 const Utilities = () => import("@/views/Admin/Utilities/UtilitiesManager");
+const Integrations = () => import("@/views/Admin/Integrations/Integrations");
+
 export default [
   {
     path: "utilities",
@@ -21,9 +23,9 @@ export default [
     }
   },
   {
-    path: "reports",
-    name: "reports",
-    component: Reports,
+    path: "analytics",
+    name: "analytics",
+    component: Analytics,
     meta: {
       authRequired: true
     }
@@ -32,6 +34,14 @@ export default [
     path: "user",
     name: "user",
     component: UserManager,
+    meta: {
+      authRequired: true
+    }
+  },
+  {
+    path: "integrations",
+    name: "integrations",
+    component: Integrations,
     meta: {
       authRequired: true
     }

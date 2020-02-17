@@ -19,9 +19,14 @@
         >
           <el-col :span="8" v-for="(group, index) in count" :key="index">
             <div class="p-4 m-1 user_group_container">
-              <div class=" icon_text_container flex_center mb-3">
-                <i class="bx bx-user user_group_icon"></i>
-                <span class="capitalize">{{ `${group.name}s` }}</span>
+              <div
+                class=" icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
+              >
+                <div class="flex_center">
+                  <i class="bx bx-user user_group_icon"></i>
+                  <span class="capitalize">{{ `${group.name}s` }}</span>
+                </div>
+                <i class="el-icon-more"></i>
               </div>
               <User
                 v-for="member in group.teamMembers"

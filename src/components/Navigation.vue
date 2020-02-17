@@ -41,8 +41,8 @@ export default {
           icon: "bx bx-group"
         },
         {
-          name: "Reports",
-          path: "/admin/reports",
+          name: "Analytics",
+          path: "/admin/analytics",
           icon: "bx bx-bar-chart-alt-2"
         },
         {
