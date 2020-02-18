@@ -2,7 +2,9 @@
   <div class="view_user_container">
     <!-- Display the avatar -->
     <div class="avatar_info_container flex_center columns">
-      <Avatar class="sidebar_avatar full" :name="returnUsername" />
+      <el-badge is-dot :type="userData.isOnline ? 'success' : 'danger'" class="dot_container">
+        <Avatar class="sidebar_avatar full" :name="returnUsername" />
+      </el-badge>
       <h3 class="mt-4 mb-2 capitalize">{{ returnUsername }}</h3>
       <h4 class="grey">{{ returnGroupName }}</h4>
     </div>
@@ -61,6 +63,15 @@ export default {
   background: $hover_grey;
   padding: 20px;
   margin-bottom: 20px;
+}
+.dot_container {
+  &/deep/ {
+    .el-badge__content {
+      width: 12px;
+      height: 12px;
+      margin: 0;
+    }
+  }
 }
 .sidebar_avatar {
   &/deep/ {

@@ -3,15 +3,16 @@
     <div class="flex flex--end align-center">
       <el-button round @click="requestgenEmail">Contact</el-button>
     </div>
-    <h5>User Info</h5>
-    <p v-for="(property, index) in removeUnwantedProperties" :key="index">
-      {{ index }} : {{ property }}
-    </p>
+    <h3>User Info</h3>
+    <p>{{date}}</p>
+    <p>{{data.name}}</p>
+    <p>{{data.email}}</p>
+    <p class="member_name">{{group}}</p>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "UserInfo",
   props: {
@@ -21,6 +22,13 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("Admin", ["getGroupName"]),
+    date() {
+      return this.formatDate(this.data.dateCreated);
+    },
+    group() {
+      return this.getGroupName("event", this.data.groupID).name;
+    },
     removeUnwantedProperties() {
       let cleanedProperties = {};
       for (let property in this.data) {
