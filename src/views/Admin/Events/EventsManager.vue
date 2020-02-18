@@ -6,7 +6,7 @@
     element-loading-text="Loading team members and events please wait..."
   >
     <!-- Shift and calendar view -->
-    <EventFilters />
+    <EventFilters v-if="$mq == 'lg'" />
 
     <el-col>
       <Toolbar @modalChanges="self.modals[$event] = true" class="m-3" />

@@ -1,7 +1,6 @@
 <template>
   <el-menu
     id="main_nav"
-    style="height:100%; border:none; z-index:3"
     :default-active="$route.path"
     :router="true"
     mode="vertical"
@@ -30,11 +29,11 @@ export default {
           path: "/admin/events",
           icon: "el-icon-date"
         },
-        {
-          name: "Messenger",
-          path: "/comms/messenger",
-          icon: "bx bx-message-rounded-edit"
-        },
+        // {
+        //   name: "Messenger",
+        //   path: "/comms/messenger",
+        //   icon: "bx bx-message-rounded-edit"
+        // },
         {
           name: "User management",
           path: "/admin/user",
@@ -83,5 +82,10 @@ export default {
 }
 .el-menu-item i {
   color: darken($color: white, $amount: 10);
+}
+
+#main_nav {
+  flex: 1;
+  height: 100%;
 }
 </style>

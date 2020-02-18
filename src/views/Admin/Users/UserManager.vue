@@ -1,7 +1,7 @@
 <template>
   <el-row
-    :type="$mq != 'mob' ? 'flex' : ''"
-    class="user_container p-4 h-100"
+    type="flex"
+    class="user_container p-4"
     v-loading="loading"
     :element-loading-text="
       `Getting
@@ -13,15 +13,10 @@
     <UserGroup v-if="filteredGroupsWithUsers.length > 0">
       <div>
         <Title title="User Groups" subtitle="Manage and contact users here" />
-        <el-row
-          v-for="(count, i) in filteredGroupsWithUsers"
-          :key="`${count}${i}`"
-        >
-          <el-col :span="8" v-for="(group, index) in count" :key="index">
+        <el-row v-for="(count, i) in filteredGroupsWithUsers" :key="`${count}${i}`">
+          <el-col :span="$mq != 'lg' ? 12 : 8" v-for="(group, index) in count" :key="index">
             <div class="p-4 m-1 user_group_container">
-              <div
-                class=" icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
-              >
+              <div class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3">
                 <div class="flex_center">
                   <i class="bx bx-user user_group_icon"></i>
                   <span class="capitalize">{{ `${group.name}s` }}</span>
@@ -42,10 +37,7 @@
     <!-- Quick actions -->
     <QuickActions />
     <!-- User manager dialog -->
-    <UserManagerDialog
-      :display="displayDialog"
-      @toggle="displayDialog = $event"
-    />
+    <UserManagerDialog :display="displayDialog" @toggle="displayDialog = $event" />
   </el-row>
 </template>
 
@@ -167,5 +159,15 @@ export default {
   padding: 10px 0px;
   color: #222;
   font-size: 0.9em;
+}
+.mobile {
+  .user_container {
+    flex-direction: column;
+  }
+  /deep/ {
+    .el-card {
+      margin: 0;
+    }
+  }
 }
 </style>

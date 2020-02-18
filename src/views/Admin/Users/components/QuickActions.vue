@@ -1,6 +1,6 @@
 <template>
   <!-- Quick actions -->
-  <el-card class=" m-3 quick_actions_wrapper ">
+  <el-card class="m-3 quick_actions_wrapper">
     <div class="title_container flex_center columns">
       <h3>Quick Actions</h3>
       <small class="grey">Select a tab below to initiate a quick action</small>
@@ -14,22 +14,13 @@
     >
       <div class="flex_center columns txt_center p-4">
         <div class="icons mb-3">
-          <i
-            v-if="isSuccess.length == 0"
-            :class="icon"
-            class="quick_action_icon "
-          />
+          <i v-if="isSuccess.length == 0" :class="icon" class="quick_action_icon" />
 
           <div v-if="isSuccess == id" class="check_container">
             <i class="bx bx-check"></i>
           </div>
         </div>
-        <Title
-          tag="h4"
-          defaultClass="m-0"
-          :title="title"
-          :subtitle="subtitle"
-        />
+        <Title tag="h4" defaultClass="m-0" :title="title" :subtitle="subtitle" />
       </div>
     </div>
   </el-card>
@@ -112,7 +103,7 @@ export default {
 
 <style lang="scss" scoped>
 .quick_actions_wrapper {
-  width: 20%;
+  flex: 1;
   /deep/ {
     .el-card__body {
       padding: 0;
@@ -141,5 +132,11 @@ export default {
 .title_container {
   background: rgb(250, 250, 250);
   padding: 20px;
+}
+
+.mobile {
+  .quick_actions_wrapper {
+    flex: 1;
+  }
 }
 </style>

@@ -8,12 +8,7 @@
       <LeadIcon class="large_icon grey mb-5" icon="bx bx-group" />
       <h2 class="large">Manager users</h2>
       <small class="grey">Create, edit, remove users / groups.</small>
-      <el-button
-        class="mt-4"
-        icon="el-icon-plus"
-        circle
-        @click="$emit('createUserGroup', true)"
-      ></el-button>
+      <el-button class="mt-4" icon="el-icon-plus" circle @click="$emit('createUserGroup', true)"></el-button>
     </div>
   </el-card>
 </template>
@@ -42,11 +37,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.group_container {
-  width: 70%;
-  &.new_group {
-    width: 20%;
-  }
-}
-</style>

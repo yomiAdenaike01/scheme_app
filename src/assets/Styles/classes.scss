@@ -1,8 +1,9 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans&display=swap");
-
+body,
 html,
-body {
+#app {
   height: 100%;
+  width: 100%;
   font-family: "Open Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -180,11 +181,11 @@ span {
   text-align: center;
 }
 .w-100 {
-  width: 100%;
+  flex: 1;
 }
 
 .h-100 {
-  height: 100%;
+  flex: 1;
 }
 .h-90 {
   height: 90%;
@@ -213,23 +214,21 @@ span {
 .el-dialog__header {
   padding: 0;
 }
-#app {
-  overflow: hidden;
-  border-collapse: collapse;
-  height: 100%;
 
-  /**
+/**
     _   _  _  ___ _  _    ___
     | \_/ |/ \| o ) || |  | __|
     | \_/ ( o ) o \ || |_ | _|
     |_| |_|\_/|___/_||___||___|
   
   */
-  &.mobile {
-    overflow: scroll;
-    .el-drawer__body {
-      overflow-y: scroll;
-    }
+.mobile {
+  overflow: scroll;
+  .el-dialog {
+    width: 100%;
+  }
+  .el-drawer__body {
+    overflow-y: scroll;
   }
 }
 .trigger {

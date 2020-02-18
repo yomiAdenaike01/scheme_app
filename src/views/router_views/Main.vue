@@ -1,11 +1,11 @@
 <template>
-  <div class="main_wrapper">
+  <div class="main_wrapper flex columns">
     <NprogressContainer />
     <AppBar />
-    <el-row type="flex" style="height:100%">
-      <el-col style="flex:1">
+    <div class="inner_wrapper flex">
+      <div class="nav_wrapper">
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
-      </el-col>
+      </div>
       <el-col>
         <!-- <ServerHealth /> -->
         <DefaultTransition>
@@ -14,7 +14,7 @@
           </keep-alive>
         </DefaultTransition>
       </el-col>
-    </el-row>
+    </div>
     <NotificationsCenter />
   </div>
 </template>
@@ -121,5 +121,10 @@ export default {
 <style lang="scss" scoped>
 .main_wrapper {
   height: 100%;
+  width: 100%;
+  flex: 1;
+}
+.inner_wrapper {
+  flex: 1;
 }
 </style>

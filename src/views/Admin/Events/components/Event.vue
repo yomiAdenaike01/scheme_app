@@ -11,18 +11,20 @@
           <div class="content" slot="content">{{assignedUsers.arr.join(", ")}}</div>
           <p slot="trigger" class="member_name black">{{ assignedUsers.text }}</p>
         </Popover>
-        <el-tag
-          class="mr-1"
-          v-if="approval.boolean"
-          :value="approval.text"
-          type="success"
-        >{{ approval.text }}</el-tag>
-        <el-tag v-else effect="dark" type="danger">Not approved</el-tag>
+        <div class="tag_container">
+          <el-tag
+            class="mr-1"
+            v-if="approval.boolean"
+            :value="approval.text"
+            type="success"
+          >{{ approval.text }}</el-tag>
+          <el-tag v-else effect="dark" type="danger">Not approved</el-tag>
 
-        <el-tag class="capitalize" type="primary">{{ event.timeTag }}</el-tag>
+          <el-tag class="capitalize" type="primary">{{ event.timeTag }}</el-tag>
+        </div>
       </el-col>
 
-      <el-col :class="['event_times flex details_unit', event.class]">
+      <el-col v-if="$mq == 'lg'" :class="['event_times flex details_unit', event.class]">
         <div class="flex_center">
           <span class="date">{{ formattedDates.start }}</span>
           <div class="flex_center columns">
@@ -33,7 +35,7 @@
         </div>
       </el-col>
 
-      <el-col class="flex_center event_controls_wrapper">
+      <el-col v-if="$mq == 'lg'" class="flex_center event_controls_wrapper">
         <i
           class="el-icon-arrow-right more_details_indicator"
           :class="{ displayMore: displayMoreDetails }"
@@ -208,6 +210,13 @@ export default {
   will-transform: rotate;
   &.displayMore {
     transform: rotate(90deg);
+  }
+}
+
+.mobile {
+  .event_details_container {
+    min-width: 100%;
+    line-height: 2.5em;
   }
 }
 </style>

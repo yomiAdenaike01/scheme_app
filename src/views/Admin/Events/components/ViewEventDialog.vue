@@ -4,7 +4,12 @@
       <MoreInformation index="admin" instruction="view_event" />
     </Title>
     <div class="info_button_container flex flex--end">
-      <el-button circle class="no_events" :icon="approval.icon" :type="approval.type"></el-button>
+      <el-button
+        :circle="$mq == 'lg'"
+        class="no_events"
+        :icon="approval.icon"
+        :type="approval.type"
+      ></el-button>
       <el-button
         v-if="hasPermissions"
         size="small"
@@ -12,7 +17,7 @@
         plain
         @click="sendReminderToUser"
         round
-      >{{event.assignedTo.length > 0 ? 'Remind users of this event' : 'Remind user of this event'}}</el-button>
+      >{{event.assignedTo.length > 0 ? truncate('Remind users of this event',14) : truncate('Remind user of this event')}}</el-button>
       <el-button
         type="danger"
         size="small"
@@ -24,14 +29,14 @@
     </div>
     <div class="info_container p-3">
       <h3 class="mb-3">Assigned users</h3>
-      <div class="info_unit">
+      <div class="info_unit avatar_wrapper">
         <div
           v-for="(member,index) in event.assignedTo"
           :key="index"
-          class="avatar_wrapper no_events mb-2 flex align-center"
+          class="no_events mb-2 flex align-center"
         >
           <Avatar class="mr-3" :name="member"></Avatar>
-          <span class="member_name">{{member}}</span>
+          <span v-if="$mq == 'lg'" class="member_name">{{member}}</span>
         </div>
       </div>
 
@@ -236,5 +241,19 @@ h4 {
 }
 .view_event_col {
   margin: 1em;
+}
+
+.mobile {
+  .info_button_container {
+    flex-direction: column;
+    &/deep/ > * {
+      margin: 10px 0;
+    }
+    .avatar_wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
 </style>

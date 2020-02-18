@@ -10,13 +10,11 @@
     client instance please wait....`
     "
   >
-    <div class="h-100">
-      <DefaultTransition>
-        <keep-alive>
-          <router-view></router-view>
-        </keep-alive>
-      </DefaultTransition>
-    </div>
+    <DefaultTransition>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </DefaultTransition>
   </div>
 </template>
 
