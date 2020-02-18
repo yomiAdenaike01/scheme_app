@@ -1,4 +1,9 @@
 import vars from "@/assets/Styles/defaults.scss";
+
+const getStorage = key => {
+  return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : {};
+};
+
 export default {
   theme: localStorage.getItem("cssText"),
   serverHealth: {},
@@ -7,17 +12,13 @@ export default {
     shifts: 6000,
     client: 4000
   },
-  clientInformation: localStorage.getItem("clientInformation")
-    ? JSON.parse(localStorage.getItem("clientInformation"))
-    : {},
+  clientInformation: getStorage("clientInformation"),
   environmentURL:
     process.env.NODE_ENV == "development"
       ? "http://localhost:7070/"
       : "https://schemeapi.now.sh/",
-  token: localStorage.getItem("token"),
-  userInformation: localStorage.getItem("userInformation")
-    ? JSON.parse(localStorage.getItem("userInformation"))
-    : {},
+  token: getStorage("token"),
+  userInformation: getStorage("userInformation"),
   globalLoader: false,
   notifications: [],
   criticalNetworkError: false,

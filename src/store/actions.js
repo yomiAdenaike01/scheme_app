@@ -118,12 +118,12 @@ export default {
         });
     });
   },
-  request(context, payload, enableNotifications) {
+  request(context, payload) {
     payload = sortPayload(context.state, payload);
 
-    if (typeof enableNotifications == undefined) {
-      enableNotifications = true;
-    } else {
+    let enableNotifications = true;
+
+    if (typeof payload.hasOwnProperty("disableNotification")) {
       enableNotifications = false;
     }
 
@@ -132,10 +132,7 @@ export default {
         response = response.data;
 
         if (response.hasOwnProperty("success")) {
-          if (
-            typeof response.content == "string" &&
-            enableNotifications == false
-          ) {
+          if (typeof response.content == "string" && enableNotifications) {
             context.commit("UPDATE_NOTIFICATIONS", {
               message: response.content,
               type: "success"

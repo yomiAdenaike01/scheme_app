@@ -17,8 +17,7 @@
             ? button.method
             : null
         "
-        >{{ button.label }}</el-button
-      >
+      >{{ button.label }}</el-button>
       <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
@@ -30,9 +29,9 @@
         v-if="!hasGcal"
       >
         {{
-          !hasGcal
-            ? "Integrate with google calendar"
-            : "Integrated with google calendar"
+        !hasGcal
+        ? "Integrate with google calendar"
+        : "Integrated with google calendar"
         }}
       </el-button>
     </el-col>
@@ -53,6 +52,7 @@ export default {
         {
           method: "POST",
           url: "services/googlecal",
+          disableNotification: true,
           data: {
             id: this.userInformation._id,
             returnPath: window.location.href
