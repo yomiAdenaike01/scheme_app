@@ -1,7 +1,7 @@
 <template>
   <el-row
     class="schedule_container w-100"
-    type="flex"
+    :type="$mq == 'lg' ? 'flex' : ''"
     v-loading="loading"
     element-loading-text="Loading team members and events please wait..."
   >

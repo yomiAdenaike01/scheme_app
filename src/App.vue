@@ -37,6 +37,7 @@ export default {
     };
   },
   async created() {
+    new Notification("title");
     this.loggerController();
 
     if (this.isValidClient) {
