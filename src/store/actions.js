@@ -16,11 +16,12 @@ const sortPayload = (state, payload) => {
 };
 
 export default {
-  genPromptBox(context, { boxType, text, title, type }) {
+  genPromptBox(context, { boxType, text, title, type, confirm }) {
     return new Promise((resolve, reject) => {
       boxType ? boxType : "confirm";
+      confirm ? confirm : "Yes";
       Vue.prototype[`$${boxType}`](text, title, {
-        confirmButtonText: "OK",
+        confirmButtonText: confirm,
         cancelButtonText: "Cancel",
         type,
         round: true
@@ -123,7 +124,7 @@ export default {
 
     let enableNotifications = true;
 
-    if (typeof payload.hasOwnProperty("disableNotification")) {
+    if (payload.hasOwnProperty("disableNotification")) {
       enableNotifications = false;
     }
 

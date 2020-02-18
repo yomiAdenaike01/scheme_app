@@ -27,9 +27,7 @@
       <div slot="body_content">
         <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 0">
           <ColourUnit v-model="eventData.colour" />
-          <p class="mb-3 ml-4 desc grey">
-            Press to select an event colour (optional):
-          </p>
+          <p class="mb-3 ml-4 desc grey">Press to select an event colour (optional):</p>
         </div>
       </div>
     </Tabs>
@@ -174,6 +172,7 @@ export default {
 
       // Check if it is an admin or not
       let isAdmin = this.getIsAdmin;
+
       if (isAdmin) {
         createEventConfig.unshift(
           {

@@ -22,7 +22,8 @@ export default {
       "localSettings",
       "userNotifications",
       "userInformation",
-      "criticalNetworkError"
+      "criticalNetworkError",
+      "requestIntervals"
     ])
   },
 
@@ -30,15 +31,13 @@ export default {
     clearInterval(this.adminInterval);
   },
   activated() {
-    if (!this.criticalNetworkError) {
-      this.adminInterval = setInterval(() => {
-        this.getTeam();
-        this.getNotifications();
-        this.getEvents();
-      }, 60 * 3000);
-      if (this.userNotifications.length > 0) {
-        this.displayNewNotification();
-      }
+    this.adminInterval = setInterval(() => {
+      this.getTeam();
+      this.getNotifications();
+      this.getEvents();
+    }, this.requestIntervals.events);
+    if (this.userNotifications.length > 0) {
+      this.displayNewNotification();
     }
   },
   methods: {

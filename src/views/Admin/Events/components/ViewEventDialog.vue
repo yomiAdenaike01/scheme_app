@@ -1,21 +1,60 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <Title
-      title="View Event"
-      subtitle="Click on more information to display details"
-    >
+    <Title title="View Event" subtitle="Click on more information to display details">
       <MoreInformation index="admin" instruction="view_event" />
     </Title>
-    <p>{{ event }}</p>
-    <el-button
-      v-if="hasPermissions"
-      size="small"
-      type="primary"
-      plain
-      @click="sendReminderToUser"
-      round
-      >Remind user of this event</el-button
-    >
+    <div class="info_button_container flex flex--end">
+      <el-button circle class="no_events" :icon="approval.icon" :type="approval.type"></el-button>
+      <el-button
+        v-if="hasPermissions"
+        size="small"
+        type="primary"
+        plain
+        @click="sendReminderToUser"
+        round
+      >{{event.assignedTo.length > 0 ? 'Remind users of this event' : 'Remind user of this event'}}</el-button>
+      <el-button
+        type="danger"
+        size="small"
+        v-if="hasPermissions"
+        @click="deleteEvent"
+        round
+        plain
+      >Delete Event</el-button>
+    </div>
+    <div class="info_container p-3">
+      <h3 class="mb-3">Assigned users</h3>
+      <div class="info_unit">
+        <div
+          v-for="(member,index) in event.assignedTo"
+          :key="index"
+          class="avatar_wrapper no_events mb-2 flex align-center"
+        >
+          <Avatar class="mr-3" :name="member"></Avatar>
+          <span class="member_name">{{member}}</span>
+        </div>
+      </div>
+
+      <h3 class="mb-3 mt-3">Event date information</h3>
+
+      <div class="info_unit">
+        <span class="info_label">Event start:</span>
+        <span>{{dates.start}}</span>
+        <br />
+        <span class="info_label">Event end:</span>
+
+        <span>{{dates.end}}</span>
+      </div>
+      <h3 class="mt-4 mb-2">Event type & duration</h3>
+
+      <div class="info_unit">
+        <span class="info_label">Event duration:</span>
+        <span>{{duration}} hours</span>
+        <br />
+        <span class="info_label">Event type:</span>
+        <span class="member_name">{{eventType}}</span>
+      </div>
+    </div>
   </el-dialog>
 </template>
 
@@ -25,6 +64,7 @@ import Title from "@/components/Title";
 import MoreInformation from "@/components/MoreInformation";
 import moment from "moment";
 import Dropdown from "@/components/Dropdown";
+import Avatar from "@/components/Avatar";
 export default {
   name: "ViewEventDialog",
   data() {
@@ -49,6 +89,37 @@ export default {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getEventAssginedTo"]),
+    eventType() {
+      return this.event.type;
+    },
+    duration() {
+      return Math.round(this.event.endTimeMinutes / 60);
+    },
+    approval() {
+      let approval = {
+        icon: "el-icon-check",
+        type: "success"
+      };
+
+      if (this.event.isApproved.admin != 1) {
+        approval = {
+          icon: "el-icon-cross",
+          type: "danger"
+        };
+      }
+
+      return approval;
+    },
+    getEmail() {
+      let { assignedToRaw } = this.event;
+      assignedToRaw = [...assignedToRaw];
+      return assignedToRaw.map(assignee => {
+        let { email } = this.teamInformation.find(member => {
+          return member._id == assignee;
+        });
+        return email;
+      });
+    },
 
     dates() {
       let start = this.formatDate(this.event.startDate);
@@ -61,7 +132,10 @@ export default {
 
     hasPermissions() {
       let result = false;
-      if (this.userInformation._id == this.event.assignedTo) {
+      if (
+        this.userInformation._id == this.event.assignedTo ||
+        this.getIsAdmin
+      ) {
         result = true;
       }
 
@@ -81,13 +155,39 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["request", "genEmail", "genPromptBox"]),
+
+    deleteEvent() {
+      this.genPromptBox({
+        boxType: "confirm",
+        title: "Confirm",
+        text: "Are you sure you want to delete this event ?",
+        confirm: "Yes"
+      })
+        .then(response => {
+          this.request({
+            method: "DELETE",
+            url: "events/delete",
+            data: {
+              id: this.event.id
+            }
+          })
+            .then(response => {
+              this.computeDisplay = false;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        })
+        .catch(err => {
+          return err;
+        });
+    },
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}`;
       this.genEmail({
         subject: "Reminder",
-        to: this.teamInformation.find(user => {
-          return user._id == this.event.assignedTo;
-        }).email,
+        to: this.getEmail,
         context: {
           body: contentMessage
         }
@@ -104,11 +204,23 @@ export default {
   components: {
     Title,
     MoreInformation,
-    Dropdown
+    Dropdown,
+    Avatar
   }
 };
 </script>
 <style lang="scss" scoped>
+.title_button_container {
+  text-align: left;
+}
+.info_label {
+  margin-right: 10px;
+}
+.info_unit {
+  border: $border;
+  line-height: 2em;
+  padding: 20px;
+}
 .view_event_dialog_item {
   margin: 1em;
   border: 1.2px solid whitesmoke;

@@ -58,7 +58,7 @@
             v-for="option in input.options"
             :label="option.text || option.name"
             :key="option.value"
-            :value="option.value ? option.value : option.text || option.name"
+            :value="option.value ? option.value : option.text"
           >{{ option.text || option.name }}</el-option>
         </component>
         <!-- Hint -->

@@ -4,17 +4,12 @@
       class="hide_show_indicator shadow pl-3 pr-3 pt-2 pb-2"
       @click="displayState = !displayState"
     >
-      <i
-        class="el-icon-arrow-right active_arrow"
-        :class="{ ' el-icon-arrow-left': !displayState }"
-      ></i>
+      <i class="el-icon-arrow-right active_arrow" :class="{ ' el-icon-arrow-left': !displayState }"></i>
     </div>
     <div class="inner_filter_container" :class="{ active: displayState }">
       <div class="title_container">
         <h4>Filters</h4>
-        <small class="grey filter_desc"
-          >Select from dropdowns to filter the schedule.</small
-        >
+        <small class="grey filter_desc">Select from dropdowns to filter the schedule.</small>
         <el-select
           v-model="localFilters[key]"
           v-for="(group, key) in groups"
@@ -23,17 +18,10 @@
           class="mt-3"
           size="small"
         >
-          <el-option
-            v-for="item in group"
-            :key="item.value"
-            :value="item.value"
-            :label="item.name"
-          ></el-option>
+          <el-option v-for="item in group" :key="item.value" :value="item.value" :label="item.name"></el-option>
         </el-select>
       </div>
-      <el-button size="mini" class="mt-3" round type="primary"
-        >Reset filters</el-button
-      >
+      <el-button size="mini" class="mt-3" round type="primary">Reset filters</el-button>
     </div>
   </el-col>
 </template>

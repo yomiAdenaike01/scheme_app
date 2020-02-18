@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow_border flex_center">
+  <div class="shadow_border flex_center avatar_container">
     <el-avatar :style="{ background: randColour }">{{ initials }}</el-avatar>
   </div>
 </template>
@@ -39,3 +39,9 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+.avatar_container {
+  max-width: 40px;
+  max-height: 40px;
+}
+</style>

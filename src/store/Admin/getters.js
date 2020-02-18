@@ -63,7 +63,7 @@ export default {
     let team = [...state.teamInformation];
     return team.map(({ name, _id }) => {
       return {
-        name,
+        text: name,
         value: _id
       };
     });

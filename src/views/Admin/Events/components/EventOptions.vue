@@ -99,7 +99,7 @@ export default {
       try {
         this.templates = await this.request({
           method: "GET",
-          url: "templates/all"
+          url: "events/templates/all"
         });
         this.loadingTemplates = false;
       } catch (error) {

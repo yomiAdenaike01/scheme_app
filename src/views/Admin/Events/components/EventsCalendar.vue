@@ -169,6 +169,7 @@ export default {
           class: eventClass,
           isApproved,
           assignedTo: assignedTo.arr,
+          assignedToRaw: event.assignedTo,
           type
         });
       }

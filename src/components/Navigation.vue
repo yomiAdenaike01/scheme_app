@@ -39,22 +39,22 @@ export default {
           name: "User management",
           path: "/admin/user",
           icon: "bx bx-group"
-        },
-        {
-          name: "Analytics",
-          path: "/admin/analytics",
-          icon: "bx bx-bar-chart-alt-2"
-        },
-        {
-          name: "Utilities",
-          path: "/admin/utilities",
-          icon: "bx bx-task"
-        },
-        {
-          name: "Intergrations",
-          path: "/admin/integrations",
-          icon: "bx bx-extension"
         }
+        // {
+        //   name: "Analytics",
+        //   path: "/admin/analytics",
+        //   icon: "bx bx-bar-chart-alt-2"
+        // },
+        // {
+        //   name: "Utilities",
+        //   path: "/admin/utilities",
+        //   icon: "bx bx-task"
+        // },
+        // {
+        //   name: "Intergrations",
+        //   path: "/admin/integrations",
+        //   icon: "bx bx-extension"
+        // }
       ]
     };
   },
