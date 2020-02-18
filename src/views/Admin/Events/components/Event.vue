@@ -7,32 +7,27 @@
     <el-row type="flex">
       <el-col class="event_details_container details_unit p-2">
         <h4 class="member_name">{{ getEventType }}</h4>
-        <p class="member_name black">{{ assignedToText }}</p>
+        <Popover>
+          <div class="content" slot="content">{{assignedUsers.arr.join(", ")}}</div>
+          <p slot="trigger" class="member_name black">{{ assignedUsers.text }}</p>
+        </Popover>
         <el-tag
           class="mr-1"
           v-if="approval.boolean"
           :value="approval.text"
           type="success"
-          >{{ approval.text }}</el-tag
-        >
+        >{{ approval.text }}</el-tag>
         <el-tag v-else effect="dark" type="danger">Not approved</el-tag>
 
-        <el-tag class="capitalize" type="primary">
-          {{ event.timeTag }}
-        </el-tag>
+        <el-tag class="capitalize" type="primary">{{ event.timeTag }}</el-tag>
       </el-col>
 
       <el-col :class="['event_times flex details_unit', event.class]">
         <div class="flex_center">
           <span class="date">{{ formattedDates.start }}</span>
           <div class="flex_center columns">
-            <i
-              style="font-size:1.3em"
-              class="el-icon el-icon-right p-0 m-0 grey"
-            ></i>
-            <span class="time_diff grey"
-              >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
-            >
+            <i style="font-size:1.3em" class="el-icon el-icon-right p-0 m-0 grey"></i>
+            <span class="time_diff grey">{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span>
           </div>
           <span class="date">{{ formattedDates.end }}</span>
         </div>
@@ -47,14 +42,7 @@
     </el-row>
     <el-collapse-transition>
       <div class="p-2" v-if="displayMoreDetails">
-        <el-button
-          type="danger"
-          plain
-          size="small"
-          class="w-100"
-          @click="deleteEvent"
-          >Delete event</el-button
-        >
+        <el-button type="danger" plain size="small" class="w-100" @click="deleteEvent">Delete event</el-button>
       </div>
     </el-collapse-transition>
   </div>
@@ -67,6 +55,7 @@ import dates from "@/mixins/dates";
 import Dropdown from "@/components/Dropdown";
 import ViewEventDialog from "../../Events/components/ViewEventDialog";
 import moment from "moment";
+import Popover from "@/components/Popover";
 export default {
   name: "Event",
   mixins: [employeeMethods, dates],
@@ -106,8 +95,8 @@ export default {
       let { type } = this.event;
       return this.eventTypes[type - 1].name;
     },
-    assignedToText() {
-      return this.getEventAssignedTo(this.event.assignedTo).text;
+    assignedUsers() {
+      return this.getEventAssignedTo(this.event.assignedTo);
     },
 
     formattedDates() {
@@ -161,7 +150,8 @@ export default {
   },
   components: {
     Dropdown,
-    ViewEventDialog
+    ViewEventDialog,
+    Popover
   }
 };
 </script>

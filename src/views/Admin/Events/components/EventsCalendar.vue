@@ -153,7 +153,7 @@ export default {
 
         let { isApproved, startDate, _id, endDate, assignedTo, type } = event;
 
-        assignedTo = this.getEventAssignedTo([...assignedTo], true);
+        assignedTo = this.getEventAssignedTo([...assignedTo]);
 
         type = this.getGroupName("event", type).name;
         startDate = moment(startDate).format(this.format);

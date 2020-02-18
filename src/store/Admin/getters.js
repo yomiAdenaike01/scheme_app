@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 export default {
-  getEventAssignedTo: ({ teamInformation }) => (assignedTo, truncate) => {
+  getEventAssignedTo: ({ teamInformation }) => assignedTo => {
     let assignedToData = {
       arr: [],
       text: ""

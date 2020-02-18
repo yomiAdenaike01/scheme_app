@@ -43,5 +43,9 @@ export default {
 .avatar_container {
   max-width: 40px;
   max-height: 40px;
+  &.full {
+    max-width: initial;
+    max-height: initial;
+  }
 }
 </style>
