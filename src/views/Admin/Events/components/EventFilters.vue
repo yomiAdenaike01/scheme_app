@@ -85,15 +85,12 @@ export default {
 
 <style lang="scss" scoped>
 .filters_container {
-  transition: 0.56s ease-out width;
-  width: 10%;
+  flex: 0.15;
   background: rgb(252, 252, 252);
   border-right: 1px solid #efefef;
-  position: relative;
+  border-top: 1px solid #efefef;
 
-  &.active {
-    width: 0;
-  }
+  position: relative;
 }
 .filter_desc {
   font-size: 0.7em;

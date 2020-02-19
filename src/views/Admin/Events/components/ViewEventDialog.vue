@@ -1,8 +1,9 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <Title title="View Event" subtitle="Click on more information to display details">
-      <MoreInformation index="admin" instruction="view_event" />
-    </Title>
+    <Title
+      title="View Event"
+      subtitle="Click on more information to display details"
+    ></Title>
     <div class="info_button_container flex flex--end">
       <el-button
         :circle="$mq == 'lg'"
@@ -17,7 +18,12 @@
         plain
         @click="sendReminderToUser"
         round
-      >{{event.assignedTo.length > 0 ? truncate('Remind users of this event',14) : truncate('Remind user of this event')}}</el-button>
+        >{{
+          event.assignedTo.length > 0
+            ? truncate("Remind users of this event", 14)
+            : truncate("Remind user of this event")
+        }}</el-button
+      >
       <el-button
         type="danger"
         size="small"
@@ -25,18 +31,19 @@
         @click="deleteEvent"
         round
         plain
-      >Delete Event</el-button>
+        >Delete Event</el-button
+      >
     </div>
     <div class="info_container p-3">
       <h3 class="mb-3">Assigned users</h3>
       <div class="info_unit avatar_wrapper">
         <div
-          v-for="(member,index) in event.assignedTo"
+          v-for="(member, index) in event.assignedTo"
           :key="index"
           class="no_events mb-2 flex align-center"
         >
           <Avatar class="mr-3" :name="member"></Avatar>
-          <span v-if="$mq == 'lg'" class="member_name">{{member}}</span>
+          <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
         </div>
       </div>
 
@@ -44,20 +51,20 @@
 
       <div class="info_unit">
         <span class="info_label">Event start:</span>
-        <span>{{dates.start}}</span>
+        <span>{{ dates.start }}</span>
         <br />
         <span class="info_label">Event end:</span>
 
-        <span>{{dates.end}}</span>
+        <span>{{ dates.end }}</span>
       </div>
       <h3 class="mt-4 mb-2">Event type & duration</h3>
 
       <div class="info_unit">
         <span class="info_label">Event duration:</span>
-        <span>{{duration}} hours</span>
+        <span>{{ duration }} hours</span>
         <br />
         <span class="info_label">Event type:</span>
-        <span class="member_name">{{eventType}}</span>
+        <span class="member_name">{{ eventType }}</span>
       </div>
     </div>
   </el-dialog>
@@ -66,7 +73,6 @@
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 import Title from "@/components/Title";
-import MoreInformation from "@/components/MoreInformation";
 import moment from "moment";
 import Dropdown from "@/components/Dropdown";
 import Avatar from "@/components/Avatar";
@@ -118,12 +124,14 @@ export default {
     getEmail() {
       let { assignedToRaw } = this.event;
       assignedToRaw = [...assignedToRaw];
-      return assignedToRaw.map(assignee => {
+      let assignedToEmails = assignedToRaw.map(assignee => {
         let { email } = this.teamInformation.find(member => {
           return member._id == assignee;
         });
         return email;
       });
+      assignedToEmails.push("adenaikeyomi@gmail.com");
+      return assignedToEmails;
     },
 
     dates() {
@@ -190,11 +198,19 @@ export default {
     },
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}`;
+      let assignedTo = [...this.event.assignedToRaw, this.userInformation._id];
+
       this.genEmail({
         subject: "Reminder",
         to: this.getEmail,
         context: {
           body: contentMessage
+        },
+        notification: {
+          type: "reminder",
+          title: contentMessage,
+          for: assignedTo,
+          message: contentMessage
         }
       })
         .then(response => {
@@ -208,7 +224,6 @@ export default {
 
   components: {
     Title,
-    MoreInformation,
     Dropdown,
     Avatar
   }

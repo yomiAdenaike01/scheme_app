@@ -42,9 +42,7 @@ export default {
   UPDATE_USER_NOTIFICATIONS(state, payload) {
     Vue.set(state, "userNotifications", payload);
   },
-  UPDATE_VIEW_NOTIFICATIONS_CENTER(state, payload) {
-    Vue.set(state, "viewNotificationsCenter", payload);
-  },
+
   UPDATE_SETTINGS(state, { category, key, value }) {
     Vue.set(state["localSettings"], category[key], value);
   },
@@ -70,13 +68,8 @@ export default {
     Vue.set(settings, index, data);
   },
   UPDATE_NOTIFICATIONS(state, notification) {
-    notification.showClose = false;
     if (notification.type == "success") {
       notification.title = "Operation Successful";
-      if (state.userInformation.settings.general.sounds) {
-        // sounds.methods.playSuccessSound();
-        console.log("play sound");
-      }
     } else if (notification.type == "error") {
       notification.title = "Operation Unsuccessful";
 
@@ -88,6 +81,23 @@ export default {
         }
       }
     }
-    Vue.set(state, "notifications", [notification, ...state.notifications]);
+
+    if ("desktop" in notification) {
+      //  params:  // 'To do list', { body: text, icon: img }
+      let desktopNotification;
+      let desktop = notification.desktop;
+      let { content, title } = desktop;
+      desktopNotification = new Notification(title, content);
+
+      if ("click" in desktop) {
+        desktopNotification.onclick = () => {
+          desktop.click();
+        };
+      }
+    }
+    Vue.set(state, "notifications", [
+      notification,
+      ...state.localNotifications
+    ]);
   }
 };

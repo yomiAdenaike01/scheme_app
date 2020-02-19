@@ -7,9 +7,10 @@
           <LeadIcon class="large_icon" icon="el-icon-warning-outline" />
           <br />
           <p class="grey">
-            An error has occured with your schemeapp instance, please contact your
-            assigned systems administrator to get this resolved. If you don't want
-            to do this please click the button below to view the FAQ's.
+            An error has occured with your schemeapp instance, please contact
+            your assigned systems administrator to get this resolved. If you
+            don't want to do this please click the button below to view the
+            FAQ's.
           </p>
           <div class="button_container flex_center mt-3">
             <el-button
@@ -17,14 +18,16 @@
               type="primary"
               size="mediuim"
               plain
-              @click="$router.push({name:'faqs'})"
-            >View FAQ's</el-button>
+              @click="$router.push({ name: 'faqs' })"
+              >View FAQ's</el-button
+            >
             <el-button
               round
               type="primary"
               size="mediuim"
               @click="sendErrorReport"
-            >Send Error Report</el-button>
+              >Send Error Report</el-button
+            >
           </div>
         </div>
       </div>
@@ -34,8 +37,7 @@
 
 <script>
 import LeadIcon from "@/components/LeadIcon";
-import { mapState, mapActions } from "vuex";
-var UAParser = require("ua-parser-js");
+import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "CriticalError",
   data() {
@@ -45,9 +47,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    parser() {
-      return new UAParser().getUA();
-    }
+    ...mapGetters(["getUAInformation"])
   },
   methods: {
     ...mapActions(["request"]),
@@ -56,7 +56,7 @@ export default {
         this.enterEmail = true;
       }
 
-      let parser = this.parser;
+      let parser = this.getUAInformation;
 
       let payload = {
         content: parser,

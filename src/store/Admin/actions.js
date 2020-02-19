@@ -84,12 +84,20 @@ export default {
     });
   },
   getNotifications(context) {
-    const payload = {
-      method: "GET",
-      url: "/notifications/all"
-    };
-    context.dispatch("request", payload, { root: true }).then(response => {
-      context.commit("UPDATE_USER_NOTIFICATIONS", response, { root: true });
+    return new Promise((resolve, reject) => {
+      const payload = {
+        method: "GET",
+        url: "/notifications/all"
+      };
+      context
+        .dispatch("request", payload, { root: true })
+        .then(response => {
+          context.commit("UPDATE_USER_NOTIFICATIONS", response, { root: true });
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
     });
   },
   getEvents(context) {

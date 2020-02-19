@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="cal_container">
     <vue-cal
       xsmall
       v-loading="loading"
@@ -275,44 +275,51 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.vuecal__now-line {
-  color: $element_colour;
-}
+<style lang="scss" scoped>
+.cal_container {
+  flex: 1;
+  height: 70%;
 
-.vuecal__event {
-  font-size: 0.8em;
+  &/deep/ {
+    .vuecal__now-line {
+      color: $element_colour;
+    }
 
-  background: #ecf5ff;
-  color: $element_colour;
-  border-top: 2px solid $element_colour;
+    .vuecal__event {
+      font-size: 0.8em;
 
-  &.holiday {
-    background: #fef0f0;
-    color: #f56c6c;
-    border-top: 2px solid #f56c6c;
-  }
-  &.time_off,
-  &.sick_leave {
-    background: #fdf6ec;
-    color: #f2c678;
-    border-top: 2px solid #f2c678;
-  }
-  padding: 1em;
-  text-transform: capitalize;
-}
-.el-icon-circle-close {
-  color: red;
-}
-.el-icon-circle-check {
-  color: green;
-}
-.vuecal__title-bar {
-  margin: 1em 0;
-  background: none;
-  .vuecal__title {
-    button {
-      color: #999;
+      background: #ecf5ff;
+      color: $element_colour;
+      border-top: 2px solid $element_colour;
+
+      &.holiday {
+        background: #fef0f0;
+        color: #f56c6c;
+        border-top: 2px solid #f56c6c;
+      }
+      &.time_off,
+      &.sick_leave {
+        background: #fdf6ec;
+        color: #f2c678;
+        border-top: 2px solid #f2c678;
+      }
+      padding: 1em;
+      text-transform: capitalize;
+    }
+    .el-icon-circle-close {
+      color: red;
+    }
+    .el-icon-circle-check {
+      color: green;
+    }
+    .vuecal__title-bar {
+      margin: 1em 0;
+      background: none;
+      .vuecal__title {
+        button {
+          color: #999;
+        }
+      }
     }
   }
 }

@@ -1,96 +1,12 @@
 <template>
-  <div ref="notification" v-loading="globalLoader">
-    <el-row
-      class="p-3 m-1"
-      style="width:100%;border-left:2px solid rgb(220,220,220);"
+  <div ref="notification" class="notification_container m-3" v-loading="loading">
+    <el-badge
+      :value="makePretty(notification.status) "
+      :type="notification.status == 'read' ? 'success' : 'danger'"
     >
-      <el-col style="width:100%; ">
-        <el-row
-          type="flex"
-          align="middle"
-          v-if="notification.status != 'complete'"
-        >
-          <el-col>
-            <span style="font-size:.8em">{{ `${notification.message}.` }}</span>
-          </el-col>
-
-          <el-col
-            style="flex:1;display:flex; justify-content:center; align-items:center; flex-direction:column"
-          >
-            <el-button
-              plain
-              type="danger"
-              size="small"
-              class="m-0"
-              style="width:100%"
-              @click="deleteNotifcation"
-              >Delete Notification</el-button
-            >
-            <el-button
-              size="small"
-              class="m-0"
-              style="width:100%"
-              type="primary"
-              plain
-              v-if="notification.type == 'approve'"
-              @click="viewDetails = !viewDetails"
-              >Approve / Reject</el-button
-            >
-          </el-col>
-        </el-row>
-        <!-- NOTIFICATION ACTION IS COMPLETE -->
-        <el-row v-else type="flex" align="center">
-          <el-col
-            style="display:flex; justify-content:space-between; align-items:center"
-          >
-            <span style="font-size:.8em">{{ `${notification.message}.` }}</span>
-            <el-button
-              disabled
-              size="small"
-              icon="el-icon-check"
-              type="success"
-              circle
-            ></el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-collapse-transition>
-        <el-col
-          v-if="viewDetails && notification.status != 'complete'"
-          class="p-3 mt-3"
-          style=" color:#444"
-        >
-          <p style="text-align:center; font-size:.8em">
-            Please confirm that you want to approve these changes
-          </p>
-          <div class="update_content p-3">
-            {{ notificationUpdate }}
-            <!-- <p class="mb-1" v-for="(prop, index) in notificationUpdate" :key="index">
-            <span class="member_name">{{ index.toLowerCase() }}:</span>
-            {{ prop }}
-            </p>-->
-            <div class="flex_container" style="display:flex;">
-              <el-button
-                class="mt-4"
-                plain
-                type="success"
-                icon="el-icon-check"
-                size="small"
-                @click="updateContent"
-              ></el-button>
-              <el-button
-                plain
-                class="mt-4"
-                icon="el-icon-close"
-                size="small"
-                type="danger"
-                @click="updateContent"
-              ></el-button>
-            </div>
-          </div>
-        </el-col>
-      </el-collapse-transition>
-    </el-row>
+      <p class="bold">{{ `${truncate(notification.message, 20)}.` }}</p>
+      <small class="grey">{{ notificationSendDate }}</small>
+    </el-badge>
   </div>
 </template>
 
@@ -104,10 +20,13 @@ export default {
     return {
       viewDetails: false,
       formatString: "DD/MMMM/YYYY HH:mm",
-      globalLoader: false
+      loading: false
     };
   },
   computed: {
+    notificationSendDate() {
+      return this.calendar(this.notification.dateCreated);
+    },
     startDate() {
       return this.format(this.update.startDate, this.formatString);
     },
@@ -159,7 +78,7 @@ export default {
         .catch(error => console.log(error));
     },
     deleteNotifcation() {
-      this.globalLoader = true;
+      this.loading = true;
       this.request({
         method: "DELETE",
         url: "/notifications/one",
@@ -171,16 +90,16 @@ export default {
           this.UPDATE_USER_NOTIFICATIONS(null);
         })
         .catch(error => {
-          this.globalLoader = false;
+          this.loading = false;
         });
     },
     async updateContent() {
-      this.globalLoader = true;
+      this.loading = true;
       this.request(this.notificationRequestBody)
         .then(response => console.log(response))
         .catch(error => console.log(error));
       this.changeNotificationActionToComplete();
-      this.globalLoader = false;
+      this.loading = false;
     }
   }
 };
@@ -197,6 +116,12 @@ export default {
   border: 1px solid $element_colour;
   .el-icon-check {
     color: $element_colour;
+  }
+}
+.notification_container {
+  cursor: pointer;
+  &:hover {
+    background: $hover_grey;
   }
 }
 </style>

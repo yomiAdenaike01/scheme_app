@@ -19,11 +19,10 @@ export default {
     ? JSON.parse(localStorage.getItem("userInformation"))
     : {},
   globalLoader: false,
-  notifications: [],
+  localNotifications: [],
   criticalNetworkError: false,
   weeklyTimesheetUploaded: false,
   hasSeenNotifications: false,
-  viewNotificationsCenter: false,
   userNotifications: [],
   currentInterval: "",
   viewMobileMenu: false,

@@ -1,5 +1,10 @@
 import { guide } from "@/stubs/guide";
+var UAParser = require("ua-parser-js");
+
 export default {
+  getUAInformation() {
+    return new UAParser().getResult();
+  },
   isValidClient(state, getters) {
     return Object.keys(state.clientInformation).length > 0;
   },

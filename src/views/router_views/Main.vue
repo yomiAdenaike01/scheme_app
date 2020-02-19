@@ -6,7 +6,7 @@
       <div class="nav_wrapper">
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       </div>
-      <el-col>
+      <el-col class="main_col_container">
         <!-- <ServerHealth /> -->
         <DefaultTransition>
           <keep-alive>
@@ -15,21 +15,20 @@
         </DefaultTransition>
       </el-col>
     </div>
-    <NotificationsCenter />
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
-import NotificationsCenter from "@/components/NotificationsCenter";
 import moment, * as moments from "moment";
 import ServerHealth from "@/components/ServerHealth";
 import CriticalError from "@/components/CriticalError";
 import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
+
 export default {
   name: "Main",
 
@@ -44,6 +43,29 @@ export default {
         message: "Open settings to activate account."
       });
     }
+    if (this.hasRequestOrNotifications) {
+      this.UPDATE_NOTIFICATIONS({
+        title: "Pending notifications",
+        message: "You have notifications pending, press the bell to view them",
+        type: "info"
+      });
+    }
+
+    if (this.hasReminder) {
+      let notificationTitle =
+        "You have a reminder scheduled, close the notification to complete the reminder";
+      this.UPDATE_NOTIFICATIONS({
+        title: "Reminder",
+        message: notificationTitle,
+        type: "info",
+        desktop: {
+          title: "You have reminder",
+          content: {
+            body: notificationTitle
+          }
+        }
+      });
+    }
     let { general } = this.userInformation.settings;
     if (Notification.permission != "granted") {
       this.requestNotificationPermission();
@@ -56,7 +78,7 @@ export default {
       return this.$route.path;
     },
     ...mapState([
-      "notifications",
+      "localNotifications",
       "globalLoader",
       "userInformation",
       "userNotifications",
@@ -66,9 +88,21 @@ export default {
       "weeklyTimesheetUploaded",
       "localSettings"
     ]),
+    ...mapGetters(["getUAInformation"]),
     ...mapState("Admin", ["shifts", "teamInformation"]),
     returnIsStartOfWeek() {
       return moment().get("day") <= 1;
+    },
+    hasRequestOrNotifications() {
+      return this.userNotifications.length > 0;
+    },
+    hasReminder() {
+      return (
+        this.userNotifications.findIndex(({ type }) => {
+          console.log(type);
+          return type == "attention";
+        }) > -1
+      );
     }
   },
 
@@ -82,17 +116,21 @@ export default {
 
     requestNotificationPermission() {
       if (!window.Notification) {
-        console.log("Browser does not support notifications.");
+        let {
+          browser: { name, version }
+        } = this.getUAInformation;
+        this.UPDATE_NOTIFICATIONS({
+          title: "Browser version error",
+          message: `The current browser doesn't support notifications ${name} ${Math.round(
+            parseInt(version)
+          )}`
+        });
       } else {
         Notification.requestPermission()
           .then(p => {
-            if (p === "granted") {
-              // show notification here
-            } else {
-              console.log("User blocked notifications.");
-            }
+            console.log(p);
           })
-          .catch(function(err) {
+          .catch(err => {
             console.error(err);
           });
       }
@@ -110,7 +148,6 @@ export default {
   components: {
     Navigation,
     AppBar,
-    NotificationsCenter,
     ServerHealth,
     NprogressContainer,
     DefaultTransition
@@ -125,6 +162,9 @@ export default {
   flex: 1;
 }
 .inner_wrapper {
+  flex: 1;
+}
+.main_col_container {
   flex: 1;
 }
 </style>

@@ -1,30 +1,24 @@
 <template>
-  <el-row
-    class="schedule_container w-100"
-    :type="$mq == 'lg' ? 'flex' : ''"
+  <div
+    class="eventmanager_container"
     v-loading="loading"
     element-loading-text="Loading team members and events please wait..."
   >
     <!-- Shift and calendar view -->
     <EventFilters v-if="$mq == 'lg'" />
 
-    <el-col>
+    <div class="eventmanager_inner_container">
       <Toolbar @modalChanges="self.modals[$event] = true" class="m-3" />
 
-      <EventsCalendar
-        @refreshShift="getEvents"
-        @displayCreateEvent="modals.createEvent = $event"
-        class="schedule_cal_container"
-      />
-
+      <EventsCalendar @refreshShift="getEvents" @displayCreateEvent="modals.createEvent = $event" />
       <EventMangerDialog
         @toggle="modals.createEvent = $event"
         @createEvent="createEvent"
         :display="modals.createEvent"
       />
-    </el-col>
+    </div>
     <UserSidebar />
-  </el-row>
+  </div>
 </template>
 
 <script>
@@ -214,11 +208,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.schedule_container {
-  height: 100%;
-  // overflow-y: auto;
+.eventmanager_container {
+  display: flex;
+  flex: 1;
+  overflow: auto;
 }
-.schedule_cal_container {
-  height: 84%;
+.eventmanager_inner_container {
+  flex: 1;
 }
 </style>

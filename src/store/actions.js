@@ -74,19 +74,6 @@ export default {
     });
   },
 
-  getNotifications(context) {
-    context
-      .dispatch("request", {
-        url: "notifications/all",
-        method: "GET"
-      })
-      .then(response => {
-        context.commit("UPDATE_USER_NOTIFICATIONS", response);
-      })
-      .catch(error => {
-        return error;
-      });
-  },
   /**
    * 
         to: "adenaikeyomi@gmail.com",

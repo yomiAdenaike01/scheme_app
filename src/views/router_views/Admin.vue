@@ -20,7 +20,6 @@ export default {
   computed: {
     ...mapState([
       "localSettings",
-      "userNotifications",
       "userInformation",
       "criticalNetworkError",
       "requestIntervals"
@@ -36,9 +35,6 @@ export default {
       this.getNotifications();
       this.getEvents();
     }, this.requestIntervals.events);
-    if (this.userNotifications.length > 0) {
-      this.displayNewNotification();
-    }
   },
   methods: {
     ...mapActions("Admin", ["getTeam", "getEvents", "getNotifications"]),

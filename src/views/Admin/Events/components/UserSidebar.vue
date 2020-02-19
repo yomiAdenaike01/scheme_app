@@ -1,32 +1,31 @@
 <template>
-  <el-col class="team_wrapper h-100" v-loading="false">
-    <el-row class="team_container h-100">
-      <!-- Display if in mobile view -->
-      <Title
-        style="text-align:center"
-        v-if="$mq != 'lg'"
-        title="teamInformation"
-        subtitle="View and interact with your team members here"
-      />
-      <div v-if="teamInformation.length > 0">
-        <el-col v-for="(member, index) in teamInformation" :key="index" class="member flex_center">
-          <Dropdown
-            class="p-2"
-            @click.native="hoveredTeamMember = member._id"
-            :items="items"
-            @method="handleEvents"
-            position="left"
-            :icon="false"
-          >
-            <el-badge is-dot :type="member.isOnline ? 'success' : 'danger'" class="item">
-              <Avatar :name="member.name" />
-            </el-badge>
-          </Dropdown>
-        </el-col>
+  <div class="team_container" v-loading="false">
+    <!-- Display if in mobile view -->
+    <Title
+      style="text-align:center"
+      v-if="$mq != 'lg'"
+      title="teamInformation"
+      subtitle="View and interact with your team members here"
+    />
+    <div v-if="teamInformation.length > 0">
+      <div v-for="(member, index) in teamInformation" :key="index" class="member flex_center">
+        <Dropdown
+          class="p-2"
+          @click.native="hoveredTeamMember = member._id"
+          :items="items"
+          @method="handleEvents"
+          position="left"
+          :icon="false"
+        >
+          <el-badge is-dot :type="member.isOnline ? 'success' : 'danger'" class="item">
+            <Avatar :name="member.name" />
+          </el-badge>
+        </Dropdown>
       </div>
-      <Nocontent
-        v-else
-        :moreInformation="
+    </div>
+    <Nocontent
+      v-else
+      :moreInformation="
           getIsAdmin
             ? null
             : {
@@ -35,18 +34,17 @@
                 hoverPosition: 'bottom-end'
               }
         "
-        text="No team members detected, hover over the button below for more information."
-        icon="el-icon-user"
-      >
-        <el-button
-          round
-          type="primary"
-          @click="$router.push({ name: 'schedule' })"
-          size="mini"
-        >Create Team Member</el-button>
-      </Nocontent>
-    </el-row>
-  </el-col>
+      text="No team members detected, hover over the button below for more information."
+      icon="el-icon-user"
+    >
+      <el-button
+        round
+        type="primary"
+        @click="$router.push({ name: 'schedule' })"
+        size="mini"
+      >Create Team Member</el-button>
+    </Nocontent>
+  </div>
 </template>
 
 <script>
@@ -136,14 +134,13 @@ export default {
 
 <style lang="scss" scoped>
 .team_wrapper {
-  max-width: 11%;
-  min-width: 5%;
   border-left: solid 1px #e6e6e6;
-  height: 100%;
   overflow-x: hidden;
 }
 .team_container {
-  .el-col {
+  flex: 0.1;
+  border-left: 1px solid #e6e6e6;
+  .member {
     border-bottom: solid 1px #e6e6e6;
     cursor: pointer;
     &:hover {
@@ -175,7 +172,6 @@ export default {
     border-top: 1px solid #e6e6e6;
   }
   .team_wrapper {
-    width: 100%;
     border-left: none;
   }
 }

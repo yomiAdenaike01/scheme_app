@@ -14,12 +14,12 @@
           <Avatar :name="userInformation.name" />
         </Dropdown>
         <el-badge :value="userNotifications.length" class="item ml-2 mt-1 primary">
-          <el-button
-            size="small"
-            @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"
-            circle
-            icon="el-icon-bell trigger"
-          ></el-button>
+          <Popover trigger="click" position="bottom-left">
+            <div class="notifications_center" slot="content">
+              <NotificationManager />
+            </div>
+            <el-button slot="trigger" size="small" circle icon="el-icon-bell trigger"></el-button>
+          </Popover>
         </el-badge>
       </div>
     </el-col>
@@ -33,8 +33,9 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Dropdown from "@/components/Dropdown";
 import Settings from "@/views/Settings/Settings";
 import Avatar from "./Avatar.vue";
-import prompts from "@/mixins/prompts";
 import ClientImage from "@/components/ClientImage";
+import Popover from "@/components/Popover";
+import NotificationManager from "@/components/NotificationManager";
 export default {
   name: "AppBar",
   data() {
@@ -47,7 +48,8 @@ export default {
       "userInformation",
       "userNotifications",
       "viewMobileMenu",
-      "client"
+      "client",
+      "userNotifications"
     ]),
 
     ...mapGetters(["getClientColours", "getClient", "getSidebarColour"]),
@@ -148,9 +150,10 @@ export default {
     Dropdown,
     Settings,
     Avatar,
-    ClientImage
-  },
-  mixins: [prompts]
+    ClientImage,
+    Popover,
+    NotificationManager
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -189,6 +192,13 @@ export default {
 }
 .text_wrapper {
   font-size: 0.9em;
+}
+.notification_manager_wrapper {
+  &/deep/ {
+    .el-popover {
+      padding: 0;
+    }
+  }
 }
 /**
  _   _  _  ___ _  _    ___ 
