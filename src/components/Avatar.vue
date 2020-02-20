@@ -1,6 +1,6 @@
 <template>
   <div class="shadow_border flex_center avatar_container">
-    <el-avatar :style="{ background: randColour }">{{ initials }}</el-avatar>
+    <el-avatar :style="{ background: randColour }">{{ !isNameTheSame ? initials : 'ME' }}</el-avatar>
   </div>
 </template>
 
@@ -12,7 +12,13 @@ export default {
     name: String
   },
   computed: {
-    ...mapState(["defaultCustomColours"]),
+    ...mapState(["defaultCustomColours", "userInformation"]),
+    isNameTheSame() {
+      return (
+        this.userInformation.name.trim().toLowerCase() ==
+        this.name.trim().toLowerCase()
+      );
+    },
     randColour() {
       return this.defaultCustomColours[
         Math.round(Math.random() * this.defaultCustomColours.length)

@@ -1,7 +1,7 @@
 <template>
   <div
     class="team_member flex p-4 mt-1"
-    @click="UPDATE_VIEW_TEAM_MEMBER({ view: true, id: data._id })"
+    @click="UPDATE_VIEW_USER_INFO({ view: true, id: data._id })"
   >
     <el-badge
       v-if="displayPrescence"
@@ -56,7 +56,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"])
+    ...mapMutations("Admin", ["UPDATE_VIEW_USER_INFO"])
   },
   components: {
     Avatar

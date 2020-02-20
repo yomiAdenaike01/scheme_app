@@ -23,13 +23,29 @@ export default {
       "userInformation",
       "criticalNetworkError",
       "requestIntervals"
-    ])
+    ]),
+    ...mapState("Admin", ["eventsInformation"]),
+    hasEventsToday() {
+      return this.eventsInformation.today.length > 0;
+    }
   },
 
   deactivated() {
     clearInterval(this.adminInterval);
   },
   activated() {
+    if (this.hasEventsToday) {
+      this.UPDATE_NOTIFICATIONS({
+        title: "Events information",
+        message: "You have events scheduled for today dont forget clock in",
+        desktop: {
+          title: "Pending events today",
+          content:
+            "You have events scheduled for today, please navigate to scheme cloud to view it"
+        }
+      });
+    }
+
     this.adminInterval = setInterval(() => {
       this.getTeam();
       this.getNotifications();

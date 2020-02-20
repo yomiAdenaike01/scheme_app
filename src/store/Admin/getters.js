@@ -1,6 +1,16 @@
 import Vue from "vue";
 
 export default {
+  getFilteredTeam: (
+    { teamInformation },
+    getters,
+    { userInformation }
+  ) => displayMyself => {
+    console.log(teamInformation, userInformation);
+    return teamInformation.filter(({ _id }) => {
+      return _id != userInformation._id;
+    });
+  },
   getEventAssignedTo: ({ teamInformation }) => assignedTo => {
     let assignedToData = {
       arr: [],

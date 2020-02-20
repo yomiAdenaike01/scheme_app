@@ -8,34 +8,34 @@
     />
 
     <!-- Predefined configs -->
-    <el-switch
-      class="create_template_switch mb-3"
-      v-for="(elem,index) in switches"
-      :inactive-text="elem['text']"
-      :key="index"
-      v-model="configDisplay[elem['model']]"
-    ></el-switch>
+
+    <p v-for="({text,model},index) in switches" :key="index" class="config_switches">
+      <el-switch
+        class="create_template_switch mb-3"
+        :active-text="text"
+        v-model="configDisplay[model]"
+      ></el-switch>
+    </p>
 
     <!-- Form -->
-    <Form
-      :config="returnCreateTemplate"
-      submitText="Submit Template"
-      @val="computeForm"
-      size="small"
-    />
+    <Form :config="templateForm" submitText="Submit Template" @val="computeForm" size="small" />
   </el-card>
 </template>
 
 <script>
 import Title from "@/components/Title";
 import Form from "@/components/Form";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import moment from "moment";
+import uuid from "uuid";
 export default {
   name: "CreateTemplate",
   data() {
     return {
-      configDisplay: {}
+      configDisplay: {
+        userGroupAssignment: true,
+        start_end_week: true
+      }
     };
   },
   computed: {
@@ -45,11 +45,20 @@ export default {
       "getDropdownTeamMembers",
       "teamInformation"
     ]),
+    ...mapState(["clientInformation"]),
     switches() {
       return [
         {
-          text: "Generate for working week",
+          text: "Generate for working week (Mon-Fri)",
           model: "start_end_week"
+        },
+        {
+          text: "Assign to individual users",
+          model: "multiUser"
+        },
+        {
+          text: "Assign to user groups",
+          model: "userGroupAssignment"
         }
       ];
     },
@@ -60,15 +69,22 @@ export default {
       let filteredArray = [];
       // Generate array that finds and adds all their details for filtering
     },
-    returnCreateTemplate() {
-      let createTemplateConfig = [
+    templateForm() {
+      let templateConfig = [
+        {
+          model: "eventGroup",
+          "component-type": "select",
+          placeholder: "Select event type",
+          options: this.clientInformation.eventGroups,
+          optional: true,
+          mutiple: true
+        },
         {
           model: "name",
           "component-type": "text",
-          placeholder: "Template Name",
-          hint: `Optional: Default name will be <strong>template_${moment().format(
-            "DD-MM-YYYY_HH:MM"
-          )}</strong>`
+          placeholder: "Template name",
+          optional: true,
+          hint: `Optional: Default name will be <strong>template_${uuid()}</strong>`
         },
 
         {
@@ -76,22 +92,23 @@ export default {
           "component-type": "date-picker",
           "input-type": "date-time",
           placeholder: "Start date-time",
-          disabled: this.configDisplay["start_end_week"]
+          disabled: this.configDisplay["start_end_week"],
+          optional: this.configDisplay["start_end_week"]
         },
         {
           model: "end_date",
           "component-type": "date-picker",
           "input-type": "date-time",
-
           placeholder: "End date-time",
-          disabled: this.configDisplay["start_end_week"]
+          disabled: this.configDisplay["start_end_week"],
+          optional: this.configDisplay["start_end_week"]
         }
       ];
 
-      if (this.getIsAdmin) {
-        createTemplateConfig.unshift({
+      if (this.getIsAdmin && !this.configDisplay.userGroupAssignment) {
+        templateConfig.unshift({
           name: "Assign Employees",
-          placeholder: "Select Team Members",
+          placeholder: "Select team members",
           id: "assignedTo",
           "component-type": "select",
           model: "assignedTo",
@@ -100,8 +117,18 @@ export default {
           multiple: true
         });
       }
+      if (this.getIsAdmin && !this.configDisplay.multiUser) {
+        templateConfig.unshift({
+          model: "userGroup",
+          "component-type": "select",
+          placeholder: "Select user group",
+          options: this.clientInformation.userGroups,
+          optional: true,
+          mutiple: true
+        });
+      }
 
-      return createTemplateConfig;
+      return templateConfig;
     }
   },
   methods: {
@@ -139,3 +166,12 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.create_template_switch {
+  &/deep/ {
+    .el-switch__label span {
+      font-size: 0.8em;
+    }
+  }
+}
+</style>

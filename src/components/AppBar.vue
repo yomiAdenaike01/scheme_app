@@ -82,11 +82,12 @@ export default {
     items() {
       return [
         {
-          name: "View Notifications",
-          command: "view_notifications"
+          name: "<i class='bx bx-user'></i> Profile",
+          command: "view_profile"
         },
+
         {
-          name: "Settings",
+          name: "<i class='bx bx-cog'></i> Settings",
           command: "settings",
           divided: true
         },
@@ -99,8 +100,7 @@ export default {
         {
           name: "Log Out",
           command: "log_out",
-          divided: true,
-          icon: "el-icon-switch-button"
+          divided: true
         }
       ];
     }
@@ -112,16 +112,20 @@ export default {
       "UPDATE_VIEW_NOTIFICATIONS_CENTER",
       "UPDATE_TOGGLE_MOBILE_MENU"
     ]),
+    ...mapMutations("Admin", ["UPDATE_VIEW_USER_INFO"]),
 
     ...mapActions(["request"]),
     handleCommands(command) {
       switch (command) {
-        case "view_notifications": {
-          this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true);
+        case "view_profile": {
+          this.UPDATE_VIEW_USER_INFO({
+            view: true,
+            id: this.userInformation._id
+          });
           break;
         }
+
         case "log_out": {
-          this.UPDATE_GLOBAL_LOADER(true);
           this.request({
             method: "GET",
             url: "users/logout"

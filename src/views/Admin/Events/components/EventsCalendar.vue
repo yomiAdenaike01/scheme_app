@@ -151,7 +151,15 @@ export default {
           continue;
         }
 
-        let { isApproved, startDate, _id, endDate, assignedTo, type } = event;
+        let {
+          isApproved,
+          startDate,
+          _id,
+          endDate,
+          assignedTo,
+          type,
+          clockedIn
+        } = event;
 
         assignedTo = this.getEventAssignedTo([...assignedTo]);
 
@@ -170,7 +178,8 @@ export default {
           isApproved,
           assignedTo: assignedTo.arr,
           assignedToRaw: event.assignedTo,
-          type
+          type,
+          clockedIn
         });
       }
 

@@ -13,7 +13,7 @@ export default {
     previous: []
   },
   requestsInformation: [],
-  viewTeamMember: { view: false, id: null },
+  viewUserInformation: { view: false, id: null },
   /**
    * 
    * title,

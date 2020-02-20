@@ -7,8 +7,8 @@
       title="teamInformation"
       subtitle="View and interact with your team members here"
     />
-    <div v-if="teamInformation.length > 0">
-      <div v-for="(member, index) in teamInformation" :key="index" class="member flex_center">
+    <div v-if="getFilteredTeam.length > 0">
+      <div v-for="(member, index) in getFilteredTeam" :key="index" class="member flex_center">
         <Dropdown
           class="p-2"
           @click.native="hoveredTeamMember = member._id"
@@ -69,11 +69,7 @@ export default {
   computed: {
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsAdmin", "getOnlineTeam"]),
-    onlineTeam() {
-      return this.teamInformation.filter(member => {
-        return member.isOnline;
-      });
-    },
+    ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {
       let items = [
         {
@@ -92,7 +88,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
+    ...mapMutations("Admin", ["UPDATE_VIEW_USER_INFO"]),
     teamLoaderManager() {
       this.loaderTimeout = setTimeout(() => {
         if (this.teamInformation.length <= 0) {
@@ -110,7 +106,7 @@ export default {
           break;
         }
         case "view_team_member": {
-          this.UPDATE_VIEW_TEAM_MEMBER({
+          this.UPDATE_VIEW_USER_INFO({
             view: true,
             id: this.hoveredTeamMember
           });

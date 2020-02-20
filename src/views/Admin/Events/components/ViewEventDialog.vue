@@ -1,29 +1,30 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <Title
-      title="View Event"
-      subtitle="Click on more information to display details"
-    ></Title>
+    <Title title="View Event" subtitle="Click on more information to display details"></Title>
     <div class="info_button_container flex flex--end">
       <el-button
-        :circle="$mq == 'lg'"
+        :circle="$mq != 'lg'"
+        :round="$mq == 'lg'"
         class="no_events"
         :icon="approval.icon"
-        :type="approval.type"
-      ></el-button>
-      <el-button
-        v-if="hasPermissions"
         size="small"
-        type="primary"
-        plain
-        @click="sendReminderToUser"
+        :type="approval.type"
+      >{{approval.type == 'success' && $mq == 'lg' ? 'Approved' : $mq == 'lg' && approval.type != 'success' ? 'Not approved' : null}}</el-button>
+      <el-button
         round
-        >{{
-          event.assignedTo.length > 0
-            ? truncate("Remind users of this event", 14)
-            : truncate("Remind user of this event")
-        }}</el-button
-      >
+        plain
+        size="small"
+        @click="clockIn"
+        v-if="isEventMine && isEventToday && !hasClockedIn"
+      >Clock In</el-button>
+
+      <el-button v-if="hasPermissions" size="small" plain @click="sendReminderToUser" round>
+        {{
+        event.assignedTo.length > 0
+        ? truncate("Remind users of this event", 14)
+        : truncate("Remind user of this event")
+        }}
+      </el-button>
       <el-button
         type="danger"
         size="small"
@@ -31,8 +32,7 @@
         @click="deleteEvent"
         round
         plain
-        >Delete Event</el-button
-      >
+      >Delete Event</el-button>
     </div>
     <div class="info_container p-3">
       <h3 class="mb-3">Assigned users</h3>
@@ -40,8 +40,16 @@
         <div
           v-for="(member, index) in event.assignedTo"
           :key="index"
-          class="no_events mb-2 flex align-center"
+          :class="['assigned_user_container no_events mb-2 flex align-center',{clocked_in:hasClockedIn}]"
         >
+          <el-button
+            v-if="hasClockedIn"
+            circle
+            icon="el-icon-check"
+            type="success"
+            class="no_events mr-2"
+            size="mini"
+          ></el-button>
           <Avatar class="mr-3" :name="member"></Avatar>
           <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
         </div>
@@ -100,6 +108,14 @@ export default {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getEventAssginedTo"]),
+    isEventToday() {
+      return moment(this.event.startDate).diff(moment(), "hours") < 24;
+    },
+    hasClockedIn() {
+      return this.event.clockedIn.some(assingnee => {
+        return assingnee == this.userInformation._id;
+      });
+    },
     eventType() {
       return this.event.type;
     },
@@ -142,7 +158,11 @@ export default {
         end
       };
     },
-
+    isEventMine() {
+      return this.event.assignedTo.some(event => {
+        return this.userInformation._id;
+      });
+    },
     hasPermissions() {
       let result = false;
       if (
@@ -219,6 +239,16 @@ export default {
         .catch(err => {
           return err;
         });
+    },
+    clockIn() {
+      this.request({
+        method: "POST",
+        url: "events/clockin",
+        data: {
+          id: this.event._id,
+          user: this.userInformation._id
+        }
+      });
     }
   },
 
@@ -269,6 +299,11 @@ h4 {
       justify-content: center;
       align-items: center;
     }
+  }
+}
+.assigned_user_container {
+  &.cloked_in {
+    opacity: 0.5;
   }
 }
 </style>

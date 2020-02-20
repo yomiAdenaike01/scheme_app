@@ -28,8 +28,8 @@ export default {
   UPDATE_TEAM(state, payload) {
     Vue.set(state, "teamInformation", payload);
   },
-  UPDATE_VIEW_TEAM_MEMBER(state, payload) {
-    Vue.set(state, "viewTeamMember", payload);
+  UPDATE_VIEW_USER_INFO(state, payload) {
+    Vue.set(state, "viewUserInformation", payload);
   },
   UPDATE_NOTES(state, payload) {
     if (Array.isArray(payload)) {

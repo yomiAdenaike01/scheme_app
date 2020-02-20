@@ -113,11 +113,11 @@ export default {
     tabs() {
       let tabs = [
         {
-          label: this.getIsAdmin ? "Create event" : "Create Request",
+          label: this.getIsAdmin ? "Create Event" : "Create Request",
           formContent: this.createEventForm
         },
         {
-          label: "Timesheets",
+          label: "Timesheets & Templates",
           view: {
             component: EventOptions
           }

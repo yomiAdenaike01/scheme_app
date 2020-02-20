@@ -17,7 +17,9 @@
         :command="item.command"
         :icon="item.icon"
         :key="index"
-      >{{item.name}}</el-dropdown-item>
+      >
+        <span v-html="item.name"></span>
+      </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
 </template>

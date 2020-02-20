@@ -81,10 +81,6 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } else {
-    if (to.name == "login" && isLoggedIn) {
-      redirect("events");
-    }
-
     next();
   }
 });

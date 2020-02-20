@@ -12,7 +12,7 @@
             <component
               :is="returnComponents.component"
               :data="returnComponents.props"
-              @toggle="UPDATE_VIEW_TEAM_MEMBER({ view: false, id: null })"
+              @toggle="UPDATE_VIEW_USER_INFO({ view: false, id: null })"
             />
           </div>
         </ViewUserWrapper>
@@ -42,7 +42,7 @@ export default {
       "eventsInformation",
       "teamInformation",
       "requestsInformation",
-      "viewTeamMember"
+      "viewUserInformation"
     ]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation", "getUsersEvents"]),
@@ -83,14 +83,14 @@ export default {
       ];
     },
     userID() {
-      return this.viewTeamMember.id;
+      return this.viewUserInformation.id;
     },
     toggleView: {
       get() {
-        return this.viewTeamMember.view;
+        return this.viewUserInformation.view;
       },
       set(val) {
-        this.UPDATE_VIEW_TEAM_MEMBER(val);
+        this.UPDATE_VIEW_USER_INFO(val);
       }
     },
     getUserInfo() {
@@ -109,7 +109,7 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations("Admin", ["UPDATE_VIEW_TEAM_MEMBER"]),
+    ...mapMutations("Admin", ["UPDATE_VIEW_USER_INFO"]),
 
     getDocumentation() {
       this.request({
