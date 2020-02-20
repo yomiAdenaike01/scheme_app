@@ -376,8 +376,8 @@ span {
 .el-dialog__header {
   padding: 0;
 }
-.el-popover {
-  padding: 0;
+.popover_container {
+  padding: 0 !important;
 }
 
 /**

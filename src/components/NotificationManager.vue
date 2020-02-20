@@ -1,5 +1,9 @@
 <template>
   <div v-loading="loading">
+    <div class="title_switch_container p-3 flex align-center">
+      <h3 class="bold">Notifications</h3>
+      <el-switch v-model="dnd" active-text="Do not disturb"></el-switch>
+    </div>
     <div v-if="userNotifications.length > 0">
       <Notification
         v-for="notification in userNotifications"
@@ -26,7 +30,8 @@ export default {
   name: "NotificationManager",
   data() {
     return {
-      loading: false
+      loading: false,
+      dnd: false
     };
   },
   activated() {
@@ -76,6 +81,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.title_switch_container {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: $border;
+}
 .block_button {
   width: 100%;
 }

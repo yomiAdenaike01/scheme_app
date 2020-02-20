@@ -1,12 +1,14 @@
 <template>
-  <div ref="notification" class="notification_container m-3" v-loading="loading">
-    <el-badge
-      :value="makePretty(notification.status) "
-      :type="notification.status == 'read' ? 'success' : 'danger'"
-    >
-      <p class="bold">{{ `${truncate(notification.message, 20)}.` }}</p>
-      <small class="grey">{{ notificationSendDate }}</small>
-    </el-badge>
+  <div ref="notification" class="notification_container p-4" v-loading="loading">
+    <p :title="notification.message">{{ notification.message }}</p>
+    <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
+    <i
+      v-if="notification.type != 'reminder' || notification.type != 'attention'"
+      class="el-icon-more-outline"
+    ></i>
+    <div :class="['notification_type_indicator mt-3 mb-3',notification.type]">
+      <small>{{makePretty(notification.type)}}</small>
+    </div>
   </div>
 </template>
 
@@ -120,8 +122,32 @@ export default {
 }
 .notification_container {
   cursor: pointer;
+  border-bottom: $border;
   &:hover {
     background: $hover_grey;
+    .actions_wrapper {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+.actions_wrapper {
+  opacity: 0;
+  visibility: hidden;
+}
+.notification_type_indicator {
+  border-radius: 20px;
+  color: white;
+  text-transform: capitalize;
+  max-width: 80px;
+  text-align: center;
+  padding: 3px 10px;
+  margin-top: 5px;
+  &.reminder {
+    background: orange;
+  }
+  &.attention {
+    background: orange;
   }
 }
 </style>

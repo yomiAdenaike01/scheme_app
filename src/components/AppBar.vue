@@ -14,7 +14,7 @@
           <Avatar :name="userInformation.name" />
         </Dropdown>
         <el-badge :value="userNotifications.length" class="item ml-2 mt-1 primary">
-          <Popover trigger="click" position="bottom-left">
+          <Popover width="350" trigger="click" traisition="el-collapse-transition">
             <div class="notifications_center" slot="content">
               <NotificationManager />
             </div>
@@ -193,7 +193,7 @@ export default {
 .text_wrapper {
   font-size: 0.9em;
 }
-.notification_manager_wrapper {
+.popover_container {
   &/deep/ {
     .el-popover {
       padding: 0;
