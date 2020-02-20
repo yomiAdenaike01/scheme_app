@@ -40,6 +40,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(["userInformation"]),
     quickActions() {
       return [
         {
@@ -74,6 +75,12 @@ export default {
             to: "adenaikeyomi@gmail.com",
             context: {
               body: response.value
+            },
+            notification: {
+              title: "Annoucement",
+              message: response.value,
+              type: "attention",
+              for: [this.userInformation._id]
             }
           })
             .then(response => {

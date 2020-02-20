@@ -13,7 +13,7 @@
         <Dropdown :items="items" @method="handleCommands" :icon="false">
           <Avatar :name="userInformation.name" />
         </Dropdown>
-        <el-badge :value="notificationsLength" class="item ml-2 mt-1 primary">
+        <el-badge :value="getUserNotificationsLength" class="item ml-2 mt-1 primary">
           <Popover width="350" trigger="click" traisition="el-collapse-transition">
             <div class="notifications_center" slot="content">
               <NotificationManager />
@@ -51,17 +51,12 @@ export default {
       "client"
     ]),
 
-    ...mapGetters(["getClientColours", "getClient", "getSidebarColour"]),
-
-    notificationsLength() {
-      return this.userNotifications.filter(notification => {
-        console.log(notification);
-        return (
-          notification.status != "is_read" &&
-          notification.status != "is_complete"
-        );
-      }).length;
-    },
+    ...mapGetters([
+      "getClientColours",
+      "getClient",
+      "getSidebarColour",
+      "getUserNotificationsLength"
+    ]),
 
     getPrimaryColour() {
       return this.getClientColours.find(colour => {

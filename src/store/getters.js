@@ -2,6 +2,13 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getUserNotificationsLength({ userNotifications }) {
+    return userNotifications.filter(notification => {
+      return (
+        notification.status != "is_read" && notification.status != "is_complete"
+      );
+    }).length;
+  },
   getUAInformation() {
     return new UAParser().getResult();
   },

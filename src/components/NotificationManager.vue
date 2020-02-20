@@ -15,6 +15,7 @@
         type="text"
         @click="clearAllNotifications"
         size="small"
+        v-if="getUserNotificationsLength > 0"
       >Mark all as read</el-button>
     </div>
     <Nocontent v-else v-bind="noContent" />
@@ -22,7 +23,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Notification from "./Notification";
 import Nocontent from "@/components/Nocontent";
 
@@ -46,6 +47,7 @@ export default {
 
   computed: {
     ...mapState(["userNotifications", "userInformation"]),
+    ...mapGetters(["getUserNotificationsLength"]),
     noContent() {
       return {
         moreInformation: {
