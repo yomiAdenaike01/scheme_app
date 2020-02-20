@@ -1,14 +1,21 @@
 <template>
-  <div ref="notification" class="notification_container p-4" v-loading="loading">
+  <div
+    ref="notification"
+    class="notification_container p-4"
+    :class="{is_read:notification.status == 'is_read' || notification.status == 'complete'}"
+    v-loading="loading"
+    @click="updateNotification({status:'is_read'})"
+  >
     <p :title="notification.message">{{ notification.message }}</p>
     <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
-    <i
-      v-if="notification.type != 'reminder' || notification.type != 'attention'"
-      class="el-icon-more-outline"
-    ></i>
-    <div :class="['notification_type_indicator mt-3 mb-3',notification.type]">
+
+    <div
+      v-if="notification.status != 'is_read'"
+      :class="['notification_type_indicator mt-3 mb-3',notification.type]"
+    >
       <small>{{makePretty(notification.type)}}</small>
     </div>
+    <br />
   </div>
 </template>
 
@@ -95,7 +102,23 @@ export default {
           this.loading = false;
         });
     },
-    async updateContent() {
+    updateNotification(update) {
+      this.request({
+        method: "POST",
+        url: "notifications/update",
+        data: {
+          id: this.notification._id,
+          update
+        }
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    updateContent() {
       this.loading = true;
       this.request(this.notificationRequestBody)
         .then(response => console.log(response))
@@ -123,6 +146,10 @@ export default {
 .notification_container {
   cursor: pointer;
   border-bottom: $border;
+  &.is_read {
+    opacity: 0.5;
+    pointer-events: none;
+  }
   &:hover {
     background: $hover_grey;
     .actions_wrapper {
@@ -144,10 +171,13 @@ export default {
   padding: 3px 10px;
   margin-top: 5px;
   &.reminder {
-    background: orange;
+    background: rgb(94, 114, 228);
+  }
+  &.request {
+    background: rgb(45, 206, 137);
   }
   &.attention {
-    background: orange;
+    background: rgb(251, 99, 64);
   }
 }
 </style>
