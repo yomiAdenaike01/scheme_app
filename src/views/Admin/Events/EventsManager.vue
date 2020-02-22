@@ -11,11 +11,7 @@
       <Toolbar @modalChanges="self.modals[$event] = true" class="m-3" />
 
       <EventsCalendar @refreshShift="getEvents" @displayCreateEvent="modals.createEvent = $event" />
-      <EventMangerDialog
-        @toggle="modals.createEvent = $event"
-        @createEvent="createEvent"
-        :display="modals.createEvent"
-      />
+      <EventMangerDialog @createEvent="createEvent" />
       <ViewEventDialog />
     </div>
     <UserSidebar />

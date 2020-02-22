@@ -88,7 +88,7 @@ import uploadContent from "@/mixins/uploadContent";
 import Title from "@/components/Title";
 import EventTemplate from "./EventTemplate";
 import MoreInformation from "@/components/MoreInformation";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import Nocontent from "@/components/Nocontent";
 import CreateTemplate from "./CreateTemplate";
 export default {
@@ -108,6 +108,7 @@ export default {
   mixins: [uploadContent],
   computed: {
     ...mapState(["userInformation"]),
+    ...mapGetters(["getIsAdmin"]),
     filteredTemplates() {
       let filteredTemplates = [];
       for (let i = 0; i < this.templates.length; i++) {

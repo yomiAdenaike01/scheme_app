@@ -10,23 +10,15 @@
         :key="key"
         size="small"
         :plain="button.plain"
-        @click="
-          button.emit
-            ? $emit('modalChanges', button.emit)
-            : button.method
-            ? button.method
-            : null
-        "
+        @click="button.method"
       >{{ button.label }}</el-button>
       <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
         round
-        type="primary"
         size="small"
         @click="initGcal"
         plain
-        v-if="!hasGcal"
       >
         {{
         !hasGcal
@@ -39,13 +31,14 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions } from "vuex";
+import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "Toolbar",
 
   methods: {
     ...mapActions(["request"]),
+    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     initGcal() {
       this.request(
@@ -80,12 +73,12 @@ export default {
         text: "Create request",
         icon: "el-icon-question"
       };
+
       if (this.getIsAdmin) {
-        render = {
-          text: "Event Management",
-          icon: "el-icon-date"
-        };
+        render.text = "Event Management";
+        render.icon = "el-icon-date";
       }
+
       return render;
     },
 
@@ -93,10 +86,16 @@ export default {
       let buttons = [
         {
           label: this.renderCreateEventButton.text,
-          emit: "createEvent",
           round: true,
           plain: true,
           type: "primary",
+          method: () => {
+            console.log("Clicked");
+            this.UPDATE_DIALOG_INDEX({
+              dialog: "eventManager",
+              view: true
+            });
+          },
           icon: this.renderCreateEventButton.icon
         }
       ];

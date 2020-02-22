@@ -70,15 +70,17 @@ export default {
       syncWithGcal: false
     };
   },
-  props: {
-    display: Boolean
-  },
 
   deactivated() {
     this.resetData();
   },
   computed: {
-    ...mapGetters(["getIsAdmin", "getInstructions", "getName"]),
+    ...mapGetters([
+      "getIsAdmin",
+      "getInstructions",
+      "getName",
+      "getActiveDialog"
+    ]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapState([
       "token",
@@ -204,16 +206,20 @@ export default {
     //  control the current view
     view: {
       get() {
-        return this.display;
+        return this.getActiveDialog("eventManager");
       },
       set(toggle) {
-        this.$emit("toggle", toggle);
+        this.UPDATE_DIALOG_INDEX({
+          view: false,
+          dialog: "eventManager",
+          data: null
+        });
       }
     }
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_DIALOG_INDEX"]),
 
     createEventController() {
       if (this.hasEntries(this.fileContent)) {
