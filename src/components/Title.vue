@@ -1,7 +1,7 @@
 <template>
   <div class="title_wrapper" :class="defaultClass">
     <component v-if="title" :is="tag">{{ title }}</component>
-    <p v-if="subtitle" class="desc mb-2">{{ subtitle }}</p>
+    <p v-if="subtitle" class="desc mb-2" v-html="subtitle"></p>
     <slot></slot>
   </div>
 </template>

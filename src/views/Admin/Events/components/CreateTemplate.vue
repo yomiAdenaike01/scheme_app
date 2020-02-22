@@ -1,41 +1,40 @@
 <template>
   <!-- Slide download -->
-  <el-card class="create_template_container p-2 mt-4">
+  <el-card class="create_template_container p-2 mt-4" v-loading="loading">
     <Title
       title="Create Template"
       class="m-0 p-0"
-      subtitle="Fill in the following form to create a new template"
+      subtitle="Fill in the following form to create a new template.</br>
+     <i class='bx bx-error'></i> Warning templates when added to the events will last for <strong>one week</strong>.
+      "
     />
 
     <!-- Predefined configs -->
-
-    <p v-for="({text,model},index) in switches" :key="index" class="config_switches">
-      <el-switch
-        class="create_template_switch mb-3"
-        :active-text="text"
-        v-model="configDisplay[model]"
-      ></el-switch>
-    </p>
+    <el-checkbox-group v-model="configDisplay" size="mini" class="m-3">
+      <el-checkbox-button
+        v-for="({text,model,disable},index) in switches"
+        :label="model"
+        :disabled="disable ? disable : false"
+        :key="index"
+      >{{text}}</el-checkbox-button>
+    </el-checkbox-group>
 
     <!-- Form -->
-    <Form :config="templateForm" submitText="Submit Template" @val="computeForm" size="small" />
+    <Form :config="templateForm" submitText="Submit Template" @val="createTemplate" size="small" />
   </el-card>
 </template>
 
 <script>
 import Title from "@/components/Title";
 import Form from "@/components/Form";
-import { mapGetters, mapState } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
 import moment from "moment";
-import uuid from "uuid";
 export default {
   name: "CreateTemplate",
   data() {
     return {
-      configDisplay: {
-        userGroupAssignment: true,
-        start_end_week: true
-      }
+      configDisplay: ["disableRepeatFor", "individualUserGroups"],
+      loading: false
     };
   },
   computed: {
@@ -43,22 +42,31 @@ export default {
     ...mapGetters("Admin", [
       "getTeamMember",
       "getDropdownTeamMembers",
-      "teamInformation"
+      "teamInformation",
+      "getUsersInUserGroup"
     ]),
-    ...mapState(["clientInformation"]),
+    ...mapState(["clientInformation", "daysOfWeek"]),
+
     switches() {
       return [
         {
           text: "Generate for working week (Mon-Fri)",
-          model: "start_end_week"
+          model: "disableRepeatFor"
         },
         {
           text: "Assign to individual users",
-          model: "multiUser"
+          model: "individualUsers"
         },
         {
           text: "Assign to user groups",
-          model: "userGroupAssignment"
+          model: "individualUserGroups"
+        },
+        {
+          text: "Assign to all users",
+          model: "allUsers",
+          disable:
+            this.contains("individualUserGroups") ||
+            this.contains("individualUsers")
         }
       ];
     },
@@ -72,7 +80,14 @@ export default {
     templateForm() {
       let templateConfig = [
         {
-          model: "eventGroup",
+          model: "name",
+          "component-type": "text",
+          placeholder: "Template name",
+          optional: true,
+          hint: `Optional: Default name will be <strong>template_${new Date().toISOString()}</strong>`
+        },
+        {
+          model: "type",
           "component-type": "select",
           placeholder: "Select event type",
           options: this.clientInformation.eventGroups,
@@ -80,34 +95,25 @@ export default {
           mutiple: true
         },
         {
-          model: "name",
-          "component-type": "text",
-          placeholder: "Template name",
-          optional: true,
-          hint: `Optional: Default name will be <strong>template_${uuid()}</strong>`
-        },
-
-        {
-          model: "start_date",
-          "component-type": "date-picker",
-          "input-type": "date-time",
-          placeholder: "Start date-time",
-          disabled: this.configDisplay["start_end_week"],
-          optional: this.configDisplay["start_end_week"]
+          model: "weekdays",
+          "component-type": "select",
+          options: this.daysOfWeek,
+          placeholder: "Select repeat for",
+          multiple: true,
+          disabled: this.contains("disableRepeatFor"),
+          optional: this.configDisplay["disableRepeatFor"]
         },
         {
-          model: "end_date",
-          "component-type": "date-picker",
-          "input-type": "date-time",
-          placeholder: "End date-time",
-          disabled: this.configDisplay["start_end_week"],
-          optional: this.configDisplay["start_end_week"]
+          model: "timeRange",
+          "component-type": "time-picker",
+          start_placeholder: "Start Time",
+          end_placeholder: "End time",
+          isRange: true
         }
       ];
 
-      if (this.getIsAdmin && !this.configDisplay.userGroupAssignment) {
+      if (this.getIsAdmin && this.contains("individualUsers")) {
         templateConfig.unshift({
-          name: "Assign Employees",
           placeholder: "Select team members",
           id: "assignedTo",
           "component-type": "select",
@@ -117,7 +123,7 @@ export default {
           multiple: true
         });
       }
-      if (this.getIsAdmin && !this.configDisplay.multiUser) {
+      if (this.getIsAdmin && this.contains("individualUserGroups")) {
         templateConfig.unshift({
           model: "userGroup",
           "component-type": "select",
@@ -127,37 +133,58 @@ export default {
           mutiple: true
         });
       }
+      if (this.contains("disableRepeatFor")) {
+        templateConfig.splice(3, 1);
+      }
 
       return templateConfig;
     }
   },
   methods: {
-    computeForm(val) {
-      console.log(val);
-      let { assignedTo } = val;
+    ...mapActions(["request"]),
+    contains(item) {
+      return this.configDisplay.some(x => x == item);
+    },
+    createTemplate(form) {
+      let nextWeek = moment()
+        .add(1, "week")
+        .endOf("week")
+        .toISOString();
 
-      for (let i = 0; i < 5; i++) {
-        // Generate shift for everyday of the week
-        let startDate = moment().toDate();
-        startDate.setDate(i - 1);
-        startDate.setHours(9);
-        startDate.setMinutes(0);
-        startDate = startDate.toISOString();
+      let templateForm = {
+        name: form.name,
+        content: {
+          type: form.type,
+          assignedTo: [],
+          repeat: { weekdays: [], until: nextWeek },
+          startDate: form.timeRange[0].toISOString(),
+          endDate: form.timeRange[1].toISOString()
+        }
+      };
 
-        let endDate = moment().toDate();
-        endDate.setDate(i - 1);
-        endDate.setHours(17);
-        endDate.setMinutes(0);
-        endDate = endDate.toISOString();
-
-        let shiftBuilder = {
-          startDate,
-          endDate,
-          assignedTo,
-          admin_gen: true
-        };
-        console.log(shiftBuilder);
+      if (this.contains("disableRepeatFor")) {
+        templateForm.content.repeat.weekdays = [1, 2, 3, 4, 5];
       }
+
+      if (this.contains("individualUserGroups")) {
+        let selectedUserGroup = form.userGroup;
+        templateForm.content.assignedTo = this.getUsersInUserGroup(
+          selectedUserGroup
+        );
+      }
+
+      this.loading = true;
+      this.request({
+        method: "POST",
+        url: "events/templates/create",
+        data: { ...templateForm }
+      })
+        .then(response => {
+          this.loading = false;
+        })
+        .catch(err => {
+          this.loading = false;
+        });
     }
   },
   components: {

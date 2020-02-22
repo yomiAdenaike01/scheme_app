@@ -7,7 +7,8 @@
       @removeContent="(fileContent = ''), (timeSheetError = null)"
       @val="eventManagerController"
       :disable="currentTab > 1"
-      v-model.number="currentTab"
+      v-model="currentTab"
+      :selectedTab="currentTab"
       :liveChange="true"
       size="mini"
       :disableForm="fileContent.length > 0"
@@ -16,7 +17,7 @@
       <div slot="header_content">
         <Title
           defaultClass="m-0"
-          title="Event Management"
+          title="Event management"
           subtitle="Select different tabs to create groups or events."
         />
         <div class="content_container p-3 flex_center" v-if="currentTab > 0">
@@ -28,6 +29,11 @@
         <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 0">
           <ColourUnit v-model="eventData.colour" />
           <p class="mb-3 ml-4 desc grey">Press to select an event colour (optional):</p>
+        </div>
+        <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 1">
+          <el-button round @click="currentTab = 2" class="w-100" size="mini">
+            <i class="bx bx-brain"></i> Auto generate using templates
+          </el-button>
         </div>
       </div>
     </Tabs>
@@ -57,7 +63,7 @@ export default {
       eventData: {},
       loading: false,
       fileContent: "",
-      currentTab: 0,
+      currentTab: 2,
       timeSheetError: null,
       timeSheetData: "",
       userTemplates: null,

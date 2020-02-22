@@ -29,6 +29,8 @@
               ? 'el-date-picker'
               : input['component-type'] == 'number'
               ? 'el-input-number'
+              : input['component-type'] == 'time-picker'
+              ? 'el-time-picker'
               : null
           "
           v-model="formContent[input.model]"
@@ -36,6 +38,9 @@
           :show-password="input['component-type'] == 'password'"
           :min="input.min"
           :max="input.max"
+          :picker-options="input.pickerOptions"
+          range-separator="To"
+          :is-range="input.isRange"
           :type="
             input['input-type'] == 'date'
               ? 'date'
@@ -45,7 +50,7 @@
               ? 'textarea'
               : input['input-type'] == 'date-time'
               ? 'datetime'
-              : null
+              : input['input-type'] == 'dates' ? 'dates' : null
           "
           v-bind="input"
           :disabled="input.disabled"
@@ -74,6 +79,7 @@
           round
           @click="submitForm"
         >{{ submitText }}</el-button>
+        <el-button v-if="displayReset" @click="resetForm">Reset</el-button>
       </div>
     </el-form>
   </div>
@@ -94,6 +100,10 @@ export default {
     };
   },
   props: {
+    displayReset: {
+      type: Boolean,
+      default: false
+    },
     inline: {
       type: Boolean,
       default: false
@@ -155,7 +165,11 @@ export default {
           //   trigger = "change";
           // }
 
-          if (compType == "select" && formItem.hasOwnProperty("multiple")) {
+          if (
+            (compType == "select" && formItem.hasOwnProperty("multiple")) ||
+            inputType == "dates" ||
+            formItem.hasOwnProperty("isRange")
+          ) {
             type = "array";
           } else if (
             compType == "select" &&

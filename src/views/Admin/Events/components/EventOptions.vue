@@ -4,10 +4,25 @@
     <ToggleSlideDown title="Your saved templates" :center="false">
       <MoreInformation slot="titleContent" index="admin" instruction="create_template" />
       <div class="flex columns" v-if="templates.length > 0" v-loading="templateLoading">
-        <el-input v-model="templateNamesSearch" placeholder="Seach Templates" size="mini"></el-input>
-
+        <div class="flex_center input_container p-4">
+          <el-input v-model="templateNamesSearch" placeholder="Seach Templates" size="mini"></el-input>
+          <el-button
+            size="mini"
+            class="ml-4"
+            type="text"
+            plain
+            round
+            @click="displayCreateTemplate = !displayCreateTemplate"
+          >
+            Create new template
+            <i
+              :class="{active:displayCreateTemplate}"
+              class="indicator el-icon-arrow-right"
+            ></i>
+          </el-button>
+        </div>
         <EventTemplate
-          @deleteTemplate="deleteTemplate"
+          @toggle="displayCreateTemplate = false"
           v-for="template in templates"
           :key="template._id"
           :data="template"
@@ -20,8 +35,18 @@
           <Nocontent v-bind="noTemplateOptions">
             <el-button
               size="mini"
+              class="ml-4"
+              type="primary"
+              plain
+              round
               @click="displayCreateTemplate = !displayCreateTemplate"
-            >Create new template</el-button>
+            >
+              Create new template
+              <i
+                :class="{active:displayCreateTemplate}"
+                class="indicator el-icon-arrow-right"
+              ></i>
+            </el-button>
           </Nocontent>
         </div>
       </div>
@@ -67,7 +92,7 @@ import { mapState, mapActions } from "vuex";
 import Nocontent from "@/components/Nocontent";
 import CreateTemplate from "./CreateTemplate";
 export default {
-  name: "CreateShiftOptions",
+  name: "EventOptions",
   data() {
     return {
       templates: "",
@@ -83,14 +108,25 @@ export default {
   mixins: [uploadContent],
   computed: {
     ...mapState(["userInformation"]),
+    filteredTemplates() {
+      let filteredTemplates = [];
+      for (let i = 0; i < this.templates.length; i++) {
+        let { name } = this.templates[i];
+        if (
+          name.trim().toLowerCase() !=
+          this.templateNamesSearch.trim().toLowerCase()
+        ) {
+          continue;
+        }
+        filteredTemplates.push(this.templates[i]);
+      }
+      return filteredTemplates;
+    },
     noTemplateOptions() {
       return {
         text: "No templates found, press more information for find out more.",
         icon: "el-icon-plus"
       };
-    },
-    shiftConfig() {
-      return ["name", "assignedTo", "startDate", "endDate", "type"];
     }
   },
   methods: {
@@ -105,19 +141,6 @@ export default {
       } catch (error) {
         this.loadingTemplates = false;
       }
-    },
-    async deleteTemplate({ id, elem }) {
-      try {
-        this.templateLoading = true;
-        let deleteRequest = await this.request({
-          method: "DELETE",
-          url: "templates/delete",
-          data: { id }
-        });
-        await this.getTemplates();
-      } catch (error) {
-        this.templateLoading = false;
-      }
     }
   },
   components: {
@@ -131,3 +154,12 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.indicator {
+  will-transform: rotate;
+  transition: $default_transition;
+  &.active {
+    transform: rotate(90deg);
+  }
+}
+</style>

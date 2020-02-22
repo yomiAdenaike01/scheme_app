@@ -1,6 +1,15 @@
 import Vue from "vue";
 
 export default {
+  getUsersInUserGroup: ({ teamInformation }) => userGroupID => {
+    return teamInformation
+      .filter(({ groupID }) => {
+        return userGroupID == groupID;
+      })
+      .map(({ _id }) => {
+        return _id;
+      });
+  },
   getFilteredTeam: (
     { teamInformation },
     getters,
@@ -105,7 +114,6 @@ export default {
       teams = teamInformation.find(member => {
         return member._id == userID;
       });
-      console.log(teams);
     }
     return teams;
   }

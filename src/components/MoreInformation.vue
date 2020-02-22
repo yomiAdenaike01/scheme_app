@@ -5,8 +5,8 @@
       <el-button slot="trigger" size="mini" round :type="type">More Information</el-button>
 
       <div slot="content" class="instructions_content">
-        <h3 class="mb-2">{{ returnGuideContent["title"] }}</h3>
-        <p v-html="returnGuideContent['information']" style="line-height:1.5em"></p>
+        <h3 class="mb-2">{{ guideContent.title }}</h3>
+        <p v-html="guideContent.information" style="line-height:1.5em"></p>
       </div>
     </Popover>
   </div>
@@ -21,7 +21,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: "text"
+      default: "round"
     },
     hoverPosition: {
       type: String,
@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     ...mapGetters(["getGuide"]),
-    returnGuideContent() {
+    guideContent() {
       return this.getGuide[this.index][this.instruction];
     }
   },

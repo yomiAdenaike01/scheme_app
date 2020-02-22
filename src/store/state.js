@@ -44,5 +44,35 @@ export default {
     "#fb6340",
     "#ffd600",
     "#2dce89"
+  ],
+  daysOfWeek: [
+    {
+      text: "Mondays",
+      value: 1
+    },
+    {
+      text: "Tuesdays",
+      value: 2
+    },
+    {
+      text: "Wednesdays",
+      value: 3
+    },
+    {
+      text: "Thursdays",
+      value: 4
+    },
+    {
+      text: "Fridays",
+      value: 5
+    },
+    {
+      text: "Saturdays",
+      value: 6
+    },
+    {
+      text: "Sundays",
+      value: 7
+    }
   ]
 };

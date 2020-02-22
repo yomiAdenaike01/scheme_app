@@ -179,7 +179,10 @@ export default {
           assignedTo: assignedTo.arr,
           assignedToRaw: event.assignedTo,
           type,
-          clockedIn
+          clockedIn,
+          repeat: {
+            weekdays: [1, 2, 3, 4, 5]
+          }
         });
       }
 
