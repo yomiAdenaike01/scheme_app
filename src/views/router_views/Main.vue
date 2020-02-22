@@ -43,29 +43,7 @@ export default {
         message: "Open settings to activate account."
       });
     }
-    if (this.hasRequestOrNotifications) {
-      this.UPDATE_NOTIFICATIONS({
-        title: "Pending notifications",
-        message: "You have notifications pending, press the bell to view them",
-        type: "info"
-      });
-    }
 
-    if (this.hasReminder) {
-      let notificationTitle =
-        "You have a reminder scheduled, close the notification to complete the reminder";
-      this.UPDATE_NOTIFICATIONS({
-        title: "Reminder",
-        message: notificationTitle,
-        type: "info",
-        desktop: {
-          title: "You have reminder",
-          content: {
-            body: notificationTitle
-          }
-        }
-      });
-    }
     let { general } = this.userInformation.settings;
     if (Notification.permission != "granted") {
       this.requestNotificationPermission();
@@ -98,9 +76,15 @@ export default {
     },
     hasReminder() {
       return (
-        this.userNotifications.findIndex(({ type }) => {
-          console.log(type);
-          return type == "attention";
+        this.userNotifications.findIndex(({ type, status }) => {
+          return type == "reminder" && status == "unread";
+        }) > -1
+      );
+    },
+    hasAnnoucement() {
+      return (
+        this.userNotifications.findIndex(({ type, status }) => {
+          return type == "attention" && status == "unread";
         }) > -1
       );
     }
@@ -151,6 +135,62 @@ export default {
     ServerHealth,
     NprogressContainer,
     DefaultTransition
+  },
+  watch: {
+    hasAnnoucement: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          let notificationTitle =
+            "A notification requires your attention, press the bell icon to view them";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Attention",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "A notification requires your attention",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
+        }
+      }
+    },
+    hasRequestOrNotifications: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.UPDATE_NOTIFICATIONS({
+            title: "Pending notifications",
+            message:
+              "You have notifications pending, press the bell to view them",
+            type: "info"
+          });
+        }
+      }
+    },
+    hasReminder: {
+      immediate: true,
+
+      handler(val) {
+        if (val) {
+          let notificationTitle =
+            "You have a reminder scheduled, close the notification to complete the reminder";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Reminder",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "You have reminder",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
+        }
+      }
+    }
   }
 };
 </script>

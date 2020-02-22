@@ -8,7 +8,7 @@
     team please wait....`
     "
   >
-    <UserGroup addNew @createUserGroup="displayDialog = $event" />
+    <UserGroup v-if="getIsAdmin" addNew @createUserGroup="displayDialog = $event" />
 
     <UserGroup v-if="filteredGroupsWithUsers.length > 0">
       <div>
@@ -35,7 +35,7 @@
       </div>
     </UserGroup>
     <!-- Quick actions -->
-    <QuickActions />
+    <QuickActions v-if="getIsAdmin" />
     <!-- User manager dialog -->
     <UserManagerDialog :display="displayDialog" @toggle="displayDialog = $event" />
   </el-row>

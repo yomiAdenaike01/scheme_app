@@ -8,7 +8,7 @@
       subtitle="View and interact with your team members here"
     />
     <div v-if="getFilteredTeam.length > 0">
-      <div v-for="(member, index) in getFilteredTeam" :key="index" class="member flex_center">
+      <div v-for="(member, index) in teamInformation" :key="index" class="member flex_center">
         <Dropdown
           class="p-2"
           @click.native="hoveredTeamMember = member._id"
@@ -88,7 +88,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Admin", ["UPDATE_VIEW_USER_INFO"]),
+    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
     teamLoaderManager() {
       this.loaderTimeout = setTimeout(() => {
         if (this.teamInformation.length <= 0) {
@@ -106,9 +106,10 @@ export default {
           break;
         }
         case "view_team_member": {
-          this.UPDATE_VIEW_USER_INFO({
+          this.UPDATE_DIALOG_INDEX({
+            dialog: "viewUser",
             view: true,
-            id: this.hoveredTeamMember
+            data: this.hoveredTeamMember
           });
           break;
         }

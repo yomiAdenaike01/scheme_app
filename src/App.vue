@@ -77,8 +77,9 @@ export default {
     ]),
     ...mapState("Admin", ["teamInformation", "shifts"]),
 
-    ...mapGetters(["isValidClient"]),
-
+    isValidClient() {
+      return this.hasEntries(this.clientInformation);
+    },
     loading() {
       // Check team and schedule
       let res;

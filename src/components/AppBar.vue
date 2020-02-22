@@ -112,13 +112,14 @@ export default {
       "UPDATE_VIEW_NOTIFICATIONS_CENTER",
       "UPDATE_TOGGLE_MOBILE_MENU"
     ]),
-    ...mapMutations("Admin", ["UPDATE_VIEW_USER_INFO"]),
+    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     ...mapActions(["request"]),
     handleCommands(command) {
       switch (command) {
         case "view_profile": {
-          this.UPDATE_VIEW_USER_INFO({
+          this.UPDATE_DIALOG_INDEX({
+            dialog: "viewUser",
             view: true,
             id: this.userInformation._id
           });

@@ -1,5 +1,9 @@
 <template>
-  <el-dialog :visible.sync="toggleView" class="view_user_container" v-if="hasEntries(getUserInfo)">
+  <el-dialog
+    :visible.sync="toggleView"
+    class="view_user_container"
+    v-if="getActiveDialog('viewUser')"
+  >
     <el-row type="flex">
       <el-col>
         <ViewUserWrapper
@@ -12,7 +16,7 @@
             <component
               :is="returnComponents.component"
               :data="returnComponents.props"
-              @toggle="UPDATE_VIEW_USER_INFO({ view: false, id: null })"
+              @toggle="UPDATE_DIALOG_INDEX({dialog:'viewUser', view: false, data: null })"
             />
           </div>
         </ViewUserWrapper>
@@ -28,7 +32,7 @@ import UserEvents from "./components/UserEvents";
 import ViewUserWrapper from "./components/ViewUserWrapper";
 
 export default {
-  name: "ViewUser",
+  name: "ViewUserDialog",
   data() {
     return {
       documentation: [],
@@ -38,13 +42,13 @@ export default {
   },
 
   computed: {
+    ...mapState(["dialogIndex"]),
     ...mapState("Admin", [
       "eventsInformation",
       "teamInformation",
-      "requestsInformation",
-      "viewUserInformation"
+      "requestsInformation"
     ]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     ...mapGetters("Admin", ["getUserInformation", "getUsersEvents"]),
     returnComponents() {
       let selectedTab = this.selectedTab;
@@ -83,14 +87,18 @@ export default {
       ];
     },
     userID() {
-      return this.viewUserInformation.id;
+      return this.currentDialog.data;
     },
     toggleView: {
       get() {
-        return this.viewUserInformation.view;
+        return this.getActiveDialog("viewUser");
       },
       set(val) {
-        this.UPDATE_VIEW_USER_INFO(val);
+        this.UPDATE_DIALOG_INDEX({
+          view: false,
+          dialog: "viewUser",
+          data: null
+        });
       }
     },
     getUserInfo() {
@@ -105,11 +113,18 @@ export default {
     },
     associatedUserEvents() {
       return this.getUsersEvents(this.userID);
+    },
+    currentDialog() {
+      return this.dialogIndex.viewUser;
+    },
+    dialogVisible() {
+      let { view, id } = this.currentDialog;
+      return view && id.length > 0 && this.getIsAdmin;
     }
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations("Admin", ["UPDATE_VIEW_USER_INFO"]),
+    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     getDocumentation() {
       this.request({

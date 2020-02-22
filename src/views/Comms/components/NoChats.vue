@@ -14,12 +14,7 @@ import { mapGetters, mapMutations } from "vuex";
 import LeadIcon from "@/components/LeadIcon";
 export default {
   name: "NoChats",
-  computed: {
-    ...mapGetters(["isValidClient ,getClient"]),
-    colours() {
-      return this.getClient ? this.getClient.company_colours : "";
-    }
-  },
+
   methods: {
     ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"])
   },

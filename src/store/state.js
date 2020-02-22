@@ -35,6 +35,11 @@ export default {
     isError: false
   },
 
+  dialogIndex: {
+    viewUser: { view: null, data: null, tabIndex: 0 },
+    viewEvent: { view: null, data: null, tabIndex: 0 }
+  },
+
   defaultCustomColours: [
     vars.default,
     "#5e72e4",

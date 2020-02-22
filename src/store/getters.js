@@ -2,6 +2,9 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getActiveDialog: ({ dialogIndex }) => dialogName => {
+    return dialogIndex[dialogName].view;
+  },
   getUserNotificationsLength({ userNotifications }) {
     return userNotifications.filter(notification => {
       return (
@@ -11,12 +14,6 @@ export default {
   },
   getUAInformation() {
     return new UAParser().getResult();
-  },
-  isValidClient(state, getters) {
-    return Object.keys(state.clientInformation).length > 0;
-  },
-  isValidUser(state) {
-    return Object.keys(state.userInformation).length > 0;
   },
   getUserSettings(state) {
     return state.userInformation.settings;
@@ -31,19 +28,13 @@ export default {
   getPreferences(state) {
     return state.userInformation.preferences;
   },
-  getContentLoaded(state) {
-    return false;
-  },
-  getIsAdmin(state) {
-    const groupID = state.userInformation.groupID;
-    return groupID == 1 || groupID == "Admin";
+  getIsAdmin({ userInformation: { groupID } }) {
+    return groupID == 1;
   },
   getClientColours(state) {
     return state.clientInformation.colours;
   },
-  getName(state) {
-    return state.userInformation.name.trim().toLowerCase();
-  },
+
   getGuide() {
     return guide;
   },

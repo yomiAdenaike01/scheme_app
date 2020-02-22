@@ -38,7 +38,7 @@ export default {
           name: "User management",
           path: "/admin/user",
           icon: "bx bx-group"
-        }
+        },
         // {
         //   name: "Analytics",
         //   path: "/admin/analytics",
@@ -49,11 +49,11 @@ export default {
         //   path: "/admin/utilities",
         //   icon: "bx bx-task"
         // },
-        // {
-        //   name: "Intergrations",
-        //   path: "/admin/integrations",
-        //   icon: "bx bx-extension"
-        // }
+        {
+          name: "Support",
+          path: "/support/dashboard",
+          icon: "bx bx-support"
+        }
       ]
     };
   },

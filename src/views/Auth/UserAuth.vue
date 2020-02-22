@@ -67,7 +67,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["isValidClient"]),
+    isValidClient() {
+      return this.hasEntries(this.clientInformation);
+    },
     ...mapState(["clientInformation"]),
     selectedForm() {
       if (this.tabIndex == "0") {

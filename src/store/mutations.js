@@ -3,6 +3,12 @@ import Vue from "vue";
 import router from "../router";
 
 export default {
+  UPDATE_DIALOG_INDEX(
+    { dialogIndex },
+    { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
+  ) {
+    Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
+  },
   UPDATE_SERVER_HEALTH_STATUS(state, payload) {
     Vue.set(state, "serverHealth", payload);
   },
@@ -88,7 +94,6 @@ export default {
       let desktop = notification.desktop;
       let { content, title } = desktop;
       desktopNotification = new Notification(title, content);
-
       if ("click" in desktop) {
         desktopNotification.onclick = () => {
           desktop.click();

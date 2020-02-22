@@ -26,11 +26,11 @@
       </div>
 
       <div slot="body_content">
-        <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 0">
+        <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 0 && getIsAdmin">
           <ColourUnit v-model="eventData.colour" />
           <p class="mb-3 ml-4 desc grey">Press to select an event colour (optional):</p>
         </div>
-        <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 1">
+        <div class="ml-4 mt-4 flex align-center" v-if="currentTab == 1 && getIsAdmin">
           <el-button round @click="currentTab = 2" class="w-100" size="mini">
             <i class="bx bx-brain"></i> Auto generate using templates
           </el-button>
@@ -63,7 +63,7 @@ export default {
       eventData: {},
       loading: false,
       fileContent: "",
-      currentTab: 2,
+      currentTab: 0,
       timeSheetError: null,
       timeSheetData: "",
       userTemplates: null,
@@ -130,10 +130,12 @@ export default {
         }
       ];
 
-      tabs.unshift({
-        label: "Create Event Group",
-        formContent: this.createEventGroupForm
-      });
+      if (this.getIsAdmin) {
+        tabs.unshift({
+          label: "Create Event Group",
+          formContent: this.createEventGroupForm
+        });
+      }
       return tabs;
     },
     createEventGroupForm() {

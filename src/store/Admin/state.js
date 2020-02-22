@@ -13,7 +13,6 @@ export default {
     previous: []
   },
   requestsInformation: [],
-  viewUserInformation: { view: false, id: null },
   /**
    * 
    * title,

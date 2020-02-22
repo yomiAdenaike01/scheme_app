@@ -58,7 +58,7 @@
     </ToggleSlideDown>
 
     <!-- Upload content -->
-    <ToggleSlideDown title="Upload new timesheet">
+    <ToggleSlideDown title="Upload new timesheet" v-if="getIsAdmin">
       <MoreInformation slot="titleContent" index="admin" instruction="upload_timesheet" />
 
       <div class="upload_file_container columns">

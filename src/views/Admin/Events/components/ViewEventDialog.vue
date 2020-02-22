@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="computeDisplay">
+  <el-dialog :visible.sync="computeDisplay" v-if="getActiveDialog('viewEvent')">
     <Title title="View Event" subtitle="Click on more information to display details"></Title>
     <div class="info_button_container flex flex--end">
       <el-button
@@ -91,23 +91,15 @@ export default {
       loading: false
     };
   },
-  props: {
-    event: {
-      type: Object,
-      default: () => {
-        return {};
-      }
-    },
-    display: {
-      type: Boolean,
-      default: false
-    }
-  },
+
   computed: {
     ...mapState("Admin", ["teamInformation", "eventsInformation"]),
-    ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapState(["userInformation", "dialogIndex"]),
+    ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     ...mapGetters("Admin", ["getEventAssginedTo"]),
+    event() {
+      return this.dialogIndex.viewEvent.data;
+    },
     isEventToday() {
       return moment(this.event.startDate).diff(moment(), "hours") < 24;
     },
@@ -180,16 +172,20 @@ export default {
     },
     computeDisplay: {
       get() {
-        return this.display;
+        return this.getActiveDialog("viewEvent");
       },
       set(val) {
-        this.$emit("toggle", val);
+        this.UPDATE_DIALOG_INDEX({
+          dialog: "viewEvent",
+          data: null,
+          view: val
+        });
       }
     }
   },
   methods: {
     ...mapActions(["request", "genEmail", "genPromptBox"]),
-
+    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
     deleteEvent() {
       this.genPromptBox({
         boxType: "confirm",

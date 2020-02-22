@@ -16,6 +16,7 @@
         @createEvent="createEvent"
         :display="modals.createEvent"
       />
+      <ViewEventDialog />
     </div>
     <UserSidebar />
   </div>
@@ -26,12 +27,12 @@ import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import EventMangerDialog from "./components/EventMangerDialog";
 import Toolbar from "./components/Toolbar";
-import Dropdown from "@/components/Dropdown.vue";
-import Popover from "@/components/Popover";
 import EventsCalendar from "./components/EventsCalendar";
 import Title from "@/components/Title";
 import EventFilters from "./components/EventFilters";
 import UserSidebar from "./components/UserSidebar";
+import ViewEventDialog from "./components/ViewEventDialog";
+
 export default {
   name: "EventsManager",
   activated() {
@@ -199,11 +200,10 @@ export default {
     Title,
     EventsCalendar,
     EventMangerDialog,
-    Dropdown,
-    Popover,
     Toolbar,
     EventFilters,
-    UserSidebar
+    UserSidebar,
+    ViewEventDialog
   }
 };
 </script>

@@ -6,17 +6,7 @@
       :events="allEvents"
       :on-event-click="viewEvent"
       events-on-month-view="short"
-      @event-duration-change="changeShiftTime"
       :cell-click-hold="false"
-    />
-
-    <ViewEventDialog
-      v-if="view"
-      :display="view"
-      :event="event"
-      @toggle="view = $event"
-      @loading="loading = $event"
-      @refreshShift="$emit('refreshShift', null)"
     />
   </div>
 </template>
@@ -25,7 +15,6 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import ViewEventDialog from "./ViewEventDialog";
 import moment from "moment";
 export default {
   name: "EventsCalendar",
@@ -197,11 +186,14 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_DIALOG_INDEX"]),
 
     viewEvent(event) {
-      this.event = event;
-      this.view = true;
+      this.UPDATE_DIALOG_INDEX({
+        view: true,
+        dialog: "viewEvent",
+        data: event
+      });
     },
 
     displayCreateNewShift(startTime) {
@@ -281,8 +273,7 @@ export default {
     }
   },
   components: {
-    VueCal,
-    ViewEventDialog
+    VueCal
   }
 };
 </script>
