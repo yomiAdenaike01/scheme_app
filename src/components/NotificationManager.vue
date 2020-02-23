@@ -11,12 +11,19 @@
         :notification="notification"
       />
       <el-button
-        class="block_button"
-        type="text"
+        class="block_button m-0"
         @click="clearAllNotifications"
         size="small"
         v-if="getUserNotificationsLength > 0"
       >Mark all as read</el-button>
+      <el-button
+        v-if="hasReadNotifications"
+        class="m-0 block_button"
+        size="small"
+        type="primary"
+        plain
+        @click="deleteReadNotifications"
+      >Delete all read notifications</el-button>
     </div>
     <Nocontent v-else v-bind="noContent" />
   </div>
@@ -48,6 +55,11 @@ export default {
   computed: {
     ...mapState(["userNotifications", "userInformation"]),
     ...mapGetters(["getUserNotificationsLength"]),
+    hasReadNotifications() {
+      return (
+        this.userNotifications.filter(x => x.status == "is_read").length > 0
+      );
+    },
     noContent() {
       return {
         moreInformation: {
@@ -64,11 +76,28 @@ export default {
     ...mapActions(["request"]),
     ...mapActions("Admin", ["getNotifications"]),
     ...mapMutations(["UPDATE_USER_NOTIFICATIONS"]),
+    deleteReadNotifications() {
+      this.loading = true;
+      this.request({
+        method: "DELETE",
+        url: "notifications/delete/read"
+      })
+        .then(response => {
+          this.loading = false;
+
+          return response;
+        })
+        .catch(err => {
+          this.loading = false;
+
+          return err;
+        });
+    },
     clearAllNotifications() {
       this.globalLoader = true;
       this.request({
         method: "DELETE",
-        url: "/notifications/all"
+        url: "/notifications/delete/all"
       })
         .then(response => {})
         .catch(error => {});
