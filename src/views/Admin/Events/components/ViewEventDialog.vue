@@ -35,12 +35,16 @@
       >Delete Event</el-button>
     </div>
     <div class="info_container p-3">
+      <!-- Assigned users -->
+
       <h3 class="mb-3">Assigned users</h3>
-      <div class="info_unit avatar_wrapper">
+
+      <div class="info_unit avatar_wrapper" v-if="hasEntries(event.assignedTo)">
         <div
+          ref="user"
           v-for="(member, index) in event.assignedTo"
           :key="index"
-          :class="['assigned_user_container no_events mb-2 flex align-center',{clocked_in:hasClockedIn}]"
+          :class="['assigned_user_container mb-2 flex align-center',{clocked_in:hasClockedIn}]"
         >
           <el-button
             v-if="hasClockedIn"
@@ -50,9 +54,38 @@
             class="no_events mr-2"
             size="mini"
           ></el-button>
-          <Avatar class="mr-3" :name="member"></Avatar>
+          <Avatar class="mr-3" :name="member" />
           <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
+          <el-button
+            class="remove_icon ml-4"
+            size="mini"
+            round
+            @click="dropUserFromEvent(member)"
+          >Drop user</el-button>
         </div>
+
+        <div class="add_new_user p-4 trigger">
+          <Popover>
+            <div
+              class="p-3 popover_item trigger"
+              :class="{no_events:event.assignedToRaw.indexOf(option._id) > -1}"
+              v-for="option in getFilteredTeam"
+              @click="assignNewUser(option._id)"
+              :key="option._id"
+              slot="content"
+            >
+              <span>{{option.name}}</span>
+            </div>
+            <span slot="trigger">
+              <i class="bx bx-plus"></i> Assign new user
+            </span>
+          </Popover>
+        </div>
+      </div>
+
+      <!-- Assign a user -->
+      <div class="no_users" v-else>
+        <Nocontent v-bind="noAssignedUsers" />
       </div>
 
       <h3 class="mb-3 mt-3">Event date information</h3>
@@ -84,6 +117,7 @@ import Title from "@/components/Title";
 import moment from "moment";
 import Dropdown from "@/components/Dropdown";
 import Avatar from "@/components/Avatar";
+import Popover from "@/components/Popover";
 export default {
   name: "ViewEventDialog",
   data() {
@@ -96,7 +130,20 @@ export default {
     ...mapState("Admin", ["teamInformation", "eventsInformation"]),
     ...mapState(["userInformation", "dialogIndex"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
-    ...mapGetters("Admin", ["getEventAssginedTo"]),
+    ...mapGetters("Admin", [
+      "getEventAssginedTo",
+      "getFilteredTeam",
+      "getUserInformation"
+    ]),
+    noAssignedUsers() {
+      return {
+        text:
+          "You have encountered a critical server error, to proceed please contact support so that this can be fixed",
+        icon: "el-icon-warning-outline",
+        buttonText: "Hello"
+      };
+    },
+
     event() {
       return this.dialogIndex.viewEvent.data;
     },
@@ -186,6 +233,54 @@ export default {
   methods: {
     ...mapActions(["request", "genEmail", "genPromptBox"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
+
+    dropUserFromEvent(userName) {
+      // Cannot be the last one
+      const newLen = this.event.assignedToRaw.length - 1;
+      if (newLen > 1) {
+        let userID = this.getUserInformation(userName, "name")._id;
+        this.request({
+          method: "DELETE",
+          url: "events/user",
+          data: {
+            eventID: this.event.id,
+            userID
+          }
+        })
+          .then(response => {
+            this.$refs.user.delete();
+          })
+          .catch(err => {
+            return err;
+          });
+      } else {
+        this.UPDATE_NOTIFICATIONS({
+          message:
+            "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so.",
+          title: "Removal warning",
+          type: "warning",
+          onClick: () => {
+            this.deleteEvent();
+          }
+        });
+      }
+    },
+    assignNewUser(userID) {
+      this.request({
+        method: "POST",
+        url: "events/user",
+        data: {
+          eventID: this.event.id,
+          userID
+        }
+      })
+        .then(response => {
+          return response;
+        })
+        .catch(err => {
+          return err;
+        });
+    },
     deleteEvent() {
       this.genPromptBox({
         boxType: "confirm",
@@ -251,7 +346,8 @@ export default {
   components: {
     Title,
     Dropdown,
-    Avatar
+    Avatar,
+    Popover
   }
 };
 </script>
@@ -297,9 +393,21 @@ h4 {
     }
   }
 }
+.remove_icon {
+  opacity: 0;
+}
 .assigned_user_container {
+  &:hover {
+    .remove_icon {
+      opacity: 1;
+    }
+  }
   &.cloked_in {
     opacity: 0.5;
   }
+}
+.add_new_user {
+  border-radius: $border_radius;
+  border: 2px whitesmoke dashed;
 }
 </style>

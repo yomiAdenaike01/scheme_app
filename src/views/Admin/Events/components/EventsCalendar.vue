@@ -149,9 +149,11 @@ export default {
           type,
           clockedIn
         } = event;
-
+if(assignedTo.length > 0){
         assignedTo = this.getEventAssignedTo([...assignedTo]);
-
+}else{
+  assignedTo = []
+}
         type = this.getGroupName("event", type).name;
         startDate = moment(startDate).format(this.format);
         endDate = moment(endDate).format(this.format);

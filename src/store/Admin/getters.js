@@ -10,12 +10,7 @@ export default {
         return _id;
       });
   },
-  getFilteredTeam: (
-    { teamInformation },
-    getters,
-    { userInformation }
-  ) => displayMyself => {
-    console.log(teamInformation, userInformation);
+  getFilteredTeam: ({ teamInformation }, getters, { userInformation }) => {
     return teamInformation.filter(({ _id }) => {
       return _id != userInformation._id;
     });
@@ -104,15 +99,14 @@ export default {
     return res;
   },
 
-  getUserInformation: (
-    { teamInformation },
-    getters,
-    { userInformation }
-  ) => userID => {
+  getUserInformation: ({ teamInformation }, getters, { userInformation }) => (
+    info,
+    params = "_id"
+  ) => {
     let teams;
     if (Vue.prototype.hasEntries(teamInformation)) {
       teams = teamInformation.find(member => {
-        return member._id == userID;
+        return member[params] == info;
       });
     }
     return teams;

@@ -380,6 +380,14 @@ span {
 .popover_container {
   padding: 0 !important;
 }
+.popover_item {
+  &.no_events {
+    opacity: 0.4;
+  }
+  &:hover {
+    background: $hover_grey;
+  }
+}
 
 /**
     _   _  _  ___ _  _    ___
