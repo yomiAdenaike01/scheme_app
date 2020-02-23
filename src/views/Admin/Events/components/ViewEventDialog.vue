@@ -232,6 +232,8 @@ export default {
   },
   methods: {
     ...mapActions(["request", "genEmail", "genPromptBox"]),
+    ...mapActions("Admin", ["getEvents"]),
+
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     dropUserFromEvent(userName) {
@@ -249,6 +251,7 @@ export default {
         })
           .then(response => {
             this.$refs.user.delete();
+            this.getEvents();
           })
           .catch(err => {
             return err;
@@ -275,6 +278,7 @@ export default {
         }
       })
         .then(response => {
+          this.getEvents();
           return response;
         })
         .catch(err => {
@@ -297,7 +301,12 @@ export default {
             }
           })
             .then(response => {
-              this.computeDisplay = false;
+              this.getEvents();
+              this.UPDATE_DIALOG_INDEX({
+                view: false,
+                data: null,
+                dialog: "viewEvent"
+              });
             })
             .catch(err => {
               console.log(err);
@@ -339,7 +348,13 @@ export default {
           id: this.event._id,
           user: this.userInformation._id
         }
-      });
+      })
+        .then(response => {
+          this.getEvents();
+        })
+        .catch(err => {
+          return err;
+        });
     }
   },
 
