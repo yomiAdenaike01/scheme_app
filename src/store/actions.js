@@ -16,6 +16,17 @@ const sortPayload = (state, payload) => {
 };
 
 export default {
+  closeDialog(context, name) {
+    context.commit(
+      "UPDATE_DIALOG_INDEX",
+      {
+        view: false,
+        dialog: name,
+        data: null
+      },
+      { root: true }
+    );
+  },
   genPromptBox(context, { boxType, text, title, type, confirm }) {
     return new Promise((resolve, reject) => {
       boxType ? boxType : "confirm";

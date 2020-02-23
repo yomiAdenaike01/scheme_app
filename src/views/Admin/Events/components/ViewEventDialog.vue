@@ -222,16 +222,12 @@ export default {
         return this.getActiveDialog("viewEvent");
       },
       set(val) {
-        this.UPDATE_DIALOG_INDEX({
-          dialog: "viewEvent",
-          data: null,
-          view: val
-        });
+        this.closeDialog("viewEvent");
       }
     }
   },
   methods: {
-    ...mapActions(["request", "genEmail", "genPromptBox"]),
+    ...mapActions(["request", "genEmail", "genPromptBox", "closeDialog"]),
     ...mapActions("Admin", ["getEvents"]),
 
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
@@ -250,7 +246,7 @@ export default {
           }
         })
           .then(response => {
-            this.$refs.user.delete();
+            this.$forceUpdate();
             this.getEvents();
           })
           .catch(err => {
@@ -302,11 +298,7 @@ export default {
           })
             .then(response => {
               this.getEvents();
-              this.UPDATE_DIALOG_INDEX({
-                view: false,
-                data: null,
-                dialog: "viewEvent"
-              });
+              this.closeDialog("viewEvent");
             })
             .catch(err => {
               console.log(err);

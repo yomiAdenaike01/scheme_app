@@ -209,16 +209,12 @@ export default {
         return this.getActiveDialog("eventManager");
       },
       set(toggle) {
-        this.UPDATE_DIALOG_INDEX({
-          view: false,
-          dialog: "eventManager",
-          data: null
-        });
+        this.closeDialog("eventManager");
       }
     }
   },
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "closeDialog"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_DIALOG_INDEX"]),
 
     createEventController() {

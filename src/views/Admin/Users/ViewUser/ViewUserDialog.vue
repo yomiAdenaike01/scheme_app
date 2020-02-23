@@ -16,7 +16,7 @@
             <component
               :is="returnComponents.component"
               :data="returnComponents.props"
-              @toggle="UPDATE_DIALOG_INDEX({dialog:'viewUser', view: false, data: null })"
+              @toggle="closeDialog('viewUser')"
             />
           </div>
         </ViewUserWrapper>
@@ -94,11 +94,7 @@ export default {
         return this.getActiveDialog("viewUser");
       },
       set(val) {
-        this.UPDATE_DIALOG_INDEX({
-          view: false,
-          dialog: "viewUser",
-          data: null
-        });
+        this.closeDialog("viewUser");
       }
     },
     getUserInfo() {
@@ -123,7 +119,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "closeDialog"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     getDocumentation() {
