@@ -19,6 +19,7 @@ export default {
     ? JSON.parse(localStorage.getItem("userInformation"))
     : {},
   globalLoader: false,
+  errorInformation: {},
   localNotifications: [],
   criticalNetworkError: false,
   weeklyTimesheetUploaded: false,

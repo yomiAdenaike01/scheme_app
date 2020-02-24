@@ -81,6 +81,7 @@ export default {
 
       if (typeof notification.message == "object") {
         state.criticalNetworkError = true;
+        state.errorInformation = notification.message;
 
         if (router.currentRoute.name != "error") {
           router.push({ name: "error" });

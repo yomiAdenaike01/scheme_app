@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading">
+  <div v-loading="loading" class="notifications_container overflow">
     <div class="title_switch_container p-3 flex align-center">
       <h3 class="bold">Notifications</h3>
       <el-switch v-model="dnd" active-text="Do not disturb"></el-switch>
@@ -12,7 +12,7 @@
       />
       <el-button
         class="block_button m-0"
-        @click="clearAllNotifications"
+        @click="readAll"
         size="small"
         v-if="getUserNotificationsLength > 0"
       >Mark all as read</el-button>
@@ -93,15 +93,15 @@ export default {
           return err;
         });
     },
-    clearAllNotifications() {
-      this.globalLoader = true;
+    readAll() {
+      this.loading = true;
       this.request({
         method: "DELETE",
-        url: "/notifications/delete/all"
+        url: "/notifications/read/all"
       })
         .then(response => {})
         .catch(error => {});
-      this.globalLoader = false;
+      this.loading = false;
     }
   },
   components: {
@@ -112,6 +112,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.notifications_container {
+  position: relative;
+  height: 400px;
+}
 .title_switch_container {
   display: flex;
   justify-content: space-between;

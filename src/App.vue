@@ -328,7 +328,6 @@ span {
   &:after {
     content: "";
     display: block;
-    margin-bottom: 10%;
   }
 }
 

@@ -64,7 +64,7 @@
           >Drop user</el-button>
         </div>
 
-        <div class="add_new_user p-4 trigger">
+        <div class="add_new_user p-4 trigger" v-if="canAddMoreUsers">
           <Popover>
             <div
               class="p-3 popover_item trigger"
@@ -142,6 +142,10 @@ export default {
         icon: "el-icon-warning-outline",
         buttonText: "Hello"
       };
+    },
+
+    canAddMoreUsers() {
+      return this.event.assignedToRaw.length - 1 == this.teamInformation.length;
     },
 
     event() {

@@ -1,19 +1,22 @@
 <template>
   <div
     ref="notification"
-    class="notification_container p-4"
-    :class="{is_read:notification.status == 'is_read' || notification.status == 'complete'}"
+    class="notification_container pl-2 pr-2"
+    :class="{
+      is_read:
+        notification.status == 'is_read' || notification.status == 'complete'
+    }"
     v-loading="loading"
-    @click="updateNotification({status:'is_read'})"
+    @click="updateNotification({ status: 'is_read' })"
   >
     <p :title="notification.message">{{ notification.message }}</p>
     <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
 
     <div
       v-if="notification.status != 'is_read'"
-      :class="['notification_type_indicator mt-3 mb-3',notification.type]"
+      :class="['notification_type_indicator', notification.type]"
     >
-      <small>{{makePretty(notification.type)}}</small>
+      <small>{{ makePretty(notification.type) }}</small>
     </div>
     <br />
   </div>
