@@ -386,9 +386,6 @@ span {
   }
 }
 
-.el-dialog__header {
-  padding: 0;
-}
 .el-dialog {
   border-radius: 8px;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="view_user_container">
     <!-- Display the avatar -->
-    <div class="title flex align-center">
+    <div class="title_container flex align-center">
       <h2 :style="{color:getDefaultColour}">
         <i :style="{color:getDefaultColour}" class="bx bx-user mr-2"></i>
         User management
@@ -66,8 +66,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.avatar_info_container {
+.title_container {
   background: $hover_grey;
+  margin: 10px 0;
+  padding: 20px;
+}
+.avatar_info_container {
   padding: 20px;
   margin-bottom: 20px;
 }
