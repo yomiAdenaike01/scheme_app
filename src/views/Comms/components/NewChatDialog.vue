@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="toggleView">
+  <el-dialog width="40%" :visible.sync="toggleView">
     <div v-if="hasEntries(teamInformation)">
       <Title
         defaultClass="m-0"

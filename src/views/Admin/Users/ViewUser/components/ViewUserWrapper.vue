@@ -1,6 +1,12 @@
 <template>
   <div class="view_user_container">
     <!-- Display the avatar -->
+    <div class="title flex align-center">
+      <h2 :style="{color:getDefaultColour}">
+        <i :style="{color:getDefaultColour}" class="bx bx-user mr-2"></i>
+        User management
+      </h2>
+    </div>
     <div class="avatar_info_container flex_center columns">
       <el-badge is-dot :type="userData.isOnline ? 'success' : 'danger'" class="dot_container">
         <Avatar class="sidebar_avatar full" :name="returnUsername" />
@@ -8,7 +14,7 @@
       <h3 class="mt-4 mb-2 capitalize">{{ returnUsername }}</h3>
       <h4 class="grey">{{ returnGroupName }}</h4>
     </div>
-    <el-tabs tab-position="top" stretch class="tab_container" v-model="selectedTab">
+    <el-tabs tab-position="top" type="card" stretch class="tab_container" v-model="selectedTab">
       <el-tab-pane class="h-100" :key="index" v-for="(tab, index) in tabItems" :label="tab.label">
         <slot></slot>
       </el-tab-pane>
@@ -38,6 +44,7 @@ export default {
   },
   computed: {
     ...mapGetters("Admin", ["getGroupName"]),
+    ...mapGetters(["getDefaultColour"]),
     returnUsername() {
       return this.userData.name;
     },

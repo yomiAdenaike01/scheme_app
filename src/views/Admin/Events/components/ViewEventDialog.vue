@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="computeDisplay" v-if="getActiveDialog('viewEvent')">
+  <el-dialog width="40%" :visible.sync="computeDisplay" v-if="getActiveDialog('viewEvent')">
     <Title title="View event" subtitle="Click on more information to display details"></Title>
     <div class="info_button_container flex flex--end">
       <el-button

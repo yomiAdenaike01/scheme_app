@@ -1,27 +1,16 @@
 <template>
-  <el-dialog center :visible.sync="view" width="700px">
+  <el-dialog center :visible.sync="view" width="40%">
     <div class="client_error_dialog">
       <Title
         title="Invalid domain detected."
         subtitle="Re-enter your company name to restart the process."
       />
-      <el-input
-        class="client_name"
-        placeholder="Company Name"
-        v-model="companyName"
-      >
+      <el-input class="client_name" placeholder="Company Name" v-model="companyName">
         <span slot="append">.schemeapp.cloud</span>
       </el-input>
 
-
       <div class="button_container m-4">
-        <el-button
-          round
-          type="primary"
-          :disabled="companyName.length <= 0"
-          @click="getClient"
-          >Retry</el-button
-        >
+        <el-button round type="primary" :disabled="companyName.length <= 0" @click="getClient">Retry</el-button>
 
         <el-button
           round
@@ -29,13 +18,13 @@
           @click="
             alreadyAtRegistration ? view = false : goToRegistration
           "
-          >{{
-            alreadyAtRegistration ? "Close" : "Register with scheme cloud"
-          }}</el-button
         >
+          {{
+          alreadyAtRegistration ? "Close" : "Register with scheme cloud"
+          }}
+        </el-button>
       </div>
     </div>
- 
   </el-dialog>
 </template>
 
@@ -53,8 +42,7 @@ export default {
     invalidClient: {
       type: Boolean,
       default: true
-    },
-  
+    }
   },
   methods: {
     goToRegistration() {
@@ -69,7 +57,7 @@ export default {
   computed: {
     view: {
       get() {
-        return this.invalidClient
+        return this.invalidClient;
       },
       set(val) {
         this.$emit("toggle", val);

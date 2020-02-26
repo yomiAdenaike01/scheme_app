@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="viewController">{{noteData}}</el-dialog>
+  <el-dialog width="40%" :visible.sync="viewController">{{noteData}}</el-dialog>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="tutorialView" v-if="getActiveDialog('tutorial')">
+  <el-dialog width="40%" :visible.sync="tutorialView" v-if="getActiveDialog('tutorial')">
     <div class="info_container flex align-center flex--space-between">
       <i class="el-icon arrow el-icon-arrow-left" @click="slideController('minus')"></i>
       {{currentSlideInfo}}

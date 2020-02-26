@@ -1,5 +1,5 @@
 <template>
-  <el-dialog custom-class="event_dialog" :visible.sync="view">
+  <el-dialog custom-class="event_dialog" width="40%" :visible.sync="view">
     <Tabs
       v-loading="loading"
       :tabs="tabs"
@@ -278,24 +278,22 @@ export default {
 
     async validateCSVData(fileData) {
       try {
-
-        Object.keys(fileData).map(key=>{
-          return key.toLowerCase().trim()
+        Object.keys(fileData).map(key => {
+          return key.toLowerCase().trim();
         });
-        
+
         /**
          * start date
-         * end date 
+         * end date
          * start time
-         * end time 
+         * end time
          * assigned to (names (yomi adenaike))
          * event type ('regular shift')
-         * 
+         *
          */
         // Have the group on the same day ?
         console.log(fileData);
       } catch (error) {}
-     
     },
 
     async timeSheetManagement() {
