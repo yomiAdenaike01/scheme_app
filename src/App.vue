@@ -373,9 +373,7 @@ span {
 .w-50 {
   width: 50%;
 }
-.el-dialog__header {
-  padding: 0;
-}
+
 .popover_container {
   padding: 0 !important;
 }
@@ -386,6 +384,13 @@ span {
   &:hover {
     background: $hover_grey;
   }
+}
+
+.el-dialog__header {
+  padding: 0;
+}
+.el-dialog {
+  border-radius: 8px;
 }
 
 /**
