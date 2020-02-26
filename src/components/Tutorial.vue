@@ -1,7 +1,15 @@
 <template>
   <el-dialog :visible.sync="tutorialView" v-if="getActiveDialog('tutorial')">
-    {{currentSlideInfo}}
-    <div class="slide_indicator_container">
+    <div class="info_container flex align-center flex--space-between">
+      <i class="el-icon arrow el-icon-arrow-left" @click="slideController('minus')"></i>
+      {{currentSlideInfo}}
+      <i
+        class="el-icon arrow el-icon-arrow-right"
+        @click="slideController('plus')"
+      ></i>
+    </div>
+
+    <div class="slide_indicator_container flex_center mt-5">
       <div
         :class="{active:currentSlide == slide - 1}"
         v-for="slide in totalSlides"
@@ -9,8 +17,6 @@
         class="slide_indicator"
       ></div>
     </div>
-    <i class="el-icon el-icon-arrow-right" @click="slideController('plus')"></i>
-    <i class="el-icon el-icon-arrow-left" @click="slideController('minus')"></i>
   </el-dialog>
 </template>
 
@@ -82,10 +88,16 @@ export default {
 .slide_indicator {
   border-radius: 50%;
   background: rgb(235, 233, 233);
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 20px;
+  transition: $default_transition;
   &.active {
-    background: red;
+    box-shadow: $box_shadow;
+    background: white;
   }
+}
+.arrow {
+  font-size: 20px;
+  color: #ccc;
 }
 </style>
