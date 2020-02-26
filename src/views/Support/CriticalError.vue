@@ -47,6 +47,9 @@ import LeadIcon from "@/components/LeadIcon";
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "CriticalError",
+  activated() {
+    this.closeDialog();
+  },
   data() {
     return {
       email: "",
@@ -64,7 +67,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "genEmail"]),
+    ...mapActions(["request", "genEmail", "closeDialog"]),
 
     sendErrorReport() {
       this.genEmail({

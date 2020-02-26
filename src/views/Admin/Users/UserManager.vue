@@ -21,7 +21,6 @@
                   <i class="bx bx-user user_group_icon"></i>
                   <span class="capitalize">{{ `${group.name}s` }}</span>
                 </div>
-                <i class="el-icon-more"></i>
               </div>
               <User
                 v-for="member in group.teamMembers"
@@ -48,6 +47,7 @@ import UserManagerDialog from "./components/UserManagerDialog";
 import UserGroup from "./components/UserGroup";
 import Title from "@/components/Title";
 import QuickActions from "./components/QuickActions";
+import Popover from "@/components/Popover";
 export default {
   name: "UserManager",
   activated() {
@@ -114,7 +114,8 @@ export default {
     User,
     UserGroup,
     UserManagerDialog,
-    QuickActions
+    QuickActions,
+    Popover
   }
 };
 </script>

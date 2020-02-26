@@ -21,7 +21,7 @@ export default {
       "UPDATE_DIALOG_INDEX",
       {
         view: false,
-        dialog: name,
+        dialog: name ? name : "",
         data: null
       },
       { root: true }

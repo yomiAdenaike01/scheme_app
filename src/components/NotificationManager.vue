@@ -4,7 +4,7 @@
       <h3 class="bold">Notifications</h3>
       <el-switch v-model="dnd" active-text="Do not disturb"></el-switch>
     </div>
-    <div v-if="userNotifications.length > 0">
+    <div v-if="hasEntries(userNotifications)">
       <Notification
         v-for="notification in userNotifications"
         :key="notification._id"
@@ -14,7 +14,7 @@
         class="block_button m-0"
         @click="readAll"
         size="small"
-        v-if="getUserNotificationsLength > 0"
+        v-if="hasEntries(getUserNotificationsLength)"
       >Mark all as read</el-button>
       <el-button
         v-if="hasReadNotifications"
@@ -96,7 +96,7 @@ export default {
     readAll() {
       this.loading = true;
       this.request({
-        method: "DELETE",
+        method: "POST",
         url: "/notifications/read/all"
       })
         .then(response => {})

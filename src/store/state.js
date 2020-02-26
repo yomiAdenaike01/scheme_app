@@ -39,7 +39,8 @@ export default {
   dialogIndex: {
     viewUser: { view: null, data: null, tabIndex: 0 },
     viewEvent: { view: null, data: null, tabIndex: 0 },
-    eventManager: { view: null, data: null, tabIndex: 0 }
+    eventManager: { view: null, data: null, tabIndex: 0 },
+    tutorial: { view: null, data: null, tabIndex: 0 }
   },
 
   defaultCustomColours: [

@@ -278,76 +278,30 @@ export default {
 
     async validateCSVData(fileData) {
       try {
-        let validateData = {
-          assignedTo: null,
-          startDate: null,
-          endDate: null,
-          type: null
-        };
 
-        let isAdmin = this.getIsAdmin;
-        let userInformation = this.userInformation.name.trim().toLowerCase();
-        const len = fileData.length;
-
-        for (let i = 0; i < len; i++) {
-          let eventElement = fileData[i];
-          // Validate against the schema
-
-          for (let property in validateData) {
-            if (!eventElement[property]) {
-              return Promise.reject("Time sheet is missing parameters");
-
-              break;
-            } else {
-              switch (property) {
-                case "assignedTo": {
-                  eventElement[property] = await this.getEmployeeID(
-                    eventElement[property]
-                  );
-                  break;
-                }
-
-                case "startDate": {
-                  eventElement[property] = await moment(
-                    moment(eventElement[property])
-                  ).toISOString();
-
-                  break;
-                }
-
-                case "endDate": {
-                  eventElement[property] = await moment(
-                    moment(eventElement[property])
-                  ).toISOString();
-
-                  break;
-                }
-
-                case "type": {
-                  if (eventElement[property] == 1) {
-                    return Promise.reject(
-                      "Non admins cannot create shifts, if you require a shift, please request it from your admin."
-                    );
-                  }
-                }
-
-                default:
-                  break;
-              }
-            }
-          }
-
-          return Promise.resolve(eventElement);
-        }
-      } catch (error) {
-        return Promise.reject(error);
-      }
+        Object.keys(fileData).map(key=>{
+          return key.toLowerCase().trim()
+        });
+        
+        /**
+         * start date
+         * end date 
+         * start time
+         * end time 
+         * assigned to (names (yomi adenaike))
+         * event type ('regular shift')
+         * 
+         */
+        // Have the group on the same day ?
+        console.log(fileData);
+      } catch (error) {}
+     
     },
 
     async timeSheetManagement() {
       try {
-        let JSONshifts = await csvtojson().fromString(this.fileContent);
-        let validationResult = await this.validateCSVData(JSONshifts);
+        let uploadedEvents = await csvtojson().fromString(this.fileContent);
+        let validationResult = await this.validateCSVData(uploadedEvents);
 
         return Promise.resolve(validationResult);
       } catch (e) {

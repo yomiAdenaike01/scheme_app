@@ -31,6 +31,13 @@ import ViewEventDialog from "./components/ViewEventDialog";
 
 export default {
   name: "EventsManager",
+  created() {
+    this.UPDATE_DIALOG_INDEX({
+      dialog: "tutorial",
+      view: true,
+      data: "scheduling"
+    });
+  },
   activated() {
     this.loading = true;
     Promise.all([this.getEvents(), this.getTeam()]).then(response => {
@@ -126,7 +133,7 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapActions("Admin", ["getEvents", "getTeam"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_DIALOG_INDEX"]),
 
     refreshShifts() {
       this.getEvents();

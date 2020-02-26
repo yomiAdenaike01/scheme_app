@@ -15,6 +15,7 @@
         </DefaultTransition>
       </el-col>
     </div>
+    <Tutorial />
   </div>
 </template>
 
@@ -28,7 +29,7 @@ import CriticalError from "@/components/CriticalError";
 import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
-
+import Tutorial from "@/components/Tutorial";
 export default {
   name: "Main",
 
@@ -134,7 +135,8 @@ export default {
     AppBar,
     ServerHealth,
     NprogressContainer,
-    DefaultTransition
+    DefaultTransition,
+    Tutorial
   },
   watch: {
     hasAnnoucement: {

@@ -14,7 +14,7 @@
           v-model="localFilters[key]"
           v-for="(group, key) in groups"
           :key="key"
-          :placeholder="`Select ${makePretty(key)} group`"
+          :placeholder="`Select ${makePretty(key)}`"
           class="mt-3"
           size="small"
         >
