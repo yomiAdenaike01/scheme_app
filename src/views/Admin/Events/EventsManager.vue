@@ -191,10 +191,6 @@ export default {
         .catch(error => {
           this.loading = false;
         });
-    },
-
-    displayModals(command) {
-      this.modals[command] = true;
     }
   },
   mixins: [dates],

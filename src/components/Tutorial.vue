@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="tutorialView">
+  <el-dialog :visible.sync="tutorialView" v-if="getActiveDialog('tutorial')">
     {{currentSlideInfo}}
     <div class="slide_indicator_container">
       <div
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import { tutorials } from "@/stubs/tutorials";
 export default {
   name: "Tutorial",
@@ -31,14 +31,15 @@ export default {
 
   computed: {
     ...mapState(["dialogIndex"]),
+    ...mapGetters(["getActiveDialog"]),
     tutorialsDictionary() {
       return tutorials;
     },
     tutorialView: {
       get() {
-        return this.dialogIndex.tutorial.view;
+        return this.getActiveDialog("tutorial");
       },
-      set() {
+      set(val) {
         this.closeDialog("tutorial");
       }
     },
