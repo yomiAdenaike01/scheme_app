@@ -1,5 +1,7 @@
 <template>
-  <el-dialog width="40%" :visible.sync="viewController">{{noteData}}</el-dialog>
+  <el-dialog width="40%" :visible.sync="viewController">{{
+    noteData
+  }}</el-dialog>
 </template>
 
 <script>
@@ -26,5 +28,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

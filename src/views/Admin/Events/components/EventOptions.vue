@@ -2,10 +2,22 @@
   <div class="create_shift_options_container">
     <!-- Displaying templates -->
     <ToggleSlideDown title="Your saved templates" :center="false">
-      <MoreInformation slot="titleContent" index="admin" instruction="create_template" />
-      <div class="flex columns" v-if="templates.length > 0" v-loading="templateLoading">
+      <MoreInformation
+        slot="titleContent"
+        index="admin"
+        instruction="create_template"
+      />
+      <div
+        class="flex columns"
+        v-if="templates.length > 0"
+        v-loading="templateLoading"
+      >
         <div class="flex_center input_container p-4">
-          <el-input v-model="templateNamesSearch" placeholder="Seach Templates" size="mini"></el-input>
+          <el-input
+            v-model="templateNamesSearch"
+            placeholder="Seach Templates"
+            size="mini"
+          ></el-input>
           <el-button
             size="mini"
             class="ml-4"
@@ -16,7 +28,7 @@
           >
             Create new template
             <i
-              :class="{active:displayCreateTemplate}"
+              :class="{ active: displayCreateTemplate }"
               class="indicator el-icon-arrow-right"
             ></i>
           </el-button>
@@ -43,7 +55,7 @@
             >
               Create new template
               <i
-                :class="{active:displayCreateTemplate}"
+                :class="{ active: displayCreateTemplate }"
                 class="indicator el-icon-arrow-right"
               ></i>
             </el-button>
@@ -53,13 +65,20 @@
 
       <!-- Create template -->
       <el-collapse-transition>
-        <CreateTemplate v-if="displayCreateTemplate" @toggle="displayCreateTemplate = false" />
+        <CreateTemplate
+          v-if="displayCreateTemplate"
+          @toggle="displayCreateTemplate = false"
+        />
       </el-collapse-transition>
     </ToggleSlideDown>
 
     <!-- Upload content -->
     <ToggleSlideDown title="Upload new timesheet" v-if="getIsAdmin">
-      <MoreInformation slot="titleContent" index="admin" instruction="upload_timesheet" />
+      <MoreInformation
+        slot="titleContent"
+        index="admin"
+        instruction="upload_timesheet"
+      />
 
       <div class="upload_file_container columns">
         <Title
@@ -70,9 +89,25 @@
         <div class="flex_center">
           <UploadFile
             readMethod="readAsText"
-            @removeContent="$emit('conponentChanges',{eventname:'removeContent',eventdata:null})"
-            @fileContent="$emit('conponentChanges',{eventname:'uploadFileContent',eventdata:$event})"
-            :buttonConfig="{text:'Select CSV File',round:true,icon:'el-icon-top',size:'small',type:'primary'}"
+            @removeContent="
+              $emit('conponentChanges', {
+                eventname: 'removeContent',
+                eventdata: null
+              })
+            "
+            @fileContent="
+              $emit('conponentChanges', {
+                eventname: 'uploadFileContent',
+                eventdata: $event
+              })
+            "
+            :buttonConfig="{
+              text: 'Select CSV File',
+              round: true,
+              icon: 'el-icon-top',
+              size: 'small',
+              type: 'primary'
+            }"
           />
         </div>
       </div>

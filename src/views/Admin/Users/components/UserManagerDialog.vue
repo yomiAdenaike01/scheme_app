@@ -10,7 +10,10 @@
       v-loading="loading"
     >
       <div slot="header_content">
-        <Title title="Manager users" subtitle="Manage all users and groups here." />
+        <Title
+          title="Manager users"
+          subtitle="Manage all users and groups here."
+        />
         <transition name="el-fade-in">
           <div class="flex_center" v-if="currentTab > 0">
             <ValidationUnit v-bind="renderValidationUnit" />

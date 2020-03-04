@@ -8,7 +8,11 @@
       subtitle="View and interact with your team members here"
     />
     <div v-if="getFilteredTeam.length > 0">
-      <div v-for="(member, index) in teamInformation" :key="index" class="member flex_center">
+      <div
+        v-for="(member, index) in teamInformation"
+        :key="index"
+        class="member flex_center"
+      >
         <Dropdown
           class="p-2"
           @click.native="hoveredTeamMember = member._id"
@@ -17,7 +21,11 @@
           position="left"
           :icon="false"
         >
-          <el-badge is-dot :type="member.isOnline ? 'success' : 'danger'" class="item">
+          <el-badge
+            is-dot
+            :type="member.isOnline ? 'success' : 'danger'"
+            class="item"
+          >
             <Avatar :name="member.name" />
           </el-badge>
         </Dropdown>
@@ -26,14 +34,14 @@
     <Nocontent
       v-else
       :moreInformation="
-          getIsAdmin
-            ? null
-            : {
-                index: 'admin',
-                instruction: 'team_viewing',
-                hoverPosition: 'bottom-end'
-              }
-        "
+        getIsAdmin
+          ? null
+          : {
+              index: 'admin',
+              instruction: 'team_viewing',
+              hoverPosition: 'bottom-end'
+            }
+      "
       text="No team members detected, hover over the button below for more information."
       icon="el-icon-user"
     >
@@ -42,7 +50,8 @@
         type="primary"
         @click="$router.push({ name: 'schedule' })"
         size="mini"
-      >Create Team Member</el-button>
+        >Create Team Member</el-button
+      >
     </Nocontent>
   </div>
 </template>

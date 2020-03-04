@@ -1,6 +1,11 @@
 <template>
   <div class="colour_picker_wrapper">
-    <el-color-picker v-model="colour" show-alpha :predefine="colourArray" class="theme_picker" />
+    <el-color-picker
+      v-model="colour"
+      show-alpha
+      :predefine="colourArray"
+      class="theme_picker"
+    />
   </div>
 </template>
 

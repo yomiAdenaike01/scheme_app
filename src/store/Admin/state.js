@@ -13,9 +13,9 @@ export default {
     previous: []
   },
   requestsInformation: [],
-  featureRequests:{
-    all:[],
-    user:[]
+  featureRequests: {
+    all: [],
+    user: []
   },
   /**
    * 

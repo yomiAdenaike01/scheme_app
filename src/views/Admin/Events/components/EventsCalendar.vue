@@ -1,8 +1,12 @@
 <template>
   <div class="cal_container">
-    <div
-      class="bar_incidator"
-    >{{hasEvents.value ? 'You have no scheduled events' : `You have ${hasEvents.count} events scheduled`}}</div>
+    <div class="bar_incidator">
+      {{
+        hasEvents.value
+          ? "You have no scheduled events"
+          : `You have ${hasEvents.count} events scheduled`
+      }}
+    </div>
     <vue-cal
       xsmall
       v-loading="loading"

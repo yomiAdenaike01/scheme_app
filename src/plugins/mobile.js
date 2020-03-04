@@ -1,4 +1,4 @@
-import Vue from 'vue'
-import VueMq from 'vue-mq'
+import Vue from "vue";
+import VueMq from "vue-mq";
 
-Vue.use(VueMq)
+Vue.use(VueMq);

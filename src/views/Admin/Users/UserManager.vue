@@ -8,15 +8,28 @@
     team please wait....`
     "
   >
-    <UserGroup v-if="getIsAdmin" addNew @createUserGroup="displayDialog = $event" />
+    <UserGroup
+      v-if="getIsAdmin"
+      addNew
+      @createUserGroup="displayDialog = $event"
+    />
 
     <UserGroup v-if="filteredGroupsWithUsers.length > 0">
       <div>
         <Title title="User Groups" subtitle="Manage and contact users here" />
-        <el-row v-for="(count, i) in filteredGroupsWithUsers" :key="`${count}${i}`">
-          <el-col :span="$mq != 'lg' ? 12 : 8" v-for="(group, index) in count" :key="index">
+        <el-row
+          v-for="(count, i) in filteredGroupsWithUsers"
+          :key="`${count}${i}`"
+        >
+          <el-col
+            :span="$mq != 'lg' ? 12 : 8"
+            v-for="(group, index) in count"
+            :key="index"
+          >
             <div class="p-4 m-1 user_group_container">
-              <div class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3">
+              <div
+                class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
+              >
                 <div class="flex_center">
                   <i class="bx bx-user user_group_icon"></i>
                   <span class="capitalize">{{ `${group.name}s` }}</span>
@@ -36,7 +49,10 @@
     <!-- Quick actions -->
     <QuickActions v-if="getIsAdmin" />
     <!-- User manager dialog -->
-    <UserManagerDialog :display="displayDialog" @toggle="displayDialog = $event" />
+    <UserManagerDialog
+      :display="displayDialog"
+      @toggle="displayDialog = $event"
+    />
   </el-row>
 </template>
 

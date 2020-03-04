@@ -16,7 +16,8 @@
             size="small"
             plain
             @click="$router.push({ name: 'schedule' })"
-          >{{ noShiftsContent.buttonText }}</el-button>
+            >{{ noShiftsContent.buttonText }}</el-button
+          >
         </Title>
       </el-card>
 

@@ -15,7 +15,8 @@
         @click="readAll"
         size="small"
         v-if="hasEntries(getUserNotificationsLength)"
-      >Mark all as read</el-button>
+        >Mark all as read</el-button
+      >
       <el-button
         v-if="hasReadNotifications"
         class="m-0 block_button"
@@ -23,7 +24,8 @@
         type="primary"
         plain
         @click="deleteReadNotifications"
-      >Delete all read notifications</el-button>
+        >Delete all read notifications</el-button
+      >
     </div>
     <Nocontent v-else v-bind="noContent" />
   </div>

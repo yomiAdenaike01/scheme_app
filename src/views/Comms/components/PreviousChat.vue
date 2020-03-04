@@ -8,7 +8,12 @@
   >
     <div class="flex align-center">
       <!-- Select chat to delete indicator -->
-      <el-checkbox v-if="selectionState" v-model="deleteChatIndicator" size="medium" class="mr-4" />
+      <el-checkbox
+        v-if="selectionState"
+        v-model="deleteChatIndicator"
+        size="medium"
+        class="mr-4"
+      />
       <Avatar class="mr-3" :name="participant.name" />
       <div class="flex columns">
         <p>{{ content }}</p>

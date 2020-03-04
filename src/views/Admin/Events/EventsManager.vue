@@ -10,7 +10,10 @@
     <div class="eventmanager_inner_container">
       <Toolbar @modalChanges="self.modals[$event] = true" class="m-3" />
 
-      <EventsCalendar @refreshShift="getEvents" @displayCreateEvent="modals.createEvent = $event" />
+      <EventsCalendar
+        @refreshShift="getEvents"
+        @displayCreateEvent="modals.createEvent = $event"
+      />
       <EventMangerDialog @createEvent="createEvent" />
       <ViewEventDialog />
     </div>

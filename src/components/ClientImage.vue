@@ -1,7 +1,11 @@
 <template>
   <div :class="['image_wrapper', { flex_center: center }]">
     <transition name="el-fade-in">
-      <el-image v-if="getClient || image" :src="showClient ? getClient.image : image" fit="cover">
+      <el-image
+        v-if="getClient || image"
+        :src="showClient ? getClient.image : image"
+        fit="cover"
+      >
         <div slot="error" class="error_image_slot">
           <FullLogo />
         </div>

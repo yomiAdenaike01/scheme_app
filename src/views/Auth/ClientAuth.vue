@@ -1,12 +1,21 @@
 <template>
   <div class="reg_wrapper">
     <el-card v-loading="loading">
-      <ClientImage class="m-4" :image="imageFileContent" :center="true" :showClient="false" />
+      <ClientImage
+        class="m-4"
+        :image="imageFileContent"
+        :center="true"
+        :showClient="false"
+      />
       <Tabs
         :tabs="returnTabs"
         v-model.number="selectedTab"
         :selectedTab="selectedTab"
-        @val="selectedTab == 0 ? clientRegForm.clientInformation = $event : clientRegForm.userInformation = $event"
+        @val="
+          selectedTab == 0
+            ? (clientRegForm.clientInformation = $event)
+            : (clientRegForm.userInformation = $event)
+        "
         :customMethod="changeTabs"
         :nextTab="true"
         :submitText="selectedTab == returnTabs.length ? 'Register' : 'Next'"

@@ -1,6 +1,13 @@
 <template>
-  <div class="colour_unit shadow flex_center" :style="{backgroundColor:colour}">
-    <el-color-picker :predefine="defaultCustomColours" class="inner_picker" v-model="colour"></el-color-picker>
+  <div
+    class="colour_unit shadow flex_center"
+    :style="{ backgroundColor: colour }"
+  >
+    <el-color-picker
+      :predefine="defaultCustomColours"
+      class="inner_picker"
+      v-model="colour"
+    ></el-color-picker>
   </div>
 </template>
 <script>

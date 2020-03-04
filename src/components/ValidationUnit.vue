@@ -4,7 +4,8 @@
       class="validation_unit txt_center"
       :type="booleanController"
       effect="plain"
-    >{{this[booleanController]['text'] }}</el-tag>
+      >{{ this[booleanController]["text"] }}</el-tag
+    >
   </div>
 </template>
 

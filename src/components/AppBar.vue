@@ -1,10 +1,17 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col class="client_indicator" :style="{ borderRight: `1.5px solid #efefef` }">
+    <el-col
+      class="client_indicator"
+      :style="{ borderRight: `1.5px solid #efefef` }"
+    >
       <div class="client_image_container p-2" v-if="$mq == 'lg'">
         <ClientImage :responsive="true" :center="true" />
       </div>
-      <div v-else class="nav_toggle" @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)">
+      <div
+        v-else
+        class="nav_toggle"
+        @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
+      >
         <i class="el-icon el-icon-menu"></i>
       </div>
     </el-col>
@@ -13,12 +20,24 @@
         <Dropdown :items="items" @method="handleCommands" :icon="false">
           <Avatar :name="userInformation.name" />
         </Dropdown>
-        <el-badge :value="getUserNotificationsLength" class="item ml-2 mt-1 primary">
-          <Popover width="350" trigger="click" traisition="el-collapse-transition">
+        <el-badge
+          :value="getUserNotificationsLength"
+          class="item ml-2 mt-1 primary"
+        >
+          <Popover
+            width="350"
+            trigger="click"
+            traisition="el-collapse-transition"
+          >
             <div class="notifications_center" slot="content">
               <NotificationManager />
             </div>
-            <el-button slot="trigger" size="small" circle icon="el-icon-bell trigger"></el-button>
+            <el-button
+              slot="trigger"
+              size="small"
+              circle
+              icon="el-icon-bell trigger"
+            ></el-button>
           </Popover>
         </el-badge>
       </div>

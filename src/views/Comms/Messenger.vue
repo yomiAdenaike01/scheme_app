@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <el-row type="flex" :gutter="10" class="messenger_container" v-loading="loading">
+    <el-row
+      type="flex"
+      :gutter="10"
+      class="messenger_container"
+      v-loading="loading"
+    >
       <ChatList />
       <ChatBody />
       <NewChatDialog />

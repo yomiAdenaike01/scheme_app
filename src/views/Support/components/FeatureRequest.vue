@@ -1,27 +1,25 @@
 <template>
   <div>
-      {{request}}
-      {{date}}
+    {{ request }}
+    {{ date }}
   </div>
 </template>
 
 <script>
 export default {
-name:'FeatureRequest',
-props:{
-    request:{
-        type:Object,
-        default:()=>{}
+  name: "FeatureRequest",
+  props: {
+    request: {
+      type: Object,
+      default: () => {}
     }
-},
-computed:{
-    date(){
-        return this.formatDate(this.request.dateCreated)
+  },
+  computed: {
+    date() {
+      return this.formatDate(this.request.dateCreated);
     }
-}
-}
+  }
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

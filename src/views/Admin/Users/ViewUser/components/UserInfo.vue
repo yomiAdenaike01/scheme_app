@@ -4,10 +4,10 @@
       <el-button round @click="requestgenEmail">Contact</el-button>
     </div>
     <h3>User Info</h3>
-    <p>{{date}}</p>
-    <p>{{data.name}}</p>
-    <p>{{data.email}}</p>
-    <p class="member_name">{{group}}</p>
+    <p>{{ date }}</p>
+    <p>{{ data.name }}</p>
+    <p>{{ data.email }}</p>
+    <p class="member_name">{{ group }}</p>
   </div>
 </template>
 

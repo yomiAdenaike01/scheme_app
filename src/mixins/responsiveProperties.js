@@ -2,14 +2,14 @@ export default {
   computed: {
     settings() {
       let mobileSettings = {
-        drawer: 'rtl',
-        navigation: ''
-      }
-      let isMobile = this.$mq != 'lg'
+        drawer: "rtl",
+        navigation: ""
+      };
+      let isMobile = this.$mq != "lg";
       if (isMobile) {
-        mobileSettings.drawer = 'btt'
+        mobileSettings.drawer = "btt";
       }
-      return mobileSettings
+      return mobileSettings;
     }
   }
-}
+};

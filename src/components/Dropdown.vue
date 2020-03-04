@@ -11,7 +11,7 @@
     </span>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item
-        v-for="(item,index) in items"
+        v-for="(item, index) in items"
         :disabled="item.disabled"
         :divided="item.divided"
         :command="item.command"

@@ -14,13 +14,22 @@
     >
       <div class="flex_center columns txt_center p-4">
         <div class="icons mb-3">
-          <i v-if="isSuccess.length == 0" :class="icon" class="quick_action_icon" />
+          <i
+            v-if="isSuccess.length == 0"
+            :class="icon"
+            class="quick_action_icon"
+          />
 
           <div v-if="isSuccess == id" class="check_container">
             <i class="bx bx-check"></i>
           </div>
         </div>
-        <Title tag="h4" defaultClass="m-0" :title="title" :subtitle="subtitle" />
+        <Title
+          tag="h4"
+          defaultClass="m-0"
+          :title="title"
+          :subtitle="subtitle"
+        />
       </div>
     </div>
   </el-card>

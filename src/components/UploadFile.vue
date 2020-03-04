@@ -7,7 +7,7 @@
       :limit="1"
       :on-remove="removeFileContent"
     >
-      <el-button v-bind="buttonConfig">{{buttonConfig.text}}</el-button> 
+      <el-button v-bind="buttonConfig">{{ buttonConfig.text }}</el-button>
       <p class="el-upload__tip" slot="tip">{{ tip }}</p>
     </el-upload>
   </div>

@@ -13,22 +13,31 @@
             FAQ's.
           </p>
           <div class="button_container flex_center mt-3">
-            <el-button round type="primary" plain @click="$router.push({ name: 'faqs' })">View FAQ's</el-button>
+            <el-button
+              round
+              type="primary"
+              plain
+              @click="$router.push({ name: 'faqs' })"
+              >View FAQ's</el-button
+            >
           </div>
         </div>
       </div>
       <el-collapse-transition>
         <div class="flex_center">
           <el-card class="m-5">
-            <h4
-              class="txt_center"
-            >The following information will be sent to your system administrator</h4>
+            <h4 class="txt_center">
+              The following information will be sent to your system
+              administrator
+            </h4>
             <div class="flex_center columns">
               <div class="info_wrapper p-2 m-3 txt_center">
-                <small>{{JSON.stringify(getUAInformation)}}</small>
-                <small>{{JSON.stringify(errorInformation)}}</small>
+                <small>{{ JSON.stringify(getUAInformation) }}</small>
+                <small>{{ JSON.stringify(errorInformation) }}</small>
               </div>
-              <el-button plain size="small" @click="sendErrorReport">Send Error Report</el-button>
+              <el-button plain size="small" @click="sendErrorReport"
+                >Send Error Report</el-button
+              >
             </div>
           </el-card>
         </div>

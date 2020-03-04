@@ -11,7 +11,8 @@
         size="small"
         :plain="button.plain"
         @click="button.method"
-      >{{ button.label }}</el-button>
+        >{{ button.label }}</el-button
+      >
       <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
@@ -21,9 +22,9 @@
         plain
       >
         {{
-        !hasGcal
-        ? "Integrate with google calendar"
-        : "Integrated with google calendar"
+          !hasGcal
+            ? "Integrate with google calendar"
+            : "Integrated with google calendar"
         }}
       </el-button>
     </el-col>

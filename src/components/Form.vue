@@ -50,7 +50,9 @@
               ? 'textarea'
               : input['input-type'] == 'date-time'
               ? 'datetime'
-              : input['input-type'] == 'dates' ? 'dates' : null
+              : input['input-type'] == 'dates'
+              ? 'dates'
+              : null
           "
           v-bind="input"
           :disabled="input.disabled"
@@ -64,10 +66,15 @@
             :label="option.text || option.name"
             :key="option.value"
             :value="option.value ? option.value : option.text"
-          >{{ option.text || option.name }}</el-option>
+            >{{ option.text || option.name }}</el-option
+          >
         </component>
         <!-- Hint -->
-        <small class="description" v-if="input.hint" v-html="input.hint"></small>
+        <small
+          class="description"
+          v-if="input.hint"
+          v-html="input.hint"
+        ></small>
       </el-form-item>
 
       <!-- Submit button -->
@@ -78,7 +85,8 @@
           class="button_text"
           round
           @click="submitForm"
-        >{{ submitText }}</el-button>
+          >{{ submitText }}</el-button
+        >
         <el-button v-if="displayReset" @click="resetForm">Reset</el-button>
       </div>
     </el-form>

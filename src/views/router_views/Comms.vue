@@ -33,9 +33,9 @@ export default {
     ...mapActions("Admin", ["getTeam"]),
     ...mapActions(["getNotifications"])
   },
-    watch:{
-    criticalNetworkError(){
-        clearInterval(this.commsInterval);
+  watch: {
+    criticalNetworkError() {
+      clearInterval(this.commsInterval);
     }
   }
 };

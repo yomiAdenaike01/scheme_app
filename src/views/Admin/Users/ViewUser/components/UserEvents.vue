@@ -12,7 +12,10 @@
           $router.push({ name: 'events' });
           $emit('toggle');
         "
-      >{{$route.name == 'events' ? 'Already in events' : 'Go to events'}}</el-button>
+        >{{
+          $route.name == "events" ? "Already in events" : "Go to events"
+        }}</el-button
+      >
     </Nocontent>
   </div>
 </template>

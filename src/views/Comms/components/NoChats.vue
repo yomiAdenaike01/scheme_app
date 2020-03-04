@@ -5,7 +5,11 @@
       <h3>No previous chats found</h3>
       <span class="grey desc">Press the button below to start a new chat</span>
     </div>
-    <el-button icon="el-icon-plus" circle @click="UPDATE_START_NEW_CHAT(true)"></el-button>
+    <el-button
+      icon="el-icon-plus"
+      circle
+      @click="UPDATE_START_NEW_CHAT(true)"
+    ></el-button>
   </div>
 </template>
 

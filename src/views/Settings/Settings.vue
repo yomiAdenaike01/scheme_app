@@ -9,8 +9,15 @@
             subtitle="Change all aspects of your settings here."
           />
 
-          <SettingsSelection @prefChange="view = $event" :selection="returnSettings" />
-          <div @click="verifyEmail" v-loading="loading" v-if="!userInformation.verified">
+          <SettingsSelection
+            @prefChange="view = $event"
+            :selection="returnSettings"
+          />
+          <div
+            @click="verifyEmail"
+            v-loading="loading"
+            v-if="!userInformation.verified"
+          >
             <el-alert
               class="mt-4 activate_account_alert"
               :class="{ disabled: type == 'error' }"
@@ -39,7 +46,8 @@
           v-loading="loading"
           v-if="settingsUpdated"
           size="small"
-        >Save Settings</el-button>
+          >Save Settings</el-button
+        >
       </el-footer>
     </el-container>
   </el-drawer>

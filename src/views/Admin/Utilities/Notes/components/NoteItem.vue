@@ -1,10 +1,10 @@
 <template>
   <div
     class="noteitem_container"
-    @click="note!=undefined ? UPDATE_DISPLAY_NOTE(note) : null"
-    :class="[{emptyNote: note==undefined}]"
+    @click="note != undefined ? UPDATE_DISPLAY_NOTE(note) : null"
+    :class="[{ emptyNote: note == undefined }]"
   >
-    <div class="note_body" v-if="note==undefined">
+    <div class="note_body" v-if="note == undefined">
       <el-button>Create new note</el-button>
     </div>
 
@@ -12,7 +12,7 @@
       <!-- Notes header -->
       <div class="note_header p-3 flex_center">
         <Avatar :name="assignedTo.name" />
-        <span class="grey">{{assignedTo.groupID}}</span>
+        <span class="grey">{{ assignedTo.groupID }}</span>
       </div>
 
       <!-- Notes body -->

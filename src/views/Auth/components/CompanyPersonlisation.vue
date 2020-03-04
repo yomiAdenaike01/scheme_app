@@ -1,14 +1,20 @@
 <template>
   <div class="company_personlisation_container flex_center columns">
     <div v-if="clientInformation">
-      <span class="desc">{{personalisationText}}</span>
+      <span class="desc">{{ personalisationText }}</span>
     </div>
     <ThemeSelection :predefineColors="predefinedColours">
       <!-- Display a row for the sidebar and the other colours -->
-      <ColourUnit :colour="colour" v-for="colour in predefinedColours" :key="colour" />
+      <ColourUnit
+        :colour="colour"
+        v-for="colour in predefinedColours"
+        :key="colour"
+      />
     </ThemeSelection>
     <div class="flex flex--end align-end">
-      <el-button @click="method" round type="primary" size="mini">Submit</el-button>
+      <el-button @click="method" round type="primary" size="mini"
+        >Submit</el-button
+      >
     </div>
   </div>
 </template>

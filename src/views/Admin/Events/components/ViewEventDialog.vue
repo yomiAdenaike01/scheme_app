@@ -1,6 +1,13 @@
 <template>
-  <el-dialog width="40%" :visible.sync="computeDisplay" v-if="getActiveDialog('viewEvent')">
-    <Title title="View event" subtitle="Click on more information to display details"></Title>
+  <el-dialog
+    width="40%"
+    :visible.sync="computeDisplay"
+    v-if="getActiveDialog('viewEvent')"
+  >
+    <Title
+      title="View event"
+      subtitle="Click on more information to display details"
+    ></Title>
     <div class="info_button_container flex flex--end">
       <el-button
         :circle="$mq != 'lg'"
@@ -9,20 +16,34 @@
         :icon="approval.icon"
         size="small"
         :type="approval.type"
-      >{{approval.type == 'success' && $mq == 'lg' ? 'Approved' : $mq == 'lg' && approval.type != 'success' ? 'Not approved' : null}}</el-button>
+        >{{
+          approval.type == "success" && $mq == "lg"
+            ? "Approved"
+            : $mq == "lg" && approval.type != "success"
+            ? "Not approved"
+            : null
+        }}</el-button
+      >
       <el-button
         round
         plain
         size="small"
         @click="clockIn"
         v-if="isEventMine && isEventToday && !hasClockedIn"
-      >Clock In</el-button>
+        >Clock In</el-button
+      >
 
-      <el-button v-if="hasPermissions" size="small" plain @click="sendReminderToUser" round>
+      <el-button
+        v-if="hasPermissions"
+        size="small"
+        plain
+        @click="sendReminderToUser"
+        round
+      >
         {{
-        event.assignedTo.length > 0
-        ? truncate("Remind users of this event", 14)
-        : truncate("Remind user of this event")
+          event.assignedTo.length > 0
+            ? truncate("Remind users of this event", 14)
+            : truncate("Remind user of this event")
         }}
       </el-button>
       <el-button
@@ -32,7 +53,8 @@
         @click="deleteEvent"
         round
         plain
-      >Delete Event</el-button>
+        >Delete Event</el-button
+      >
     </div>
     <div class="info_container p-3">
       <!-- Assigned users -->
@@ -44,7 +66,10 @@
           ref="user"
           v-for="(member, index) in event.assignedTo"
           :key="index"
-          :class="['assigned_user_container mb-2 flex align-center',{clocked_in:hasClockedIn}]"
+          :class="[
+            'assigned_user_container mb-2 flex align-center',
+            { clocked_in: hasClockedIn }
+          ]"
         >
           <el-button
             v-if="hasClockedIn"
@@ -61,20 +86,23 @@
             size="mini"
             round
             @click="dropUserFromEvent(member)"
-          >Drop user</el-button>
+            >Drop user</el-button
+          >
         </div>
 
         <div class="add_new_user p-4 trigger" v-if="canAddMoreUsers">
           <Popover>
             <div
               class="p-3 popover_item trigger"
-              :class="{no_events:event.assignedToRaw.indexOf(option._id) > -1}"
+              :class="{
+                no_events: event.assignedToRaw.indexOf(option._id) > -1
+              }"
               v-for="option in getFilteredTeam"
               @click="assignNewUser(option._id)"
               :key="option._id"
               slot="content"
             >
-              <span>{{option.name}}</span>
+              <span>{{ option.name }}</span>
             </div>
             <span slot="trigger">
               <i class="bx bx-plus"></i> Assign new user

@@ -34,7 +34,9 @@
                   round
                   size="small"
                   type="primary"
-                >Registering a new company ? Click here to register.</el-button>
+                  >Registering a new company ? Click here to
+                  register.</el-button
+                >
               </div>
             </Tabs>
           </el-main>

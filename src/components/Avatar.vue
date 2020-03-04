@@ -1,6 +1,8 @@
 <template>
   <div class="shadow_border flex_center avatar_container">
-    <el-avatar :style="{ background: randColour }">{{ !isNameTheSame ? initials : 'ME' }}</el-avatar>
+    <el-avatar :style="{ background: randColour }">{{
+      !isNameTheSame ? initials : "ME"
+    }}</el-avatar>
   </div>
 </template>
 

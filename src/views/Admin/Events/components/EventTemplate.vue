@@ -7,8 +7,8 @@
   >
     <div class="flex flex--space-between align-center">
       <div>
-        <h4 class="member_name">{{data.name}}</h4>
-        <p>{{getGroupName('event',data.content.type).name}}</p>
+        <h4 class="member_name">{{ data.name }}</h4>
+        <p>{{ getGroupName("event", data.content.type).name }}</p>
       </div>
       <div>
         <el-button circle icon="el-icon-delete" @click="deleteTemplate" />
@@ -18,17 +18,19 @@
     <el-collapse-transition>
       <div v-if="displayDetails" class="mt-3">
         <h3>Details</h3>
-        {{getEventAssignedTo(data.content.assignedTo).text}}
+        {{ getEventAssignedTo(data.content.assignedTo).text }}
         <br />
-        {{formatDate(data.startDate)}}
+        {{ formatDate(data.startDate) }}
         <br />
-        {{formatDate(data.endDate)}}
+        {{ formatDate(data.endDate) }}
         <br />
-        {{formatDate(data.dateCreated)}}
+        {{ formatDate(data.dateCreated) }}
         <br />
-        {{formattedWeekdays}}
+        {{ formattedWeekdays }}
         <br />
-        <el-button class="w-100 mt-3" plain type="primary" size="mini">Use template</el-button>
+        <el-button class="w-100 mt-3" plain type="primary" size="mini"
+          >Use template</el-button
+        >
       </div>
     </el-collapse-transition>
   </div>

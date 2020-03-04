@@ -21,7 +21,7 @@
         <!-- Form component -->
 
         <Form
-          @val="$emit('val',$event)"
+          @val="$emit('val', $event)"
           :customMethod="customMethod"
           :disable="disable"
           :disableForm="disableForm"
@@ -121,4 +121,3 @@ export default {
   }
 };
 </script>
-

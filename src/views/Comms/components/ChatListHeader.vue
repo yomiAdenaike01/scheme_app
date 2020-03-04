@@ -1,8 +1,22 @@
 <template>
   <div class="no_chats_container p-3 flex_center">
-    <el-input @input="$emit('searchContent',$event)" prefix-icon="el-icon-search" class="mr-3"></el-input>
-    <Dropdown @method="switchMethod" placement="bottom-start" :icon="false" :items="items">
-      <el-button icon="el-icon-more" type="primary" circle size="small"></el-button>
+    <el-input
+      @input="$emit('searchContent', $event)"
+      prefix-icon="el-icon-search"
+      class="mr-3"
+    ></el-input>
+    <Dropdown
+      @method="switchMethod"
+      placement="bottom-start"
+      :icon="false"
+      :items="items"
+    >
+      <el-button
+        icon="el-icon-more"
+        type="primary"
+        circle
+        size="small"
+      ></el-button>
     </Dropdown>
   </div>
 </template>
@@ -36,12 +50,12 @@ export default {
   methods: {
     ...mapMutations("Comms", ["UPDATE_START_NEW_CHAT"]),
     switchMethod(command) {
-      switch(command){
-        case 'startNewChat':{
-        this.UPDATE_START_NEW_CHAT(true);
-        break;
+      switch (command) {
+        case "startNewChat": {
+          this.UPDATE_START_NEW_CHAT(true);
+          break;
         }
-        case 'removeChat':{
+        case "removeChat": {
           this.$emit("removeChat");
           break;
         }

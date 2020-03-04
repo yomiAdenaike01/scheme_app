@@ -12,15 +12,21 @@
     <!-- Predefined configs -->
     <el-checkbox-group v-model="configDisplay" size="mini" class="m-3">
       <el-checkbox-button
-        v-for="({text,model,disable},index) in switches"
+        v-for="({ text, model, disable }, index) in switches"
         :label="model"
         :disabled="disable ? disable : false"
         :key="index"
-      >{{text}}</el-checkbox-button>
+        >{{ text }}</el-checkbox-button
+      >
     </el-checkbox-group>
 
     <!-- Form -->
-    <Form :config="templateForm" submitText="Submit Template" @val="createTemplate" size="small" />
+    <Form
+      :config="templateForm"
+      submitText="Submit Template"
+      @val="createTemplate"
+      size="small"
+    />
   </el-card>
 </template>
 

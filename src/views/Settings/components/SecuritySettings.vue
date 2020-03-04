@@ -2,13 +2,13 @@
   <el-collapse v-model="activeName" accordion class="mt-3">
     <el-collapse-item name="1" :disabled="userInformation.verified">
       <template slot="title">
-        <div style="width:90%;display:flex;justify-content:space-between;align-items:center;">
+        <div
+          style="width:90%;display:flex;justify-content:space-between;align-items:center;"
+        >
           Change Email Address
           <span style="color:#999">{{ userInformation.email }}</span>
           <el-tag :type="userInformation.verified ? 'success' : 'warning'">
-            {{
-            userInformation.verified ? 'Activated' : 'Not Activated'
-            }}
+            {{ userInformation.verified ? "Activated" : "Not Activated" }}
           </el-tag>
         </div>
       </template>
@@ -45,17 +45,21 @@
     </el-collapse-item>
     <el-collapse-item :disabled="getIsAdmin" title="Request Admin Access">
       <el-form>
-        <el-form-item style="display:flex;justify-content:center;align-items:center;">
+        <el-form-item
+          style="display:flex;justify-content:center;align-items:center;"
+        >
           <el-button
             size="small"
             v-loading="loading"
             @click="requestPermissionChange"
-          >Request Access</el-button>
+            >Request Access</el-button
+          >
         </el-form-item>
         <el-form-item style="text-align:center; color:#999">
-          <span
-            style="font-size:12px"
-          >This will create a request to all admins within your organisation, any body can approve it</span>
+          <span style="font-size:12px"
+            >This will create a request to all admins within your organisation,
+            any body can approve it</span
+          >
         </el-form-item>
       </el-form>
     </el-collapse-item>

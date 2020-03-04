@@ -13,7 +13,8 @@
           :value="member._id"
           :label="member.name"
           :key="member._id"
-        >{{ member.name }}</el-option>
+          >{{ member.name }}</el-option
+        >
       </el-select>
       <!-- Type first message -->
       <el-collapse-transition>
@@ -25,7 +26,10 @@
           @keyup.enter="initTranscript"
         >
           <template slot="append">
-            <el-button icon="el-icon-position" @click="initTranscript"></el-button>
+            <el-button
+              icon="el-icon-position"
+              @click="initTranscript"
+            ></el-button>
           </template>
         </el-input>
       </el-collapse-transition>

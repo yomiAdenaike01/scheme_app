@@ -21,8 +21,16 @@
 
       <!-- Popover display -->
       <Popover title="Create Task" position="right-start" trigger="click">
-        <div class="create_new_task_container" v-loading="popoverLoading" slot="content">
-          <el-input placeholder="Task title or content" v-model="task.content" size="mini"></el-input>
+        <div
+          class="create_new_task_container"
+          v-loading="popoverLoading"
+          slot="content"
+        >
+          <el-input
+            placeholder="Task title or content"
+            v-model="task.content"
+            size="mini"
+          ></el-input>
 
           <!-- Displaying the categories -->
           <el-select
@@ -80,11 +88,17 @@
               @click="runTaskRequest()"
               :disabled="task.content.length == 0"
               size="mini"
-            >Create task</el-button>
+              >Create task</el-button
+            >
           </div>
         </div>
 
-        <el-button icon="el-icon-plus" size="mini" circle slot="trigger"></el-button>
+        <el-button
+          icon="el-icon-plus"
+          size="mini"
+          circle
+          slot="trigger"
+        ></el-button>
       </Popover>
     </div>
 

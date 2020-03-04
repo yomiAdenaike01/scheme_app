@@ -4,12 +4,13 @@
     <div class="content_container">
       <div class="button_container flex_center w">
         <el-row type="flex" class="mt-4 mb-4">
-          <el-col v-for="(management,index) in managementConfig" :key="index">
+          <el-col v-for="(management, index) in managementConfig" :key="index">
             <el-button
               plain
               class="m-3 user_group_btn grey"
               @click="currentDisplay = makeUgly(management.name)"
-            >{{management.name}}</el-button>
+              >{{ management.name }}</el-button
+            >
           </el-col>
         </el-row>
       </div>
@@ -23,18 +24,26 @@
         <div v-if="currentDisplay == 'delete_group'">
           <div class="txt_center">
             <small>
-              <span class="el-icon-warning-outline"></span> Warning: Deleting a user group may cause unforseen errors
+              <span class="el-icon-warning-outline"></span> Warning: Deleting a
+              user group may cause unforseen errors
             </small>
           </div>
           <el-row type="flex">
             <div
               class="group_container p-4 m-3 flex_center columns flex-1"
-              v-for="(group,index) in clientInformation.userGroups"
+              v-for="(group, index) in clientInformation.userGroups"
               :key="index"
               @click="toggleDelete(group.value)"
-              :class="[{active:inArray(group.value),no_events:runningDelete == group.value}]"
+              :class="[
+                {
+                  active: inArray(group.value),
+                  no_events: runningDelete == group.value
+                }
+              ]"
             >
-              <p class="mb-3" v-loading="runningDelete == group.value">{{truncate(group.name,13)}}</p>
+              <p class="mb-3" v-loading="runningDelete == group.value">
+                {{ truncate(group.name, 13) }}
+              </p>
               <DefaultTransition>
                 <el-button
                   v-if="inArray(group.value)"
