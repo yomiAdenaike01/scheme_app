@@ -233,8 +233,7 @@ export default {
   methods: {
     ...mapActions(["request", "genEmail", "genPromptBox", "closeDialog"]),
     ...mapActions("Admin", ["getEvents"]),
-
-    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
+    ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
 
     dropUserFromEvent(userName) {
       // Cannot be the last one

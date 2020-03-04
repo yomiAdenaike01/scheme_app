@@ -1,5 +1,8 @@
 <template>
   <div class="cal_container">
+    <div
+      class="bar_incidator"
+    >{{hasEvents.value ? 'You have no scheduled events' : `You have ${hasEvents.count} events scheduled`}}</div>
     <vue-cal
       xsmall
       v-loading="loading"
@@ -7,6 +10,7 @@
       :on-event-click="viewEvent"
       events-on-month-view="short"
       :cell-click-hold="false"
+      editable-events
     />
   </div>
 </template>
@@ -29,20 +33,7 @@ export default {
       gcalEvents: []
     };
   },
-  activated() {
-    if ("gcalToken" in this.userInformation) {
-      this.request({
-        method: "GET",
-        url: "users/gcal"
-      })
-        .then(({ events }) => {
-          this.gcalEvents = events;
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
-  },
+
   computed: {
     ...mapState("Admin", [
       "eventsInformation",
@@ -55,8 +46,17 @@ export default {
       "getTeamMember",
       "getAllEvents",
       "getGroupName",
-      "getEventAssignedTo"
+      "getEventAssignedTo",
+      "getUsersEvents"
     ]),
+
+    hasEvents() {
+      let userEvents = this.getUsersEvents(this.userInformation._id);
+      return {
+        value: this.hasEntries(userEvents),
+        count: userEvents.length
+      };
+    },
 
     eventGroup() {
       let eventGroup = [];
@@ -149,11 +149,11 @@ export default {
           type,
           clockedIn
         } = event;
-if(assignedTo.length > 0){
-        assignedTo = this.getEventAssignedTo([...assignedTo]);
-}else{
-  assignedTo = []
-}
+        if (assignedTo.length > 0) {
+          assignedTo = this.getEventAssignedTo([...assignedTo]);
+        } else {
+          assignedTo = [];
+        }
         type = this.getGroupName("event", type).name;
         startDate = moment(startDate).format(this.format);
         endDate = moment(endDate).format(this.format);
@@ -170,10 +170,7 @@ if(assignedTo.length > 0){
           assignedTo: assignedTo.arr,
           assignedToRaw: event.assignedTo,
           type,
-          clockedIn,
-          repeat: {
-            weekdays: [1, 2, 3, 4, 5]
-          }
+          clockedIn
         });
       }
 

@@ -13,6 +13,10 @@ export default {
     previous: []
   },
   requestsInformation: [],
+  featureRequests:{
+    all:[],
+    user:[]
+  },
   /**
    * 
    * title,

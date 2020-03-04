@@ -14,16 +14,11 @@
           </p>
           <div class="button_container flex_center mt-3">
             <el-button round type="primary" plain @click="$router.push({ name: 'faqs' })">View FAQ's</el-button>
-            <el-button
-              round
-              type="primary"
-              @click="displayDetails = !displayDetails"
-            >Display Error Report</el-button>
           </div>
         </div>
       </div>
       <el-collapse-transition>
-        <div class="flex_center" v-if="displayDetails">
+        <div class="flex_center">
           <el-card class="m-5">
             <h4
               class="txt_center"
@@ -52,8 +47,7 @@ export default {
   },
   data() {
     return {
-      email: "",
-      displayDetails: false
+      email: ""
     };
   },
   computed: {
