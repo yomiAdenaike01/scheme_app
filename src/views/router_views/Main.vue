@@ -24,7 +24,6 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
 import moment, * as moments from "moment";
-import ServerHealth from "@/components/ServerHealth";
 import CriticalError from "@/components/CriticalError";
 import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
@@ -133,7 +132,6 @@ export default {
   components: {
     Navigation,
     AppBar,
-    ServerHealth,
     NprogressContainer,
     DefaultTransition,
     Tutorial

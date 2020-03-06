@@ -26,13 +26,9 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
-import UploadFile from "@/components/UploadFile";
-import ToggleSlideDown from "@/components/ToggleSlideDown";
 import Tabs from "@/components/Tabs";
-import CreateUserOptions from "./CreateUserOptions";
 import Title from "@/components/Title";
 import ValidationUnit from "@/components/ValidationUnit";
-import ManageUserGroups from "./ManageUserGroups";
 const csvtojson = require("csvtojson");
 
 export default {
@@ -258,12 +254,8 @@ export default {
 
   components: {
     Title,
-    UploadFile,
-    ToggleSlideDown,
     Tabs,
-    CreateUserOptions,
-    ValidationUnit,
-    ManageUserGroups
+    ValidationUnit
   },
 
   watch: {

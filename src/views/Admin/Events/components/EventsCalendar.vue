@@ -2,13 +2,12 @@
   <div class="cal_container">
     <div class="bar_incidator">
       {{
-        hasEvents.value
-          ? "You have no scheduled events"
-          : `You have ${hasEvents.count} events scheduled`
+        !hasEvents.value
+          ? "You have no scheduled events."
+          : `You have ${hasEvents.count} events scheduled.`
       }}
     </div>
     <vue-cal
-      xsmall
       v-loading="loading"
       :events="allEvents"
       :on-event-click="viewEvent"
@@ -328,5 +327,12 @@ export default {
       }
     }
   }
+}
+.bar_incidator {
+  border-radius: 5px;
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 40px;
+  border: 1px solid whitesmoke;
 }
 </style>
