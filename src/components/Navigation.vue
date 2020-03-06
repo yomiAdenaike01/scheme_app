@@ -1,18 +1,16 @@
 <template>
   <el-menu
     id="main_nav"
-    style="height:100%"
     :default-active="$route.path"
     :router="true"
     mode="vertical"
     :collapse="true"
-    text-color="#fff"
-    :background-color="getSidebarColour"
+    :background-color="getDefaultColour"
     :active-text-color="lightColour"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
       <i :class="route.icon" class="home_icon"></i>
-      <span slot="title">{{ route.name }}</span>
+      <small class="m-2" slot="title">{{ route.name }}</small>
     </el-menu-item>
   </el-menu>
 </template>
@@ -27,39 +25,44 @@ export default {
       isCollapse: true,
       routes: [
         {
-          name: "Dashboard",
-          path: "/admin/dashboard",
-          icon: "el-icon-s-data"
-        },
-        {
-          name: "Schedule",
-          path: "/admin/schedule",
+          name: "Events management",
+          path: "/admin/events",
           icon: "el-icon-date"
         },
+        // {
+        //   name: "Messenger",
+        //   path: "/comms/messenger",
+        //   icon: "bx bx-message-rounded-edit"
+        // },
         {
-          name: "Messenger",
-          path: "/comms/messenger",
-          icon: "el-icon-chat-round"
-        },
-        {
-          name: "User",
+          name: "User management",
           path: "/admin/user",
-          icon: "el-icon-user"
+          icon: "bx bx-group"
         },
+        // {
+        //   name: "Analytics",
+        //   path: "/admin/analytics",
+        //   icon: "bx bx-bar-chart-alt-2"
+        // },
+        // {
+        //   name: "Utilities",
+        //   path: "/admin/utilities",
+        //   icon: "bx bx-task"
+        // },
         {
-          name: "Reports",
-          path: "/admin/reports",
-          icon: "el-icon-notebook-1"
+          name: "Support",
+          path: "/support/dashboard",
+          icon: "bx bx-support"
         }
       ]
     };
   },
   computed: {
     ...mapState(["client", "localSettings"]),
-    ...mapGetters(["getSidebarColour"]),
+    ...mapGetters(["getDefaultColour"]),
 
     lightColour() {
-      let baseColour = tinycolor(this.getSidebarColour);
+      let baseColour = tinycolor(this.getDefaultColour);
       if (baseColour.isLight()) {
         return baseColour.darken(10).toString();
       } else {
@@ -79,5 +82,10 @@ export default {
 }
 .el-menu-item i {
   color: darken($color: white, $amount: 10);
+}
+
+#main_nav {
+  flex: 1;
+  height: 100%;
 }
 </style>

@@ -3,7 +3,7 @@
     <el-form v-model="generalSettings">
       <el-form-item
         class="toggle_item p-2"
-        v-for="(setting,index) in settingsConfig"
+        v-for="(setting, index) in settingsConfig"
         :label="setting.name"
         :key="index"
       >

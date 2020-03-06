@@ -1,28 +1,39 @@
 export default {
-  team: [],
-  shifts: [],
-  requests: [],
-  viewTeamMember: { view: false, id: null },
-  shiftTypes: [
-    {
-      name: "General",
-      value: 1
-    },
-    {
-      name: "Locumn",
-      value: 2
-    },
-    {
-      name: "Holiday",
-      value: 3
-    },
-    {
-      name: "Time Off",
-      value: 4
-    },
-    {
-      name: "Sick Leave",
-      value: 5
-    }
-  ]
+  eventFilters: {},
+  viewNote: {
+    display: false
+  },
+  teamInformation: [],
+  notes: [],
+  tasks: [],
+  eventsInformation: {
+    all: [],
+    upcoming: [],
+    today: [],
+    previous: []
+  },
+  requestsInformation: [],
+  featureRequests: {
+    all: [],
+    user: []
+  },
+  /**
+   * 
+   * title,
+   * endpoint,
+   * type: card, bar, pie, table,
+   * category
+   * 
+   * analytics
+   * categories
+   *  user (online, offline , count of each group(event,user) events participated in pie chart of breakdown of their totoal hours)
+    events (number of events in total, break down of type(pie),)
+   
+   */
+  analyticsPresentation: {
+    barPercentage: 0.5,
+    barThickness: 6,
+    maxBarThickness: 8,
+    minBarLength: 2
+  }
 };

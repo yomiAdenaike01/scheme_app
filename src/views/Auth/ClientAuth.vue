@@ -1,6 +1,6 @@
 <template>
   <div class="reg_wrapper">
-    <el-card v-loading="pageLoading">
+    <el-card v-loading="loading">
       <ClientImage
         class="m-4"
         :image="imageFileContent"
@@ -9,22 +9,24 @@
       />
       <Tabs
         :tabs="returnTabs"
-        v-model="selectedTab"
+        v-model.number="selectedTab"
         :selectedTab="selectedTab"
-        @val="formInput = $event"
-        :customMethod="registerNewClient"
+        @val="
+          selectedTab == 0
+            ? (clientRegForm.clientInformation = $event)
+            : (clientRegForm.userInformation = $event)
+        "
+        :customMethod="changeTabs"
         :nextTab="true"
-        @changeTab="selectedTab = '1'"
-        :submitText="selectedTab == '1' ? 'Register' : 'Next'"
+        :submitText="selectedTab == returnTabs.length ? 'Register' : 'Next'"
       >
         <!-- Upload Image -->
-        <div slot="footer_content" v-if="selectedTab == '0'">
-          <el-divider>
+        <div slot="footer_content" v-if="selectedTab == 0">
+          <el-divider class="mb-5">
             <span>Logo Selection</span>
           </el-divider>
           <UploadFile @fileContent="imageFileContent = $event" />
         </div>
-        <!-- Upload Image -->
       </Tabs>
     </el-card>
   </div>
@@ -41,27 +43,21 @@ import CompanyPersonlisation from "./components/CompanyPersonlisation";
 import UploadFile from "@/components/UploadFile";
 import ClientImage from "@/components/ClientImage";
 import uploadContent from "@/mixins/uploadContent";
+
 export default {
   name: "ClientAuth",
-  created() {
-    let allForms = this.returnRegisterForm.concat(this.returnClientForm);
-    allForms.map(form => {
-      for (let prop in form) {
-        if (prop == "model") {
-          this.$set(this.formInput, form[prop], "");
-        }
-      }
-    });
-  },
+
   mixins: [refactorLocation, uploadContent],
   data() {
     return {
-      selectedTab: "0",
+      selectedTab: 0,
       imageFileContent: "",
-      formInput: {},
-      colourOptions: "",
-      pageLoading: false,
-      moreInformation: false,
+      clientRegForm: {
+        userInformation: {},
+        clientInformation: {}
+      },
+      colourOptions: [],
+      loading: false,
       imageFile: ""
     };
   },
@@ -72,9 +68,9 @@ export default {
       let capNum =
         this.returnClientForm.length + this.returnRegisterForm.length;
       let isValid = false;
-      for (let property in this.formInput) {
+      for (let property in this.clientRegForm) {
         let initNum = 0;
-        if (this.formInput[property]) {
+        if (this.clientRegForm[property]) {
           initNum++;
 
           if (initNum == capNum) {
@@ -86,41 +82,57 @@ export default {
       }
       return isValid;
     },
+    regFormValidation() {
+      let { clientInformation, userInformation } = this.clientRegForm;
+      return {
+        userInformation: Object.values(userInformation).length <= 0,
+        clientInformation: Object.values(clientInformation).length <= 0
+      };
+    },
     returnTabs() {
       return [
         {
-          label: "Client & Admin Details",
-          formContent: this.returnClientForm.concat(this.returnRegisterForm)
+          label: "Company Details",
+          formContent: this.returnClientForm
+        },
+        {
+          label: "User Details",
+          formContent: this.returnRegisterForm,
+          disabled: this.regFormValidation.clientInformation
         },
         {
           label: "Scheme Personalisation",
+          disabled: this.regFormValidation.userInformation,
           view: {
             component: CompanyPersonlisation,
             props: {
-              predefinedColours: [this.colourOptions]
+              predefinedColours: this.colourOptions,
+              method: this.registerNewClient
             }
           }
         }
       ];
     },
+
     returnClientForm() {
       return [
         {
-          model: "client_name",
-          type: "text",
+          model: "name",
+          "component-type": "text",
           placeholder: "Company Name"
         },
         {
-          model: "client_phone",
-          type: "text",
-          placeholder: "Company Phone Number"
+          model: "phone",
+          "component-type": "text",
+          placeholder: "Company Phone Number",
+          type: "number"
         },
         {
-          model: "client_subdomain",
-          type: "text",
-          suffix: ".schemeapp.cloud",
-          placeholder: "Desired subdomin name",
-          hint: "Please enter all lowercase with no spaces"
+          optional: true,
+          model: "subdomain",
+          "component-type": "text",
+          placeholder: ".schemeapp.cloud",
+          hint: "Optional: Will default to the company name"
         }
       ];
     },
@@ -129,26 +141,26 @@ export default {
       return [
         {
           name: "name",
-          type: "text",
+          "component-type": "text",
           placeholder: "First and last name",
           model: "name"
         },
 
         {
           name: "email",
-          type: "text",
+          "component-type": "text",
           placeholder: "Email",
           model: "email"
         },
         {
           name: "password",
-          type: "password",
+          "component-type": "password",
           placeholder: "New password",
           model: "password"
         },
         {
           name: "gender",
-          type: "select",
+          "component-type": "select",
           placeholder: "Gender",
           model: "gender",
           options: [
@@ -166,56 +178,77 @@ export default {
       ];
     }
   },
+
   methods: {
     ...mapActions(["request"]),
+
+    changeTabs() {
+      let selectedTab = this.selectedTab + 1;
+      if (selectedTab == this.returnTabs.length) {
+        selectedTab = 0;
+      }
+
+      this.selectedTab = selectedTab.toString();
+    },
 
     genAccentColour() {
       if (this.imageFileContent.length > 0) {
         Vibrant.from(this.imageFileContent).getPalette((err, palette) => {
           if (!err) {
-            this.pageLoading = false;
-            this.colourOptions = palette.Vibrant.hex;
+            this.loading = false;
+            this.colourOptions.push(palette.Vibrant.hex);
           }
         });
+      } else {
+        return "rgba(42, 104, 212, 1)";
       }
     },
 
     registerNewClient() {
-      this.pageLoading = true;
-      let clientRegisterData = this.formInput;
-      clientRegisterData.client_colours = this.colourOptions;
+      this.loading = true;
 
-      this.upload({
-        ref: { folder: "clients", file: null },
-        content: this.imageFileContent
-      })
-        .then(({ url, ref }) => {
-          clientRegisterData.client_image = url;
-          clientRegisterData.storage_ref = ref;
-          this.request({
-            method: "POST",
-            url: "clients/create",
-            data: clientRegisterData
+      let { clientInformation } = this.clientRegForm;
+
+      clientInformation.colours = this.colourOptions;
+
+      if (this.imageFileContent) {
+        this.upload({
+          ref: { folder: "clients", file: null },
+          content: this.imageFileContent
+        })
+          .then(response => {
+            clientInformation.image = response.url;
+            clientInformation.storageRef = response.ref;
+
+            this.submitClient(this.clientRegForm);
           })
-            .then(response => {
-              // log them in
-              this.pageLoading = false;
-              this.processNewClient(response);
-            })
-            .catch(error => {
-              this.pageLoading = false;
-              console.error(error);
-            });
+          .catch(error => {
+            console.error(error);
+          });
+      } else {
+        this.submitClient(this.clientRegForm);
+      }
+    },
+    submitClient(form) {
+      this.request({
+        method: "POST",
+        url: "clients/create",
+        data: form
+      })
+        .then(response => {
+          // log them in
+          this.loading = false;
+          this.processNewClient();
         })
         .catch(error => {
+          this.loading = false;
           console.error(error);
         });
     },
-    processNewClient(response) {
-      this.refactorWindowLocation(this.formInput.client_subdomin.toLowerCase());
-    },
-    checkIfTabIsValid(tab) {
-      console.log(tab);
+    processNewClient() {
+      let { name } = this.clientRegForm.clientInformation;
+      let subdomain = name.toLowerCase().trim();
+      this.refactorWindowLocation(subdomain);
     }
   },
   components: {

@@ -1,9 +1,17 @@
 import sounds from "@/mixins/playSound";
-import alterTheme from "@/mixins/alterTheme";
 import Vue from "vue";
-Vue.mixin(alterTheme);
+import router from "../router";
 
 export default {
+  UPDATE_DIALOG_INDEX(
+    { dialogIndex },
+    { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
+  ) {
+    Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
+  },
+  UPDATE_SERVER_HEALTH_STATUS(state, payload) {
+    Vue.set(state, "serverHealth", payload);
+  },
   UPDATE_COLOURS(state, { target, val }) {
     state.localSettings.colours[target] = val;
   },
@@ -18,8 +26,12 @@ export default {
       document.head.appendChild(styleTag);
     }
   },
+  UPDATE_INVALID_CLIENT(state, payload) {
+    Vue.set(state, "invalidClient", payload);
+  },
   UPDATE_CLIENT(state, payload) {
-    Vue.set(state, "client", payload);
+    Vue.set(state, "clientInformation", payload);
+    localStorage.setItem("clientInformation", JSON.stringify(payload));
   },
   UPDATE_UPLOAD_TIMESHEET(state, payload) {
     Vue.set(state, "weeklyTimesheetUploaded", payload);
@@ -36,9 +48,7 @@ export default {
   UPDATE_USER_NOTIFICATIONS(state, payload) {
     Vue.set(state, "userNotifications", payload);
   },
-  UPDATE_VIEW_NOTIFICATIONS_CENTER(state, payload) {
-    Vue.set(state, "viewNotificationsCenter", payload);
-  },
+
   UPDATE_SETTINGS(state, { category, key, value }) {
     Vue.set(state["localSettings"], category[key], value);
   },
@@ -46,30 +56,54 @@ export default {
     Vue.set(state, "globalLoader", payload);
   },
   REMOVE_USER(state) {
-    Vue.set(state, "currentUser", {});
+    Vue.set(state, "userInformation", {});
     Vue.set(state, "token", {});
 
     localStorage.removeItem("token");
-    localStorage.removeItem("currentUser");
+    localStorage.removeItem("userInformation");
   },
   UPDATE_USER(state, { user, token }) {
     Vue.set(state, "token", token);
-    Vue.set(state, "currentUser", user);
+    Vue.set(state, "userInformation", user);
 
     localStorage.setItem("token", token);
-    localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("userInformation", JSON.stringify(user));
   },
-
+  UPDATE_USER_PREFERENCES(state, { index, data }) {
+    let { settings } = state.userInformation;
+    Vue.set(settings, index, data);
+  },
   UPDATE_NOTIFICATIONS(state, notification) {
-    notification.showClose = false;
-    if (notification["type"] == "success") {
-      notification["title"] = "Opeartion Successful";
-      sounds.methods.playSuccessSound();
-    } else if (notification["type"] == "error") {
-      notification["title"] = "Operation Unsuccessful";
-    } else if (notification["message"] == "network error") {
-      state["critical_network_error"] = true;
+    if (notification.type == "success") {
+      notification.title = "Operation Successful";
+    } else if (notification.type == "error") {
+      notification.title = "Operation Unsuccessful";
+
+      if (typeof notification.message == "object") {
+        state.criticalNetworkError = true;
+        state.errorInformation = notification.message;
+
+        if (router.currentRoute.name != "error") {
+          router.push({ name: "error" });
+        }
+      }
     }
-    Vue.set(state, "notifications", [notification, ...state.notifications]);
+
+    if ("desktop" in notification) {
+      //  params:  // 'To do list', { body: text, icon: img }
+      let desktopNotification;
+      let desktop = notification.desktop;
+      let { content, title } = desktop;
+      desktopNotification = new Notification(title, content);
+      if ("click" in desktop) {
+        desktopNotification.onclick = () => {
+          desktop.click();
+        };
+      }
+    }
+    Vue.set(state, "notifications", [
+      notification,
+      ...state.localNotifications
+    ]);
   }
 };

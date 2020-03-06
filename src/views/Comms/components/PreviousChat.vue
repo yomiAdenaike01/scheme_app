@@ -13,7 +13,6 @@
         v-model="deleteChatIndicator"
         size="medium"
         class="mr-4"
-        
       />
       <Avatar class="mr-3" :name="participant.name" />
       <div class="flex columns">
@@ -50,15 +49,15 @@ export default {
     data: {
       type: Object
     },
-    selectionState:{
-      type:Boolean,
-      default:false
+    selectionState: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
-    ...mapState("Admin", ["team"]),
-    ...mapState("Comms", ["activeTranscript",'selectedChat']),
-    ...mapState(["client"]),
+    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Comms", ["activeTranscript", "selectedChat"]),
+    ...mapState(["clientInformation"]),
     ...mapGetters(["getSidebarColour"]),
     participant() {
       return this.findTeamMember(this.data.user_2)
@@ -77,7 +76,7 @@ export default {
     id() {
       return this.data._id;
     },
-    isSelectedToRemove(){
+    isSelectedToRemove() {
       let selectedChat = this.selectedChat;
       return selectedChat == this.id;
     }

@@ -1,0 +1,50 @@
+{
+  "guide": {
+    "misc": {
+      "critical_error": {
+        "title": "Critical Error",
+        "information": "Information"
+      }
+    },
+    "comms": {
+      "messenger": {
+        "title": "Messaging",
+        "information": "Your messages will be displayed here."
+      }
+    },
+    "admin": {
+      "requests": {
+        "title": "Requests/Notifications",
+        "information": "Request and notifications are displayed here. Users that make requests <strong>(if admin)</strong> will be displayed here ready for your approval. Things to do with events that you are named on will be displayed here"
+      },
+      "view_shift": {
+        "title": "View shift",
+        "information": "All the information about the shift is displayed here"
+      },
+      "report": {
+        "title": "Reporting",
+        "information": "Your statistics will appear here."
+      },
+      "create_event": {
+        "title": "Creating event/shift",
+        "information": "Events / Requests or shifts can be created here. They differ based on the user that is creating them."
+      },
+      "upload_employee": {
+        "title": "Batch Upload Employees",
+        "information": "CSV files like shifts can be uploaded by they must follow strict guidelines"
+      },
+      "upload_timesheet": {
+        "title": "Uploading new timesheet",
+        "information": "Timesheets require a certain template for them to be uploaded and used frequently, they will need to consits of the following, type,  startDate,endDate,assignedTo"
+      },
+      "create_template": {
+        "title": "Creating a new template",
+        "information": "When uploading a new timesheet, users are given the option to save that timesheet and it't content as a template. This template when used in the future will update itself by one week when used. This is still an experimental feature and therefore, should be used cautiously."
+      },
+      "team_viewing": {
+        "title": "Viewing Team",
+        "information": "Your team members whether online or offline will appear here. There are quick actions that are displayed that will let you message members or book requests for them (admin)"
+      }
+    }
+  }
+}

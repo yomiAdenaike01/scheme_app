@@ -1,11 +1,11 @@
 <template>
-  <div class="validation_wrapper">
+  <div class="validation_wrapper shadow">
     <el-tag
-      style="width:100%; text-align:center"
-      class="validation_unit"
+      class="validation_unit txt_center"
       :type="booleanController"
       effect="plain"
-    >{{this[booleanController]['text'] }}</el-tag>
+      >{{ this[booleanController]["text"] }}</el-tag
+    >
   </div>
 </template>
 
@@ -44,6 +44,10 @@ export default {
 </script>
 <style lang="scss" scoped>
 .validation_unit {
-  box-shadow: $box_shadow;
+  &/deep/ {
+    .el-tag {
+      width: 100px;
+    }
+  }
 }
 </style>

@@ -1,23 +1,44 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col class="client_indicator" :style="{ borderRight: `1.5px solid #efefef` }">
-      <ClientImage v-if="$mq == 'lg'" :responsive="true" :center="true" />
-      <div v-else class="nav_toggle" @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)">
+    <el-col
+      class="client_indicator"
+      :style="{ borderRight: `1.5px solid #efefef` }"
+    >
+      <div class="client_image_container p-2" v-if="$mq == 'lg'">
+        <ClientImage :responsive="true" :center="true" />
+      </div>
+      <div
+        v-else
+        class="nav_toggle"
+        @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
+      >
         <i class="el-icon el-icon-menu"></i>
       </div>
     </el-col>
     <el-col>
       <div class="profile_container">
         <Dropdown :items="items" @method="handleCommands" :icon="false">
-          <Avatar :name="currentUser.name" />
+          <Avatar :name="userInformation.name" />
         </Dropdown>
-        <el-badge :value="userNotifications.length" class="item ml-2 mt-1 primary">
-          <el-button
-            size="small"
-            @click="UPDATE_VIEW_NOTIFICATIONS_CENTER(true)"
-            circle
-            icon="el-icon-bell trigger"
-          ></el-button>
+        <el-badge
+          :value="getUserNotificationsLength"
+          class="item ml-2 mt-1 primary"
+        >
+          <Popover
+            width="350"
+            trigger="click"
+            traisition="el-collapse-transition"
+          >
+            <div class="notifications_center" slot="content">
+              <NotificationManager />
+            </div>
+            <el-button
+              slot="trigger"
+              size="small"
+              circle
+              icon="el-icon-bell trigger"
+            ></el-button>
+          </Popover>
         </el-badge>
       </div>
     </el-col>
@@ -31,8 +52,9 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Dropdown from "@/components/Dropdown";
 import Settings from "@/views/Settings/Settings";
 import Avatar from "./Avatar.vue";
-import prompts from "@/mixins/prompts";
 import ClientImage from "@/components/ClientImage";
+import Popover from "@/components/Popover";
+import NotificationManager from "@/components/NotificationManager";
 export default {
   name: "AppBar",
   data() {
@@ -42,16 +64,21 @@ export default {
   },
   computed: {
     ...mapState([
-      "currentUser",
+      "userInformation",
       "userNotifications",
       "viewMobileMenu",
       "client"
     ]),
 
-    ...mapGetters(["getCompanyColours", "getClient", "getSidebarColour"]),
+    ...mapGetters([
+      "getClientColours",
+      "getClient",
+      "getSidebarColour",
+      "getUserNotificationsLength"
+    ]),
 
     getPrimaryColour() {
-      return this.getCompanyColours.find(colour => {
+      return this.getClientColours.find(colour => {
         return colour.label == "Primary";
       }).colour;
     },
@@ -74,19 +101,25 @@ export default {
     items() {
       return [
         {
-          name: "View Notifications",
-          command: "view_notifications"
+          name: "<i class='bx bx-user'></i> Profile",
+          command: "view_profile"
         },
+
         {
-          name: "Settings",
+          name: "<i class='bx bx-cog'></i> Settings",
           command: "settings",
           divided: true
         },
         {
+          name: "Help",
+          command: "support",
+          divided: true,
+          icon: "el-icon-bangzhu"
+        },
+        {
           name: "Log Out",
           command: "log_out",
-          divided: true,
-          icon: "el-icon-switch-button"
+          divided: true
         }
       ];
     }
@@ -98,16 +131,21 @@ export default {
       "UPDATE_VIEW_NOTIFICATIONS_CENTER",
       "UPDATE_TOGGLE_MOBILE_MENU"
     ]),
+    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     ...mapActions(["request"]),
     handleCommands(command) {
       switch (command) {
-        case "view_notifications": {
-          this.UPDATE_VIEW_NOTIFICATIONS_CENTER(true);
+        case "view_profile": {
+          this.UPDATE_DIALOG_INDEX({
+            dialog: "viewUser",
+            view: true,
+            id: this.userInformation._id
+          });
           break;
         }
+
         case "log_out": {
-          this.UPDATE_GLOBAL_LOADER(true);
           this.request({
             method: "GET",
             url: "users/logout"
@@ -126,6 +164,11 @@ export default {
           break;
         }
 
+        case "support": {
+          this.$router.push({ name: "supportCentre" });
+          break;
+        }
+
         default:
           break;
       }
@@ -135,9 +178,10 @@ export default {
     Dropdown,
     Settings,
     Avatar,
-    ClientImage
-  },
-  mixins: [prompts]
+    ClientImage,
+    Popover,
+    NotificationManager
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -159,7 +203,7 @@ export default {
   height: 100%;
 }
 .client_container {
-  background: $primary_colour;
+  background: $element_colour;
   color: white;
 }
 .username {
@@ -176,6 +220,13 @@ export default {
 }
 .text_wrapper {
   font-size: 0.9em;
+}
+.popover_container {
+  &/deep/ {
+    .el-popover {
+      padding: 0;
+    }
+  }
 }
 /**
  _   _  _  ___ _  _    ___ 

@@ -7,8 +7,8 @@
       :limit="1"
       :on-remove="removeFileContent"
     >
-      <el-button v-bind="buttonConfig">{{buttonConfig.text}}</el-button>
-      <div class="txt_center el-upload__tip" slot="tip">{{ tip }}</div>
+      <el-button v-bind="buttonConfig">{{ buttonConfig.text }}</el-button>
+      <p class="el-upload__tip" slot="tip">{{ tip }}</p>
     </el-upload>
   </div>
 </template>
@@ -42,7 +42,7 @@ export default {
     tip: {
       type: String,
       default: () => {
-        return "";
+        return "Supported files *.csv, *.png , *.jpg";
       }
     }
   },
@@ -65,8 +65,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.upload_image_container {
-  max-width: 100px;
-}
-</style>

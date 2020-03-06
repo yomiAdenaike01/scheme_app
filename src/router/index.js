@@ -1,118 +1,59 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import store from "./../store/index";
+import store from "./../store";
 
-const UserAuth = () => import("@/views/Auth/UserAuth");
-const ClientAuth = () => import("@/views/Auth/ClientAuth");
-const dashboard = () => import("@/views/Admin/Dashboard/Dashboard");
-const schedule = () => import("@/views/Admin/Schedule/Schedule");
-const messenger = () => import("@/views/Comms/Messenger");
-const reports = () => import("@/views/Admin/Reports/Reports");
-const user = () => import("@/views/Admin/User/User");
-// const featurerequest = () => import("@/views/Admin/FeatureRequest");
+import AdminRoutes from "./AdminRoutes";
+import CommsRoutes from "./CommsRoutes";
+import AuthRoutes from "./AuthRoutes";
+import SupportRoutes from "./SupportRoutes";
+
+const ClientIntro = () => import("@/components/ClientIntro");
 
 // Router views
-const mainApp = () => import("@/views/router_views/Main");
-const admin = () => import("@/views/router_views/Admin");
-const comms = () => import("@/views/router_views/Comms");
+const MainApp = () => import("@/views/router_views/Main");
+const Admin = () => import("@/views/router_views/Admin");
+const Comms = () => import("@/views/router_views/Comms");
+const Support = () => import("@/views/router_views/Support");
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    redirect: { name: "login" }
+    redirect: { name: "events" }
+  },
+  {
+    path: "/intro",
+    name: "clientIntro",
+    component: ClientIntro
+  },
+
+  {
+    path: "/support",
+    name: "support",
+    component: Support,
+    children: [...SupportRoutes]
   },
   {
     path: "/main",
     name: "main",
-    component: mainApp,
+    component: MainApp,
     children: [
       {
         path: "/admin",
         name: "admin",
-        component: admin,
-        children: [
-          {
-            path: "dashboard",
-            name: "dashboard",
-            component: dashboard,
-            meta: {
-              title: "Dashboard",
-              authRequired: true
-            }
-          },
-          {
-            path: "schedule",
-            name: "schedule",
-            component: schedule,
-            meta: {
-              title: "Schedule",
-              authRequired: true
-            }
-          },
-          {
-            path: "reports",
-            name: "reports",
-            component: reports,
-            meta: {
-              title: "Reports",
-              authRequired: true
-            }
-          },
-          {
-            path: "user",
-            name: "user",
-            component: user,
-            meta: {
-              title: "User Management",
-              authRequired: true
-            }
-          }
-          // {
-          //   path: "/request",
-          //   component: featurerequest,
-          //   meta: {
-          //     title: "Feature Request / Bug Reporting",
-          //     authRequired: true
-          //   }
-          // }
-        ]
+        component: Admin,
+        children: [...AdminRoutes]
       },
       {
         path: "/comms",
         name: "comms",
-        component: comms,
-        children: [
-          {
-            path: "messenger",
-            name: "messenger",
-            component: messenger,
-            meta: {
-              title: "Messenger",
-              authRequired: true
-            }
-          }
-        ]
+        component: Comms,
+        children: [...CommsRoutes]
       }
     ]
   },
-  {
-    path: "/auth/user",
-    name: "login",
-    component: UserAuth,
-    meta: {
-      title: "User Authentication"
-    }
-  },
-  {
-    path: "/auth/client",
-    name: "register",
-    component: ClientAuth,
-    meta: {
-      title: "Client Authentication"
-    }
-  }
+  ...AuthRoutes
 ];
 
 const router = new VueRouter({
@@ -121,14 +62,21 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const authRequired = to.matched.some(route => route.meta.authRequired);
-  const isLoggedIn = Object.keys(store.state.currentUser).length > 0;
-  document.title = to.meta.title;
+  const isLoggedIn = Vue.prototype.hasEntries(store.state.userInformation);
+  let { hostname } = window.location;
+  hostname = hostname.split(".")[0];
+  document.title = `${hostname} - Powered By Schemeapp.cloud`;
+
+  function redirect(name) {
+    next({
+      name,
+      query: { redirect: to.fullPath }
+    });
+  }
+
   if (authRequired) {
     if (!isLoggedIn) {
-      next({
-        name: "login",
-        query: { redirect: to.fullPath }
-      });
+      redirect("login");
     } else {
       next();
     }

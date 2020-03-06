@@ -2,7 +2,7 @@
   <div class="login_container">
     <div class="flex_container">
       <el-card class="form_container">
-        <el-container style="height:100%">
+        <el-container class="h-100">
           <el-main class="login_wrapper">
             <!-- Display the clients image -->
             <ClientImage :center="true" class="mb-4" />
@@ -34,10 +34,9 @@
                   round
                   size="small"
                   type="primary"
+                  >Registering a new company ? Click here to
+                  register.</el-button
                 >
-                  Registering a new company ? Click here to
-                  register.
-                </el-button>
               </div>
             </Tabs>
           </el-main>
@@ -70,8 +69,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["isValidClient"]),
-    ...mapState(["client"]),
+    isValidClient() {
+      return this.hasEntries(this.clientInformation);
+    },
+    ...mapState(["clientInformation"]),
     selectedForm() {
       if (this.tabIndex == "0") {
         return "login";
@@ -96,7 +97,7 @@ export default {
       return {
         method: "POST",
         data: {
-          client_id: this.client._id,
+          clientID: this.clientInformation._id,
           ...this.formModel[this.selectedForm]
         },
         url: `/users/${this.selectedForm}`
@@ -111,13 +112,17 @@ export default {
 
       if (this.selectedForm == "register") {
         switchObj.title = "User sign up";
+
         switchObj.subtitle =
           "Fill in the following form to successfully register";
+
         switchObj.text = "Switch to login";
       } else if (this.selectedForm == "forgotPassword") {
         switchObj.title = "Forgot Password";
+
         switchObj.subtitle =
           "Fill in the following form to change the password";
+
         switchObj.text = "Switch to login";
       }
       return switchObj;
@@ -131,19 +136,19 @@ export default {
         forgotPassword: [
           {
             name: "email",
-            type: "text",
+            "component-type": "text",
             placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-            type: "password",
+            "component-type": "password",
             placeholder: "Password",
             model: "password"
           },
           {
             name: "Verify password",
-            type: "password",
+            "component-type": "password",
             placeholder: "Verify Password",
             model: "verify_password"
           }
@@ -151,13 +156,13 @@ export default {
         login: [
           {
             name: "email",
-            type: "text",
+            "component-type": "text",
             placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-            type: "password",
+            "component-type": "password",
             placeholder: "Password",
             model: "password"
           }
@@ -165,20 +170,20 @@ export default {
         register: [
           {
             name: "name",
-            type: "text",
+            "component-type": "text",
             placeholder: "First and last name",
             model: "name"
           },
           {
             name: "email",
-            type: "text",
+            "component-type": "text",
             placeholder: "Email",
             model: "email"
           },
 
           {
             name: "password",
-            type: "password",
+            "component-type": "password",
             placeholder: "New password",
             model: "password"
           },
@@ -191,15 +196,15 @@ export default {
             options: [
               {
                 text: "Male",
-                value: "male"
+                value: 1
               },
               {
                 text: "Female",
-                value: "female"
+                value: 2
               },
               {
                 text: "Other",
-                value: "other"
+                value: 3
               }
             ]
           },
@@ -214,7 +219,7 @@ export default {
             name: "locumn",
             type: "select",
             placeholder: "Are you a locumn ?",
-            model: "employee_type",
+            model: "groupID",
             options: [
               {
                 text: "Yes",
@@ -236,6 +241,13 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
 
+    changeTab(form) {
+      if (form == "login") {
+        this.tabIndex = "0";
+      }
+      this.tabIndex = "1";
+    },
+
     setFormAndProcessUser(e) {
       try {
         this.$set(this.formModel, this.selectedForm, e);
@@ -246,7 +258,9 @@ export default {
     },
     forgotPassword() {
       let forgotPwdForm = this.formModel[this.selectedForm];
+
       this.loading = true;
+
       if (forgotPwdForm.password != forgotPwdForm.verify_password) {
         this.loading = false;
 
@@ -256,6 +270,7 @@ export default {
         });
       } else {
         delete forgotPwdForm.verify_password;
+
         this.request({
           method: "POST",
           url: "users/forgotpassword",
@@ -263,7 +278,7 @@ export default {
         })
           .then(response => {
             this.loading = false;
-            this.selectedForm = "login";
+            // this.chanteTab("login");
           })
           .catch(error => {
             this.loading = false;
@@ -275,15 +290,16 @@ export default {
         this.forgotPassword();
       } else if (this.selectedForm == "register") {
         //Change employee type
-        this.formModel.login.employee_type == "Yes"
-          ? this.$set(this.formModel.register, "employee_type", 3)
-          : this.$set(this.formModel.register, "employee_type", 2);
+        this.formModel.login.groupID == "Yes"
+          ? this.$set(this.formModel.register, "groupID", 3)
+          : this.$set(this.formModel.register, "groupID", 2);
       }
       this.loading = true;
 
       this.request(this.returnPayload)
         .then(response => {
           this.UPDATE_USER(response);
+
           if (response.user.admin_gen == true) {
             this.UPDATE_NOTIFICATIONS({
               type: "warning",
@@ -291,15 +307,16 @@ export default {
               message:
                 "Your password is insecure, please consider changing it in the user settings."
             });
-            this.$router.push({ name: "dashboard" });
+
+            this.$router.push({ name: "events" });
           }
-          this.$router.push({ name: "dashboard" });
+
+          this.$router.push({ name: "events" });
 
           this.loading = false;
-          this.selectedForm = "login";
+          // this.changeTab("login");
         })
         .catch(error => {
-          console.log(error);
           this.loading = false;
         });
     }
@@ -336,7 +353,7 @@ export default {
   min-width: 25%;
 }
 .switch_button {
-  border: 1px solid $primary_colour;
+  border: 1px solid $element_colour;
 }
 .new_client_button_container {
   display: flex;

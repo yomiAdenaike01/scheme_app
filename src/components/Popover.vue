@@ -1,5 +1,11 @@
 <template>
-  <el-popover :placement="position" :trigger="trigger" :title="title" :width="width">
+  <el-popover
+    popper-class="popover_container"
+    :placement="position"
+    :trigger="trigger"
+    :title="title"
+    :width="width"
+  >
     <slot name="content"></slot>
     <slot name="trigger" slot="reference"></slot>
   </el-popover>
@@ -23,5 +29,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

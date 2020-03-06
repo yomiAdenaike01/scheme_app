@@ -27,9 +27,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(["currentUser", "client"]),
+    ...mapState(["userInformation", "client"]),
     amISender() {
-      return this.message.sender_id == this.currentUser._id;
+      return this.message.sender_id == this.userInformation._id;
     },
     content() {
       return this.message.content;

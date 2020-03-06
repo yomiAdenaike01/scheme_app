@@ -1,15 +1,15 @@
 <template>
-  <div style="height:100%">
-    <keep-alive :key="currentUser._id">
+  <div class="h-100">
+    <keep-alive>
       <router-view></router-view>
     </keep-alive>
-    <TeamMember />
+    <ViewUserDialog />
   </div>
 </template>
 
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
-import TeamMember from "@/views/Admin/Team/TeamMember";
+import ViewUserDialog from "@/views/Admin/Users/ViewUser/ViewUserDialog";
 export default {
   name: "Admin",
   data() {
@@ -18,25 +18,42 @@ export default {
     };
   },
   computed: {
-    ...mapState(["localSettings", "userNotifications", "currentUser"])
+    ...mapState([
+      "localSettings",
+      "userInformation",
+      "criticalNetworkError",
+      "requestIntervals"
+    ]),
+    ...mapState("Admin", ["eventsInformation"]),
+    hasEventsToday() {
+      return this.eventsInformation.today.length > 0;
+    }
   },
 
   deactivated() {
     clearInterval(this.adminInterval);
   },
   activated() {
-    // Starting interval
+    if (this.hasEventsToday) {
+      this.UPDATE_NOTIFICATIONS({
+        title: "Events information",
+        message: "You have events scheduled for today dont forget clock in",
+        desktop: {
+          title: "Pending events today",
+          content:
+            "You have events scheduled for today, please navigate to scheme cloud to view it"
+        }
+      });
+    }
+
     this.adminInterval = setInterval(() => {
       this.getTeam();
       this.getNotifications();
-      this.getShifts();
-    }, 5000);
-    if (this.userNotifications.length > 0) {
-      this.displayNewNotification();
-    }
+      this.getEvents();
+    }, this.requestIntervals.events);
   },
   methods: {
-    ...mapActions("Admin", ["getTeam", "getShifts", "getNotifications"]),
+    ...mapActions("Admin", ["getTeam", "getEvents", "getNotifications"]),
     displayNewNotification() {
       let newNotification = this.userNotifications[0];
       this.UPDATE_NOTIFICATIONS({
@@ -47,7 +64,12 @@ export default {
     }
   },
   components: {
-    TeamMember
+    ViewUserDialog
+  },
+  watch: {
+    criticalNetworkError() {
+      clearInterval(this.adminInterval);
+    }
   }
 };
 </script>

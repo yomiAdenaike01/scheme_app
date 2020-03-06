@@ -1,62 +1,44 @@
-import { instructions } from "@/stubs/instructions";
-export default {
-  isValidClient(state, getters) {
-    return Object.keys(state["client"]).length > 0;
-  },
-  getEmployeeTypeLabel(state) {
-    let { employee_type } = state["currentUser"];
-    let label;
-    switch (employee_type) {
-      case 1: {
-        label = "Admin";
-        break;
-      }
-      case 2: {
-        label = "General Employee";
-        break;
-      }
-      case 3: {
-        label = "Locumn";
-        break;
-      }
+import { guide } from "@/stubs/guide";
+var UAParser = require("ua-parser-js");
 
-      default:
-        break;
-    }
-    return label;
+export default {
+  getActiveDialog: ({ dialogIndex }) => dialogName => {
+    return dialogIndex[dialogName].view;
   },
-  getSidebarColour(state) {
-    return state.localSettings.colours.sidebar;
+  getUserNotificationsLength({ userNotifications }) {
+    return userNotifications.filter(notification => {
+      return (
+        notification.status != "is_read" && notification.status != "is_complete"
+      );
+    }).length;
+  },
+  getUAInformation() {
+    return new UAParser().getResult();
+  },
+  getUserSettings(state) {
+    return state.userInformation.settings;
   },
   getClient(state, getters) {
     if (getters.isValidClient) {
-      return state.client;
+      return state.clientInformation;
     } else {
       return {};
     }
   },
   getPreferences(state) {
-    return state.currentUser.preferences;
+    return state.userInformation.preferences;
   },
-  getContentLoaded(state) {
-    return false;
+  getIsAdmin({ userInformation: { groupID } }) {
+    return groupID == 1;
   },
-  getIsAdmin(state) {
-    const employee_type = state.currentUser.employee_type;
-    return employee_type == 1 || employee_type == "Admin";
+  getClientColours(state) {
+    return state.clientInformation.colours;
   },
-  getCompanyColours(state) {
-    let colours = state.client.company_colours;
-    if (colours.length > 0) {
-      return colours;
-    } else {
-      return [];
-    }
+
+  getGuide() {
+    return guide;
   },
-  getName(state) {
-    return state.currentUser.name.trim().toLowerCase();
-  },
-  getInstructions() {
-    return instructions;
+  getDefaultColour(state) {
+    return state.defaultCustomColours[0];
   }
 };

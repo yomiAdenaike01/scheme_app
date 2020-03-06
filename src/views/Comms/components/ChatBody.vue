@@ -30,7 +30,7 @@ export default {
       };
     },
     isActiveChat() {
-      return Object.keys(this.activeTranscript).length > 0;
+      return this.hasEntries(this.activeTranscript);
     }
   },
   components: {

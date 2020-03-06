@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'SettingsSelection',
+  name: "SettingsSelection",
   props: {
     active: String,
     selection: Array
@@ -18,12 +18,12 @@ export default {
   data() {
     return {
       settings: this.selection[0].label
-    }
+    };
   },
   watch: {
     settings(val) {
-      this.$emit('prefChange', val)
+      this.$emit("prefChange", val);
     }
   }
-}
+};
 </script>

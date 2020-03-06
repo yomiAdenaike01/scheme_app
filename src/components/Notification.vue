@@ -1,96 +1,24 @@
 <template>
-  <div ref="notification" v-loading="globalLoader">
-    <el-row
-      class="p-3 m-1"
-      style="width:100%;border-left:2px solid rgb(220,220,220);"
-    >
-      <el-col style="width:100%; ">
-        <el-row
-          type="flex"
-          align="middle"
-          v-if="notification.status != 'complete'"
-        >
-          <el-col>
-            <span style="font-size:.8em">{{ `${notification.message}.` }}</span>
-          </el-col>
+  <div
+    ref="notification"
+    class="notification_container pl-2 pr-2"
+    :class="{
+      is_read:
+        notification.status == 'is_read' || notification.status == 'complete'
+    }"
+    v-loading="loading"
+    @click="updateNotification({ status: 'is_read' })"
+  >
+    <p :title="notification.message">{{ notification.message }}</p>
+    <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
 
-          <el-col
-            style="flex:1;display:flex; justify-content:center; align-items:center; flex-direction:column"
-          >
-            <el-button
-              plain
-              type="danger"
-              size="small"
-              class="m-0"
-              style="width:100%"
-              @click="deleteNotifcation"
-              >Delete Notification</el-button
-            >
-            <el-button
-              size="small"
-              class="m-0"
-              style="width:100%"
-              type="primary"
-              plain
-              v-if="notification.type == 'approve'"
-              @click="viewDetails = !viewDetails"
-              >Approve / Reject</el-button
-            >
-          </el-col>
-        </el-row>
-        <!-- NOTIFICATION ACTION IS COMPLETE -->
-        <el-row v-else type="flex" align="center">
-          <el-col
-            style="display:flex; justify-content:space-between; align-items:center"
-          >
-            <span style="font-size:.8em">{{ `${notification.message}.` }}</span>
-            <el-button
-              disabled
-              size="small"
-              icon="el-icon-check"
-              type="success"
-              circle
-            ></el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-collapse-transition>
-        <el-col
-          v-if="viewDetails && notification.status != 'complete'"
-          class="p-3 mt-3"
-          style=" color:#444"
-        >
-          <p style="text-align:center; font-size:.8em">
-            Please confirm that you want to approve these changes
-          </p>
-          <div class="update_content p-3">
-            {{ notificationUpdate }}
-            <!-- <p class="mb-1" v-for="(prop, index) in notificationUpdate" :key="index">
-            <span class="member_name">{{ index.toLowerCase() }}:</span>
-            {{ prop }}
-            </p>-->
-            <div class="flex_container" style="display:flex;">
-              <el-button
-                class="mt-4"
-                plain
-                type="success"
-                icon="el-icon-check"
-                size="small"
-                @click="updateContent"
-              ></el-button>
-              <el-button
-                plain
-                class="mt-4"
-                icon="el-icon-close"
-                size="small"
-                type="danger"
-                @click="updateContent"
-              ></el-button>
-            </div>
-          </div>
-        </el-col>
-      </el-collapse-transition>
-    </el-row>
+    <div
+      v-if="notification.status != 'is_read'"
+      :class="['notification_type_indicator', notification.type]"
+    >
+      <small>{{ makePretty(notification.type) }}</small>
+    </div>
+    <br />
   </div>
 </template>
 
@@ -104,10 +32,13 @@ export default {
     return {
       viewDetails: false,
       formatString: "DD/MMMM/YYYY HH:mm",
-      globalLoader: false
+      loading: false
     };
   },
   computed: {
+    notificationSendDate() {
+      return this.calendar(this.notification.dateCreated);
+    },
     startDate() {
       return this.format(this.update.startDate, this.formatString);
     },
@@ -159,7 +90,7 @@ export default {
         .catch(error => console.log(error));
     },
     deleteNotifcation() {
-      this.globalLoader = true;
+      this.loading = true;
       this.request({
         method: "DELETE",
         url: "/notifications/one",
@@ -171,16 +102,32 @@ export default {
           this.UPDATE_USER_NOTIFICATIONS(null);
         })
         .catch(error => {
-          this.globalLoader = false;
+          this.loading = false;
         });
     },
-    async updateContent() {
-      this.globalLoader = true;
+    updateNotification(update) {
+      this.request({
+        method: "POST",
+        url: "notifications/update",
+        data: {
+          id: this.notification._id,
+          update
+        }
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    updateContent() {
+      this.loading = true;
       this.request(this.notificationRequestBody)
         .then(response => console.log(response))
         .catch(error => console.log(error));
       this.changeNotificationActionToComplete();
-      this.globalLoader = false;
+      this.loading = false;
     }
   }
 };
@@ -194,9 +141,46 @@ export default {
   font-size: 0.8em;
 }
 .check_button {
-  border: 1px solid $primary_colour;
+  border: 1px solid $element_colour;
   .el-icon-check {
-    color: $primary_colour;
+    color: $element_colour;
+  }
+}
+.notification_container {
+  cursor: pointer;
+  border-bottom: $border;
+  &.is_read {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  &:hover {
+    background: $hover_grey;
+    .actions_wrapper {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+.actions_wrapper {
+  opacity: 0;
+  visibility: hidden;
+}
+.notification_type_indicator {
+  border-radius: 20px;
+  color: white;
+  text-transform: capitalize;
+  max-width: 80px;
+  text-align: center;
+  padding: 3px 10px;
+  margin-top: 5px;
+  &.reminder {
+    background: rgb(94, 114, 228);
+  }
+  &.request {
+    background: rgb(45, 206, 137);
+  }
+  &.attention {
+    background: rgb(251, 99, 64);
   }
 }
 </style>

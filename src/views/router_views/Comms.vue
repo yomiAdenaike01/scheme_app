@@ -1,5 +1,5 @@
 <template>
-  <keep-alive :key="currentUser._id">
+  <keep-alive :key="userInformation._id">
     <router-view></router-view>
   </keep-alive>
 </template>
@@ -17,19 +17,26 @@ export default {
     clearInterval(this.commsInterval);
   },
   activated() {
-    this.commsInterval = setInterval(() => {
-      this.getTranscripts();
-      this.getTeam();
-      this.getNotifications();
-    }, 5000);
+    if (!this.criticalNetworkError) {
+      this.commsInterval = setInterval(() => {
+        this.getTranscripts();
+        this.getTeam();
+        this.getNotifications();
+      }, 5000);
+    }
   },
   computed: {
-    ...mapState(["currentUser"])
+    ...mapState(["userInformation", "criticalNetworkError"])
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),
     ...mapActions("Admin", ["getTeam"]),
     ...mapActions(["getNotifications"])
+  },
+  watch: {
+    criticalNetworkError() {
+      clearInterval(this.commsInterval);
+    }
   }
 };
 </script>

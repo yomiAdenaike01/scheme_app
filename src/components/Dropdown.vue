@@ -11,13 +11,15 @@
     </span>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item
-        v-for="(item,index) in items"
+        v-for="(item, index) in items"
         :disabled="item.disabled"
         :divided="item.divided"
         :command="item.command"
         :icon="item.icon"
         :key="index"
-      >{{item.name}}</el-dropdown-item>
+      >
+        <span v-html="item.name"></span>
+      </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
 </template>

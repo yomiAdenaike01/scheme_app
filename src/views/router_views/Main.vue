@@ -1,31 +1,41 @@
 <template>
-  <div class="main_wrapper">
+  <div class="main_wrapper flex columns">
+    <NprogressContainer />
     <AppBar />
-    <el-row type="flex" style="height:100%">
-      <el-col style="flex:1">
+    <div class="inner_wrapper flex">
+      <div class="nav_wrapper">
         <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
+      </div>
+      <el-col class="main_col_container">
+        <!-- <ServerHealth /> -->
+        <DefaultTransition>
+          <keep-alive>
+            <router-view :key="key" />
+          </keep-alive>
+        </DefaultTransition>
       </el-col>
-      <el-col>
-        <keep-alive :key="currentUser._id">
-          <router-view></router-view>
-        </keep-alive>
-      </el-col>
-    </el-row>
-    <NotificationsCenter />
+    </div>
+    <Tutorial />
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
-import NotificationsCenter from "@/components/NotificationsCenter";
 import moment, * as moments from "moment";
-
+import CriticalError from "@/components/CriticalError";
+import InvalidClient from "@/components/InvalidClient";
+import NprogressContainer from "vue-nprogress/src/NprogressContainer";
+import DefaultTransition from "@/components/DefaultTransition";
+import Tutorial from "@/components/Tutorial";
 export default {
   name: "Main",
+
   activated() {
-    let isVerified = this.currentUser.verified;
+    this.checkServerHealth();
+
+    let isVerified = this.userInformation.verified;
     if (!isVerified) {
       this.UPDATE_NOTIFICATIONS({
         title: "Activate account",
@@ -33,33 +43,55 @@ export default {
         message: "Open settings to activate account."
       });
     }
-    let general = this.localSettings.general;
+
+    let { general } = this.userInformation.settings;
     if (Notification.permission != "granted") {
       this.requestNotificationPermission();
     }
 
-    this.displayWeeklyTimesheetNotification();
-    this.checkIsLocumnWorking();
+    this.displayWeeklyNotification();
   },
   computed: {
+    key() {
+      return this.$route.path;
+    },
     ...mapState([
-      "notifications",
+      "localNotifications",
       "globalLoader",
-      "currentUser",
+      "userInformation",
       "userNotifications",
       "viewMobileMenu",
       "defaultSize",
-      "critical_network_error",
+      "criticalNetworkError",
       "weeklyTimesheetUploaded",
       "localSettings"
     ]),
-    ...mapState("Admin", ["shifts", "team"]),
+    ...mapGetters(["getUAInformation"]),
+    ...mapState("Admin", ["shifts", "teamInformation"]),
     returnIsStartOfWeek() {
       return moment().get("day") <= 1;
+    },
+    hasRequestOrNotifications() {
+      return this.userNotifications.length > 0;
+    },
+    hasReminder() {
+      return (
+        this.userNotifications.findIndex(({ type, status }) => {
+          return type == "reminder" && status == "unread";
+        }) > -1
+      );
+    },
+    hasAnnoucement() {
+      return (
+        this.userNotifications.findIndex(({ type, status }) => {
+          return type == "attention" && status == "unread";
+        }) > -1
+      );
     }
   },
 
   methods: {
+    ...mapActions(["checkServerHealth"]),
     ...mapMutations([
       "REMOVE_USER",
       "UPDATE_NOTIFICATIONS",
@@ -68,79 +100,94 @@ export default {
 
     requestNotificationPermission() {
       if (!window.Notification) {
-        console.log("Browser does not support notifications.");
+        let {
+          browser: { name, version }
+        } = this.getUAInformation;
+        this.UPDATE_NOTIFICATIONS({
+          title: "Browser version error",
+          message: `The current browser doesn't support notifications ${name} ${Math.round(
+            parseInt(version)
+          )}`
+        });
       } else {
         Notification.requestPermission()
           .then(p => {
-            if (p === "granted") {
-              // show notification here
-            } else {
-              console.log("User blocked notifications.");
-            }
+            console.log(p);
           })
-          .catch(function(err) {
+          .catch(err => {
             console.error(err);
           });
       }
     },
 
-    checkIsLocumnWorking() {
-      this.shifts.map(shift => {
-        // Is Today
-        let shiftStartTime = shift.startDate;
-        let shiftType = shift.shift_type;
-        if (
-          shiftStartTime == moment(shiftStartTime).isSame(new Date(), "day")
-        ) {
-          if (shiftType == 2) {
-            this.UPDATE_NOTIFICATIONS({
-              title: "No locumn shift detected.",
-              message: "Please go to schedule to book a new locumn shift.",
-              type: "warning",
-              onClick: () => {
-                this.$router.push({ name: "schedule" });
-              }
-            });
-          }
-        }
-      });
-    },
-    /**
-     * Create notification at the start of the week asking them to upload a timesheet
-     */
-    displayWeeklyTimesheetNotification() {
+    displayWeeklyNotification() {
       if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek)
         this.UPDATE_NOTIFICATIONS({
           type: "info",
           message: "Start the new week off by uploading a new weekly timesheet",
           title: "Upload Timesheet"
         });
-    },
-    displayRedirectBox() {
-      // Redirect to login;
-      let msg = "A critical network error has occured.",
-        title = "Critical Error!";
-
-      this.$confirm(msg, title, {
-        confirmButtonText: "Log out",
-        type: "error"
-      }).then(() => {
-        this.REMOVE_USER();
-        this.$router.push({ name: "login" });
-      });
     }
   },
   components: {
     Navigation,
     AppBar,
-    NotificationsCenter
+    NprogressContainer,
+    DefaultTransition,
+    Tutorial
   },
   watch: {
-    critical_network_error: {
+    hasAnnoucement: {
       immediate: true,
       handler(val) {
         if (val) {
-          this.displayRedirectBox();
+          let notificationTitle =
+            "A notification requires your attention, press the bell icon to view them";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Attention",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "A notification requires your attention",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
+        }
+      }
+    },
+    hasRequestOrNotifications: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.UPDATE_NOTIFICATIONS({
+            title: "Pending notifications",
+            message:
+              "You have notifications pending, press the bell to view them",
+            type: "info"
+          });
+        }
+      }
+    },
+    hasReminder: {
+      immediate: true,
+
+      handler(val) {
+        if (val) {
+          let notificationTitle =
+            "You have a reminder scheduled, close the notification to complete the reminder";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Reminder",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "You have reminder",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
         }
       }
     }
@@ -151,5 +198,13 @@ export default {
 <style lang="scss" scoped>
 .main_wrapper {
   height: 100%;
+  width: 100%;
+  flex: 1;
+}
+.inner_wrapper {
+  flex: 1;
+}
+.main_col_container {
+  flex: 1;
 }
 </style>

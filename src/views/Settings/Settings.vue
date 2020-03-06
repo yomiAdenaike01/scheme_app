@@ -9,8 +9,15 @@
             subtitle="Change all aspects of your settings here."
           />
 
-          <SettingsSelection @prefChange="view = $event" :selection="returnSettings" />
-          <div @click="verifyEmail" v-loading="loading" v-if="!currentUser.verified">
+          <SettingsSelection
+            @prefChange="view = $event"
+            :selection="returnSettings"
+          />
+          <div
+            @click="verifyEmail"
+            v-loading="loading"
+            v-if="!userInformation.verified"
+          >
             <el-alert
               class="mt-4 activate_account_alert"
               :class="{ disabled: type == 'error' }"
@@ -24,9 +31,7 @@
           <el-col v-if="settingsView == 'security'">
             <SecuritySettings />
           </el-col>
-          <el-col v-else-if="settingsView == 'general'">
-            <GeneralSettings />
-          </el-col>
+
           <el-col v-else-if="settingsView == 'profile'">
             <ProfileSettings />
           </el-col>
@@ -41,7 +46,8 @@
           v-loading="loading"
           v-if="settingsUpdated"
           size="small"
-        >Save Settings</el-button>
+          >Save Settings</el-button
+        >
       </el-footer>
     </el-container>
   </el-drawer>
@@ -74,7 +80,7 @@ export default {
     this.view = this.returnSettings[0].label;
   },
   computed: {
-    ...mapState(["currentUser", "localSettings"]),
+    ...mapState(["userInformation"]),
     returnAlert() {
       let alert = {
         desc:
@@ -95,9 +101,6 @@ export default {
     returnSettings() {
       return [
         {
-          label: "General"
-        },
-        {
           label: "Security"
         },
         {
@@ -105,8 +108,8 @@ export default {
         }
       ];
     },
-    currentUserViewConfig() {
-      let cUser = this.currentUser;
+    userInformationViewConfig() {
+      let cUser = this.userInformation;
       let arr = [];
       return arr;
     },
@@ -125,6 +128,7 @@ export default {
   methods: {
     ...mapActions(["updateSettings", "request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "REMOVE_USER"]),
+
     verifyEmail() {
       this.loading = true;
       this.request({
@@ -154,8 +158,6 @@ export default {
       this.updateSettings()
         .then(response => (this.loading = false))
         .catch(err => (this.loading = false));
-
-      this.$forceUpdate();
     }
   },
   components: {
@@ -169,7 +171,7 @@ export default {
   mixins: [responsive],
 
   watch: {
-    localSettings: {
+    "userInformation.settings": {
       deep: true,
       handler(val) {
         this.settingsUpdated = true;

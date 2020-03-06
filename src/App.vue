@@ -3,23 +3,18 @@
     id="app"
     v-resize-text="defaultSize"
     :class="{ mobile: $mq != 'lg' }"
-    v-loading="resolving"
+    v-loading="loading"
     element-loading-background="rgba(255, 255, 255, 1)"
-    :element-loading-text="
-      `Loading
-    scheme cloud....`
+    element-loading-text="
+      Loading
+    client instance please wait....
     "
   >
-    <ErrorDialog
-      @displayChange="error = $event"
-      :display="error"
-      @companyNameChange="companyName = $event"
-      @getClient="getClient"
-    />
-
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <DefaultTransition>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </DefaultTransition>
   </div>
 </template>
 
@@ -27,148 +22,391 @@
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
-import ErrorDialog from "@/components/ErrorDialog";
 import alterTheme from "@/mixins/alterTheme";
-
+import CriticalError from "@/components/CriticalError";
+import ClientIntro from "@/components/ClientIntro";
+import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "app",
   data() {
     return {
-      resolving: true,
-      error: false,
-      companyName: "",
-      companyImage: "",
+      clientName: "",
       clientInterval: null,
-      subdomain: "",
-      windowClient: window.location.hostname.toString().split(".")
+      windowClient: window.location.hostname.toString().split("."),
+      runLoading: true
     };
   },
-  created() {
-    if (this.isValidClient) {
-      this.SET_THEME();
-    }
+  async created() {
+    this.loggerController();
 
-    this.clientInterval = setInterval(() => {
-      this.getClient()
-        .then(response => {
-          this.resolving = false;
+    // if (this.isValidClient) {
+    //   // this.SET_THEME();
+    // }
+
+    if (this.runInterval) {
+      this.clientInterval = setInterval(async () => {
+        try {
+          let response = await this.getClient();
           this.UPDATE_CLIENT(response);
-        })
-        .catch(error => {
-          // Stop the interval
-          clearInterval(this.clientInterval);
-          this.clientInterval = null;
-          this.error = true;
-          this.resolving = false;
-        });
-    }, 6000);
-
-    // this.$store.subscribe((mutation, state) => {
-    //   if (mutation.type === "UPDATE_CLIENT") {
-    //     let { company_colours } = state.client;
-    //     this.mutateTheme(company_colours);
-    //   }
-    // });
+        } catch (error) {
+          console.log(error);
+        }
+      }, this.requestIntervals.client);
+    } else {
+      try {
+        let response = await this.getClient();
+        this.UPDATE_CLIENT(response);
+      } catch (error) {
+        this.UPDATE_INVALID_CLIENT({ display: true, error: true });
+        console.log(error);
+      }
+    }
   },
-  beforeDestroy() {
+  destroyed() {
     clearInterval(this.clientInterval);
   },
   computed: {
-    ...mapState(["notifications", "currentUser", "defaultSize", "client"]),
-    ...mapGetters(["isValidClient"])
+    ...mapState([
+      "requestIntervals",
+      "notifications",
+      "userInformation",
+      "defaultSize",
+      "clientInformation",
+      "criticalNetworkError",
+      "invalidClient"
+    ]),
+    ...mapState("Admin", ["teamInformation", "shifts"]),
+
+    isValidClient() {
+      return this.hasEntries(this.clientInformation);
+    },
+    loading() {
+      // Check team and schedule
+      let res;
+      if (this.criticalNetworkError || this.invalidClient.display) {
+        res = false;
+      } else {
+        res = Object.keys(this.clientInformation).length == 0;
+      }
+      return res;
+    },
+    runInterval() {
+      return (
+        this.$route.name != "register" && this.isValidClient && !this.noClient
+      );
+    }
   },
   mixins: [refactorLocation, alterTheme],
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_CLIENT", "SET_THEME"]),
+    ...mapMutations(["UPDATE_CLIENT", "UPDATE_INVALID_CLIENT", "SET_THEME"]),
+    loggerController() {
+      if (process.env.NODE_ENV != "development") {
+        window.console.log = function() {};
+        window.console.warn = function() {};
+        window.console.error = function() {};
+      }
+    },
 
-    getClient() {
+    getClient(clientName) {
       return new Promise((resolve, reject) => {
         let currentHostname = window.location.hostname.split(".");
-        if (this.companyName.length <= 0) {
+
+        if (this.clientName.length <= 0) {
           let subdomain = this.windowClient[0];
           let domain = this.windowClient[1];
-          this.request({
-            method: "GET",
-            url: "clients/one",
-            params: { client_name: subdomain }
-          })
+
+          this.request(
+            {
+              method: "GET",
+              url: "clients/get",
+              params: { clientSubdomain: subdomain }
+            },
+            true
+          )
             .then(response => {
-              let { company_image } = response;
               resolve(response);
             })
             .catch(error => {
+              this.UPDATE_INVALID_CLIENT({ display: true, error: true });
               reject(error);
             });
         } else {
-          this.refactorWindowLocation(this.companyName);
+          this.refactorWindowLocation(this.clientName);
         }
       });
     }
   },
   components: {
     Title,
-    ErrorDialog
+    CriticalError,
+    ClientIntro,
+    DefaultTransition
   },
 
   watch: {
-    "client.company_colours"(val) {
-      console.log(val);
+    "clientInformation.colours"(val) {
       this.mutateTheme(val);
     },
     notifications(val) {
       this.$notify(val[0]);
+    },
+    criticalNetworkError(val) {
+      if (val) {
+        clearInterval(this.clientInterval);
+      }
     }
   }
 };
 </script>
-
 <style lang="scss">
+@import url("https://fonts.googleapis.com/css?family=Open+Sans&display=swap");
+body,
+html,
 #app {
   height: 100%;
+  width: 100%;
+  font-family: "Open Sans";
+  margin: 0;
   overflow: hidden;
-  /**
-  _   _  _  ___ _  _    ___
-  | \_/ |/ \| o ) || |  | __|
-  | \_/ ( o ) o \ || |_ | _|
-  |_| |_|\_/|___/_||___||___|
+  padding: 0;
+}
 
-*/
-  &.mobile {
-    overflow: scroll;
-    .el-drawer__body {
-      overflow-y: scroll;
-    }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span {
+  font-weight: 300;
+  margin: 0;
+  padding: 0;
+}
+.desc {
+  font-size: 12px;
+  color: #606266;
+  margin-top: 7px;
+}
+
+.bold {
+  font-weight: bold;
+}
+.grey {
+  color: #999;
+}
+.black {
+  color: black;
+}
+.error {
+  color: $error_colour;
+}
+.primary {
+  color: $element_colour;
+}
+.columns {
+  flex-direction: column;
+}
+.caps {
+  text-transform: uppercase;
+}
+.shadow_border {
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: $box_shadow;
+}
+.member_name {
+  text-transform: capitalize;
+}
+.client_error_dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .button_container {
+    display: flex;
+    justify-content: space-between;
+  }
+  .client_name {
+    width: 80%;
+  }
+}
+.rounded_image {
+  border-radius: 10px;
+}
+
+//   Borders
+.bordered {
+  border: 2px solid whitesmoke;
+}
+.borderless {
+  border: none;
+}
+
+//   Flex box
+.flex {
+  display: flex;
+}
+.flex--center {
+  justify-content: center;
+}
+.align-center {
+  align-items: center;
+}
+.align-end {
+  align-items: flex-end;
+}
+.flex--space-between {
+  justify-content: space-between;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex--start {
+  justify-content: flex-start;
+}
+.flex--end {
+  justify-content: flex-end;
+}
+.align-end {
+  align-items: flex-end;
+}
+.align-start {
+  align-items: flex-start;
+}
+.flex_center {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+.posr {
+  position: relative;
+}
+.posa {
+  position: absolute;
+}
+
+/* fade-transform */
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  &.line-through {
+    text-decoration: line-through;
+  }
+}
+
+.logo {
+  padding: 5px 19px;
+  border-radius: 50%;
+  background-image: linear-gradient(
+    340deg,
+    $default_colour 0%,
+    $element_colour 100%
+  );
+
+  color: white;
+  font-weight: bold;
+}
+.overflow {
+  overflow-x: hidden;
+  &:after {
+    content: "";
+    display: block;
+  }
+}
+
+.rounded {
+  border-radius: $border_radius;
+}
+.shadow {
+  box-shadow: $box_shadow;
+}
+.txt_center {
+  text-align: center;
+}
+.w-100 {
+  flex: 1;
+  width: 100%;
+}
+
+.h-100 {
+  flex: 1;
+  height: 100%;
+}
+.h-90 {
+  height: 90%;
+}
+.large_icon {
+  font-size: 3em;
+}
+.medium_icon {
+  font-size: 2em;
+}
+.capitalize {
+  text-transform: capitalize;
+}
+.txt-large {
+  font-size: 1.3em;
+}
+.l-height-large {
+  line-height: 1.6em;
+}
+.no_events {
+  pointer-events: none;
+}
+.w-50 {
+  width: 50%;
+}
+
+.popover_container {
+  padding: 0 !important;
+}
+.popover_item {
+  &.no_events {
+    opacity: 0.4;
+  }
+  &:hover {
+    background: $hover_grey;
+  }
+}
+
+.el-dialog {
+  border-radius: 8px;
+}
+
+/**
+    _   _  _  ___ _  _    ___
+    | \_/ |/ \| o ) || |  | __|
+    | \_/ ( o ) o \ || |_ | _|
+    |_| |_|\_/|___/_||___||___|
+  
+  */
+.mobile {
+  overflow: scroll;
+  .el-dialog {
+    width: 100%;
+  }
+  .el-drawer__body {
+    overflow-y: scroll;
   }
 }
 .trigger {
   cursor: pointer;
-}
-html,
-body {
-  height: 100%;
-}
-
-@import "./assets/spacing";
-@import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=ac1e1b2a-4472-4043-bb43-7925ca5b822d");
-@font-face {
-  font-family: "AvenirNextLTW01-Regular";
-  src: url("./assets/Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix");
-  src: url("./assets/Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix")
-      format("eot"),
-    url("./assets/Fonts/2cd55546-ec00-4af9-aeca-4a3cd186da53.woff2")
-      format("woff2"),
-    url("./assets/Fonts/1e9892c0-6927-4412-9874-1b82801ba47a.woff")
-      format("woff"),
-    url("./assets/Fonts/46cf1067-688d-4aab-b0f7-bd942af6efd8.ttf")
-      format("truetype");
-}
-
-* {
-  font-family: "AvenirNextLTW01-Regular";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin: 0;
-  padding: 0;
 }
 </style>

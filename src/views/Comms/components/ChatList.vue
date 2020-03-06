@@ -1,14 +1,13 @@
 <template>
-
   <el-col
-  v-loading="loading"
+    v-loading="loading"
     class="chat_list_container pr-0"
     :style="{ borderRight: `1.5px solid #efefef` }"
   >
-    <ChatListHeader @removeChat="removeChatState = true"  />
+    <ChatListHeader @removeChat="removeChatState = true" />
     <div v-if="transcripts.length > 0">
       <PreviousChat
-      v-click-outside="toggleRemoveChatState"
+        v-click-outside="toggleRemoveChatState"
         :selectionState="removeChatState"
         @selectedChat="selectedChat = $event"
         :key="transcript._id"
@@ -30,8 +29,8 @@ export default {
   data() {
     return {
       selectedChat: "",
-      loading:false,
-      removeChatState:false
+      loading: false,
+      removeChatState: false
     };
   },
   computed: {
@@ -41,22 +40,24 @@ export default {
       return this.localSettings.colours.sidebar;
     }
   },
-  methods:{
-    ...mapActions('Comms',['removeChat']),
-    toggleRemoveChatState(){
-      if(this.removeChatState){
+  methods: {
+    ...mapActions("Comms", ["removeChat"]),
+    toggleRemoveChatState() {
+      if (this.removeChatState) {
         this.removeChatState = false;
       }
     },
-    removeChatMethod(){
-      this.removeChat({transcript_id:this.selectedChat}).then(response=>{
-        this.loading=false;
-      }).catch(error=>{
-        this.loading=false;
-      })
+    removeChatMethod() {
+      this.removeChat({ transcript_id: this.selectedChat })
+        .then(response => {
+          this.loading = false;
+        })
+        .catch(error => {
+          this.loading = false;
+        });
     }
   },
-  
+
   components: {
     PreviousChat,
     ChatListHeader,

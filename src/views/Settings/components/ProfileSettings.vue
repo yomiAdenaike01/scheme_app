@@ -1,18 +1,18 @@
 <template>
   <div>
-    {{ currentUser }}
+    {{ userInformation }}
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex";
 export default {
-  name: 'ProfileSettings',
+  name: "ProfileSettings",
   computed: {
-    ...mapState(['currentUser'])
+    ...mapState(["userInformation"])
   },
   methods: {}
-}
+};
 </script>
 
 <style></style>

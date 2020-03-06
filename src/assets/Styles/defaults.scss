@@ -1,0 +1,28 @@
+@import "vars", "spacing";
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: white;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(144, 147, 153, 0.3);
+  border-radius: 20px;
+  transition: 0.56s ease-in-out background;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(210, 210, 210);
+  cursor: pointer;
+}
+
+:export {
+  default: $default_colour;
+}
