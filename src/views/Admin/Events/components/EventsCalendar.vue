@@ -7,7 +7,7 @@
           : `You have ${hasEvents.count} events scheduled.`
       }}
     </div>
-    <vue-cal
+    <VueCal
       v-loading="loading"
       :events="allEvents"
       :on-event-click="viewEvent"
@@ -32,7 +32,6 @@ export default {
       loading: false,
       event: {},
       format: "YYYY-MM-DD HH:mm",
-
       gcalEvents: []
     };
   },
