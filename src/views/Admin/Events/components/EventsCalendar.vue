@@ -32,7 +32,6 @@ export default {
       loading: false,
       event: {},
       format: "YYYY-MM-DD HH:mm",
-
       gcalEvents: []
     };
   },
