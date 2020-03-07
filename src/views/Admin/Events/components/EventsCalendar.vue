@@ -1,11 +1,12 @@
 <template>
   <div class="cal_container">
     <div class="bar_incidator">
-      {{
-        !hasEvents.value
-          ? "You have no scheduled events."
-          : `You have ${hasEvents.count} events scheduled.`
-      }}
+      <p>
+        You have
+        <strong :style="{ color: `${getRandomColour}` }"
+          >{{ upcomingEventCount }} </strong
+        >upcoming events.
+      </p>
     </div>
     <VueCal
       v-loading="loading"
@@ -48,7 +49,7 @@ export default {
       "eventFilters"
     ]),
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["getIsAdmin", "getRandomColour"]),
     ...mapGetters("Admin", [
       "getTeamMember",
       "getAllEvents",
@@ -58,12 +59,9 @@ export default {
       "getCalTimings"
     ]),
 
-    hasEvents() {
+    upcomingEventCount() {
       let userEvents = this.getUsersEvents(this.userInformation._id);
-      return {
-        value: this.hasEntries(userEvents),
-        count: userEvents.length
-      };
+      return userEvents.length;
     },
 
     eventGroup() {

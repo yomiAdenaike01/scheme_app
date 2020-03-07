@@ -52,5 +52,10 @@ export default {
   },
   getDefaultColour(state) {
     return state.defaultCustomColours[0];
+  },
+  getRandomColour({ defaultCustomColours }) {
+    return defaultCustomColours[
+      Math.round(Math.random() * defaultCustomColours.length)
+    ];
   }
 };
