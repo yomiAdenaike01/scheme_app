@@ -59,11 +59,12 @@ export default {
         });
     });
   },
-  getEvents(context) {
+  getEvents(context, params = {}) {
     return new Promise((resolve, reject) => {
       const payload = {
         method: "GET",
-        url: "events/all"
+        url: "events/all",
+        params
       };
       context
         .dispatch("request", payload, { root: true })

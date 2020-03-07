@@ -2,6 +2,16 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getIsSignedUser: (
+    { userInformation: { groupID, _id }, clientInformation: { signedUser } },
+    { getIsAdmin }
+  ) => id => {
+    let isSignedUser = false;
+
+    isSignedUser = signedUser.indexOf(id) != -1;
+
+    return isSignedUser;
+  },
   getActiveDialog: ({ dialogIndex }) => dialogName => {
     return dialogIndex[dialogName].view;
   },
@@ -40,5 +50,10 @@ export default {
   },
   getDefaultColour(state) {
     return state.defaultCustomColours[0];
+  },
+  getRandomColour({ defaultCustomColours }) {
+    return defaultCustomColours[
+      Math.round(Math.random() * defaultCustomColours.length)
+    ];
   }
 };

@@ -76,7 +76,7 @@ export default {
 
     tabType: {
       type: String,
-      default: ""
+      default: "card"
     },
     tabs: {
       type: Array,

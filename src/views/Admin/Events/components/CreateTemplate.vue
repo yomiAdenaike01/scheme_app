@@ -1,13 +1,11 @@
 <template>
   <!-- Slide download -->
-  <el-card class="create_template_container p-2 mt-4" v-loading="loading">
-    <Title
-      title="Create Template"
-      class="m-0 p-0"
-      subtitle="Fill in the following form to create a new template.</br>
-     <i class='bx bx-error'></i> Warning templates when added to the events will last for <strong>one week</strong>.
-      "
-    />
+  <el-card
+    class="create_template_container p-2 mt-4"
+    shadow="none"
+    v-loading="loading"
+  >
+    <Title title="Create Template" class="m-0 p-0" />
 
     <!-- Predefined configs -->
     <el-checkbox-group v-model="configDisplay" size="mini" class="m-3">
@@ -76,13 +74,7 @@ export default {
         }
       ];
     },
-    filterAssignedTo() {
-      let dropDownTeamMembers = [...this.getDropdownTeamMembers];
-      let team = this.teamInformation;
-      let len = team.length;
-      let filteredArray = [];
-      // Generate array that finds and adds all their details for filtering
-    },
+
     templateForm() {
       let templateConfig = [
         {

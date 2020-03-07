@@ -19,7 +19,7 @@
           v-model="localFilters[key]"
           v-for="(group, key) in groups"
           :key="key"
-          :placeholder="`Select ${makePretty(key)}`"
+          :placeholder="`Select ${placeholders[key].name}`"
           class="mt-3"
           size="small"
         >
@@ -39,11 +39,7 @@
 </template>
 
 <script>
-import Title from "@/components/Title";
-import Nocontent from "@/components/Nocontent";
-import Tabs from "@/components/Tabs";
-import { mapGetters, mapState, mapMutations } from "vuex";
-
+import { mapState, mapActions } from "vuex";
 export default {
   name: "EventFilters",
   props: {
@@ -64,33 +60,40 @@ export default {
     ...mapState("Admin", ["teamInformation"]),
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["eventFilters"]),
+    /**
+     * display placeholders based on the group names
+     */
+    placeholders() {
+      return {
+        userGroup: {
+          name: "user group"
+        },
+        eventGroup: {
+          name: "event group"
+        }
+      };
+    },
 
     groups() {
       let groups = {
-        user_group: {},
-        event_group: {}
+        userGroup: {},
+        eventGroup: {}
       };
 
       if (this.hasEntries(this.clientInformation)) {
-        groups.user_group = this.clientInformation.userGroups;
-        groups.event_group = this.clientInformation.eventGroups;
+        groups.userGroup = this.clientInformation.userGroups;
+        groups.eventGroup = this.clientInformation.eventGroups;
       }
       return groups;
     }
   },
   methods: {
-    ...mapMutations("Admin", ["UPDATE_EVENT_FILTERS"])
+    ...mapActions("Admin", ["getEvents"])
   },
   watch: {
-    localFilters(val) {
-      this.UPDATE_EVENT_FILTERS(val);
+    localFilters({ userGroup = 0, eventGroup = 0 }) {
+      this.getEvents({ userGroup, eventGroup });
     }
-  },
-
-  components: {
-    Title,
-    Nocontent,
-    Tabs
   }
 };
 </script>

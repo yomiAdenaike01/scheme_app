@@ -1,11 +1,14 @@
 <template>
   <div class="cal_container">
     <div class="bar_incidator">
-      {{
-        !hasEvents.value
-          ? "You have no scheduled events."
-          : `You have ${hasEvents.count} events scheduled.`
-      }}
+      <span>
+        <h1>
+          <strong :style="{ color: `${getDefaultColour}` }"
+            >{{ upcomingEventCount }}
+          </strong>
+        </h1>
+        upcoming events.
+      </span>
     </div>
     <VueCal
       v-loading="loading"
@@ -13,7 +16,12 @@
       :on-event-click="viewEvent"
       events-on-month-view="short"
       :cell-click-hold="false"
+      :time-from="getCalTimings.from"
+      :time-to="getCalTimings.to"
       editable-events
+      xsmall
+      style="height:830px"
+      ref="eventsCalendar"
     />
   </div>
 </template>
@@ -43,21 +51,19 @@ export default {
       "eventFilters"
     ]),
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["getIsAdmin", "getDefaultColour"]),
     ...mapGetters("Admin", [
       "getTeamMember",
       "getAllEvents",
       "getGroupName",
       "getEventAssignedTo",
-      "getUsersEvents"
+      "getUsersEvents",
+      "getCalTimings"
     ]),
 
-    hasEvents() {
+    upcomingEventCount() {
       let userEvents = this.getUsersEvents(this.userInformation._id);
-      return {
-        value: this.hasEntries(userEvents),
-        count: userEvents.length
-      };
+      return userEvents.length;
     },
 
     eventGroup() {
@@ -138,10 +144,6 @@ export default {
       for (let i = 0, len = events.length; i < len; i++) {
         let event = events[i];
 
-        if (!event == event_group) {
-          continue;
-        }
-
         let {
           isApproved,
           startDate,
@@ -170,7 +172,7 @@ export default {
           class: eventClass,
           isApproved,
           assignedTo: assignedTo.arr,
-          assignedToRaw: event.assignedTo,
+          assignedToIDs: event.assignedTo,
           type,
           clockedIn
         });
@@ -282,7 +284,6 @@ export default {
 <style lang="scss" scoped>
 .cal_container {
   flex: 1;
-  height: 70%;
 
   &/deep/ {
     .vuecal__now-line {

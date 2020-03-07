@@ -50,3 +50,14 @@ Vue.prototype.initMoment = function(date) {
 Vue.prototype.formatDate = function(date) {
   return moment(date).format("DD/MM/YYYY HH:mm");
 };
+Vue.prototype.ArrIncludes = function(arr, item, displayIndex = true, key = "") {
+  let res;
+  if (!displayIndex) {
+    res = arr.some(arrItem => arrItem == item);
+  } else {
+    res = arr.findIndex(arrItem => {
+      return arrItem[key] == item;
+    });
+  }
+  return res;
+};

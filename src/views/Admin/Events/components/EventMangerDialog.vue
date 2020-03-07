@@ -1,28 +1,23 @@
 <template>
-  <el-dialog custom-class="event_dialog" width="40%" :visible.sync="view">
+  <el-dialog custom-class="event_dialog" :visible.sync="view">
     <Tabs
       v-loading="loading"
       :tabs="tabs"
-      @uploadFileContent="fileContent = $event"
-      @removeContent="(fileContent = ''), (timeSheetError = null)"
       @val="eventManagerController"
       :disable="currentTab > 1"
       v-model="currentTab"
       :selectedTab="currentTab"
       :liveChange="true"
-      size="mini"
       :disableForm="fileContent.length > 0"
     >
       <!-- Confirmation unit for a template or csv content -->
       <div slot="header_content">
         <Title
-          defaultClass="m-0"
-          title="Event management"
+          defaultClass="mb-5"
+          class="p-4"
+          title="Event Management"
           subtitle="Select different tabs to create groups or events."
         />
-        <div class="content_container p-3 flex_center" v-if="currentTab > 0">
-          <ValidationUnit v-bind="validationUnitController" />
-        </div>
       </div>
 
       <div slot="body_content">
@@ -35,14 +30,6 @@
             Press to select an event colour (optional):
           </p>
         </div>
-        <div
-          class="ml-4 mt-4 flex align-center"
-          v-if="currentTab == 1 && getIsAdmin"
-        >
-          <el-button round @click="currentTab = 2" class="w-100" size="mini">
-            <i class="bx bx-brain"></i> Auto generate using templates
-          </el-button>
-        </div>
       </div>
     </Tabs>
   </el-dialog>
@@ -50,7 +37,6 @@
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
-import dates from "@/mixins/dates";
 import EventTemplate from "./EventTemplate";
 import UploadFile from "@/components/UploadFile";
 import Title from "@/components/Title";
@@ -58,14 +44,11 @@ import Tabs from "@/components/Tabs";
 import EventOptions from "./EventOptions";
 import ValidationUnit from "@/components/ValidationUnit";
 import MoreInformation from "@/components/MoreInformation";
-import findTeam from "@/mixins/findTeam";
-import createEvent from "../createEvent";
 import moment from "moment";
 import csvtojson from "csvtojson";
 import ColourUnit from "@/components/ColourUnit";
 export default {
   name: "EventManagerDialog",
-  mixins: [dates, findTeam, createEvent],
   data() {
     return {
       eventData: {},
@@ -108,32 +91,14 @@ export default {
       return !isAdmin && type > 3;
     },
 
-    validationUnitController() {
-      return {
-        success: {
-          condition:
-            this.timeSheetError == false && this.fileContent.length > 0,
-          text:
-            "Time sheet successfully validated please submit to add timesheet."
-        },
-        danger: {
-          text: "Time sheet validation failed.",
-          condition: this.timeSheetError == true && this.fileContent.length > 0
-        },
-        info: {
-          text: "Timesheet not selected",
-          condition: this.fileContent.length <= 0
-        }
-      };
-    },
     tabs() {
       let tabs = [
         {
-          label: this.getIsAdmin ? "Create Event" : "Create Request",
+          label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm
         },
         {
-          label: "Timesheets & Templates",
+          label: "Manage event templates",
           view: {
             component: EventOptions
           }
@@ -142,7 +107,7 @@ export default {
 
       if (this.getIsAdmin) {
         tabs.unshift({
-          label: "Create Event Group",
+          label: "Create event group",
           formContent: this.createEventGroupForm
         });
       }
@@ -222,9 +187,75 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "closeDialog"]),
+    ...mapActions(["request", "closeDialog", "genPromptBox"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_DIALOG_INDEX"]),
+    // Submit one event
+    createOneEvent() {
+      this.loading = true;
+      let { date } = this.eventData;
 
+      let startDate = moment(date[0]).toISOString();
+      let endDate = moment(date[1]).toISOString();
+
+      this.eventData = {
+        ...this.eventData,
+        startDate,
+        endDate
+      };
+      this.request({
+        method: "POST",
+        url: "events/create",
+        data: this.eventData
+      })
+        .then(response => {
+          this.loading = false;
+          this.view = false;
+          this.UPDATE_NOTIFICATIONS({
+            type: "success",
+            message: "Event successfully created"
+          });
+          this.initSaveTemplate();
+        })
+        .catch(error => {
+          this.loading = false;
+          return error;
+        });
+    },
+    initSaveTemplate() {
+      this.genPromptBox({
+        boxType: "prompt",
+        title: "Save template",
+        text:
+          "Would you like to save this event as a template to use for later.",
+        type: "info"
+      })
+        .then(response => {
+          this.saveTemplate(response);
+        })
+        .catch(err => {
+          return err;
+        });
+    },
+    saveTemplate(response) {
+      let getDayOfStart = moment(this.eventData.startDate).get("day");
+      this.request({
+        method: "POST",
+        url: "events/templates/create",
+        data: {
+          name: response,
+          content: {
+            ...this.eventData,
+            repeat: { weekdays: [getDayOfStart], until: moment().toISOString() }
+          }
+        }
+      })
+        .then(response => {
+          return response;
+        })
+        .catch(err => {
+          return err;
+        });
+    },
     createEventController() {
       if (this.hasEntries(this.fileContent)) {
         this.createEventWithTimeSheet();
@@ -282,68 +313,12 @@ export default {
       loadingTimeout = setTimeout(() => {
         this.loading = false;
       }, 1000);
-    },
-
-    async validateCSVData(fileData) {
-      try {
-        Object.keys(fileData).map(key => {
-          return key.toLowerCase().trim();
-        });
-
-        /**
-         * start date
-         * end date
-         * start time
-         * end time
-         * assigned to (names (yomi adenaike))
-         * event type ('regular shift')
-         *
-         */
-        // Have the group on the same day ?
-        console.log(fileData);
-      } catch (error) {}
-    },
-
-    async timeSheetManagement() {
-      try {
-        let uploadedEvents = await csvtojson().fromString(this.fileContent);
-        let validationResult = await this.validateCSVData(uploadedEvents);
-
-        return Promise.resolve(validationResult);
-      } catch (e) {
-        return Promise.reject(e);
-      }
     }
   },
 
-  watch: {
-    fileContent(val) {
-      if (val) {
-        let data = this.timeSheetManagement()
-          .then(response => {
-            this.timeSheetData = response;
-            this.timeSheetError = false;
-          })
-          .catch(error => {
-            this.timeSheetError = true;
-
-            this.UPDATE_NOTIFICATIONS({
-              title: "Timesheet error",
-              message: error,
-              type: "info"
-            });
-          });
-      }
-    }
-  },
   components: {
     Title,
-    EventTemplate,
-    UploadFile,
     Tabs,
-    EventOptions,
-    ValidationUnit,
-    MoreInformation,
     ColourUnit
   }
 };

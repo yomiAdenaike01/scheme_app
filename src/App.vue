@@ -20,11 +20,8 @@
 
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
-import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
 import alterTheme from "@/mixins/alterTheme";
-import CriticalError from "@/components/CriticalError";
-import ClientIntro from "@/components/ClientIntro";
 import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "app",
@@ -138,9 +135,6 @@ export default {
     }
   },
   components: {
-    Title,
-    CriticalError,
-    ClientIntro,
     DefaultTransition
   },
 
@@ -160,13 +154,17 @@ export default {
 };
 </script>
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css?family=Open+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Sen|Source+Sans+Pro&display=swap");
+
+* {
+  font-family: "Sen", sans-serif !important;
+}
+
 body,
 html,
 #app {
   height: 100%;
   width: 100%;
-  font-family: "Open Sans";
   margin: 0;
   overflow: hidden;
   padding: 0;
@@ -387,7 +385,14 @@ span {
 }
 
 .el-dialog {
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 0;
+  width: 45%;
+  &/deep/ {
+    .el-dialog__body {
+      padding: 0;
+    }
+  }
 }
 
 /**

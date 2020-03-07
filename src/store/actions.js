@@ -27,6 +27,11 @@ export default {
       { root: true }
     );
   },
+  /**
+   *
+   * @param {*} context
+   * @param {Object} params
+   */
   genPromptBox(context, { boxType, text, title, type, confirm }) {
     return new Promise((resolve, reject) => {
       boxType ? boxType : "confirm";
@@ -85,6 +90,20 @@ export default {
     });
   },
 
+  genNotification(context, notificationContent) {
+    context
+      .dispatch("request", {
+        method: "POST",
+        url: "extensions/notification",
+        data: notificationContent
+      })
+      .then(response => {
+        resolve(response);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  },
   /**
    * 
         to: "adenaikeyomi@gmail.com",
@@ -95,9 +114,16 @@ export default {
           footer (optional) :""
         }
    */
-  genEmail(context, emailContent) {
+  genEmail(
+    {
+      admin: {
+        state: { teamInformation }
+      }
+    },
+    emailContent
+  ) {
     emailContent.to == "all"
-      ? (emailContent.to = context.admin.state.teamInformation.map(member => {
+      ? (emailContent.to = teamInformation.map(member => {
           return member.email;
         }))
       : emailContent.to;
