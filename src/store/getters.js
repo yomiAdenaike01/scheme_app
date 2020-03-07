@@ -7,11 +7,9 @@ export default {
     { getIsAdmin }
   ) => id => {
     let isSignedUser = false;
-    if (!id) {
-      isSignedUser = getIsAdmin;
-    } else {
-      isSignedUser = signedUser.indexOf(id) != -1;
-    }
+
+    isSignedUser = signedUser.indexOf(id) != -1;
+
     return isSignedUser;
   },
   getActiveDialog: ({ dialogIndex }) => dialogName => {

@@ -20,11 +20,8 @@
 
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
-import Title from "@/components/Title";
 import refactorLocation from "@/mixins/refactorLocation";
 import alterTheme from "@/mixins/alterTheme";
-import CriticalError from "@/components/CriticalError";
-import ClientIntro from "@/components/ClientIntro";
 import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "app",
@@ -138,9 +135,6 @@ export default {
     }
   },
   components: {
-    Title,
-    CriticalError,
-    ClientIntro,
     DefaultTransition
   },
 
