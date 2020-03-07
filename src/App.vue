@@ -154,13 +154,13 @@ export default {
 };
 </script>
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css?family=Open+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Sen|Source+Sans+Pro&display=swap");
 body,
 html,
 #app {
   height: 100%;
   width: 100%;
-  font-family: "Open Sans";
+  font-family: "Sen", sans-serif !important;
   margin: 0;
   overflow: hidden;
   padding: 0;
@@ -177,6 +177,7 @@ span {
   font-weight: 300;
   margin: 0;
   padding: 0;
+  font-family: "Sen", sans-serif !important;
 }
 .desc {
   font-size: 12px;

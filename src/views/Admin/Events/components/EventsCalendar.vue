@@ -1,12 +1,14 @@
 <template>
   <div class="cal_container">
     <div class="bar_incidator">
-      <p>
-        You have
-        <strong :style="{ color: `${getRandomColour}` }"
-          >{{ upcomingEventCount }} </strong
-        >upcoming events.
-      </p>
+      <span>
+        <h1>
+          <strong :style="{ color: `${getDefaultColour}` }"
+            >{{ upcomingEventCount }}
+          </strong>
+        </h1>
+        upcoming events.
+      </span>
     </div>
     <VueCal
       v-loading="loading"
@@ -49,7 +51,7 @@ export default {
       "eventFilters"
     ]),
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin", "getRandomColour"]),
+    ...mapGetters(["getIsAdmin", "getDefaultColour"]),
     ...mapGetters("Admin", [
       "getTeamMember",
       "getAllEvents",
