@@ -13,7 +13,12 @@
       :on-event-click="viewEvent"
       events-on-month-view="short"
       :cell-click-hold="false"
+      :time-from="getCalTimings.from"
+      :time-to="getCalTimings.to"
       editable-events
+      :hide-weekends="!getCalTimings.weekends"
+      xsmall
+      style="height:830px"
     />
   </div>
 </template>
@@ -49,7 +54,8 @@ export default {
       "getAllEvents",
       "getGroupName",
       "getEventAssignedTo",
-      "getUsersEvents"
+      "getUsersEvents",
+      "getCalTimings"
     ]),
 
     hasEvents() {
@@ -282,7 +288,6 @@ export default {
 <style lang="scss" scoped>
 .cal_container {
   flex: 1;
-  height: 70%;
 
   &/deep/ {
     .vuecal__now-line {

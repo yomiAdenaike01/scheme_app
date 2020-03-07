@@ -11,8 +11,8 @@
         size="small"
         :plain="button.plain"
         @click="button.method"
-        >{{ button.label }}</el-button
-      >
+        ><span v-html="button.label"></span
+      ></el-button>
       <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
@@ -66,6 +66,7 @@ export default {
   computed: {
     ...mapGetters(["getIsAdmin"]),
     ...mapState(["userInformation"]),
+    ...mapState("Admin", ["eventsInformation"]),
     hasGcal() {
       return "gcalToken" in this.userInformation;
     },
@@ -91,7 +92,6 @@ export default {
           plain: true,
           type: "primary",
           method: () => {
-            console.log("Clicked");
             this.UPDATE_DIALOG_INDEX({
               dialog: "eventManager",
               view: true
@@ -100,6 +100,19 @@ export default {
           icon: this.renderCreateEventButton.icon
         }
       ];
+      if (this.eventsInformation.previous.length > 0) {
+        buttons.push({
+          label: "<i class='bx bx-timer'></i> View previous events",
+          round: true,
+          plain: true,
+          method: () => {
+            this.UPDATE_DIALOG_INDEX({
+              dialog: "prevEvents",
+              view: true
+            });
+          }
+        });
+      }
       return buttons;
     }
   }

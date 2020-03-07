@@ -9,7 +9,12 @@
         class="el-icon arrow el-icon-arrow-left"
         @click="slideController('minus')"
       ></i>
-      {{ currentSlideInfo }}
+      <transition-group name="slide_in" tag="div">
+        <p :key="index" v-for="(slideIn, index) in [currentSlideInfo]">
+          {{ slideIn }}
+        </p>
+      </transition-group>
+
       <i
         class="el-icon arrow el-icon-arrow-right"
         @click="slideController('plus')"
@@ -32,9 +37,6 @@ import { mapState, mapActions, mapGetters } from "vuex";
 import { tutorials } from "@/stubs/tutorials";
 export default {
   name: "Tutorial",
-  activated() {
-    console.log(this.dialogIndex, tutorials[this.dialogIndex.tutorial.data]);
-  },
 
   data() {
     return {
@@ -106,5 +108,18 @@ export default {
 .arrow {
   font-size: 20px;
   color: #ccc;
+}
+
+/*=============================================
+=            Transitions            =
+=============================================*/
+.slide_in.enter-active,
+.slide_in.leave-active {
+  transition: 0.5s linear all;
+}
+
+.slide_in-enter,
+.slide_in-leave-to {
+  opacity: 1;
 }
 </style>

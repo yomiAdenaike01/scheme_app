@@ -2,6 +2,18 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getIsSignedUser: (
+    { userInformation: { groupID, _id }, clientInformation: { signedUser } },
+    { getIsAdmin }
+  ) => id => {
+    let isSignedUser = false;
+    if (!id) {
+      isSignedUser = getIsAdmin;
+    } else {
+      isSignedUser = signedUser.indexOf(id) != -1;
+    }
+    return isSignedUser;
+  },
   getActiveDialog: ({ dialogIndex }) => dialogName => {
     return dialogIndex[dialogName].view;
   },

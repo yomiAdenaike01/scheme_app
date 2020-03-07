@@ -338,12 +338,8 @@ export default {
   },
   components: {
     Title,
-    EventTemplate,
-    UploadFile,
     Tabs,
-    EventOptions,
     ValidationUnit,
-    MoreInformation,
     ColourUnit
   }
 };

@@ -1,6 +1,19 @@
 import Vue from "vue";
 
 export default {
+  getClientTimings(state, getters, { clientInformation: { timings } }) {
+    return timings;
+  },
+  getCalTimings(state, { getClientTimings = { ...getClientTimings } }) {
+    let { weekends, openingTime, closingTime } = getClientTimings;
+    openingTime = openingTime * 60;
+    closingTime = closingTime * 60;
+    return {
+      from: openingTime,
+      to: closingTime,
+      weekends
+    };
+  },
   getUsersInUserGroup: ({ teamInformation }) => userGroupID => {
     return teamInformation
       .filter(({ groupID }) => {

@@ -22,8 +22,15 @@ export default {
   name: "Navigation",
   data() {
     return {
-      isCollapse: true,
-      routes: [
+      isCollapse: true
+    };
+  },
+  computed: {
+    ...mapState(["clientInformation", "localSettings"]),
+    ...mapGetters(["getDefaultColour", "getIsSignedUser"]),
+
+    routes() {
+      let allowedRoutes = [
         {
           name: "Events management",
           path: "/admin/events",
@@ -54,12 +61,16 @@ export default {
           path: "/support/dashboard",
           icon: "bx bx-support"
         }
-      ]
-    };
-  },
-  computed: {
-    ...mapState(["client", "localSettings"]),
-    ...mapGetters(["getDefaultColour"]),
+      ];
+      if (this.getIsSignedUser) {
+        allowedRoutes.push({
+          name: "Client Settings",
+          icon: "bx bx-cog",
+          path: "preferences/client"
+        });
+      }
+      return allowedRoutes;
+    },
 
     lightColour() {
       let baseColour = tinycolor(this.getDefaultColour);
