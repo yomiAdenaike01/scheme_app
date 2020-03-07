@@ -39,12 +39,6 @@ export default {
           });
           reject(error);
         });
-      // } else {
-      //   let refactoredLocation = `${
-      //     window.location.protocol
-      //   }//${subdomain}.${window.location.host.replace(`${subdomain}.`, "")}`;
-      //   window.location.replace(refactoredLocation);
-      // }
     });
   },
   closeDialog(context, name) {
