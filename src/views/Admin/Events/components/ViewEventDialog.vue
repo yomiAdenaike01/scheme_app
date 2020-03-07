@@ -1,139 +1,140 @@
 <template>
-  <el-dialog
-    width="40%"
-    :visible.sync="computeDisplay"
-    v-if="getActiveDialog('viewEvent')"
-  >
-    <Title
-      title="View event"
-      subtitle="Click on more information to display details"
-    ></Title>
-    <div class="info_button_container flex flex--end">
-      <el-button
-        :circle="$mq != 'lg'"
-        :round="$mq == 'lg'"
-        class="no_events"
-        :icon="approval.icon"
-        size="small"
-        :type="approval.type"
-        >{{
-          approval.type == "success" && $mq == "lg"
-            ? "Approved"
-            : $mq == "lg" && approval.type != "success"
-            ? "Not approved"
-            : null
-        }}</el-button
-      >
-      <el-button
-        round
-        plain
-        size="small"
-        @click="clockIn"
-        v-if="isEventMine && isEventToday && !hasClockedIn"
-        >Clock In</el-button
-      >
-
-      <el-button
-        v-if="hasPermissions"
-        size="small"
-        plain
-        @click="sendReminderToUser"
-        round
-      >
-        {{
-          event.assignedTo.length > 0
-            ? truncate("Remind users of this event", 14)
-            : truncate("Remind user of this event")
-        }}
-      </el-button>
-      <el-button
-        type="danger"
-        size="small"
-        v-if="hasPermissions"
-        @click="deleteEvent"
-        round
-        plain
-        >Delete Event</el-button
-      >
-    </div>
-    <div class="info_container p-3">
-      <!-- Assigned users -->
-
-      <h3 class="mb-3">Assigned users</h3>
-
-      <div class="info_unit avatar_wrapper" v-if="hasEntries(event.assignedTo)">
-        <div
-          ref="user"
-          v-for="(member, index) in event.assignedTo"
-          :key="index"
-          :class="[
-            'assigned_user_container mb-2 flex align-center',
-            { clocked_in: hasClockedIn }
-          ]"
+  <el-dialog :visible.sync="computeDisplay" v-if="getActiveDialog('viewEvent')">
+    <div class="view_event_dialog p-3">
+      <Title
+        title="View event"
+        subtitle="Click on more information to display details"
+      ></Title>
+      <div class="info_button_container flex flex--end">
+        <el-button
+          :circle="$mq != 'lg'"
+          :round="$mq == 'lg'"
+          class="no_events"
+          :icon="approval.icon"
+          size="small"
+          :type="approval.type"
+          >{{
+            approval.type == "success" && $mq == "lg"
+              ? "Approved"
+              : $mq == "lg" && approval.type != "success"
+              ? "Not approved"
+              : null
+          }}</el-button
         >
-          <el-button
-            v-if="hasClockedIn"
-            circle
-            icon="el-icon-check"
-            type="success"
-            class="no_events mr-2"
-            size="mini"
-          ></el-button>
-          <Avatar class="mr-3" :name="member" />
-          <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
-          <el-button
-            class="remove_icon ml-4"
-            size="mini"
-            round
-            @click="dropUserFromEvent(member)"
-            >Drop user</el-button
+        <el-button
+          round
+          plain
+          size="small"
+          @click="clockIn"
+          v-if="isEventMine && isEventToday && !hasClockedIn"
+          >Clock In</el-button
+        >
+
+        <el-button
+          v-if="hasPermissions"
+          size="small"
+          plain
+          @click="sendReminderToUser"
+          round
+        >
+          {{
+            event.assignedTo.length > 0
+              ? truncate("Remind users of this event", 14)
+              : truncate("Remind user of this event")
+          }}
+        </el-button>
+        <el-button
+          type="danger"
+          size="small"
+          v-if="hasPermissions"
+          @click="deleteEvent"
+          round
+          plain
+          >Delete Event</el-button
+        >
+      </div>
+      <div class="info_container p-3">
+        <!-- Assigned users -->
+
+        <h3 class="mb-3">Assigned users</h3>
+
+        <div
+          class="info_unit avatar_wrapper"
+          v-if="hasEntries(event.assignedTo)"
+        >
+          <div
+            ref="user"
+            v-for="(member, index) in event.assignedTo"
+            :key="index"
+            :class="[
+              'assigned_user_container mb-2 flex align-center',
+              { clocked_in: hasClockedIn }
+            ]"
           >
-        </div>
-
-        <div class="add_new_user p-4 trigger" v-if="canAddMoreUsers">
-          <Popover>
-            <div
-              class="p-3 popover_item trigger"
-              :class="{
-                no_events: event.assignedToRaw.indexOf(option._id) > -1
-              }"
-              v-for="option in getFilteredTeam"
-              @click="assignNewUser(option._id)"
-              :key="option._id"
-              slot="content"
+            <el-button
+              v-if="hasClockedIn"
+              circle
+              icon="el-icon-check"
+              type="success"
+              class="no_events mr-2"
+              size="mini"
+            ></el-button>
+            <Avatar class="mr-3" :name="member" />
+            <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
+            <el-button
+              class="remove_icon ml-4"
+              size="mini"
+              round
+              @click="dropUserFromEvent(member)"
+              >Drop user</el-button
             >
-              <span>{{ option.name }}</span>
-            </div>
-            <span slot="trigger">
-              <i class="bx bx-plus"></i> Assign new user
-            </span>
-          </Popover>
+          </div>
+
+          <div class="add_new_user p-4 trigger" v-if="canAddMoreUsers">
+            <Popover>
+              <div
+                class="p-3 popover_item trigger"
+                :class="{
+                  no_events: event.assignedToIDs.indexOf(option._id) > -1
+                }"
+                v-for="option in getFilteredTeam"
+                @click="assignNewUser(option._id)"
+                :key="option._id"
+                slot="content"
+              >
+                <span>{{ option.name }}</span>
+              </div>
+              <span slot="trigger">
+                <i class="bx bx-plus"></i> Assign new user
+              </span>
+            </Popover>
+          </div>
         </div>
-      </div>
 
-      <!-- Assign a user -->
-      <div class="no_users" v-else>
-        <Nocontent v-bind="noAssignedUsers" />
-      </div>
+        <!-- Assign a user -->
+        <div class="no_users" v-else>
+          <Nocontent v-bind="noAssignedUsers" />
+        </div>
 
-      <h3 class="mb-3 mt-3">Event date information</h3>
+        <h3 class="mb-3 mt-3">Event date information</h3>
 
-      <div class="info_unit">
-        <span class="info_label">Event start:</span>
-        <span>{{ dates.start }}</span>
-        <br />
-        <span class="info_label">Event end:</span>
+        <div class="info_unit">
+          <span class="info_label">Event start:</span>
+          <span>{{ dates.start }}</span>
+          <br />
+          <span class="info_label">Event end:</span>
 
-        <span>{{ dates.end }}</span>
-      </div>
-      <h3 class="mt-4 mb-2">Event type & duration</h3>
+          <span>{{ dates.end }}</span>
+        </div>
+        <h3 class="mt-4 mb-2">Event type & duration</h3>
 
-      <div class="info_unit">
-        <span class="info_label">Event duration:</span>
-        <span>{{ duration }} hours</span>
-        <br />
-        <span class="info_label">Event type:</span>
-        <span class="member_name">{{ eventType }}</span>
+        <div class="info_unit">
+          <span class="info_label">Event duration:</span>
+          <span>{{ duration }} hours</span>
+          <br />
+          <span class="info_label">Event type:</span>
+          <span class="member_name">{{ eventType }}</span>
+        </div>
       </div>
     </div>
   </el-dialog>
@@ -173,7 +174,7 @@ export default {
     },
 
     canAddMoreUsers() {
-      return this.event.assignedToRaw.length - 1 == this.teamInformation.length;
+      return this.event.assignedToIDs.length - 1 == this.teamInformation.length;
     },
 
     event() {
@@ -209,15 +210,14 @@ export default {
       return approval;
     },
     getEmail() {
-      let { assignedToRaw } = this.event;
-      assignedToRaw = [...assignedToRaw];
-      let assignedToEmails = assignedToRaw.map(assignee => {
+      let { assignedToIDs } = this.event;
+      assignedToIDs = [...assignedToIDs];
+      let assignedToEmails = assignedToIDs.map(assignee => {
         let { email } = this.teamInformation.find(member => {
           return member._id == assignee;
         });
-        return email;
+        return { assignee, email };
       });
-      assignedToEmails.push("adenaikeyomi@gmail.com");
       return assignedToEmails;
     },
 
@@ -235,19 +235,7 @@ export default {
       });
     },
     hasPermissions() {
-      let result = false;
-      if (
-        this.userInformation._id == this.event.assignedTo ||
-        this.getIsAdmin
-      ) {
-        result = true;
-      }
-
-      if (this.getIsAdmin) {
-        result = true;
-      }
-
-      return result;
+      return this.getIsAdmin;
     },
     computeDisplay: {
       get() {
@@ -263,9 +251,15 @@ export default {
     ...mapActions("Admin", ["getEvents"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
 
+    getOneEmail(id) {
+      return this.getEmail.findIndex(assignee => {
+        return assignee.id == id;
+      }).email;
+    },
+
     dropUserFromEvent(userName) {
       // Cannot be the last one
-      const newLen = this.event.assignedToRaw.length - 1;
+      const newLen = this.event.assignedToIDs.length - 1;
       if (newLen > 1) {
         let userID = this.getUserInformation(userName, "name")._id;
         this.request({
@@ -279,6 +273,21 @@ export default {
           .then(response => {
             this.$forceUpdate();
             this.getEvents();
+            // Notify user they have been dropped
+
+            // this.genEmail({
+            //   subject: "Removed from event",
+            //   to: this.getEmail,
+            //   context: {
+            //     body: contentMessage
+            //   },
+            //   notification: {
+            //     type: "reminder",
+            //     title: contentMessage,
+            //     for: assignedTo,
+            //     message: contentMessage
+            //   }
+            // });
           })
           .catch(err => {
             return err;
@@ -330,6 +339,7 @@ export default {
             .then(response => {
               this.getEvents();
               this.closeDialog("viewEvent");
+              this.notifyAssignees();
             })
             .catch(err => {
               console.log(err);
@@ -339,9 +349,33 @@ export default {
           return err;
         });
     },
+    notifyAssignees() {
+      let assignedToIDs = this.event.assignedToIDs;
+      let removalMessage = `You have an event on ${this.dates.start} to ${this.dates.end} has been deleted by ${this.userInformation.name}`;
+      for (
+        let index = 0, len = assignedToIDs.length;
+        index < assignedToIDs.length;
+        index++
+      ) {
+        let assignee = assignedToIDs[i];
+        this.genEmail({
+          subject: "Event removal",
+          to: this.getEmail,
+          context: {
+            body: removalMessage
+          },
+          notification: {
+            type: "attention",
+            title: "Event removal",
+            for: assignee,
+            message: removalMessage
+          }
+        });
+      }
+    },
     sendReminderToUser() {
-      let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}`;
-      let assignedTo = [...this.event.assignedToRaw, this.userInformation._id];
+      let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
+      let assignedTo = [...this.event.assignedToIDs, this.userInformation._id];
 
       this.genEmail({
         subject: "Reminder",

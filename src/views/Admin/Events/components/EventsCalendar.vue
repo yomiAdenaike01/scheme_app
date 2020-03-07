@@ -19,7 +19,6 @@
       :time-from="getCalTimings.from"
       :time-to="getCalTimings.to"
       editable-events
-      :hide-weekends="!getCalTimings.weekends"
       xsmall
       style="height:830px"
     />
@@ -176,7 +175,7 @@ export default {
           class: eventClass,
           isApproved,
           assignedTo: assignedTo.arr,
-          assignedToRaw: event.assignedTo,
+          assignedToIDs: event.assignedTo,
           type,
           clockedIn
         });

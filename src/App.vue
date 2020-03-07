@@ -385,7 +385,14 @@ span {
 }
 
 .el-dialog {
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 0;
+  width: 45%;
+  &/deep/ {
+    .el-dialog__body {
+      padding: 0;
+    }
+  }
 }
 
 /**

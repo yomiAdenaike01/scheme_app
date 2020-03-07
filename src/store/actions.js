@@ -90,6 +90,20 @@ export default {
     });
   },
 
+  genNotification(context, notificationContent) {
+    context
+      .dispatch("request", {
+        method: "POST",
+        url: "extensions/notification",
+        data: notificationContent
+      })
+      .then(response => {
+        resolve(response);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  },
   /**
    * 
         to: "adenaikeyomi@gmail.com",

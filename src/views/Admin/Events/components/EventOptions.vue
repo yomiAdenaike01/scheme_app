@@ -1,27 +1,53 @@
 <template>
-  <div class="create_shift_options_container">
+  <div class="create_shift_options_container p-4">
     <!-- Displaying templates -->
-    <ToggleSlideDown title="Your saved templates" :center="false">
-      <MoreInformation
-        slot="titleContent"
-        index="admin"
-        instruction="create_template"
+    <!-- <MoreInformation
+      slot="titleContent"
+      index="admin"
+      instruction="create_template"
+    /> -->
+    <div
+      class="flex columns"
+      v-if="templates.length > 0"
+      v-loading="templateLoading"
+    >
+      <div class="flex_center input_container p-4">
+        <el-input
+          v-model="templateNamesSearch"
+          placeholder="Seach Templates"
+          size="mini"
+        ></el-input>
+        <el-button
+          size="mini"
+          class="ml-4"
+          type="text"
+          plain
+          round
+          @click="displayCreateTemplate = !displayCreateTemplate"
+        >
+          Create new template
+          <i
+            :class="{ active: displayCreateTemplate }"
+            class="indicator el-icon-arrow-right"
+          ></i>
+        </el-button>
+      </div>
+      <EventTemplate
+        @toggle="displayCreateTemplate = false"
+        v-for="template in templates"
+        :key="template._id"
+        :data="template"
       />
-      <div
-        class="flex columns"
-        v-if="templates.length > 0"
-        v-loading="templateLoading"
-      >
-        <div class="flex_center input_container p-4">
-          <el-input
-            v-model="templateNamesSearch"
-            placeholder="Seach Templates"
-            size="mini"
-          ></el-input>
+    </div>
+
+    <!-- No templates -->
+    <div v-else>
+      <div class="flex_center">
+        <Nocontent v-bind="noTemplateOptions">
           <el-button
             size="mini"
             class="ml-4"
-            type="text"
+            type="primary"
             plain
             round
             @click="displayCreateTemplate = !displayCreateTemplate"
@@ -32,52 +58,22 @@
               class="indicator el-icon-arrow-right"
             ></i>
           </el-button>
-        </div>
-        <EventTemplate
-          @toggle="displayCreateTemplate = false"
-          v-for="template in templates"
-          :key="template._id"
-          :data="template"
-        />
+        </Nocontent>
       </div>
+    </div>
 
-      <!-- No templates -->
-      <div v-else>
-        <div class="flex_center">
-          <Nocontent v-bind="noTemplateOptions">
-            <el-button
-              size="mini"
-              class="ml-4"
-              type="primary"
-              plain
-              round
-              @click="displayCreateTemplate = !displayCreateTemplate"
-            >
-              Create new template
-              <i
-                :class="{ active: displayCreateTemplate }"
-                class="indicator el-icon-arrow-right"
-              ></i>
-            </el-button>
-          </Nocontent>
-        </div>
-      </div>
-
-      <!-- Create template -->
-      <el-collapse-transition>
-        <CreateTemplate
-          v-if="displayCreateTemplate"
-          @toggle="displayCreateTemplate = false"
-        />
-      </el-collapse-transition>
-    </ToggleSlideDown>
+    <!-- Create template -->
+    <el-collapse-transition>
+      <CreateTemplate
+        v-if="displayCreateTemplate"
+        @toggle="displayCreateTemplate = false"
+      />
+    </el-collapse-transition>
   </div>
 </template>
 
 <script>
 import ToggleSlideDown from "@/components/ToggleSlideDown";
-import UploadFile from "@/components/UploadFile";
-import uploadContent from "@/mixins/uploadContent";
 import Title from "@/components/Title";
 import EventTemplate from "./EventTemplate";
 import MoreInformation from "@/components/MoreInformation";
@@ -98,7 +94,6 @@ export default {
   async mounted() {
     await this.getTemplates();
   },
-  mixins: [uploadContent],
   computed: {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
@@ -139,8 +134,6 @@ export default {
   },
   components: {
     ToggleSlideDown,
-    UploadFile,
-    Title,
     EventTemplate,
     MoreInformation,
     Nocontent,

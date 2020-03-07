@@ -1,33 +1,31 @@
 <template>
-  <el-dialog
-    width="40%"
-    :visible.sync="tutorialView"
-    v-if="getActiveDialog('tutorial')"
-  >
-    <div class="info_container flex align-center flex--space-between">
-      <i
-        class="el-icon arrow el-icon-arrow-left"
-        @click="slideController('minus')"
-      ></i>
-      <transition-group name="slide_in" tag="div">
-        <p :key="index" v-for="(slideIn, index) in [currentSlideInfo]">
-          {{ slideIn }}
-        </p>
-      </transition-group>
+  <el-dialog :visible.sync="tutorialView" v-if="getActiveDialog('tutorial')">
+    <div class="tutorial_container p-3">
+      <div class="info_container flex align-center flex--space-between">
+        <i
+          class="el-icon arrow el-icon-arrow-left"
+          @click="slideController('minus')"
+        ></i>
+        <transition-group name="slide_in" tag="div">
+          <p :key="index" v-for="(slideIn, index) in [currentSlideInfo]">
+            {{ slideIn }}
+          </p>
+        </transition-group>
 
-      <i
-        class="el-icon arrow el-icon-arrow-right"
-        @click="slideController('plus')"
-      ></i>
-    </div>
+        <i
+          class="el-icon arrow el-icon-arrow-right"
+          @click="slideController('plus')"
+        ></i>
+      </div>
 
-    <div class="slide_indicator_container flex_center mt-5">
-      <div
-        :class="{ active: currentSlide == slide - 1 }"
-        v-for="slide in totalSlides"
-        :key="slide"
-        class="slide_indicator"
-      ></div>
+      <div class="slide_indicator_container flex_center mt-5">
+        <div
+          :class="{ active: currentSlide == slide - 1 }"
+          v-for="slide in totalSlides"
+          :key="slide"
+          class="slide_indicator"
+        ></div>
+      </div>
     </div>
   </el-dialog>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog custom-class="event_dialog" width="40%" :visible.sync="view">
+  <el-dialog custom-class="event_dialog" :visible.sync="view">
     <Tabs
       v-loading="loading"
       :tabs="tabs"
@@ -14,7 +14,8 @@
       <div slot="header_content">
         <Title
           defaultClass="mb-5"
-          title="Event management"
+          class="p-4"
+          title="Event Management"
           subtitle="Select different tabs to create groups or events."
         />
       </div>
@@ -28,14 +29,6 @@
           <p class="mb-3 ml-4 desc grey">
             Press to select an event colour (optional):
           </p>
-        </div>
-        <div
-          class="ml-4 mt-4 flex align-center"
-          v-if="currentTab == 1 && getIsAdmin"
-        >
-          <el-button round @click="currentTab = 2" class="w-100" size="mini">
-            <i class="bx bx-brain"></i> Auto generate using templates
-          </el-button>
         </div>
       </div>
     </Tabs>
@@ -101,11 +94,11 @@ export default {
     tabs() {
       let tabs = [
         {
-          label: this.getIsAdmin ? "Create Event" : "Create Request",
+          label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm
         },
         {
-          label: "Timesheets & Templates",
+          label: "Manage event templates",
           view: {
             component: EventOptions
           }
@@ -114,7 +107,7 @@ export default {
 
       if (this.getIsAdmin) {
         tabs.unshift({
-          label: "Create Event Group",
+          label: "Create event group",
           formContent: this.createEventGroupForm
         });
       }
@@ -320,64 +313,12 @@ export default {
       loadingTimeout = setTimeout(() => {
         this.loading = false;
       }, 1000);
-    },
-
-    async validateCSVData(fileData) {
-      try {
-        Object.keys(fileData).map(key => {
-          return key.toLowerCase().trim();
-        });
-
-        /**
-         * start date
-         * end date
-         * start time
-         * end time
-         * assigned to (names (yomi adenaike))
-         * event type ('regular shift')
-         *
-         */
-        // Have the group on the same day ?
-        console.log(fileData);
-      } catch (error) {}
-    },
-
-    async timeSheetManagement() {
-      try {
-        let uploadedEvents = await csvtojson().fromString(this.fileContent);
-        let validationResult = await this.validateCSVData(uploadedEvents);
-
-        return Promise.resolve(validationResult);
-      } catch (e) {
-        return Promise.reject(e);
-      }
     }
   },
 
-  watch: {
-    fileContent(val) {
-      if (val) {
-        let data = this.timeSheetManagement()
-          .then(response => {
-            this.timeSheetData = response;
-            this.timeSheetError = false;
-          })
-          .catch(error => {
-            this.timeSheetError = true;
-
-            this.UPDATE_NOTIFICATIONS({
-              title: "Timesheet error",
-              message: error,
-              type: "info"
-            });
-          });
-      }
-    }
-  },
   components: {
     Title,
     Tabs,
-    ValidationUnit,
     ColourUnit
   }
 };
