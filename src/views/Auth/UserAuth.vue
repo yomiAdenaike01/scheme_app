@@ -42,6 +42,17 @@ export default {
       loading: false
     };
   },
+  activated() {
+    if (!this.hasEntries(this.clientInformation)) {
+      this.getClient()
+        .then(response => {
+          this.UPDATE_CLIENT(response);
+        })
+        .catch(() => {
+          return;
+        });
+    }
+  },
   computed: {
     isValidClient() {
       return this.hasEntries(this.clientInformation);
