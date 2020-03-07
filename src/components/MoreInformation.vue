@@ -2,9 +2,9 @@
   <div class="moreinformation_container">
     <!-- Create popover with the index of the instructions -->
     <Popover :position="hoverPosition" trigger="hover" width="250">
-      <el-button slot="trigger" size="mini" round :type="type"
-        >More Information</el-button
-      >
+      <el-button slot="trigger" size="mini" plain circle :type="type"
+        ><i class="bx bx-info-circle"></i
+      ></el-button>
 
       <div slot="content" class="instructions_content">
         <h3 class="mb-2">{{ guideContent.title }}</h3>
@@ -50,3 +50,9 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.bx-info-circle {
+  font-size: 19px;
+  color: #999;
+}
+</style>

@@ -27,6 +27,11 @@ export default {
       { root: true }
     );
   },
+  /**
+   *
+   * @param {*} context
+   * @param {Object} params
+   */
   genPromptBox(context, { boxType, text, title, type, confirm }) {
     return new Promise((resolve, reject) => {
       boxType ? boxType : "confirm";

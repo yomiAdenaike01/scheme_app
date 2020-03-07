@@ -71,48 +71,6 @@
         />
       </el-collapse-transition>
     </ToggleSlideDown>
-
-    <!-- Upload content -->
-    <ToggleSlideDown title="Upload new timesheet" v-if="getIsAdmin">
-      <MoreInformation
-        slot="titleContent"
-        index="admin"
-        instruction="upload_timesheet"
-      />
-
-      <div class="upload_file_container columns">
-        <Title
-          defaultClass="m-0"
-          subtitle="Select only CSV files that must have the following rows:"
-        />
-
-        <div class="flex_center">
-          <UploadFile
-            readMethod="readAsText"
-            @removeContent="
-              $emit('conponentChanges', {
-                eventname: 'removeContent',
-                eventdata: null
-              })
-            "
-            @fileContent="
-              $emit('conponentChanges', {
-                eventname: 'uploadFileContent',
-                eventdata: $event
-              })
-            "
-            :buttonConfig="{
-              text: 'Select CSV File',
-              round: true,
-              icon: 'el-icon-top',
-              size: 'small',
-              type: 'primary'
-            }"
-          />
-        </div>
-      </div>
-    </ToggleSlideDown>
-    <div class="template_container"></div>
   </div>
 </template>
 

@@ -107,7 +107,6 @@ export default {
   },
   watch: {
     isSuccess(val) {
-      console.log(val);
       this.isSuccessInterval = setTimeout(() => {
         this.isSuccess = "";
         this.quickActionLoading = "";
