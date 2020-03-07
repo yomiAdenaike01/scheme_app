@@ -114,9 +114,16 @@ export default {
           footer (optional) :""
         }
    */
-  genEmail(context, emailContent) {
+  genEmail(
+    {
+      admin: {
+        state: { teamInformation }
+      }
+    },
+    emailContent
+  ) {
     emailContent.to == "all"
-      ? (emailContent.to = context.admin.state.teamInformation.map(member => {
+      ? (emailContent.to = teamInformation.map(member => {
           return member.email;
         }))
       : emailContent.to;

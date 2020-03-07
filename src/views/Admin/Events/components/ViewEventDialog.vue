@@ -247,7 +247,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "genEmail", "genPromptBox", "closeDialog"]),
+    ...mapActions([
+      "request",
+      "genEmail",
+      "genPromptBox",
+      "closeDialog",
+      "genNotification"
+    ]),
     ...mapActions("Admin", ["getEvents"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
 
@@ -274,6 +280,12 @@ export default {
             this.$forceUpdate();
             this.getEvents();
             // Notify user they have been dropped
+            this.genNotification({
+              type: "attention",
+              title: "Event Update",
+              message: "You have been removed from an event",
+              for: userID
+            });
 
             // this.genEmail({
             //   subject: "Removed from event",
@@ -352,24 +364,25 @@ export default {
     notifyAssignees() {
       let assignedToIDs = this.event.assignedToIDs;
       let removalMessage = `You have an event on ${this.dates.start} to ${this.dates.end} has been deleted by ${this.userInformation.name}`;
+      this.genEmail({
+        subject: "Event removal",
+        to: this.getEmail,
+        context: {
+          body: removalMessage
+        }
+      });
+
       for (
         let index = 0, len = assignedToIDs.length;
         index < assignedToIDs.length;
         index++
       ) {
         let assignee = assignedToIDs[i];
-        this.genEmail({
-          subject: "Event removal",
-          to: this.getEmail,
-          context: {
-            body: removalMessage
-          },
-          notification: {
-            type: "attention",
-            title: "Event removal",
-            for: assignee,
-            message: removalMessage
-          }
+        this.genNotification({
+          type: "attention",
+          title: "Event removal",
+          for: assignee,
+          message: removalMessage
         });
       }
     },

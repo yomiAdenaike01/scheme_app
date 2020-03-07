@@ -21,6 +21,7 @@
       editable-events
       xsmall
       style="height:830px"
+      ref="eventsCalendar"
     />
   </div>
 </template>
@@ -142,10 +143,6 @@ export default {
 
       for (let i = 0, len = events.length; i < len; i++) {
         let event = events[i];
-
-        if (!event == event_group) {
-          continue;
-        }
 
         let {
           isApproved,
