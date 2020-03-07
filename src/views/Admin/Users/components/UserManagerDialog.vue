@@ -29,6 +29,9 @@ import { mapActions, mapMutations, mapState } from "vuex";
 import Tabs from "@/components/Tabs";
 import Title from "@/components/Title";
 import ValidationUnit from "@/components/ValidationUnit";
+import ManageUserGroups from "./ManageUserGroups";
+import CreateUserOptions from "./CreateUserOptions";
+
 const csvtojson = require("csvtojson");
 
 export default {
@@ -255,7 +258,9 @@ export default {
   components: {
     Title,
     Tabs,
-    ValidationUnit
+    ValidationUnit,
+    ManageUserGroups,
+    CreateUserOptions
   },
 
   watch: {

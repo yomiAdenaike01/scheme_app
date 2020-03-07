@@ -36,26 +36,16 @@ export default {
     if (this.isValidClient) {
       this.SET_THEME();
     }
-
-    if (this.runInterval) {
-      this.clientInterval = setInterval(() => {
-        let res = this.getClient()
-          .then(response => {
-            this.loading = false;
-          })
-          .catch(err => {
-            this.loading = false;
-          });
-      }, this.requestIntervals.client);
-    } else {
-      this.getClient()
-        .then(res => {
+    clearInterval(this.clientInterval);
+    this.clientInterval = setInterval(() => {
+      let res = this.getClient()
+        .then(response => {
           this.loading = false;
         })
         .catch(err => {
           this.loading = false;
         });
-    }
+    }, this.requestIntervals.client);
   },
   destroyed() {
     clearInterval(this.clientInterval);
@@ -74,12 +64,6 @@ export default {
 
     isValidClient() {
       return this.hasEntries(this.clientInformation);
-    },
-
-    runInterval() {
-      return (
-        this.$route.name != "register" && this.isValidClient && !this.noClient
-      );
     }
   },
   mixins: [alterTheme],
