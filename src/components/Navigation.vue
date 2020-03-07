@@ -37,14 +37,14 @@ export default {
         },
         {
           name: "Messenger",
-          path: "/comms/messenger",
+          path: "/admin/messenger",
           icon: "bx bx-message-rounded"
         },
         {
           name: "User management",
           path: "/admin/user",
           icon: "bx bx-group"
-        },
+        }
         // {
         //   name: "Analytics",
         //   path: "/admin/analytics",
@@ -55,19 +55,19 @@ export default {
         //   path: "/admin/utilities",
         //   icon: "bx bx-task"
         // },
-        {
-          name: "Support",
-          path: "/support/dashboard",
-          icon: "bx bx-support"
-        }
+        // {
+        //   name: "Support",
+        //   path: "/support/dashboard",
+        //   icon: "bx bx-support"
+        // }
       ];
-      if (this.getIsSignedUser) {
-        allowedRoutes.push({
-          name: "Client Settings",
-          icon: "bx bx-cog",
-          path: "preferences/client"
-        });
-      }
+      // if (this.getIsSignedUser) {
+      //   allowedRoutes.push({
+      //     name: "Client Settings",
+      //     icon: "bx bx-cog",
+      //     path: "preferences/client"
+      //   });
+      // }
       return allowedRoutes;
     },
 

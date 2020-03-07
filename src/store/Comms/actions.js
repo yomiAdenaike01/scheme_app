@@ -70,7 +70,7 @@ export default {
         });
     });
   },
-  getTranscripts({ state: { transcripts } }) {
+  getTranscripts({ dispatch, commit, state: { transcripts } }) {
     if (transcripts.length <= 0) {
       return new Promise((resolve, reject) => {
         if (transcripts.length <= 0) {
@@ -78,10 +78,9 @@ export default {
             method: "GET",
             url: "/messenger/transcripts"
           };
-          context
-            .dispatch("request", payload, { root: true })
+          dispatch("request", payload, { root: true })
             .then(response => {
-              context.commit("UPDATE_TRANSCRIPTS", {
+              commit("UPDATE_TRANSCRIPTS", {
                 data: response,
                 type: "all"
               });

@@ -17,7 +17,11 @@
           slot="trigger"
           @click="startChat = !startChat"
         ></el-button>
-        <div slot="content" class="start_chat_container p-2">
+        <div
+          slot="content"
+          v-loading="loading"
+          class="start_chat_container p-2"
+        >
           <el-select
             v-model="chat.userTwo"
             size="small"
@@ -39,7 +43,12 @@
             v-model="chat.content"
             placeholder="Chat message"
           ></el-input>
-          <el-button size="small" type="primary" round @click="sendMessage"
+          <el-button
+            :disabled="!chat.content || !chat.userTwo"
+            size="small"
+            type="primary"
+            round
+            @click="sendMessage"
             >Initiate chat</el-button
           >
         </div>
@@ -63,6 +72,7 @@ export default {
     return {
       transcriptSearch: "",
       startChat: false,
+      loading: false,
       chat: {
         content: "",
         userTwo: ""
@@ -102,9 +112,16 @@ export default {
     ...mapActions("Comms", ["getTranscripts"]),
     ...mapActions("Admin", ["getTeam"]),
     sendMessage() {
+      this.loading = true;
       this.startChat({
         ...this.chat
-      });
+      })
+        .then(() => {
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     }
   },
   components: {
