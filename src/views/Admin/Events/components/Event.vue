@@ -72,15 +72,11 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
-import employeeMethods from "@/mixins/employeeMethods";
-import dates from "@/mixins/dates";
 import Dropdown from "@/components/Dropdown";
 import ViewEventDialog from "../../Events/components/ViewEventDialog";
-import moment from "moment";
 import Popover from "@/components/Popover";
 export default {
   name: "Event",
-  mixins: [employeeMethods, dates],
 
   data() {
     return {
@@ -125,8 +121,8 @@ export default {
       const format = "dddd DD MMM HH:mm";
       let { startDate, endDate } = this.event;
       return {
-        start: moment(startDate).format(format),
-        end: moment(endDate).format(format)
+        start: this.formatDate(startDate, format),
+        end: this.formatDate(endDate, format)
       };
     },
 

@@ -7,38 +7,22 @@
             <!-- Display the clients image -->
             <ClientImage :center="true" class="mb-4" />
             <!-- Auth Register &  Login -->
-            <Tabs
-              v-loading="loading"
-              :tabs="returnTabs"
-              :submitText="
-                tabIndex == '0' && isValidClient
-                  ? 'Login'
-                  : !isValidClient
-                  ? 'Invalid client please register'
-                  : 'Register'
-              "
-              v-model="tabIndex"
-              :disable="!isValidClient"
-              @val="setFormAndProcessUser"
+            <Form :config="formConfig" submitText="Login" @val="login" />
+            <!-- New client registration -->
+            <div
+              class="new_client_button_container mb-4 mt-4"
+              slot="header_content"
             >
               <!-- New client registration -->
-              <div
-                class="new_client_button_container mb-4 mt-4"
-                slot="header_content"
-                v-if="tabIndex != '0'"
+              <el-button
+                v-if="!isValidClient"
+                @click="$router.push({ name: 'register' })"
+                round
+                size="small"
+                type="primary"
+                >Registering a new company ? Click here to register.</el-button
               >
-                <!-- New client registration -->
-                <el-button
-                  v-if="!isValidClient"
-                  @click="$router.push({ name: 'register' })"
-                  round
-                  size="small"
-                  type="primary"
-                  >Registering a new company ? Click here to
-                  register.</el-button
-                >
-              </div>
-            </Tabs>
+            </div>
           </el-main>
         </el-container>
       </el-card>
@@ -48,24 +32,14 @@
 
 <script>
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
-import prompts from "@/mixins/prompts";
-import Title from "@/components/Title";
-import Tabs from "@/components/Tabs";
+import Form from "@/components/Form";
 import ClientImage from "@/components/ClientImage";
 export default {
   name: "UserAuth",
   data() {
     return {
       newUser: false,
-      tabIndex: "0",
-      formModel: {
-        login: {},
-        register: {},
-        forgotPassword: {}
-      },
-
-      loading: false,
-      payload: {}
+      loading: false
     };
   },
   computed: {
@@ -73,180 +47,34 @@ export default {
       return this.hasEntries(this.clientInformation);
     },
     ...mapState(["clientInformation"]),
-    selectedForm() {
-      if (this.tabIndex == "0") {
-        return "login";
-      } else {
-        return "register";
-      }
-    },
-    returnTabs() {
-      // loop the types of forms and create a label
-      return [
-        {
-          label: "Login",
-          formContent: this.formConfig["login"]
-        },
-        {
-          label: "Register",
-          formContent: this.formConfig["register"]
-        }
-      ];
-    },
+
     returnPayload() {
-      return {
-        method: "POST",
-        data: {
-          clientID: this.clientInformation._id,
-          ...this.formModel[this.selectedForm]
-        },
-        url: `/users/${this.selectedForm}`
-      };
-    },
-    switchController() {
-      let switchObj = {
-        title: "User sign in",
-        subtitle: "Use your email and password to sign in.",
-        text: "Switch to registration"
-      };
-
-      if (this.selectedForm == "register") {
-        switchObj.title = "User sign up";
-
-        switchObj.subtitle =
-          "Fill in the following form to successfully register";
-
-        switchObj.text = "Switch to login";
-      } else if (this.selectedForm == "forgotPassword") {
-        switchObj.title = "Forgot Password";
-
-        switchObj.subtitle =
-          "Fill in the following form to change the password";
-
-        switchObj.text = "Switch to login";
-      }
-      return switchObj;
+      return {};
     },
 
     returnForm() {
       return this.formConfig[this.selectedForm];
     },
     formConfig() {
-      let formConfig = {
-        forgotPassword: [
-          {
-            name: "email",
-            "component-type": "text",
-            placeholder: "Email",
-            model: "email"
-          },
-          {
-            name: "password",
-            "component-type": "password",
-            placeholder: "Password",
-            model: "password"
-          },
-          {
-            name: "Verify password",
-            "component-type": "password",
-            placeholder: "Verify Password",
-            model: "verify_password"
-          }
-        ],
-        login: [
-          {
-            name: "email",
-            "component-type": "text",
-            placeholder: "Email",
-            model: "email"
-          },
-          {
-            name: "password",
-            "component-type": "password",
-            placeholder: "Password",
-            model: "password"
-          }
-        ],
-        register: [
-          {
-            name: "name",
-            "component-type": "text",
-            placeholder: "First and last name",
-            model: "name"
-          },
-          {
-            name: "email",
-            "component-type": "text",
-            placeholder: "Email",
-            model: "email"
-          },
-
-          {
-            name: "password",
-            "component-type": "password",
-            placeholder: "New password",
-            model: "password"
-          },
-
-          {
-            name: "gender",
-            type: "select",
-            placeholder: "Gender",
-            model: "gender",
-            options: [
-              {
-                text: "Male",
-                value: 1
-              },
-              {
-                text: "Female",
-                value: 2
-              },
-              {
-                text: "Other",
-                value: 3
-              }
-            ]
-          },
-          {
-            name: "date_of_birth",
-            type: "date",
-            placeholder: "Date of birth",
-            model: "date_of_birth"
-          },
-
-          {
-            name: "locumn",
-            type: "select",
-            placeholder: "Are you a locumn ?",
-            model: "groupID",
-            options: [
-              {
-                text: "Yes",
-                value: "Yes"
-              },
-              {
-                text: "No",
-                value: "No"
-              }
-            ]
-          }
-        ]
-      };
-
-      return formConfig;
+      return [
+        {
+          name: "email",
+          "component-type": "text",
+          placeholder: "Email",
+          model: "email"
+        },
+        {
+          name: "password",
+          "component-type": "password",
+          placeholder: "Password",
+          model: "password"
+        }
+      ];
     }
   },
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
-
-    changeTab(form) {
-      if (form == "login") {
-        this.tabIndex = "0";
-      }
-      this.tabIndex = "1";
-    },
 
     setFormAndProcessUser(e) {
       try {
@@ -256,47 +84,16 @@ export default {
         console.log(error);
       }
     },
-    forgotPassword() {
-      let forgotPwdForm = this.formModel[this.selectedForm];
-
+    login(credentials) {
       this.loading = true;
-
-      if (forgotPwdForm.password != forgotPwdForm.verify_password) {
-        this.loading = false;
-
-        this.UPDATE_NOTIFICATIONS({
-          type: "error",
-          message: "Passwords do not match, please enter them again."
-        });
-      } else {
-        delete forgotPwdForm.verify_password;
-
-        this.request({
-          method: "POST",
-          url: "users/forgotpassword",
-          data: forgotPwdForm
-        })
-          .then(response => {
-            this.loading = false;
-            // this.chanteTab("login");
-          })
-          .catch(error => {
-            this.loading = false;
-          });
-      }
-    },
-    processUser() {
-      if (this.selectedForm == "forgotPassword") {
-        this.forgotPassword();
-      } else if (this.selectedForm == "register") {
-        //Change employee type
-        this.formModel.login.groupID == "Yes"
-          ? this.$set(this.formModel.register, "groupID", 3)
-          : this.$set(this.formModel.register, "groupID", 2);
-      }
-      this.loading = true;
-
-      this.request(this.returnPayload)
+      this.request({
+        method: "POST",
+        data: {
+          clientID: this.clientInformation._id,
+          ...credentials
+        },
+        url: "/users/login"
+      })
         .then(response => {
           this.UPDATE_USER(response);
 
@@ -322,8 +119,7 @@ export default {
     }
   },
   components: {
-    Title,
-    Tabs,
+    Form,
     ClientImage
   }
 };

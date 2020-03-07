@@ -47,8 +47,8 @@ Vue.prototype.truncate = function(elem, len) {
 Vue.prototype.initMoment = function(date) {
   return moment(date);
 };
-Vue.prototype.formatDate = function(date) {
-  return moment(date).format("DD/MM/YYYY HH:mm");
+Vue.prototype.formatDate = function(date, formatString = "DD/MM/YYYY HH:mm") {
+  return moment(date).format(formatString);
 };
 Vue.prototype.ArrIncludes = function(arr, item, displayIndex = true, key = "") {
   let res;

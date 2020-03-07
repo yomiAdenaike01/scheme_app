@@ -24,10 +24,8 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
-import dates from "@/mixins/dates";
 export default {
   name: "Notification",
-  mixins: [dates],
   data() {
     return {
       viewDetails: false,
@@ -37,13 +35,13 @@ export default {
   },
   computed: {
     notificationSendDate() {
-      return this.calendar(this.notification.dateCreated);
+      return this.initMoment(this.notification.dateCreated).calendar();
     },
     startDate() {
-      return this.format(this.update.startDate, this.formatString);
+      return this.formatDate(this.update.startDate, this.formatString);
     },
     endDate() {
-      return this.format(this.update.endDate, this.formatString);
+      return this.formatDate(this.update.endDate, this.formatString);
     },
     notificationUpdate() {
       return this.notification.content;

@@ -2,7 +2,6 @@
   <el-dialog
     :visible.sync="toggleView"
     class="view_user_container"
-    width="40%"
     v-if="getActiveDialog('viewUser')"
   >
     <el-row type="flex">
