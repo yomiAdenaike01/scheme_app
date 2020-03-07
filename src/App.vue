@@ -317,7 +317,7 @@ span {
 }
 
 .popover_container {
-  padding: 0 !important;
+  padding: 0;
 }
 .popover_item {
   &.no_events {

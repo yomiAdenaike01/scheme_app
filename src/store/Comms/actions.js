@@ -70,12 +70,10 @@ export default {
         });
     });
   },
-  getTranscripts(context) {
-    let { transcripts } = context.state;
+  getTranscripts({ state: { transcripts } }) {
     if (transcripts.length <= 0) {
       return new Promise((resolve, reject) => {
-        const anyTranscripts = context.state.transcripts.length <= 0;
-        if (anyTranscripts) {
+        if (transcripts.length <= 0) {
           const payload = {
             method: "GET",
             url: "/messenger/transcripts"

@@ -35,11 +35,11 @@ export default {
           path: "/admin/events",
           icon: "el-icon-date"
         },
-        // {
-        //   name: "Messenger",
-        //   path: "/comms/messenger",
-        //   icon: "bx bx-message-rounded-edit"
-        // },
+        {
+          name: "Messenger",
+          path: "/comms/messenger",
+          icon: "bx bx-message-rounded"
+        },
         {
           name: "User management",
           path: "/admin/user",

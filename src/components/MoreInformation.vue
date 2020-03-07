@@ -1,14 +1,20 @@
 <template>
   <div class="moreinformation_container">
     <!-- Create popover with the index of the instructions -->
-    <Popover :position="hoverPosition" trigger="hover" width="250">
+    <Popover
+      popperclass="p-3"
+      :position="hoverPosition"
+      trigger="hover"
+      width="250"
+      class="p-4"
+    >
       <el-button slot="trigger" size="mini" plain circle :type="type"
-        ><i class="bx bx-info-circle"></i
+        ><i class="bx bx-question-mark"></i
       ></el-button>
 
       <div slot="content" class="instructions_content">
-        <h3 class="mb-2">{{ guideContent.title }}</h3>
-        <p v-html="guideContent.information" style="line-height:1.5em"></p>
+        <h2 class="mb-2">{{ guideContent.title }}</h2>
+        <p v-html="guideContent.information"></p>
       </div>
     </Popover>
   </div>
@@ -54,5 +60,8 @@ export default {
 .bx-info-circle {
   font-size: 19px;
   color: #999;
+}
+.instructions_content {
+  line-height: 1.8em;
 }
 </style>
