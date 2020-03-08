@@ -21,17 +21,25 @@ export default {
   },
   readMessages({ dispatch, commit, state: { activeTranscript } }, payload) {
     return new Promise((resolve, reject) => {
-      dispatch("request", {
-        method: "POST",
-        url: "messengers/read",
-        data: { transcriptID: activeTranscript._id }
-      })
-        .then(() => {
-          resolve();
-        })
-        .catch(() => {
-          reject();
-        });
+      if (Object.keys(activeTranscript).length > 0) {
+        dispatch(
+          "request",
+          {
+            method: "POST",
+            url: "messengers/read",
+            data: { transcriptID: activeTranscript._id }
+          },
+          { root: true }
+        )
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
+      } else {
+        resolve();
+      }
     });
   },
   sendMessage(context, payload) {

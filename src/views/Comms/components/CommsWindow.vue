@@ -1,10 +1,10 @@
 <template>
   <transition name="el-fade-in">
     <div class="comms_window_container flex columns">
-      <div class="comms_window_toolbar">
-        <p>{{ username }}</p>
-      </div>
-      <div class="messages_container">
+      <div class="messages_container" v-if="hasEntries(activeTranscript)">
+        <div class="comms_window_toolbar">
+          <p>{{ username }}</p>
+        </div>
         <transition-group name="el-fade-in">
           <Message
             v-for="(message, index) in messages"
@@ -37,6 +37,7 @@
           >
         </div>
       </div>
+      <Nocontent v-bind="noContent" />
     </div>
   </transition>
 </template>
@@ -44,6 +45,7 @@
 <script>
 import Popover from "@/components/Popover";
 import Message from "./Message";
+import Nocontent from "@/components/Nocontent";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "CommsWindow",
@@ -72,6 +74,12 @@ export default {
   computed: {
     ...mapState(["requestIntervals"]),
     ...mapState("Comms", ["activeTranscript", "messages"]),
+    noContent() {
+      return {
+        text: "No chat selected",
+        icon: "bx bx-conversation"
+      };
+    },
     info() {
       return this.activeTranscript.userInfo;
     },
@@ -106,7 +114,8 @@ export default {
   },
   components: {
     Message,
-    Popover
+    Popover,
+    Nocontent
   }
 };
 </script>

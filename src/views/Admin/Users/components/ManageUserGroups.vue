@@ -42,14 +42,14 @@
               ]"
             >
               <p class="mb-3" v-loading="runningDelete == group.value">
-                {{ truncate(group.name, 13) }}
+                {{ group.label }}
               </p>
               <DefaultTransition>
                 <el-button
                   v-if="inArray(group.value)"
-                  type="danger"
                   icon="el-icon-delete"
                   circle
+                  type="danger"
                   @click="deleteGroup(group.value)"
                 ></el-button>
               </DefaultTransition>

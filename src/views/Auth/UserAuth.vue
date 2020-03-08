@@ -84,7 +84,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "getClient"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
 
     setFormAndProcessUser(e) {

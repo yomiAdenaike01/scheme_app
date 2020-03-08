@@ -14,11 +14,11 @@
           title="Manager users"
           subtitle="Manage all users and groups here."
         />
-        <transition name="el-fade-in">
+        <!-- <transition name="el-fade-in">
           <div class="flex_center" v-if="currentTab > 0">
             <ValidationUnit v-bind="renderValidationUnit" />
           </div>
-        </transition>
+        </transition> -->
       </div>
     </Tabs>
   </el-dialog>

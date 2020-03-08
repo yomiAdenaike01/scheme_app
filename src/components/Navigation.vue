@@ -38,7 +38,7 @@ export default {
         {
           name: "Messenger",
           path: "/admin/messenger",
-          icon: "bx bx-message-rounded"
+          icon: "bx bx-conversation"
         },
         {
           name: "User management",
