@@ -5,7 +5,7 @@
     @click="updateActiveTranscript"
   >
     <div class="text_wrapper p-3 flex_center">
-      <Avatar class="mr-3" :name="userInformation.name" />
+      <Avatar class="mr-3" :name="user.name" />
       <div>
         <p>
           {{ truncate(data.message.content) }}
@@ -17,7 +17,6 @@
           >
         </transition>
       </div>
-      {{ getUserInformation("_id", data.userTwo) }}
     </div>
     <Popover trigger="hover" position="right">
       <i slot="trigger" class="bx bx-dots-vertical grey"></i>
@@ -34,7 +33,7 @@ import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
 import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
 export default {
-  name: "Transcript",
+  name: "CommsTranscript",
   data() {
     return {
       loading: false
@@ -45,7 +44,7 @@ export default {
     ...mapState("Comms", ["activeTranscript"]),
     ...mapGetters("Admin", ["getUserInformation"]),
     user() {
-      return this.getUserInformation("_id", this.data.userTwo);
+      return this.getUserInformation(this.data.userTwo);
     }
   },
 

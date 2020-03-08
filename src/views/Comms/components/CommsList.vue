@@ -60,7 +60,7 @@
         <Nocontent v-bind="noContent" />
       </div>
       <div v-else>
-        <Transcript
+        <CommsTranscript
           v-for="transcript in transcripts"
           :key="transcript._id"
           :data="transcript"
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import Transcript from "./Transcript";
+import CommsTranscript from "./CommsTranscript";
 import Nocontent from "@/components/Nocontent";
 import Popover from "@/components/Popover";
 import { mapState, mapActions, mapGetters } from "vuex";
@@ -108,14 +108,14 @@ export default {
         icon: "bx bx-message-rounded"
       };
     },
-    filterTranscripts() {
-      let filteredTranscripts = [];
-      filteredTranscripts.filter(transcript => {});
-      return filteredTranscripts;
+    filterCommsTranscripts() {
+      let filteredCommsTranscripts = [];
+      filteredCommsTranscripts.filter(transcript => {});
+      return filteredCommsTranscripts;
     }
   },
   methods: {
-    ...mapActions("Comms", ["getTranscripts", "startChat"]),
+    ...mapActions("Comms", ["getCommsTranscripts", "startChat"]),
     ...mapActions("Admin", ["getTeam"]),
     sendMessage() {
       this.loading = true;
@@ -135,13 +135,13 @@ export default {
     async reset() {
       this.loading = false;
       this.$set(this, "chat", {});
-      await this.getTranscripts();
+      await this.getCommsTranscripts();
     }
   },
   components: {
     Nocontent,
     Popover,
-    Transcript
+    CommsTranscript
   }
 };
 </script>
@@ -154,6 +154,7 @@ export default {
 }
 .comms_list {
   height: inherit;
+  overflow-x: hidden;
 }
 .no_content_wrapper {
   height: 100%;
