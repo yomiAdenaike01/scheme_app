@@ -2,15 +2,16 @@
   <transition name="el-fade-in">
     <div class="comms_window_container flex columns">
       <div class="comms_window_toolbar">
-        <p>{{ info }}</p>
+        <p>{{ username }}</p>
       </div>
       <div class="messages_container">
-        {{ messages }}
-        <Message
-          v-for="(message, index) in messages"
-          :data="message"
-          :key="index"
-        />
+        <transition-group name="el-fade-in">
+          <Message
+            v-for="(message, index) in messages"
+            :data="message"
+            :key="index"
+          />
+        </transition-group>
         <!-- Message input -->
         <div class="input_container flex">
           <div class="actions_container">
@@ -27,6 +28,13 @@
             v-model="chat.content"
             type="textarea"
           ></el-input>
+          <el-button
+            v-loading="loading"
+            @click="prepareSendMessage"
+            plain
+            type="primary"
+            >Send</el-button
+          >
         </div>
       </div>
     </div>
@@ -41,34 +49,60 @@ export default {
   name: "CommsWindow",
   data() {
     return {
-      messages: [],
+      loading: false,
       messagesInterval: null,
       chat: {
-        content: ""
+        content: "",
+        attachments: ""
       }
     };
   },
-  activated() {
+
+  deactivated() {
+    clearInterval(this.messagesInterval);
+  },
+  async activated() {
+    await this.getMessages();
+    this.readMessages();
     clearInterval(this.messagesInterval);
     this.messagesInterval = setInterval(() => {
-      this.getMessages()
-        .then(response => {
-          this.messages = response;
-        })
-        .catch(() => {
-          return;
-        });
+      this.getMessages();
     }, this.requestIntervals.messages);
   },
   computed: {
     ...mapState(["requestIntervals"]),
-    ...mapState("Comms", ["activeTranscript"]),
+    ...mapState("Comms", ["activeTranscript", "messages"]),
     info() {
       return this.activeTranscript.userInfo;
+    },
+    username() {
+      return this.info?.name ?? "John Doe";
     }
   },
   methods: {
-    ...mapActions("Comms", ["getMessages"])
+    ...mapActions("Comms", ["getMessages", "sendMessage", "readMessages"]),
+
+    prepareSendMessage() {
+      this.loading = true;
+
+      let messagePayload = {
+        ...this.chat,
+        recieverID: this.activeTranscript.userTwo,
+        transcriptID: this.activeTranscript._id,
+        userName: this.username
+      };
+      this.chat.content = "";
+
+      this.sendMessage(messagePayload)
+        .then(response => {
+          this.loading = false;
+          this.UPDATE_MESSAGES(response);
+        })
+        .catch(() => {
+          this.loading = false;
+          return;
+        });
+    }
   },
   components: {
     Message,
@@ -87,7 +121,8 @@ export default {
   border-bottom: $border;
   padding: 10px;
   width: 100%;
-  box-shadow: 0px 4px 10px whitesmoke;
+  pointer-events: none;
+  //   box-shadow: 0px 4px 10px whitesmoke;
 }
 .messages_container {
   position: relative;

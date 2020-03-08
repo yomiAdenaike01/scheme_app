@@ -3,12 +3,8 @@ export default {
   UPDATE_START_NEW_CHAT(state, payload) {
     state.startNewChat = payload;
   },
-  UPDATE_MESSAGES(state, { event, messages }) {
-    if (event == "equal") {
-      Vue.set(state, "messages", messages);
-    } else {
-      Vue.set(state, "messages", [...state.messages, ...messages]);
-    }
+  UPDATE_MESSAGES(state, payload) {
+    Vue.set(state, "messages", payload);
   },
 
   UPDATE_TRANSCRIPTS(state, { type, data }) {

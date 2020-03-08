@@ -15,15 +15,14 @@
       </div>
       <div>
         <p>
-          {{ truncate(data.message.content) }}
+          {{ truncate(data.message.content, 50) }}
         </p>
         <p class="date grey">{{ initMoment(data.dateUpdated).calendar() }}</p>
         <transition name="el-fade-in">
           <small
             class="success"
             v-if="
-              hasEntries(activeTranscript) &&
-                activeTranscript.transcriptID == data.transcriptID
+              hasEntries(activeTranscript) && activeTranscript._id == data._id
             "
             >Active</small
           >

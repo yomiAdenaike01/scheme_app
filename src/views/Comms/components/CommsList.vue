@@ -148,6 +148,7 @@ export default {
 
 <style lang="scss" scoped>
 .comms_list_container {
+  min-width: 30%;
   max-width: 40%;
   height: 100%;
   border-right: $border;

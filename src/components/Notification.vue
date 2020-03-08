@@ -9,7 +9,10 @@
     v-loading="loading"
     @click="updateNotification({ status: 'is_read' })"
   >
-    <p :title="notification.message">{{ notification.message }}</p>
+    <p :title="notification.message">
+      <i :class="notificationTypeIcon" class="grey"></i>
+      {{ notification.message }}
+    </p>
     <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
 
     <div
@@ -48,6 +51,24 @@ export default {
     },
     notificationRequestBody() {
       return this.notification.requestBody;
+    },
+    notificationTypeIcon() {
+      let type = "";
+      switch (this.notification.type) {
+        case "message": {
+          type = "bx bx-message-rounded";
+          break;
+        }
+
+        case "attention": {
+          type = "bx bx-exclamation";
+          break;
+        }
+
+        default:
+          break;
+      }
+      return type;
     }
   },
   props: {

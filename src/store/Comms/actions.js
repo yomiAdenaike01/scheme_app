@@ -19,6 +19,21 @@ export default {
         });
     });
   },
+  readMessages({ dispatch, commit, state: { activeTranscript } }, payload) {
+    return new Promise((resolve, reject) => {
+      dispatch("request", {
+        method: "POST",
+        url: "messengers/read",
+        data: { transcriptID: activeTranscript._id }
+      })
+        .then(() => {
+          resolve();
+        })
+        .catch(() => {
+          reject();
+        });
+    });
+  },
   sendMessage(context, payload) {
     return new Promise((resolve, reject) => {
       context
@@ -56,13 +71,15 @@ export default {
             { root: true }
           )
           .then(response => {
-            resolve(response);
+            context.commit("UPDATE_MESSAGES", response);
+            console.log(response);
+            resolve();
           })
           .catch(error => {
             reject(error);
           });
       } else {
-        resolve([]);
+        resolve(["No content"]);
       }
     });
   },
