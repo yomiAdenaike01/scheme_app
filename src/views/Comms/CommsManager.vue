@@ -25,7 +25,7 @@ export default {
         .then(response => {
           this.loading = false;
           if (response.length > 0) {
-            this.UPDATE_ACTIVE_TRANSCRIPT(response[0].transcriptID);
+            this.UPDATE_ACTIVE_TRANSCRIPT(response[0]);
           }
         })
         .catch(() => {

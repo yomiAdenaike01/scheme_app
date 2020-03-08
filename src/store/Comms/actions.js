@@ -73,24 +73,22 @@ export default {
   getTranscripts({ dispatch, commit, state: { transcripts } }) {
     return new Promise((resolve, reject) => {
       if (transcripts.length <= 0) {
-        if (transcripts.length <= 0) {
-          const payload = {
-            method: "GET",
-            url: "/messenger/transcripts"
-          };
-          dispatch("request", payload, { root: true })
-            .then(response => {
-              commit("UPDATE_TRANSCRIPTS", {
-                data: response,
-                type: "all"
-              });
-              resolve(response);
-            })
-            .catch(error => {
-              reject(error);
+        const payload = {
+          method: "GET",
+          url: "/messenger/transcripts"
+        };
+        dispatch("request", payload, { root: true })
+          .then(response => {
+            commit("UPDATE_TRANSCRIPTS", {
+              data: response,
+              type: "all"
             });
-        }
-
+            resolve(response);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } else {
         resolve();
       }
     });

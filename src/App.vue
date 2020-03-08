@@ -113,7 +113,16 @@ html,
   overflow: hidden;
   padding: 0;
 }
-
+/*
+ 
+   _____         _         _         _           
+  |_   _|____  _| |_   ___| |_ _   _| | ___  ___ 
+    | |/ _ \ \/ / __| / __| __| | | | |/ _ \/ __|
+    | |  __/>  <| |_  \__ \ |_| |_| | |  __/\__ \
+    |_|\___/_/\_\\__| |___/\__|\__, |_|\___||___/
+                               |___/             
+ 
+*/
 h1,
 h2,
 h3,
@@ -153,6 +162,16 @@ span {
 .caps {
   text-transform: uppercase;
 }
+.capitalize {
+  text-transform: capitalize;
+}
+.txt-large {
+  font-size: 1.3em;
+}
+.l-height-large {
+  line-height: 1.6em;
+}
+
 .shadow_border {
   border-radius: 50%;
   padding: 6px;
@@ -178,7 +197,16 @@ span {
   border-radius: 10px;
 }
 
-//   Borders
+/*
+ 
+   ____                _               
+  | __ )  ___  _ __ __| | ___ _ __ ___ 
+  |  _ \ / _ \| '__/ _` |/ _ \ '__/ __|
+  | |_) | (_) | | | (_| |  __/ |  \__ \
+  |____/ \___/|_|  \__,_|\___|_|  |___/
+                                       
+ 
+*/
 .bordered {
   border: 2px solid whitesmoke;
 }
@@ -186,7 +214,16 @@ span {
   border: none;
 }
 
-//   Flex box
+/*
+ 
+   ____           _ _   _             _             
+  |  _ \ ___  ___(_) |_(_) ___  _ __ (_)_ __   __ _ 
+  | |_) / _ \/ __| | __| |/ _ \| '_ \| | '_ \ / _` |
+  |  __/ (_) \__ \ | |_| | (_) | | | | | | | | (_| |
+  |_|   \___/|___/_|\__|_|\___/|_| |_|_|_| |_|\__, |
+                                              |___/ 
+ 
+*/
 .flex {
   display: flex;
 }
@@ -228,8 +265,39 @@ span {
 .posa {
   position: absolute;
 }
+.w-100 {
+  flex: 1;
+  width: 100%;
+}
 
-/* fade-transform */
+.h-100 {
+  flex: 1;
+  height: 100%;
+}
+.h-90 {
+  height: 90%;
+}
+.large_icon {
+  font-size: 3em;
+}
+.medium_icon {
+  font-size: 2em;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+/*
+ 
+   _____                    _ _   _                 
+  |_   _| __ __ _ _ __  ___(_) |_(_) ___  _ __  ___ 
+    | || '__/ _` | '_ \/ __| | __| |/ _ \| '_ \/ __|
+    | || | | (_| | | | \__ \ | |_| | (_) | | | \__ \
+    |_||_|  \__,_|_| |_|___/_|\__|_|\___/|_| |_|___/
+                                                    
+ 
+*/
 .fade-transform-leave-active,
 .fade-transform-enter-active {
   transition: all 0.5s;
@@ -282,38 +350,9 @@ span {
 .txt_center {
   text-align: center;
 }
-.w-100 {
-  flex: 1;
-  width: 100%;
-}
 
-.h-100 {
-  flex: 1;
-  height: 100%;
-}
-.h-90 {
-  height: 90%;
-}
-.large_icon {
-  font-size: 3em;
-}
-.medium_icon {
-  font-size: 2em;
-}
-.capitalize {
-  text-transform: capitalize;
-}
-.txt-large {
-  font-size: 1.3em;
-}
-.l-height-large {
-  line-height: 1.6em;
-}
 .no_events {
   pointer-events: none;
-}
-.w-50 {
-  width: 50%;
 }
 
 .popover_container {

@@ -115,7 +115,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Comms", ["getCommsTranscripts", "startChat"]),
+    ...mapActions("Comms", ["getTranscripts", "startChat"]),
     ...mapActions("Admin", ["getTeam"]),
     sendMessage() {
       this.loading = true;
@@ -135,7 +135,7 @@ export default {
     async reset() {
       this.loading = false;
       this.$set(this, "chat", {});
-      await this.getCommsTranscripts();
+      await this.getTranscripts();
     }
   },
   components: {
@@ -148,7 +148,7 @@ export default {
 
 <style lang="scss" scoped>
 .comms_list_container {
-  width: 20%;
+  max-width: 40%;
   height: 100%;
   border-right: $border;
 }

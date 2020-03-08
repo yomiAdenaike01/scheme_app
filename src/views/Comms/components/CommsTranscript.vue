@@ -2,17 +2,29 @@
   <div
     class="transcript_container flex flex--space-between align-center"
     v-loading="loading"
-    @click="updateActiveTranscript"
+    @click="
+      UPDATE_ACTIVE_TRANSCRIPT({
+        ...data,
+        extraInfo: { otherUsername: user.name }
+      })
+    "
   >
     <div class="text_wrapper p-3 flex_center">
-      <Avatar class="mr-3" :name="user.name" />
+      <div v-if="hasEntries(user)">
+        <Avatar class="mr-3" :name="user.name" />
+      </div>
       <div>
         <p>
           {{ truncate(data.message.content) }}
         </p>
         <p class="date grey">{{ initMoment(data.dateUpdated).calendar() }}</p>
         <transition name="el-fade-in">
-          <small class="success" v-if="activeTranscript == data.transcriptID"
+          <small
+            class="success"
+            v-if="
+              hasEntries(activeTranscript) &&
+                activeTranscript.transcriptID == data.transcriptID
+            "
             >Active</small
           >
         </transition>
@@ -59,13 +71,7 @@ export default {
   methods: {
     ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"]),
     ...mapActions(["request"]),
-    updateActiveTranscript() {
-      if (this.activeTranscript.transcriptID != this.data.transcriptID) {
-        this.UPDATE_ACTIVE_TRANSCRIPT(this.data);
-      } else {
-        this.UPDATE_ACTIVE_TRANSCRIPT(null);
-      }
-    },
+
     deleteTranscript() {
       this.loading = true;
       this.request({
