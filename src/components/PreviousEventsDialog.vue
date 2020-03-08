@@ -1,10 +1,16 @@
 <template>
   <el-dialog :visible.sync="computeDisplay">
-    <div v-if="hasEntries(previousEvents)">
-      <Event v-for="event in previousEvents" :event="event" :key="event._id" />
-    </div>
-    <div>
-      <p>No previous events</p>
+    <div class="p-4">
+      <div v-if="hasEntries(previousEvents)">
+        <Event
+          v-for="event in previousEvents"
+          :event="event"
+          :key="event._id"
+        />
+      </div>
+      <div>
+        <p>No previous events</p>
+      </div>
     </div>
   </el-dialog>
 </template>
@@ -21,6 +27,7 @@ export default {
     previousEvents() {
       return this.eventsInformation.previous;
     },
+
     computeDisplay: {
       get() {
         return this.getActiveDialog("prevEvents");
