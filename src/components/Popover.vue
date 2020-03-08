@@ -1,6 +1,6 @@
 <template>
   <el-popover
-    popper-class="popover_container"
+    :popper-class="popperclass"
     :placement="position"
     :trigger="trigger"
     :title="title"
@@ -15,6 +15,10 @@
 export default {
   name: "Popover",
   props: {
+    popperclass: {
+      type: String,
+      default: "popover_container"
+    },
     width: String,
     title: String,
     position: {

@@ -12,10 +12,10 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   namespaced: true,
-  state: state,
-  mutations: mutations,
-  actions: actions,
-  getters: getters,
+  state,
+  mutations,
+  actions,
+  getters,
 
   modules: { Comms, Admin },
   plugins: [VuexReset({ trigger: "REMOVE_USER" })]

@@ -16,6 +16,7 @@
       </el-col>
     </div>
     <Tutorial />
+    <PreviousEventsDialog />
   </div>
 </template>
 
@@ -29,6 +30,7 @@ import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
 import Tutorial from "@/components/Tutorial";
+import PreviousEventsDialog from "@/components/PreviousEventsDialog";
 export default {
   name: "Main",
 
@@ -134,7 +136,8 @@ export default {
     AppBar,
     NprogressContainer,
     DefaultTransition,
-    Tutorial
+    Tutorial,
+    PreviousEventsDialog
   },
   watch: {
     hasAnnoucement: {

@@ -5,8 +5,8 @@
     </div>
 
     <div v-if="addNew" class="flex_center columns new_group_container">
-      <LeadIcon class="large_icon grey mb-5" icon="bx bx-group" />
-      <h2 class="large">Manager users</h2>
+      <LeadIcon class="large_icon shadow grey mb-5" icon="bx bx-group" />
+      <h2 class="large">Manage users</h2>
       <small class="grey">Create, edit, remove users / groups.</small>
       <el-button
         class="mt-4"

@@ -19,6 +19,29 @@ export default {
         });
     });
   },
+  readMessages({ dispatch, commit, state: { activeTranscript } }, payload) {
+    return new Promise((resolve, reject) => {
+      if (Object.keys(activeTranscript).length > 0) {
+        dispatch(
+          "request",
+          {
+            method: "POST",
+            url: "messengers/read",
+            data: { transcriptID: activeTranscript._id }
+          },
+          { root: true }
+        )
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
+      } else {
+        resolve();
+      }
+    });
+  },
   sendMessage(context, payload) {
     return new Promise((resolve, reject) => {
       context
@@ -38,19 +61,34 @@ export default {
     });
   },
   getMessages(context, payload) {
+    let {
+      state: { activeTranscript }
+    } = context;
+    let transcriptID =
+      Object.keys(activeTranscript).length > 0 ? activeTranscript._id : "";
     return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          { method: "POST", url: "messenger/messages", data: payload },
-          { root: true }
-        )
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      if (transcriptID.length > 0) {
+        context
+          .dispatch(
+            "request",
+            {
+              method: "POST",
+              url: "messenger/messages",
+              data: { transcriptID }
+            },
+            { root: true }
+          )
+          .then(response => {
+            context.commit("UPDATE_MESSAGES", response);
+            console.log(response);
+            resolve();
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } else {
+        resolve(["No content"]);
+      }
     });
   },
   startChat(context, payload) {
@@ -70,30 +108,27 @@ export default {
         });
     });
   },
-  getTranscripts(context) {
-    let { transcripts } = context.state;
-    if (transcripts.length <= 0) {
-      return new Promise((resolve, reject) => {
-        const anyTranscripts = context.state.transcripts.length <= 0;
-        if (anyTranscripts) {
-          const payload = {
-            method: "GET",
-            url: "/messenger/transcripts"
-          };
-          context
-            .dispatch("request", payload, { root: true })
-            .then(response => {
-              context.commit("UPDATE_TRANSCRIPTS", {
-                data: response,
-                type: "all"
-              });
-              resolve(response);
-            })
-            .catch(error => {
-              reject(error);
+  getTranscripts({ dispatch, commit, state: { transcripts } }) {
+    return new Promise((resolve, reject) => {
+      if (transcripts.length <= 0) {
+        const payload = {
+          method: "GET",
+          url: "/messenger/transcripts"
+        };
+        dispatch("request", payload, { root: true })
+          .then(response => {
+            commit("UPDATE_TRANSCRIPTS", {
+              data: response,
+              type: "all"
             });
-        }
-      });
-    }
+            resolve(response);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } else {
+        resolve();
+      }
+    });
   }
 };

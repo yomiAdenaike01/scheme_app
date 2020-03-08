@@ -3,9 +3,9 @@
     type="flex"
     class="user_container p-4"
     v-loading="loading"
-    :element-loading-text="
-      `Getting
-    team please wait....`
+    element-loading-text="
+      Getting
+    team please wait....
     "
   >
     <UserGroup
@@ -14,38 +14,67 @@
       @createUserGroup="displayDialog = $event"
     />
 
-    <UserGroup v-if="filteredGroupsWithUsers.length > 0">
+    <UserGroup>
       <div>
         <Title title="User Groups" subtitle="Manage and contact users here" />
-        <el-row
-          v-for="(count, i) in filteredGroupsWithUsers"
-          :key="`${count}${i}`"
-        >
-          <el-col
-            :span="$mq != 'lg' ? 12 : 8"
-            v-for="(group, index) in count"
-            :key="index"
+
+        <div v-if="hasEntries(getFilteredTeam)">
+          <el-row
+            v-for="(count, i) in filteredGroupsWithUsers"
+            :key="`${count}${i}`"
           >
-            <div class="p-4 m-1 user_group_container">
-              <div
-                class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
-              >
-                <div class="flex_center">
-                  <i class="bx bx-user user_group_icon"></i>
-                  <span class="capitalize">{{ `${group.name}s` }}</span>
+            <el-col
+              :span="$mq != 'lg' ? 12 : 8"
+              v-for="(group, index) in count"
+              :key="index"
+            >
+              <div class="p-4 m-1 user_group_container">
+                <div
+                  class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
+                >
+                  <div class="flex_center">
+                    <i class="bx bx-user user_group_icon"></i>
+                    <span class="capitalize">{{ group.label }}</span>
+                  </div>
                 </div>
+                <User
+                  v-for="member in group.teamMembers"
+                  :data="{ ...member, groupID: group.value }"
+                  :key="member._id"
+                  @viewUser="viewUser = $event"
+                />
               </div>
-              <User
-                v-for="member in group.teamMembers"
-                :data="{ ...member, groupID: group.value }"
-                :key="member._id"
-                @viewUser="viewUser = $event"
-              />
-            </div>
-          </el-col>
-        </el-row>
+            </el-col>
+          </el-row>
+          {{ filteredGroupsWithUsers }}
+        </div>
+        <div v-else class="h-100 no_content_container flex_center">
+          <Nocontent
+            class="pr-4 pl-4"
+            :moreInformation="
+              getIsAdmin
+                ? null
+                : {
+                    index: 'admin',
+                    instruction: 'team_viewing',
+                    hoverPosition: 'bottom-end'
+                  }
+            "
+            text="No team members detected, click the button below to go to user management."
+            icon="bx bx-user-circle"
+          >
+            <el-button
+              round
+              type="primary"
+              @click="$router.push({ name: 'user' })"
+              size="mini"
+              >Create Team Member</el-button
+            >
+          </Nocontent>
+        </div>
       </div>
     </UserGroup>
+
     <!-- Quick actions -->
     <QuickActions v-if="getIsAdmin" />
     <!-- User manager dialog -->
@@ -64,6 +93,7 @@ import UserGroup from "./components/UserGroup";
 import Title from "@/components/Title";
 import QuickActions from "./components/QuickActions";
 import Popover from "@/components/Popover";
+import Nocontent from "@/components/Nocontent";
 export default {
   name: "UserManager",
   activated() {
@@ -86,18 +116,19 @@ export default {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState("Admin", ["teamInformation", "groupIDs"]),
     ...mapGetters(["getIsAdmin"]),
-
+    ...mapGetters("Admin", ["getFilteredTeam"]),
+    noContent() {
+      return {
+        text: "",
+        icon: "el-icon-warning-outline",
+        buttonText: "Hello"
+      };
+    },
     filteredGroupsWithUsers() {
-      let groups = this.groupsWithUsers;
-      for (let i = 0, len = groups.length; i < len; i++) {
-        let group = groups[i];
+      let groups = this.groupsWithUsers.filter(({ label, teamMembers }) => {
+        return label != "System Administrator" && teamMembers.length > 0;
+      });
 
-        if (group && group.hasOwnProperty("teamMembers")) {
-          if (group.teamMembers.length <= 0) {
-            groups.splice(i, 1);
-          }
-        }
-      }
       return [groups];
     },
     groupsWithUsers() {
@@ -131,7 +162,8 @@ export default {
     UserGroup,
     UserManagerDialog,
     QuickActions,
-    Popover
+    Popover,
+    Nocontent
   }
 };
 </script>
@@ -177,6 +209,17 @@ export default {
   color: #222;
   font-size: 0.9em;
 }
+
+/*
+ 
+   __  __       _     _ _      
+  |  \/  | ___ | |__ (_) | ___ 
+  | |\/| |/ _ \| '_ \| | |/ _ \
+  | |  | | (_) | |_) | | |  __/
+  |_|  |_|\___/|_.__/|_|_|\___|
+                               
+ 
+*/
 .mobile {
   .user_container {
     flex-direction: column;

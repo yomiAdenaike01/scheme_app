@@ -187,7 +187,6 @@ export default {
             type = "number";
           }
 
-          console.log({ trigger, type, name: formItemName });
           let validObj = {
             required: true,
             trigger,

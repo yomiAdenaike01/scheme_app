@@ -9,7 +9,10 @@
     v-loading="loading"
     @click="updateNotification({ status: 'is_read' })"
   >
-    <p :title="notification.message">{{ notification.message }}</p>
+    <p class="flex" :title="notification.message">
+      <i :class="notificationTypeIcon" class="grey notification_icon mr-2"></i>
+      {{ notification.message }}
+    </p>
     <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
 
     <div
@@ -24,10 +27,8 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
-import dates from "@/mixins/dates";
 export default {
   name: "Notification",
-  mixins: [dates],
   data() {
     return {
       viewDetails: false,
@@ -37,19 +38,37 @@ export default {
   },
   computed: {
     notificationSendDate() {
-      return this.calendar(this.notification.dateCreated);
+      return this.initMoment(this.notification.dateCreated).calendar();
     },
     startDate() {
-      return this.format(this.update.startDate, this.formatString);
+      return this.formatDate(this.update.startDate, this.formatString);
     },
     endDate() {
-      return this.format(this.update.endDate, this.formatString);
+      return this.formatDate(this.update.endDate, this.formatString);
     },
     notificationUpdate() {
       return this.notification.content;
     },
     notificationRequestBody() {
       return this.notification.requestBody;
+    },
+    notificationTypeIcon() {
+      let type = "";
+      switch (this.notification.type) {
+        case "message": {
+          type = "bx bx-conversation";
+          break;
+        }
+
+        case "attention": {
+          type = "bx bx-exclamation";
+          break;
+        }
+
+        default:
+          break;
+      }
+      return type;
     }
   },
   props: {
@@ -182,5 +201,8 @@ export default {
   &.attention {
     background: rgb(251, 99, 64);
   }
+}
+.notification_icon {
+  font-size: 1.5em;
 }
 </style>

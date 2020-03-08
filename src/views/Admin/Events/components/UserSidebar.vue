@@ -32,6 +32,7 @@
       </div>
     </div>
     <Nocontent
+      class="pr-4 pl-4"
       v-else
       :moreInformation="
         getIsAdmin
@@ -42,13 +43,13 @@
               hoverPosition: 'bottom-end'
             }
       "
-      text="No team members detected, hover over the button below for more information."
-      icon="el-icon-user"
+      text="No team members detected, click the button below to go to user management."
+      icon="bx bx-user-circle "
     >
       <el-button
         round
         type="primary"
-        @click="$router.push({ name: 'schedule' })"
+        @click="$router.push({ name: 'user' })"
         size="mini"
         >Create Team Member</el-button
       >

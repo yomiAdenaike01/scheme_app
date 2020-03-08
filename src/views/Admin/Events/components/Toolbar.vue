@@ -10,10 +10,11 @@
         :key="key"
         size="small"
         :plain="button.plain"
+        :disabled="button.disabled"
         @click="button.method"
         ><span v-html="button.label"></span
       ></el-button>
-      <el-button
+      <!-- <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
         round
@@ -26,7 +27,7 @@
             ? "Integrate with google calendar"
             : "Integrated with google calendar"
         }}
-      </el-button>
+      </el-button> -->
     </el-col>
   </el-row>
 </template>
@@ -77,7 +78,7 @@ export default {
       };
 
       if (this.getIsAdmin) {
-        render.text = "Event Management";
+        render.text = "Event management";
         render.icon = "el-icon-date";
       }
 

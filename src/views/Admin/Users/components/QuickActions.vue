@@ -7,8 +7,10 @@
     </div>
     <div
       v-loading="id == quickActionLoading"
+      :class="{ disabled: condition }"
       class="quick_action_container"
-      v-for="({ icon, title, subtitle, click, id }, index) in quickActions"
+      v-for="({ icon, condition, title, subtitle, click, id },
+      index) in quickActions"
       :key="index"
       @click="click"
     >
@@ -50,12 +52,14 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
+    ...mapState("Admin", ["teamInformation"]),
     quickActions() {
       return [
         {
           icon: "bx bx-volume-full",
           title: "Create announcement",
           id: "create_announcement",
+          condition: this.teamInformation.length == 0,
 
           click: () => {
             this.createAnnoucement();
@@ -118,7 +122,7 @@ export default {
 
 <style lang="scss" scoped>
 .quick_actions_wrapper {
-  flex: 1;
+  flex: 0.5;
   /deep/ {
     .el-card__body {
       padding: 0;
@@ -128,6 +132,10 @@ export default {
 .quick_action_container {
   border-bottom: $border;
   cursor: pointer;
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
   &:hover {
     background: $hover_grey;
     transition: $default_transition background;

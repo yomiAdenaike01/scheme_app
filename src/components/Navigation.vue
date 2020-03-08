@@ -5,7 +5,6 @@
     :router="true"
     mode="vertical"
     :collapse="true"
-    :background-color="getDefaultColour"
     :active-text-color="lightColour"
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
@@ -36,16 +35,16 @@ export default {
           path: "/admin/events",
           icon: "el-icon-date"
         },
-        // {
-        //   name: "Messenger",
-        //   path: "/comms/messenger",
-        //   icon: "bx bx-message-rounded-edit"
-        // },
+        {
+          name: "Messenger",
+          path: "/admin/messenger",
+          icon: "bx bx-conversation"
+        },
         {
           name: "User management",
           path: "/admin/user",
           icon: "bx bx-group"
-        },
+        }
         // {
         //   name: "Analytics",
         //   path: "/admin/analytics",
@@ -56,26 +55,31 @@ export default {
         //   path: "/admin/utilities",
         //   icon: "bx bx-task"
         // },
-        {
-          name: "Support",
-          path: "/support/dashboard",
-          icon: "bx bx-support"
-        }
+        // {
+        //   name: "Support",
+        //   path: "/support/dashboard",
+        //   icon: "bx bx-support"
+        // }
       ];
-      if (this.getIsSignedUser) {
-        allowedRoutes.push({
-          name: "Client Settings",
-          icon: "bx bx-cog",
-          path: "preferences/client"
-        });
-      }
+      // if (this.getIsSignedUser) {
+      //   allowedRoutes.push({
+      //     name: "Client Settings",
+      //     icon: "bx bx-cog",
+      //     path: "preferences/client"
+      //   });
+      // }
       return allowedRoutes;
+    },
+
+    darken() {
+      let base = tinycolor(this.getDefaultColour);
+      return base.darken(40).toString();
     },
 
     lightColour() {
       let baseColour = tinycolor(this.getDefaultColour);
       if (baseColour.isLight()) {
-        return baseColour.darken(10).toString();
+        return baseColour.darken(50).toString();
       } else {
         return baseColour.lighten(40).toString();
       }
@@ -91,8 +95,9 @@ export default {
 .el-menu-item {
   width: 100%;
 }
+
 .el-menu-item i {
-  color: darken($color: white, $amount: 10);
+  color: darken($color: white, $amount: 30);
 }
 
 #main_nav {

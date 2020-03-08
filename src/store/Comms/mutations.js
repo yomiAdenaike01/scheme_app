@@ -4,18 +4,14 @@ export default {
     state.startNewChat = payload;
   },
   UPDATE_MESSAGES(state, payload) {
-    if (payload.event == "equal") {
-      Vue.set(state, "messages", payload["messages"]);
-    } else {
-      Vue.set(state, "messages", [...state.messages, ...payload["messages"]]);
-    }
+    Vue.set(state, "messages", payload);
   },
 
-  UPDATE_TRANSCRIPTS(state, payload) {
-    if (payload.type == "all") {
-      Vue.set(state, "transcripts", payload["data"]);
+  UPDATE_TRANSCRIPTS(state, { type, data }) {
+    if (type == "all") {
+      Vue.set(state, "transcripts", data);
     } else {
-      Vue.set(state, "transcripts", [...state.transcripts, ...payload]);
+      Vue.set(state, "transcripts", [...state.transcripts, ...{ type, data }]);
     }
 
     //  Think about auto selecting the transcript

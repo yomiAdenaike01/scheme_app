@@ -2,9 +2,7 @@
   <el-collapse v-model="activeName" accordion class="mt-3">
     <el-collapse-item name="1" :disabled="userInformation.verified">
       <template slot="title">
-        <div
-          style="width:90%;display:flex;justify-content:space-between;align-items:center;"
-        >
+        <div class="flex_center">
           Change Email Address
           <span style="color:#999">{{ userInformation.email }}</span>
           <el-tag :type="userInformation.verified ? 'success' : 'warning'">
@@ -45,9 +43,7 @@
     </el-collapse-item>
     <el-collapse-item :disabled="getIsAdmin" title="Request Admin Access">
       <el-form>
-        <el-form-item
-          style="display:flex;justify-content:center;align-items:center;"
-        >
+        <el-form-item class="flex_center">
           <el-button
             size="small"
             v-loading="loading"

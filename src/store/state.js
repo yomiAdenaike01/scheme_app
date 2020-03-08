@@ -5,7 +5,8 @@ export default {
   requestIntervals: {
     team: 6000,
     events: 6000,
-    client: 10000
+    client: 10000,
+    messages: 3000
   },
   clientInformation: localStorage.getItem("clientInformation")
     ? JSON.parse(localStorage.getItem("clientInformation"))
@@ -40,7 +41,8 @@ export default {
     viewUser: { view: null, data: null, tabIndex: 0 },
     viewEvent: { view: null, data: null, tabIndex: 0 },
     eventManager: { view: null, data: null, tabIndex: 0 },
-    tutorial: { view: null, data: null, tabIndex: 0 }
+    tutorial: { view: null, data: null, tabIndex: 0 },
+    prevEvents: { view: null, data: null, tabIndex: 0 }
   },
 
   defaultCustomColours: [
