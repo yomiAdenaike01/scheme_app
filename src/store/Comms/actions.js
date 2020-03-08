@@ -38,19 +38,32 @@ export default {
     });
   },
   getMessages(context, payload) {
+    let {
+      state: { activeTranscript }
+    } = context;
+    let transcriptID =
+      Object.keys(activeTranscript).length > 0 ? activeTranscript._id : "";
     return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          { method: "POST", url: "messenger/messages", data: payload },
-          { root: true }
-        )
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      if (transcriptID.length > 0) {
+        context
+          .dispatch(
+            "request",
+            {
+              method: "POST",
+              url: "messenger/messages",
+              data: { transcriptID }
+            },
+            { root: true }
+          )
+          .then(response => {
+            resolve(response);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } else {
+        resolve([]);
+      }
     });
   },
   startChat(context, payload) {

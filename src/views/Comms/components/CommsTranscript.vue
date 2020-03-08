@@ -5,7 +5,7 @@
     @click="
       UPDATE_ACTIVE_TRANSCRIPT({
         ...data,
-        extraInfo: { otherUsername: user.name }
+        userInfo: { ...user }
       })
     "
   >

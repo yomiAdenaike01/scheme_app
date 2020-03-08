@@ -5,7 +5,8 @@ export default {
   requestIntervals: {
     team: 6000,
     events: 6000,
-    client: 10000
+    client: 10000,
+    messages: 3000
   },
   clientInformation: localStorage.getItem("clientInformation")
     ? JSON.parse(localStorage.getItem("clientInformation"))
