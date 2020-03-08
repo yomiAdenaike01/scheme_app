@@ -44,7 +44,7 @@
             }
       "
       text="No team members detected, click the button below to go to user management."
-      icon="el-icon-user"
+      icon="bx bx-user-circle "
     >
       <el-button
         round

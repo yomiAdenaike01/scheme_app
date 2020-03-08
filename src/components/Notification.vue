@@ -9,8 +9,8 @@
     v-loading="loading"
     @click="updateNotification({ status: 'is_read' })"
   >
-    <p :title="notification.message">
-      <i :class="notificationTypeIcon" class="grey"></i>
+    <p class="flex" :title="notification.message">
+      <i :class="notificationTypeIcon" class="grey notification_icon mr-2"></i>
       {{ notification.message }}
     </p>
     <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
@@ -56,7 +56,7 @@ export default {
       let type = "";
       switch (this.notification.type) {
         case "message": {
-          type = "bx bx-message-rounded";
+          type = "bx bx-conversation";
           break;
         }
 
@@ -201,5 +201,8 @@ export default {
   &.attention {
     background: rgb(251, 99, 64);
   }
+}
+.notification_icon {
+  font-size: 1.5em;
 }
 </style>

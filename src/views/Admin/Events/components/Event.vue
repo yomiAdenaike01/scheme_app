@@ -75,6 +75,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 import Dropdown from "@/components/Dropdown";
 import ViewEventDialog from "../../Events/components/ViewEventDialog";
 import Popover from "@/components/Popover";
+import moment from "moment";
 export default {
   name: "Event",
 
@@ -129,14 +130,13 @@ export default {
     startAndEndTimeDiff() {
       let { startDate, endDate, type } = this.event;
 
-      let diff = this.duration(endDate, startDate).as("hours");
+      let diff = moment.duration(endDate, startDate).as("hours");
       if (diff > 23) {
         this.startEndTimeDiffType = "days";
       } else if (diff > 100) {
         this.startEndTimeDiffType = "weeks";
       }
-      diff = this.duration(endDate, startDate).as(this.startEndTimeDiffType);
-
+      diff = moment.duration(endDate, startDate).as(this.startEndTimeDiffType);
       return Math.floor(diff);
     },
     getEventType() {

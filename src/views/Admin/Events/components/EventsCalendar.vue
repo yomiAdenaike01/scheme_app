@@ -19,7 +19,6 @@
       :time-from="getCalTimings.from"
       :time-to="getCalTimings.to"
       editable-events
-      xsmall
       style="height:830px"
       ref="eventsCalendar"
     />

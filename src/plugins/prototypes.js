@@ -44,7 +44,7 @@ Vue.prototype.truncate = function(elem, len) {
   }
 };
 
-Vue.prototype.initMoment = function(date) {
+Vue.prototype.initMoment = function(date = new Date()) {
   return moment(date);
 };
 Vue.prototype.formatDate = function(date, formatString = "DD/MM/YYYY HH:mm") {
