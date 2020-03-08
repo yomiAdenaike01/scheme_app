@@ -113,13 +113,13 @@ export default {
   },
 
   getUserInformation: ({ teamInformation }, getters, { userInformation }) => (
-    info,
+    match,
     params = "_id"
   ) => {
     let teams;
     if (Vue.prototype.hasEntries(teamInformation)) {
       teams = teamInformation.find(member => {
-        return member[params] == info;
+        return member[params] == match;
       });
     }
     return teams;

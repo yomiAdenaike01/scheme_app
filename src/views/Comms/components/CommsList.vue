@@ -1,13 +1,12 @@
 <template>
   <div class="comms_list_container">
-    <div class="comms_list_toolbar flex_center">
+    <div class="comms_list_toolbar flex_center p-3">
       <el-input
         placeholder="Seach chats"
         class="mr-3"
         size="small"
         v-model="transcriptSearch"
       ></el-input>
-      <!-- <Transcript v-for="transcript in transcripts" :data="transcript" /> -->
       <Popover width="200" trigger="click">
         <el-button
           icon="el-icon-plus"
@@ -15,7 +14,6 @@
           size="small"
           circle
           slot="trigger"
-          @click="startChat = !startChat"
         ></el-button>
         <div
           slot="content"
@@ -23,7 +21,7 @@
           class="start_chat_container p-2"
         >
           <el-select
-            v-model="chat.userTwo"
+            v-model="chat.recieverID"
             size="small"
             placeholder="Select team member"
           >
@@ -44,7 +42,7 @@
             placeholder="Chat message"
           ></el-input>
           <el-button
-            :disabled="!chat.content || !chat.userTwo"
+            :disabled="!chat.content || !chat.recieverID"
             size="small"
             type="primary"
             round
@@ -55,38 +53,46 @@
       </Popover>
     </div>
     <div class="comms_list">
-      <div class="no_content_wrapper flex_center">
+      <div
+        class="no_content_wrapper flex_center"
+        v-if="transcripts.length == 0"
+      >
         <Nocontent v-bind="noContent" />
+      </div>
+      <div v-else>
+        <Transcript
+          v-for="transcript in transcripts"
+          :key="transcript._id"
+          :data="transcript"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Transcript from "./Transcript";
 import Nocontent from "@/components/Nocontent";
 import Popover from "@/components/Popover";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "CommsList",
   data() {
     return {
       transcriptSearch: "",
-      startChat: false,
       loading: false,
       chat: {
         content: "",
-        userTwo: ""
+        recieverID: ""
       }
     };
   },
-  activated() {
-    this.getTranscripts();
-    this.getTeam();
-  },
+
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["transcripts"]),
     ...mapState("Admin", ["teamInformation"]),
+    ...mapGetters("Admin", ["getUserInformation"]),
     team() {
       return this.teamInformation.filter(member => {
         return member._id != this.userInformation._id;
@@ -109,34 +115,42 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Comms", ["getTranscripts"]),
+    ...mapActions("Comms", ["getTranscripts", "startChat"]),
     ...mapActions("Admin", ["getTeam"]),
     sendMessage() {
       this.loading = true;
+      let userName = this.getUserInformation(this.chat.recieverID).name;
+
       this.startChat({
-        ...this.chat
+        ...this.chat,
+        userName
       })
         .then(() => {
-          this.loading = false;
+          reset();
         })
         .catch(() => {
-          this.loading = false;
+          reset();
         });
+    },
+    async reset() {
+      this.loading = false;
+      this.$set(this, "chat", {});
+      await this.getTranscripts();
     }
   },
   components: {
     Nocontent,
-    Popover
+    Popover,
+    Transcript
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .comms_list_container {
-  border-right: $border;
   width: 20%;
-  padding: 20px;
   height: 100%;
+  border-right: $border;
 }
 .comms_list {
   height: inherit;

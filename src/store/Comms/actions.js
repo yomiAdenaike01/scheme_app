@@ -71,8 +71,8 @@ export default {
     });
   },
   getTranscripts({ dispatch, commit, state: { transcripts } }) {
-    if (transcripts.length <= 0) {
-      return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      if (transcripts.length <= 0) {
         if (transcripts.length <= 0) {
           const payload = {
             method: "GET",
@@ -90,7 +90,9 @@ export default {
               reject(error);
             });
         }
-      });
-    }
+
+        resolve();
+      }
+    });
   }
 };
