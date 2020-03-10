@@ -6,10 +6,13 @@ if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "https://dev-schemapi.now.sh/v1/";
 }
 
-const sortPayload = (state, payload) => {
+const sortPayload = ({ state, getters }, payload) => {
   const token = state.token;
   if (token) {
-    payload.headers = { authorisation: token };
+    payload.headers = {
+      authorisation: token,
+      version: getters.getCurrentVersion()
+    };
   }
   return payload;
 };
@@ -169,7 +172,7 @@ export default {
     });
   },
   request(context, payload) {
-    payload = sortPayload(context.state, payload);
+    payload = sortPayload(context, payload);
 
     let enableNotifications = true;
 

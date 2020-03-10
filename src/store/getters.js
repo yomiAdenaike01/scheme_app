@@ -2,6 +2,9 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getCurrentVersion() {
+    return require("../package.json").version;
+  },
   getIsSignedUser: (
     { userInformation: { groupID, _id }, clientInformation: { signedUser } },
     { getIsAdmin }

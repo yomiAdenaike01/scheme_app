@@ -17,6 +17,11 @@
     </div>
     <Tutorial />
     <PreviousEventsDialog />
+    <transition name="el-fade-in">
+      <div class="new_version_container shadow" v-if="isNewVersion">
+        <p>This is a new version</p>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -70,6 +75,9 @@ export default {
     ]),
     ...mapGetters(["getUAInformation"]),
     ...mapState("Admin", ["shifts", "teamInformation"]),
+    isNewVersion() {
+      return this.userInformation.usedVersions != this.getCurrentVersion;
+    },
     returnIsStartOfWeek() {
       return moment().get("day") <= 1;
     },
