@@ -4,7 +4,7 @@ export default {
     state.startNewChat = payload;
   },
   UPDATE_MESSAGES(state, payload) {
-    Vue.set(state, "messages", payload);
+    state.messages = payload;
   },
 
   UPDATE_TRANSCRIPTS(state, { type, data }) {

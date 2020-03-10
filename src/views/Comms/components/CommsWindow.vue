@@ -5,13 +5,15 @@
         <div class="comms_window_toolbar">
           <p>{{ username }}</p>
         </div>
-        <transition-group name="el-fade-in">
-          <Message
-            v-for="(message, index) in messages"
-            :data="message"
-            :key="index"
-          />
-        </transition-group>
+        <Message
+          v-for="(message, index) in messages"
+          :data="message"
+          :key="
+            `${index}${Math.random()
+              .toString(16)
+              .slice(2)}`
+          "
+        />
         <!-- Message input -->
         <div class="input_container flex">
           <div class="actions_container">
@@ -37,7 +39,7 @@
           >
         </div>
       </div>
-      <Nocontent v-bind="noContent" />
+      <Nocontent v-else v-bind="noContent" />
     </div>
   </transition>
 </template>
@@ -85,6 +87,12 @@ export default {
     },
     username() {
       return this.info?.name ?? "John Doe";
+    },
+    isMuted() {
+      return (
+        this.activeTranscript.mutedNotifications.indexOf(this.userInformation) >
+        -1
+      );
     }
   },
   methods: {
@@ -97,7 +105,8 @@ export default {
         ...this.chat,
         recieverID: this.activeTranscript.userTwo,
         transcriptID: this.activeTranscript._id,
-        userName: this.username
+        userName: this.username,
+        isMuted: this.isMuted
       };
       this.chat.content = "";
 

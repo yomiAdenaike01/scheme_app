@@ -1,6 +1,6 @@
 <template>
   <transition name="fade-transform" mode="out-in" tag="div">
-    <div class="h-100 p-4">
+    <div class="critical_error_wrapper h-100 p-4">
       <div class="error_container flex_center">
         <!-- Text container for what to do on errors -->
         <div class="text_container flex_center columns">
@@ -32,8 +32,12 @@
             </h4>
             <div class="flex_center columns">
               <div class="info_wrapper p-2 m-3 txt_center">
-                <small>{{ JSON.stringify(getUAInformation) }}</small>
-                <small>{{ JSON.stringify(errorInformation) }}</small>
+                <small class="error_information">{{
+                  JSON.stringify(getUAInformation)
+                }}</small>
+                <small class="error_information">{{
+                  JSON.stringify(errorInformation)
+                }}</small>
               </div>
               <el-button plain size="small" @click="sendErrorReport"
                 >Send Error Report</el-button
@@ -53,6 +57,9 @@ export default {
   name: "CriticalError",
   activated() {
     this.closeDialog();
+    if (!this.hasEntries(this.errorInformation)) {
+      this.$router.push({ name: "events" });
+    }
   },
   data() {
     return {
@@ -95,6 +102,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.critical_error_wrapper {
+  height: calc(100% - 100px);
+  overflow-x: hidden;
+}
 .error_content {
   text-align: center;
   width: 700px;
@@ -105,5 +116,12 @@ export default {
   border: $border;
   background: whitesmoke;
   color: rgb(50, 50, 50);
+  max-height: 400px;
+  overflow-x: hidden;
+}
+.error_information {
+  white-space: pre-wrap;
+  word-break: break-all;
+  display: inline-block;
 }
 </style>

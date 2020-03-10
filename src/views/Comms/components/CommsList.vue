@@ -74,7 +74,8 @@
 import CommsTranscript from "./CommsTranscript";
 import Nocontent from "@/components/Nocontent";
 import Popover from "@/components/Popover";
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
+import CommsEventBus from "./CommsEventBus";
 export default {
   name: "CommsList",
   data() {
@@ -86,6 +87,18 @@ export default {
         recieverID: ""
       }
     };
+  },
+
+  activated() {
+    CommsEventBus.$on("createNewChat", recieverID => {
+      this.chat.recieverID = recieverID;
+      this.UPDATE_NOTIFICATIONS({
+        message:
+          "You have selected a user to start a chat with, press the + button to start a new chat",
+        title: "Start a new chat",
+        type: "info"
+      });
+    });
   },
 
   computed: {
@@ -117,9 +130,16 @@ export default {
   methods: {
     ...mapActions("Comms", ["getTranscripts", "startChat"]),
     ...mapActions("Admin", ["getTeam"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     sendMessage() {
       this.loading = true;
       let userName = this.getUserInformation(this.chat.recieverID).name;
+
+      const reset = () => {
+        this.loading = false;
+        this.$set(this, "chat", {});
+        this.getTranscripts();
+      };
 
       this.startChat({
         ...this.chat,
@@ -132,16 +152,13 @@ export default {
           reset();
         });
     },
-    async reset() {
-      this.loading = false;
-      this.$set(this, "chat", {});
-      await this.getTranscripts();
-    }
+    async reset() {}
   },
   components: {
     Nocontent,
     Popover,
-    CommsTranscript
+    CommsTranscript,
+    CommsEventBus
   }
 };
 </script>

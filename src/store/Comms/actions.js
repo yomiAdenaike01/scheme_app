@@ -26,7 +26,7 @@ export default {
           "request",
           {
             method: "POST",
-            url: "messengers/read",
+            url: "messenger/read",
             data: { transcriptID: activeTranscript._id }
           },
           { root: true }
@@ -80,7 +80,6 @@ export default {
           )
           .then(response => {
             context.commit("UPDATE_MESSAGES", response);
-            console.log(response);
             resolve();
           })
           .catch(error => {
