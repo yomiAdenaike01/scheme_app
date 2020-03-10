@@ -9,7 +9,10 @@ if (process.env.NODE_ENV == "development") {
 const sortPayload = (state, payload) => {
   const token = state.token;
   if (token) {
-    payload.headers = { authorisation: token };
+    payload.headers = {
+      authorisation: token,
+      version: getters.getCurrentVersion
+    };
   }
   return payload;
 };

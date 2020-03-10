@@ -19,7 +19,6 @@
       :time-from="getCalTimings.from"
       :time-to="getCalTimings.to"
       editable-events
-      style="height:830px"
       ref="eventsCalendar"
     />
   </div>
@@ -282,7 +281,7 @@ export default {
 
 <style lang="scss" scoped>
 .cal_container {
-  flex: 1;
+  height: 60%;
 
   &/deep/ {
     .vuecal__now-line {

@@ -8,7 +8,6 @@
       v-model="tabChange"
       :tab-position="position"
       v-loading="loading"
-      :type="tabType"
     >
       <slot name="body_content"></slot>
       <el-tab-pane

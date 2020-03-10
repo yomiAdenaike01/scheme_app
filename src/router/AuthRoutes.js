@@ -4,13 +4,13 @@ const ClientAuth = () => import("@/views/Auth/ClientAuth");
 
 export default [
   {
-    path: "/auth/user",
+    path: "/auth",
     name: "login",
     component: UserAuth
-  },
-  {
-    path: "/auth/client",
-    name: "register",
-    component: ClientAuth
   }
+  // {
+  //   path: "/auth/client",
+  //   name: "register",
+  //   component: ClientAuth
+  // }
 ];

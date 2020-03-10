@@ -7,7 +7,7 @@
         notification.status == 'is_read' || notification.status == 'complete'
     }"
     v-loading="loading"
-    @click="updateNotification({ status: 'is_read' })"
+    @click="updateNotification({ status: 'is_read' }), notificationController()"
   >
     <p class="flex" :title="notification.message">
       <i :class="notificationTypeIcon" class="grey notification_icon mr-2"></i>
@@ -15,12 +15,6 @@
     </p>
     <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
 
-    <div
-      v-if="notification.status != 'is_read'"
-      :class="['notification_type_indicator', notification.type]"
-    >
-      <small>{{ makePretty(notification.type) }}</small>
-    </div>
     <br />
   </div>
 </template>
@@ -65,6 +59,11 @@ export default {
           break;
         }
 
+        case "announcement": {
+          type = "bx bx-speaker";
+          break;
+        }
+
         default:
           break;
       }
@@ -77,54 +76,30 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER_NOTIFICATIONS"]),
-    sendNotificationToRequster() {
-      let requester = this.notification.requested_by;
-      let payload = {
-        method: "POST",
-        url: "notifications/create",
-        data: {
-          for: requester,
-          type: "display",
-          message: "Your request has been approved"
+
+    notificationController() {
+      let notification = this.notification;
+
+      switch (notification.type) {
+        case "message": {
+          this.$router.push({
+            name: "messenger",
+            params: { id: notification.content.id }
+          });
+          break;
         }
-      };
-      this.request(payload)
-        .then(response => {
-          return response;
-        })
-        .catch(error => {
-          return error;
-        });
-    },
-    changeNotificationActionToComplete() {
-      this.request({
-        method: "POST",
-        url: "/notifications/update",
-        data: {
-          id: this.notification._id,
-          update: { status: "complete" }
+
+        case "request": {
+          this.$router.push({ name: "events" });
+          break;
         }
-      })
-        .then(response => this.sendNotificationToRequster())
-        .catch(error => console.log(error));
-    },
-    deleteNotifcation() {
-      this.loading = true;
-      this.request({
-        method: "DELETE",
-        url: "/notifications/one",
-        data: {
-          id: this.notification._id
-        }
-      })
-        .then(response => {
-          this.UPDATE_USER_NOTIFICATIONS(null);
-        })
-        .catch(error => {
-          this.loading = false;
-        });
+
+        default:
+          break;
+      }
     },
     updateNotification(update) {
+      this.loading = true;
       this.request({
         method: "POST",
         url: "notifications/update",
@@ -134,19 +109,11 @@ export default {
         }
       })
         .then(response => {
-          console.log(response);
+          this.loading = false;
         })
         .catch(error => {
-          console.log(error);
+          this.loading = false;
         });
-    },
-    updateContent() {
-      this.loading = true;
-      this.request(this.notificationRequestBody)
-        .then(response => console.log(response))
-        .catch(error => console.log(error));
-      this.changeNotificationActionToComplete();
-      this.loading = false;
     }
   }
 };

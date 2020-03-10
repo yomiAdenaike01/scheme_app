@@ -19,6 +19,7 @@ export default {
     };
   },
   activated() {
+    console.log(this.$router.params);
     if (!this.hasEntries(this.activeTranscript)) {
       this.loading = true;
       this.getTranscripts()

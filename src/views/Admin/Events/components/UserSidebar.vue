@@ -112,7 +112,10 @@ export default {
     handleEvents(event) {
       switch (event) {
         case "message": {
-          this.$router.push({ name: "messenger" });
+          this.$router.push({
+            name: "comms",
+            params: { id: this.hoveredTeamMember }
+          });
           break;
         }
         case "view_team_member": {

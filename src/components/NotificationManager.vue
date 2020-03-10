@@ -17,15 +17,6 @@
         v-if="hasEntries(getUserNotificationsLength)"
         >Mark all as read</el-button
       >
-      <el-button
-        v-if="hasReadNotifications"
-        class="m-0 block_button"
-        size="small"
-        type="primary"
-        plain
-        @click="deleteReadNotifications"
-        >Delete all read notifications</el-button
-      >
     </div>
     <Nocontent v-else v-bind="noContent" />
   </div>
@@ -57,11 +48,7 @@ export default {
   computed: {
     ...mapState(["userNotifications", "userInformation"]),
     ...mapGetters(["getUserNotificationsLength"]),
-    hasReadNotifications() {
-      return (
-        this.userNotifications.filter(x => x.status == "is_read").length > 0
-      );
-    },
+
     noContent() {
       return {
         moreInformation: {
