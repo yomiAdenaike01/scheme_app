@@ -1,12 +1,7 @@
 <template>
   <div class="team_container" v-loading="false">
     <!-- Display if in mobile view -->
-    <Title
-      style="text-align:center"
-      v-if="$mq != 'lg'"
-      title="teamInformation"
-      subtitle="View and interact with your team members here"
-    />
+
     <div v-if="getFilteredTeam.length > 0">
       <div
         v-for="(member, index) in teamInformation"

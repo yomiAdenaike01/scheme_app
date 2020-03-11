@@ -1,6 +1,6 @@
 <template>
   <div class="shadow_border flex_center avatar_container">
-    <el-avatar :style="{ background: randColour }">{{
+    <el-avatar :style="{ background: randColour() }">{{
       !isNameTheSame ? initials : "ME"
     }}</el-avatar>
   </div>
@@ -27,11 +27,7 @@ export default {
         this.name.trim().toLowerCase()
       );
     },
-    randColour() {
-      return this.defaultCustomColours[
-        Math.round(Math.random() * this.defaultCustomColours.length)
-      ];
-    },
+
     initials() {
       let initials, username;
       username = "John Doe";
@@ -48,6 +44,13 @@ export default {
         initials = initials.substr(0, 3).toUpperCase();
       }
       return initials;
+    }
+  },
+  methods: {
+    randColour() {
+      return this.defaultCustomColours[
+        Math.round(Math.random() * this.defaultCustomColours.length)
+      ];
     }
   }
 };
