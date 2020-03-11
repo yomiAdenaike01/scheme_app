@@ -44,8 +44,8 @@ export default {
         });
     });
   },
-  closeDialog(context, name) {
-    context.commit(
+  closeDialog({ commit, state: { dialogIndex } }, name) {
+    commit(
       "UPDATE_DIALOG_INDEX",
       {
         view: false,
@@ -54,6 +54,22 @@ export default {
       },
       { root: true }
     );
+
+    if (!name) {
+      for (let property in dialogIndex) {
+        if (dialogIndex[property].view == true) {
+          commit(
+            "UPDATE_DIALOG_INDEX",
+            {
+              view: false,
+              dialog: dialogIndex[property].name,
+              data: null
+            },
+            { root: true }
+          );
+        }
+      }
+    }
   },
   /**
    *

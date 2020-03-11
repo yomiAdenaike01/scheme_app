@@ -131,8 +131,7 @@ export default {
 
 <style lang="scss" scoped>
 .comms_window_container {
-  width: 100%;
-  height: 100%;
+  flex: 1;
   color: grey;
 }
 .comms_window_toolbar {
@@ -140,7 +139,6 @@ export default {
   padding: 10px;
   width: 100%;
   pointer-events: none;
-  //   box-shadow: 0px 4px 10px whitesmoke;
 }
 .messages_container {
   position: relative;

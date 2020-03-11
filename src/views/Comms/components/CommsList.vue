@@ -165,10 +165,12 @@ export default {
 
 <style lang="scss" scoped>
 .comms_list_container {
-  min-width: 30%;
-  max-width: 40%;
+  flex: 1;
   height: 100%;
   border-right: $border;
+}
+.comms_list_toolbar {
+  flex: 1;
 }
 .comms_list {
   height: inherit;

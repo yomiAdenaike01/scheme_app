@@ -74,7 +74,7 @@ export default {
 <style lang="scss" scoped>
 .comms_container {
   display: flex;
-  width: 100%;
+  flex: 1;
   height: 100%;
 }
 </style>

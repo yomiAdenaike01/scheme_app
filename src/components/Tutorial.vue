@@ -6,10 +6,15 @@
           class="el-icon arrow el-icon-arrow-left"
           @click="slideController('minus')"
         ></i>
-        <transition-group name="slide_in" tag="div">
-          <p :key="index" v-for="(slideIn, index) in [currentSlideInfo]">
-            {{ slideIn }}
-          </p>
+        <transition-group name="slide_in" mode="out-in">
+          <div
+            class="w-100"
+            :key="index"
+            v-for="(slideIn, index) in [currentSlideInfo]"
+          >
+            <h1 class="black">{{ slideIn.title }}</h1>
+            <p>{{ slideIn.body }}</p>
+          </div>
         </transition-group>
 
         <i
@@ -21,9 +26,10 @@
       <div class="slide_indicator_container flex_center mt-5">
         <div
           :class="{ active: currentSlide == slide - 1 }"
-          v-for="slide in totalSlides"
+          v-for="(slide, index) in totalSlides"
           :key="slide"
           class="slide_indicator"
+          @click="currentSlide = index"
         ></div>
       </div>
     </div>
@@ -94,13 +100,14 @@ export default {
 }
 .slide_indicator {
   border-radius: 50%;
-  background: rgb(235, 233, 233);
+  background: $default_colour;
+  border: 13px solid white;
   width: 20px;
   height: 20px;
   transition: $default_transition;
   &.active {
     box-shadow: $box_shadow;
-    background: white;
+    background: $default_colour;
   }
 }
 .arrow {
@@ -114,10 +121,11 @@ export default {
 .slide_in.enter-active,
 .slide_in.leave-active {
   transition: 0.5s linear all;
+  transform: translateX(-100px);
 }
 
 .slide_in-enter,
 .slide_in-leave-to {
-  opacity: 1;
+  transform: translateX(0px);
 }
 </style>

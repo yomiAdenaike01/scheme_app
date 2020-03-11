@@ -66,7 +66,6 @@ export default {
       "userNotifications",
       "viewMobileMenu",
       "defaultSize",
-      "criticalNetworkError",
       "weeklyTimesheetUploaded",
       "localSettings"
     ]),

@@ -1,6 +1,17 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
+    <div v-if="teamInformation.length == 0">
+      <p>You need to create team mmebers before you can create events</p>
+      <el-button
+        @click="
+          closeDialog('eventManager');
+          $router.push({ name: 'user' });
+        "
+        >Create Team Member</el-button
+      >
+    </div>
     <Tabs
+      v-else
       v-loading="loading"
       :tabs="tabs"
       @val="eventManagerController"
