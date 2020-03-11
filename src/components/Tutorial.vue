@@ -6,16 +6,18 @@
           class="el-icon arrow el-icon-arrow-left"
           @click="slideController('minus')"
         ></i>
-        <transition-group name="slide_in" mode="out-in">
-          <div
-            class="w-100"
-            :key="index"
-            v-for="(slideIn, index) in [currentSlideInfo]"
-          >
-            <h1 class="black">{{ slideIn.title }}</h1>
-            <p>{{ slideIn.body }}</p>
-          </div>
-        </transition-group>
+        <div
+          class="current_slide_info_wrapper"
+          :key="index"
+          v-for="(slideIn, index) in [currentSlideInfo]"
+        >
+          <h1 class="black">{{ slideIn.title }}</h1>
+          <p>{{ slideIn.body }}</p>
+          <img
+            v-show="slideIn.image"
+            :src="slideIn.image ? slideIn.image : ''"
+          />
+        </div>
 
         <i
           class="el-icon arrow el-icon-arrow-right"
@@ -105,6 +107,7 @@ export default {
   width: 20px;
   height: 20px;
   transition: $default_transition;
+  cursor: pointer;
   &.active {
     box-shadow: $box_shadow;
     background: $default_colour;
@@ -114,18 +117,22 @@ export default {
   font-size: 20px;
   color: #ccc;
 }
-
+.current_slide_info_wrapper {
+  width: 80%;
+}
+.current_slide_info_image {
+  background: linear-gradient(black, white, 50%);
+}
 /*=============================================
 =            Transitions            =
 =============================================*/
-.slide_in.enter-active,
-.slide_in.leave-active {
-  transition: 0.5s linear all;
-  transform: translateX(-100px);
-}
 
-.slide_in-enter,
-.slide_in-leave-to {
-  transform: translateX(0px);
+.slide_tutorial-enter-active,
+.slide_tutorial-leave-active {
+  transition: all 1s;
+}
+.slide_tutorial-enter, .slide_tutorial-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
 }
 </style>
