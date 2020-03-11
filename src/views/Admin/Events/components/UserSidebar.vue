@@ -46,7 +46,7 @@
         type="primary"
         @click="$router.push({ name: 'user' })"
         size="mini"
-        >Create Team Member</el-button
+        >Go to user management</el-button
       >
     </Nocontent>
   </div>

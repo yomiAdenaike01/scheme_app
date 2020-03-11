@@ -123,6 +123,9 @@ export default {
 .current_slide_info_image {
   background: linear-gradient(black, white, 50%);
 }
+h1 {
+  font-size: 3em;
+}
 /*=============================================
 =            Transitions            =
 =============================================*/

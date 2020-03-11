@@ -1,13 +1,19 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
-    <div v-if="teamInformation.length == 0">
+    <div
+      v-if="teamInformation.length == 0"
+      class="no_team flex_center columns p-4"
+    >
       <p>You need to create team mmebers before you can create events</p>
       <el-button
+        size="small"
+        round
+        type="primary"
         @click="
           closeDialog('eventManager');
           $router.push({ name: 'user' });
         "
-        >Create Team Member</el-button
+        >Go to user management</el-button
       >
     </div>
     <Tabs
@@ -336,6 +342,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.no_team {
+  line-height: 2.5em;
+}
 .shift_templates_container {
   height: 40%;
   overflow: auto;
