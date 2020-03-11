@@ -1,5 +1,5 @@
 <template>
-  <div class="team_container" v-loading="false">
+  <div class="team_container">
     <!-- Display if in mobile view -->
 
     <div v-if="getFilteredTeam.length > 0">
@@ -61,9 +61,7 @@ import MoreInformation from "@/components/MoreInformation";
 import Nocontent from "@/components/Nocontent";
 export default {
   name: "UserSidebar",
-  created() {
-    this.teamLoaderManager();
-  },
+
   data() {
     return {
       hoveredTeamMember: null,
@@ -94,16 +92,7 @@ export default {
   },
   methods: {
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
-    teamLoaderManager() {
-      this.loaderTimeout = setTimeout(() => {
-        if (this.teamInformation.length <= 0) {
-          this.loadingTeam = false;
-          this.noTeam = true;
-        } else {
-          this.loadingTeam;
-        }
-      }, 5000);
-    },
+
     handleEvents(event) {
       switch (event) {
         case "message": {

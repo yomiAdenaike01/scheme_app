@@ -1,13 +1,13 @@
 <template>
   <div
-    class="eventmanager_container"
+    class="eventmanager_container h-100"
     v-loading="loading"
     element-loading-text="Loading team members and events please wait..."
   >
     <!-- Shift and calendar view -->
     <EventFilters v-if="$mq == 'lg'" />
 
-    <div class="eventmanager_inner_container">
+    <div class="eventmanager_inner_container h-100 overflow">
       <Toolbar class="m-3" />
 
       <EventsCalendar

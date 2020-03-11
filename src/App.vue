@@ -43,6 +43,7 @@ export default {
           this.loading = false;
         })
         .catch(err => {
+          console.error(err);
           this.loading = false;
         });
     }, this.requestIntervals.client);
@@ -110,8 +111,8 @@ html,
   height: 100%;
   width: 100%;
   margin: 0;
-  overflow: hidden;
   padding: 0;
+  overflow: hidden;
 }
 /*
  
@@ -271,7 +272,6 @@ span {
 }
 
 .h-100 {
-  flex: 1;
   height: 100%;
 }
 .h-90 {
@@ -334,11 +334,7 @@ span {
   font-weight: bold;
 }
 .overflow {
-  overflow-x: hidden;
-  &:after {
-    content: "";
-    display: block;
-  }
+  overflow: auto;
 }
 
 .rounded {

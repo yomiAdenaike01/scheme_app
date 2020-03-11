@@ -63,13 +63,6 @@
             text="No team members detected, click the button below to go to user management."
             icon="bx bx-user-circle"
           >
-            <el-button
-              round
-              type="primary"
-              @click="$router.push({ name: 'user' })"
-              size="mini"
-              >Create Team Member</el-button
-            >
           </Nocontent>
         </div>
       </div>

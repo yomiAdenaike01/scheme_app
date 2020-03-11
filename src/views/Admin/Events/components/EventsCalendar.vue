@@ -281,8 +281,6 @@ export default {
 
 <style lang="scss" scoped>
 .cal_container {
-  height: 60%;
-
   &/deep/ {
     .vuecal__now-line {
       color: $element_colour;
