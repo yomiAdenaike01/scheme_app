@@ -4,6 +4,7 @@
       v-if="teamInformation.length == 0"
       class="no_team flex_center columns p-4"
     >
+      <i class="bx bx-error-circle large_icon"></i>
       <p>You need to create team mmebers before you can create events</p>
       <el-button
         size="small"
