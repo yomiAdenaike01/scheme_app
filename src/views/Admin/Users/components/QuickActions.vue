@@ -133,8 +133,8 @@ export default {
   border-bottom: $border;
   cursor: pointer;
   &.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    opacity: 0.1;
+    pointer-events: none;
   }
   &:hover {
     background: $hover_grey;

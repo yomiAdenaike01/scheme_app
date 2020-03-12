@@ -165,7 +165,7 @@ export default {
 
 <style lang="scss" scoped>
 .comms_list_container {
-  flex: 1;
+  flex: 0.5;
   height: 100%;
   border-right: $border;
 }
