@@ -39,7 +39,9 @@
           >
         </div>
       </div>
-      <Nocontent v-else v-bind="noContent" />
+      <div v-else class="no_content_container">
+        <Nocontent v-bind="noContent" />
+      </div>
     </div>
   </transition>
 </template>
@@ -171,5 +173,10 @@ export default {
 }
 .show_actions {
   font-size: 1.5em;
+}
+.no_content_container {
+  background: rgb(250, 250, 250);
+  flex: 1;
+  color: #ccc;
 }
 </style>

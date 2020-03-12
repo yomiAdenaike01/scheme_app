@@ -16,7 +16,15 @@ export default {
     return isSignedUser;
   },
   getActiveDialog: ({ dialogIndex }) => dialogName => {
-    return dialogIndex[dialogName].view;
+    if (dialogName) {
+      return dialogIndex[dialogName].view;
+    } else {
+      for (let property in dialogIndex) {
+        if (dialogIndex[property].view) {
+          context;
+        }
+      }
+    }
   },
   getUserNotificationsLength({ userNotifications }) {
     return userNotifications.filter(notification => {

@@ -1,15 +1,6 @@
 <template>
-  <el-col class="filters_container p-3 mr-1" :class="{ active: displayState }">
-    <div
-      class="hide_show_indicator shadow pl-3 pr-3 pt-2 pb-2"
-      @click="displayState = !displayState"
-    >
-      <i
-        class="el-icon-arrow-right active_arrow"
-        :class="{ ' el-icon-arrow-left': !displayState }"
-      ></i>
-    </div>
-    <div class="inner_filter_container" :class="{ active: displayState }">
+  <el-col class="filters_container p-3 mr-1">
+    <div class="inner_filter_container">
       <div class="title_container">
         <h4>Filters</h4>
         <small class="grey filter_desc"
@@ -51,7 +42,6 @@ export default {
   data() {
     return {
       selectedTeamMember: "",
-      displayState: false,
       localFilters: {}
     };
   },
@@ -109,25 +99,5 @@ export default {
 }
 .filter_desc {
   font-size: 0.7em;
-}
-.hide_show_indicator {
-  position: absolute;
-  top: 50%;
-  right: -20px;
-  border-radius: 40px;
-  z-index: 4;
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  &.active_arrow {
-    right: -100px;
-  }
-}
-.inner_filter_container {
-  &.active {
-    visibility: hidden;
-  }
 }
 </style>

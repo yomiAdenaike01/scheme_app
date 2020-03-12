@@ -203,4 +203,7 @@ export default {
 .main_wrapper {
   height: calc(100% - #{$app_bar_height});
 }
+.inner_wrapper {
+  flex: 1;
+}
 </style>
