@@ -98,8 +98,8 @@ export default {
         {
           "component-type": "text",
           clearable: true,
-          placeholder: "Name",
-          model: "name"
+          placeholder: "Group name",
+          model: "label"
         }
       ];
     }
@@ -172,15 +172,13 @@ export default {
     },
     updateGroup(content) {},
     createUserGroup(content) {
+      content.groupType = "userGroups";
       content.value = this.clientInformation.userGroups.length + 1;
+      this.currentDisplay = "";
       this.request({
         method: "POST",
-        url: "clients/update",
-        data: {
-          update: {
-            content
-          }
-        }
+        url: "clients/group",
+        data: content
       })
         .then(response => {
           console.log(response);

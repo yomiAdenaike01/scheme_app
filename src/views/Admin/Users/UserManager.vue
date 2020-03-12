@@ -69,7 +69,7 @@
     </UserGroup>
 
     <!-- Quick actions -->
-    <QuickActions v-if="getIsAdmin" />
+    <QuickActions v-if="getIsAdmin && teamInformation.length > 0" />
     <!-- User manager dialog -->
     <UserManagerDialog
       :display="displayDialog"
@@ -165,6 +165,9 @@ export default {
 .user_container {
   font-size: 0.9em;
   height: 90%;
+  & > * {
+    flex: 1;
+  }
 }
 .current_user_column {
   max-width: 30%;
