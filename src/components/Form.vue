@@ -63,11 +63,10 @@
         >
           <el-option
             v-for="option in input.options"
-            :label="option.text || option.name"
+            :label="option.text || option.name || option.label"
             :key="option.value"
             :value="option.value ? option.value : option.text"
-            >{{ option.text || option.name }}</el-option
-          >
+          />
         </component>
         <!-- Hint -->
         <small
@@ -158,7 +157,7 @@ export default {
           ? formItem.name
           : formItem.model;
 
-        if (!formItem.hasOwnProperty("optional")) {
+        if (!formItem?.optional) {
           let validArr = [];
           let compType = formItem["component-type"];
           let inputType = formItem["input-type"];
@@ -174,16 +173,12 @@ export default {
           // }
 
           if (
-            (compType == "select" && formItem.hasOwnProperty("multiple")) ||
+            (compType == "select" && formItem?.multiple) ||
             inputType == "dates" ||
-            formItem.hasOwnProperty("isRange")
+            formItem?.isRange
           ) {
             type = "array";
-          } else if (
-            compType == "select" &&
-            "validType" in formItem &&
-            formItem.validType == "number"
-          ) {
+          } else if (compType == "select" && formItem?.validType == "number") {
             type = "number";
           }
 
@@ -195,7 +190,7 @@ export default {
             type
           };
 
-          if (!formItem.hasOwnProperty("name")) {
+          if (!formItem?.name) {
             formItem.name = formItem.model;
           }
 

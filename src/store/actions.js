@@ -213,7 +213,7 @@ export default {
         }
       })
       .catch(error => {
-        const { status } = error.request;
+        const status = error?.request?.status;
 
         // Web token error
         if (status === 401) {

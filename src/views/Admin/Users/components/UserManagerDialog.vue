@@ -150,8 +150,9 @@ export default {
           placeholder: "Group",
           model: "groupID",
           "component-type": "select",
-          options: this.clientInformation.userGroups,
-          optional: true
+          validType: "number",
+          clearable: true,
+          options: this.clientInformation.userGroups
         }
       ];
     },

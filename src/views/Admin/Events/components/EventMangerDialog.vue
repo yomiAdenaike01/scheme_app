@@ -1,6 +1,6 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
-    <div
+    <!-- <div
       v-if="teamInformation.length == 0"
       class="no_team flex_center columns p-4"
     >
@@ -16,9 +16,8 @@
         "
         >Go to user management</el-button
       >
-    </div>
+    </div> -->
     <Tabs
-      v-else
       v-loading="loading"
       :tabs="tabs"
       @val="eventManagerController"
