@@ -373,7 +373,10 @@ span {
     }
   }
 }
-
+.el-card__body {
+  height: 100%;
+  overflow-x: scroll;
+}
 /**
     _   _  _  ___ _  _    ___
     | \_/ |/ \| o ) || |  | __|

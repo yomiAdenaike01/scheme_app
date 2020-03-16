@@ -8,7 +8,7 @@
           <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
         </div>
         <el-col class="main_col_container">
-          <!-- <ServerHealth /> -->
+          <ServerHealth />
           <DefaultTransition>
             <keep-alive>
               <router-view :key="key" />
@@ -33,11 +33,13 @@ import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
 import Tutorial from "@/components/Tutorial";
 import PreviousEventsDialog from "@/components/PreviousEventsDialog";
+import ServerHealth from "@/components/ServerHealth";
 export default {
   name: "Main",
 
   activated() {
     this.checkServerHealth();
+    this.checkDevice();
 
     let isVerified = this.userInformation.verified;
     if (!isVerified) {
@@ -94,13 +96,41 @@ export default {
   },
 
   methods: {
-    ...mapActions(["checkServerHealth"]),
+    ...mapActions(["checkServerHealth", "updateDevices"]),
     ...mapMutations([
       "REMOVE_USER",
       "UPDATE_NOTIFICATIONS",
       "UPDATE_VIEW_NOTIFICATIONS_CENTER"
     ]),
-
+    triggerDeviceNotification() {
+      this.UPDATE_NOTIFICATIONS({
+        title: "Register new device detected",
+        message:
+          "Would you like this device to be added to your library  (click to confirm) ?",
+        click: () => {
+          this.updateDevices();
+        },
+        type: "info"
+      });
+    },
+    checkDevice() {
+      if (this.userInformation?.devicesInformation?.length === 0) {
+        this.triggerDeviceNotification();
+      } else {
+        // Find in array
+        let deviceIndex = this.userInformation.devicesInformation.findIndex(
+          ({ os: { name, version } }) => {
+            return (
+              name === this.getUAInformation.os.name &&
+              version === this.getUAInformation.os.version
+            );
+          }
+        );
+        if (deviceIndex == -1) {
+          this.triggerDeviceNotification();
+        }
+      }
+    },
     requestNotificationPermission() {
       if (!window.Notification) {
         let {
@@ -138,7 +168,8 @@ export default {
     NprogressContainer,
     DefaultTransition,
     Tutorial,
-    PreviousEventsDialog
+    PreviousEventsDialog,
+    ServerHealth
   },
   watch: {
     hasAnnoucement: {

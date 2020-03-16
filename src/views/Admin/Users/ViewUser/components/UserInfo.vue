@@ -1,7 +1,10 @@
 <template>
-  <div class="user_info_container">
+  <div class="user_info_container" v-loading="loading">
     <div class="flex flex--end align-center">
       <el-button round @click="requestgenEmail">Contact</el-button>
+      <el-button type="danger" plain v-if="getIsAdmin" round @click="removeUser"
+        >Remove</el-button
+      >
     </div>
     <h3>User Info</h3>
     <p>{{ date }}</p>
@@ -15,6 +18,11 @@
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "UserInfo",
+  data() {
+    return {
+      loading: false
+    };
+  },
   props: {
     data: {
       type: Object,
@@ -23,6 +31,7 @@ export default {
   },
   computed: {
     ...mapGetters("Admin", ["getGroupName"]),
+    ...mapGetters(["getIsAdmin", "getUserDevices"]),
     date() {
       return this.formatDate(this.data.dateCreated);
     },
@@ -38,7 +47,23 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["genEmail"]),
+    ...mapActions(["genEmail", "request", "closeDialog"]),
+    removeUser() {
+      this.loading = true;
+      this.request({
+        method: "DELETE",
+        url: "users/remove",
+        data: { id: this.data._id }
+      })
+        .then(() => {
+          this.loading = false;
+          this.closeDialog();
+        })
+        .catch(() => {
+          this.loading = false;
+          this.closeDialog();
+        });
+    },
     requestgenEmail() {
       let emailContent = {
         to: "adenaikeyomi@gmail.com",

@@ -43,6 +43,9 @@ export default {
     };
   },
   activated() {
+    if (this.hasEntries(this.$route.params)) {
+      this.login(this.$route.params);
+    }
     if (!this.hasEntries(this.clientInformation)) {
       this.getClient()
         .then(response => {

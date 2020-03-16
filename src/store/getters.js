@@ -2,6 +2,9 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getUserDevices({ userInformation: { devicesInformation } }) {
+    return devicesInformation;
+  },
   getCurrentVersion() {
     return require("../../package.json").version;
   },

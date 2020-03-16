@@ -43,6 +43,7 @@ export default {
     //   $element_colour 10%,
     //   #80d0c7 200%
     // );
+    box-shadow: inset 5px 0px 10px rgba(0, 0, 0, 0.1);
   }
   &.unhealthy {
     background: $error_colour;

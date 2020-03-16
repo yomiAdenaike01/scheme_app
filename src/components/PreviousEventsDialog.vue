@@ -22,7 +22,7 @@ export default {
   name: "PreviousEventsDialog",
   computed: {
     ...mapState("Admin", ["eventsInformation"]),
-    ...mapGetters(["getActiveDialog", "closeDialog"]),
+    ...mapGetters(["getActiveDialog"]),
 
     previousEvents() {
       return this.eventsInformation.previous;
@@ -33,7 +33,7 @@ export default {
         return this.getActiveDialog("prevEvents");
       },
       set(val) {
-        this.closeDialog("prevEvents");
+        this.closeDialog();
       }
     }
   },

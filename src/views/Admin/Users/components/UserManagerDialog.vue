@@ -14,11 +14,6 @@
           title="Manager users"
           subtitle="Manage all users and groups here."
         />
-        <!-- <transition name="el-fade-in">
-          <div class="flex_center" v-if="currentTab > 0">
-            <ValidationUnit v-bind="renderValidationUnit" />
-          </div>
-        </transition> -->
       </div>
     </Tabs>
   </el-dialog>
@@ -54,23 +49,6 @@ export default {
 
   computed: {
     ...mapState(["clientInformation"]),
-
-    renderValidationUnit() {
-      return {
-        success: {
-          condition: this.fileError == true,
-          text: "User file passed tests ready to upload"
-        },
-        danger: {
-          condition: this.fileError == true,
-          text: "User timesheet passed tests ready to upload"
-        },
-        info: {
-          condition: this.fileError == null,
-          text: "Upload users file"
-        }
-      };
-    },
 
     genPwd() {
       return this.createUserForm.name

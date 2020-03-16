@@ -6,19 +6,29 @@
           class="el-icon arrow el-icon-arrow-left"
           @click="slideController('minus')"
         ></i>
-        <div
-          class="current_slide_info_wrapper"
-          :key="index"
-          v-for="(slideIn, index) in [currentSlideInfo]"
+        <transition-group
+          tag="div"
+          style="width:60%"
+          mode="in-out"
+          name="slide_tutorial"
         >
-          <h1 class="black">{{ slideIn.title }}</h1>
-          <p>{{ slideIn.body }}</p>
-          <img
-            v-show="slideIn.image"
-            :src="slideIn.image ? slideIn.image : ''"
-          />
-        </div>
-
+          <div
+            class="current_slide_info_wrapper"
+            :key="
+              `${Math.random()
+                .toString(16)
+                .slice(2)}`
+            "
+            v-for="slideIn in [currentSlideInfo]"
+          >
+            <h1 class="black">{{ slideIn.title }}</h1>
+            <p>{{ slideIn.body }}</p>
+            <img
+              v-show="slideIn.image"
+              :src="slideIn.image ? slideIn.image : ''"
+            />
+          </div>
+        </transition-group>
         <i
           class="el-icon arrow el-icon-arrow-right"
           @click="slideController('plus')"
@@ -132,10 +142,10 @@ h1 {
 
 .slide_tutorial-enter-active,
 .slide_tutorial-leave-active {
-  transition: all 1s;
+  transition: all 0.6s linear;
 }
 .slide_tutorial-enter, .slide_tutorial-leave-to /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateX(100%);
 }
 </style>

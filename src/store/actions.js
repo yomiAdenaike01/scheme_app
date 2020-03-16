@@ -18,6 +18,22 @@ const sortPayload = ({ state, getters }, payload) => {
 };
 
 export default {
+  updateDevices(context) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch("request", {
+          method: "POST",
+          url: "users/devices",
+          data: { device: context.getters.getUAInformation }
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
   getClient(context) {
     return new Promise((resolve, reject) => {
       let currentHostname = window.location.hostname.toString().split(".");

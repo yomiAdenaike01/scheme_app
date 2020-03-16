@@ -15,7 +15,7 @@
     />
 
     <UserGroup>
-      <div>
+      <div class="h-100 overflow">
         <Title title="User Groups" subtitle="Manage and contact users here" />
 
         <div v-if="hasEntries(getFilteredTeam)">
@@ -46,7 +46,6 @@
               </div>
             </el-col>
           </el-row>
-          {{ filteredGroupsWithUsers }}
         </div>
         <div v-else class="h-100 no_content_container flex_center">
           <Nocontent

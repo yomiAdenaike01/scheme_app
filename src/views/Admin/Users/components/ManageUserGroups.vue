@@ -44,17 +44,18 @@
               <p class="mb-3" v-loading="runningDelete == group.value">
                 {{ group.label }}
               </p>
-              <DefaultTransition>
-                <el-button
-                  v-if="inArray(group.value)"
-                  icon="el-icon-delete"
-                  circle
-                  type="danger"
-                  @click="deleteGroup(group.value)"
-                ></el-button>
-              </DefaultTransition>
             </div>
           </el-row>
+          <div class="flex flex--end align_end">
+            <el-button
+              plain
+              round
+              type="danger"
+              v-if="toDelete.length > 0"
+              @click="deleteGroup"
+              >Confirm</el-button
+            >
+          </div>
         </div>
       </el-collapse-transition>
     </div>
@@ -62,7 +63,6 @@
 </template>
 
 <script>
-import DefaultTransition from "@/components/DefaultTransition";
 import Form from "@/components/Form";
 import { mapActions, mapState } from "vuex";
 export default {
@@ -138,59 +138,41 @@ export default {
       }
     },
 
-    runRequest(payload) {
-      this.request(payload)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-
-    deleteGroup(content) {
+    deleteGroup() {
       // Are users assigned to this group
-      let assignedUserIndex = this.teamInformation.findIndex(({ groupID }) => {
-        return groupID == content;
-      });
 
-      if (assignedUserIndex > -1) {
-        this.genPromptBox({
-          text: "Users are assigned to this group this may cause errors.",
-          title: "User group warning",
-          type: "warning"
-        })
-          .then(response => {
-            // Users are assigned to the group
-            // this.runRequest();
-            this.runningDelete = content;
-          })
-          .catch(err => {
-            console.error(err);
-          });
-      }
-    },
-    updateGroup(content) {},
-    createUserGroup(content) {
-      content.groupType = "userGroups";
-      content.value = this.clientInformation.userGroups.length + 1;
-      this.currentDisplay = "";
       this.request({
-        method: "POST",
+        method: "DELETE",
         url: "clients/group",
-        data: content
+        data: { groupType: "userGroups", value: this.toDelete }
       })
         .then(response => {
           console.log(response);
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
         });
     }
   },
+  updateGroup(content) {},
+  createUserGroup(content) {
+    content.groupType = "userGroups";
+    content.value = this.clientInformation.userGroups.length + 1;
+    this.currentDisplay = "";
+    this.request({
+      method: "POST",
+      url: "clients/group",
+      data: content
+    })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
   components: {
-    Form,
-    DefaultTransition
+    Form
   }
 };
 </script>
