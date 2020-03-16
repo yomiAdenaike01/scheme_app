@@ -196,12 +196,27 @@ export default {
       immediate: true,
       handler(val) {
         if (val) {
-          this.UPDATE_NOTIFICATIONS({
-            title: "Pending notifications",
-            message:
-              "You have notifications pending, press the bell to view them",
-            type: "info"
-          });
+          let userNoty = this.userNotifications;
+          for (let i = 0, len = userNoty.length; i < len; i++) {
+            switch (userNoty[i].type) {
+              case "message":
+                userNoty[i].title = "New Message";
+                userNoty[i].message =
+                  '<i class="bx bx-message"></i> ' + userNoty[i].message;
+
+                break;
+
+              default:
+                break;
+            }
+            this.UPDATE_NOTIFICATIONS(userNoty[i]);
+          }
+          // this.UPDATE_NOTIFICATIONS({
+          //   title: "Pending notifications",
+          //   message:
+          //     "You have notifications pending, press the bell to view them",
+          //   type: "info"
+          // });
         }
       }
     },

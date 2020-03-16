@@ -45,6 +45,7 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", [
       "getTeamMember",
+      "getUserGroups",
       "getDropdownTeamMembers",
       "teamInformation",
       "getUsersInUserGroup"
@@ -126,7 +127,7 @@ export default {
           model: "userGroup",
           "component-type": "select",
           placeholder: "Select user group",
-          options: this.clientInformation.userGroups,
+          options: this.getUserGroups,
           optional: true,
           mutiple: true
         });

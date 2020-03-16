@@ -74,6 +74,12 @@ export default {
     Vue.set(settings, index, data);
   },
   UPDATE_NOTIFICATIONS(state, notification) {
+    let notificationTypes = ["success", "error", "info"];
+    notification.dangerouslyUseHTMLString = true;
+
+    if (notificationTypes.indexOf(notification.type) == -1) {
+      notification.type = "info";
+    }
     if (notification.type == "success") {
       notification.title = "Operation Successful";
     } else if (notification.type == "error") {

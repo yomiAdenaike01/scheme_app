@@ -99,7 +99,8 @@ export default {
     ...mapGetters("Admin", [
       "getTeamMember",
       "getDropdownTeamMembers",
-      "getEnabledEvents"
+      "getEnabledEvents",
+      "getUserGroups"
     ]),
 
     isNotShiftOrHoliday() {
@@ -140,7 +141,7 @@ export default {
         },
         {
           "component-type": "select",
-          options: this.clientInformation.userGroups,
+          options: this.getUserGroups,
           placeholder: "(Optional) Enable for user group",
           model: "enabledFor",
           multiple: true

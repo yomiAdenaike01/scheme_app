@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "EventFilters",
   props: {
@@ -50,6 +50,7 @@ export default {
     ...mapState("Admin", ["teamInformation"]),
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["eventFilters"]),
+    ...mapGetters("Admin", ["getUserGroups"]),
     /**
      * display placeholders based on the group names
      */
@@ -71,7 +72,7 @@ export default {
       };
 
       if (this.hasEntries(this.clientInformation)) {
-        groups.userGroup = this.clientInformation.userGroups;
+        groups.userGroup = this.getUserGroups;
         groups.eventGroup = this.clientInformation.eventGroups;
       }
       return groups;
