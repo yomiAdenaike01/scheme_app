@@ -64,7 +64,7 @@ export default {
       return this.userData.name;
     },
     returnGroupName() {
-      return this.getGroupName("user", this.userData.groupID).name;
+      return this.getGroupName("user", this.userData.groupID)?.name;
     },
     selectedTab: {
       get() {

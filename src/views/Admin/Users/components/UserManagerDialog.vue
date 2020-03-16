@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Tabs from "@/components/Tabs";
 import Title from "@/components/Title";
 import ValidationUnit from "@/components/ValidationUnit";
@@ -49,6 +49,7 @@ export default {
 
   computed: {
     ...mapState(["clientInformation"]),
+    ...mapGetters("Admin", ["getUserGroups"]),
 
     genPwd() {
       return this.createUserForm.name
@@ -130,7 +131,7 @@ export default {
           "component-type": "select",
           validType: "number",
           clearable: true,
-          options: this.clientInformation.userGroups
+          options: this.getUserGroups
         }
       ];
     },

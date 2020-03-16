@@ -1,6 +1,11 @@
 import Vue from "vue";
 
 export default {
+  getUserGroups(state, getters, { clientInformation: { userGroups } }) {
+    return userGroups.filter(x => {
+      return x.value != 0;
+    });
+  },
   getClientTimings(state, getters, { clientInformation: { timings } }) {
     return timings;
   },

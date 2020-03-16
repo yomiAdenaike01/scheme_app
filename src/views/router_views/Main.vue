@@ -118,7 +118,7 @@ export default {
         this.triggerDeviceNotification();
       } else {
         // Find in array
-        let deviceIndex = this.userInformation.devicesInformation.findIndex(
+        let deviceIndex = this.userInformation?.devicesInformation?.findIndex(
           ({ os: { name, version } }) => {
             return (
               name === this.getUAInformation.os.name &&

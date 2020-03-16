@@ -31,7 +31,7 @@
           <el-row type="flex">
             <div
               class="group_container p-4 m-3 flex_center columns flex-1"
-              v-for="(group, index) in clientInformation.userGroups"
+              v-for="(group, index) in getUserGroups"
               :key="index"
               @click="toggleDelete(group.value)"
               :class="[
@@ -41,7 +41,7 @@
                 }
               ]"
             >
-              <p class="mb-3" v-loading="runningDelete == group.value">
+              <p class="mb-3" v-loading="inArray(group.value)">
                 {{ group.label }}
               </p>
             </div>
@@ -64,7 +64,7 @@
 
 <script>
 import Form from "@/components/Form";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "ManageUserGroups",
   data() {
@@ -77,14 +77,11 @@ export default {
   computed: {
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["teamInformation"]),
-
+    ...mapGetters("Admin", ["getUserGroups"]),
     managementConfig() {
       return [
         {
           name: "Create Group"
-        },
-        {
-          name: "Edit Group"
         },
 
         {
@@ -105,7 +102,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
+    ...mapActions(["request", "genPromptBox", "closeDialogBox"]),
     inArray(item) {
       return this.toDelete.indexOf(item) > -1;
     },
@@ -140,36 +137,37 @@ export default {
 
     deleteGroup() {
       // Are users assigned to this group
-
+      this.runningDelete = this.toDelete;
       this.request({
         method: "DELETE",
         url: "clients/group",
         data: { groupType: "userGroups", value: this.toDelete }
       })
         .then(response => {
+          this.closeDialog();
+        })
+        .catch(err => {
+          this.closeDialog();
+        });
+    },
+
+    updateGroup(content) {},
+    createUserGroup(content) {
+      content.groupType = "userGroups";
+      content.value = this.clientInformation.userGroups.length + 1;
+      this.currentDisplay = "";
+      this.request({
+        method: "POST",
+        url: "clients/group",
+        data: content
+      })
+        .then(response => {
           console.log(response);
         })
         .catch(err => {
-          console.error(err);
+          console.log(err);
         });
     }
-  },
-  updateGroup(content) {},
-  createUserGroup(content) {
-    content.groupType = "userGroups";
-    content.value = this.clientInformation.userGroups.length + 1;
-    this.currentDisplay = "";
-    this.request({
-      method: "POST",
-      url: "clients/group",
-      data: content
-    })
-      .then(response => {
-        console.log(response);
-      })
-      .catch(err => {
-        console.log(err);
-      });
   },
   components: {
     Form
