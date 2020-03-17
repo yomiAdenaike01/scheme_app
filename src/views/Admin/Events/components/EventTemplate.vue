@@ -8,6 +8,8 @@
     <div class="flex flex--space-between align-center">
       <div>
         <h4 class="member_name">{{ data.name }}</h4>
+<strong>{{ formatDate(data.dateCreated) }}</strong>
+
         <p>{{ getGroupName("event", data.content.type).name }}</p>
       </div>
       <div>
@@ -24,12 +26,11 @@
         <br />
         {{ formatDate(data.endDate) }}
         <br />
-        {{ formatDate(data.dateCreated) }}
         <br />
         {{ formattedWeekdays }}
         <br />
-        <el-button class="w-100 mt-3" plain type="primary" size="mini"
-          >Use template</el-button
+        <el-button class="w-100 mt-3" @click="applyTemplate" plain type="primary" size="mini"
+          >Apply</el-button
         >
       </div>
     </el-collapse-transition>
@@ -72,6 +73,10 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
+    applyTemplate(){
+      // Create an event as many times as there is on the template
+      console.log(this.data);
+    },
     shareTemplate() {
       return console.log("sharing template");
       this.request({
@@ -115,6 +120,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+strong{
+  font-weight: bold;;
+}
 .event_template_container {
   border: 1px solid #efefef;
   border-radius: 10px;
