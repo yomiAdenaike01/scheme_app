@@ -148,6 +148,10 @@ export default {
     size: {
       type: String,
       default: "mini"
+    },
+    resetOnSubmit: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -238,6 +242,9 @@ export default {
       this.runValidation()
         .then(response => {
           this.completeForm();
+          if (this.resetOnSubmit) {
+            this.resetForm();
+          }
         })
         .catch(error => {
           return error;

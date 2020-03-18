@@ -329,14 +329,21 @@ export default {
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
 
     updateEvent(e) {
-      this.loading = true;
-      this.updateEvents({ update: e, id: this.event.id })
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
+      if (Object.values(e).length > 0) {
+        this.loading = true;
+        this.updateEvents({ update: e, id: this.event.id })
+          .then(() => {
+            this.loading = false;
+          })
+          .catch(() => {
+            this.loading = false;
+          });
+      } else {
+        return this.UPDATE_NOTIFICATIONS({
+          type: "error",
+          message: "You must add data to the inputs to make changes to an event"
         });
+      }
     },
 
     getOneEmail(id) {
