@@ -4,7 +4,6 @@
       class="p-1"
       :inline="inline"
       :disabled="disableForm"
-      :size="size"
       ref="form"
       :rules="form.validate"
       :model="formContent"
@@ -13,10 +12,9 @@
         v-for="(input, index) in form.formData"
         :key="`${index}${input.name}`"
         :prop="input.name"
-        :label="input.label || ' '"
+        :label="input.label || ''"
       >
         <component
-          :size="size"
           class="dialog_item"
           :is="
             input['component-type'] == 'text' ||

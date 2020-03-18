@@ -33,7 +33,7 @@
       </div>
       <EventTemplate
         @toggle="displayCreateTemplate = false"
-        v-for="template in eventTemplates"
+        v-for="template in filteredTemplates"
         :key="template._id"
         :data="template"
       />
@@ -111,7 +111,7 @@ export default {
         }
         filteredTemplates.push(this.eventTemplates[i]);
       }
-      return filteredTemplates;
+      return filteredTemplates.length == 0 ? this.eventTemplates : filteredTemplates;
     },
     noTemplateOptions() {
       return {
