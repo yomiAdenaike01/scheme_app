@@ -73,16 +73,13 @@ export default {
 
     if (!name) {
       for (let property in dialogIndex) {
+        console.log(dialogIndex[property]);
         if (dialogIndex[property].view == true) {
-          commit(
-            "UPDATE_DIALOG_INDEX",
-            {
-              view: false,
-              dialog: dialogIndex[property].name,
-              data: null
-            },
-            { root: true }
-          );
+          commit("UPDATE_DIALOG_INDEX", {
+            view: false,
+            dialog: property,
+            data: null
+          });
         }
       }
     }

@@ -56,7 +56,6 @@ import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "CriticalError",
   activated() {
-    this.closeDialog();
     if (!this.hasEntries(this.errorInformation)) {
       this.$router.push({ name: "events" });
     }
@@ -77,7 +76,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "genEmail", "closeDialog"]),
+    ...mapActions(["request", "genEmail"]),
 
     sendErrorReport() {
       this.genEmail({

@@ -18,8 +18,16 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
-  name: "SupportCentre"
+  name: "SupportCentre",
+  activated() {
+    this.closeDialog();
+  },
+  methods: {
+    ...mapActions(["closeDialog"])
+  }
 };
 </script>
 
