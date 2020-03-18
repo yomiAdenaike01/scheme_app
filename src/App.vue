@@ -32,6 +32,11 @@ export default {
   },
   created() {
     this.loggerController();
+    if (this.getIsIE) {
+      alert(
+        "Your browser is IE11, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
+      );
+    }
 
     if (this.isValidClient) {
       this.SET_THEME();
@@ -62,6 +67,7 @@ export default {
       "invalidClient"
     ]),
     ...mapState("Admin", ["teamInformation", "shifts"]),
+    ...mapGetters(["getIsIE"]),
 
     isValidClient() {
       return this.hasEntries(this.clientInformation);
@@ -375,6 +381,20 @@ span {
 .el-card__body {
   height: 100%;
   overflow-x: scroll;
+}
+
+//   _   _       _   _  __ _           _   _
+//  | \ | |     | | (_)/ _(_)         | | (_)
+//  |  \| | ___ | |_ _| |_ _  ___ __ _| |_ _  ___  _ __  ___
+//  | . ` |/ _ \| __| |  _| |/ __/ _` | __| |/ _ \| '_ \/ __|
+//  | |\  | (_) | |_| | | | | (_| (_| | |_| | (_) | | | \__ \
+//  |_| \_|\___/ \__|_|_| |_|\___\__,_|\__|_|\___/|_| |_|___/
+
+.custom_notification_icon {
+  color: #909399;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 50%;
 }
 /**
     _   _  _  ___ _  _    ___

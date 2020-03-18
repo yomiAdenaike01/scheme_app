@@ -7,8 +7,10 @@
   >
     <div class="flex flex--space-between align-center">
       <div>
-        <h4 class="member_name">{{ data.name }}</h4>
-<strong>{{ formatDate(data.dateCreated) }}</strong>
+        <h2 class="member_name">{{ data.name }}</h2>
+        <small
+          ><strong>{{ formatDate(data.dateCreated) }}</strong></small
+        >
 
         <p>{{ getGroupName("event", data.content.type).name }}</p>
       </div>
@@ -19,17 +21,23 @@
     </div>
     <el-collapse-transition>
       <div v-if="displayDetails" class="mt-3">
-        <h3>Details</h3>
+        <h2>Details</h2>
         {{ getEventAssignedTo(data.content.assignedTo).text }}
         <br />
-        {{ formatDate(data.startDate) }}
+        {{ formatDate(data.content.startDate) }}
         <br />
-        {{ formatDate(data.endDate) }}
+        {{ formatDate(data.content.endDate) }}
         <br />
         <br />
+        <h2>Repeat on</h2>
         {{ formattedWeekdays }}
         <br />
-        <el-button class="w-100 mt-3" @click="applyTemplate" plain type="primary" size="mini"
+        <el-button
+          class="w-100 mt-3"
+          @click="applyTemplate"
+          plain
+          type="primary"
+          size="mini"
           >Apply</el-button
         >
       </div>
@@ -39,7 +47,6 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
-import Popover from "@/components/Popover";
 export default {
   name: "EventTemplate",
   data() {
@@ -64,7 +71,7 @@ export default {
     formattedWeekdays() {
       let _daysOfWeek = [...this.content.repeat.weekdays];
       return _daysOfWeek
-        .map((days, index) => {
+        .map(days => {
           days = days - 1;
           return this.daysOfWeek[days].text;
         })
@@ -73,11 +80,22 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    applyTemplate(){
+    ...mapActions("Admin", ["createEvent", "getTemplates"]),
+    applyTemplate(e) {
+      e.stopPropagation();
       // Create an event as many times as there is on the template
-      console.log(this.data);
+      this.loading = true;
+      this.createEvent(this.data.content)
+        .then(() => {
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
-    shareTemplate() {
+    shareTemplate(e) {
+      e.stopPropagation();
+
       return console.log("sharing template");
       this.request({
         method: "POST",
@@ -90,10 +108,11 @@ export default {
         .catch(err => {
           this.loading = false;
           this.loading = true;
-          console.log(err);
         });
     },
-    deleteTemplate() {
+    deleteTemplate(e) {
+      e.stopPropagation();
+
       this.loading = true;
       this.request({
         method: "DELETE",
@@ -104,6 +123,7 @@ export default {
           this.loading = false;
 
           this.$refs.templateContainer.remove();
+          this.getTemplates();
           this.$emit("toggle", false);
         })
         .catch(err => {
@@ -112,16 +132,13 @@ export default {
           console.log(err);
         });
     }
-  },
-  components: {
-    Popover
   }
 };
 </script>
 
 <style lang="scss" scoped>
-strong{
-  font-weight: bold;;
+strong {
+  font-weight: bold;
 }
 .event_template_container {
   border: 1px solid #efefef;

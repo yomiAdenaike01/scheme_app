@@ -33,7 +33,7 @@ export default {
         return this.getActiveDialog("prevEvents");
       },
       set(val) {
-        this.closeDialog();
+        this.closeDialog("prevEvents");
       }
     }
   },

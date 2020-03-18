@@ -2,11 +2,29 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getCurrentTabXref: () => ({ tabs, currentTab }) => {
+    let tabLabel = tabs[currentTab].label;
+    return {
+      name: tabLabel.replace(/\s/g, "_").toLowerCase(),
+      display: tabLabel
+    };
+  },
   getUserDevices({ userInformation: { devicesInformation } }) {
     return devicesInformation;
   },
   getCurrentVersion() {
     return require("../../package.json").version;
+  },
+  getIsIE(
+    state,
+    {
+      getUAInformation: {
+        browser: { name }
+      }
+    }
+  ) {
+    let nonSupportedBrowsers = ["IE", "IEMobile"];
+    return nonSupportedBrowsers.indexOf(name) > -1;
   },
   getIsSignedUser: (
     { userInformation: { groupID, _id }, clientInformation: { signedUser } },

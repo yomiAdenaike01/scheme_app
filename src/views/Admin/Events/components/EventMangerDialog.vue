@@ -1,31 +1,13 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
-    <!-- <div
-      v-if="teamInformation.length == 0"
-      class="no_team flex_center columns p-4"
-    >
-      <i class="bx bx-error-circle large_icon"></i>
-      <p>You need to create team mmebers before you can create events</p>
-      <el-button
-        size="small"
-        round
-        type="primary"
-        @click="
-          closeDialog('eventManager');
-          $router.push({ name: 'user' });
-        "
-        >Go to user management</el-button
-      >
-    </div> -->
     <Tabs
       v-loading="loading"
       :tabs="tabs"
-      @val="eventManagerController"
+      @val="eventsCtrl"
       :disable="currentTab > 1"
       v-model="currentTab"
       :selectedTab="currentTab"
-      :liveChange="true"
-      :disableForm="fileContent.length > 0"
+      :submitText="tabXref.display"
     >
       <!-- Confirmation unit for a template or csv content -->
       <div slot="header_content">
@@ -40,9 +22,9 @@
       <div slot="body_content">
         <div
           class="ml-4 mt-4 flex align-center"
-          v-if="currentTab == 0 && getIsAdmin"
+          v-if="tabXref.name == 'create_event_group' && getIsAdmin"
         >
-          <ColourUnit v-model="eventData.colour" />
+          <ColourUnit v-model="eventsInformation.colour" />
           <p class="mb-3 ml-4 desc grey">
             Press to select an event colour (optional):
           </p>
@@ -54,59 +36,46 @@
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+
 import EventTemplate from "./EventTemplate";
-import UploadFile from "@/components/UploadFile";
+import EventOptions from "./EventOptions";
+
 import Title from "@/components/Title";
 import Tabs from "@/components/Tabs";
-import EventOptions from "./EventOptions";
-import ValidationUnit from "@/components/ValidationUnit";
 import MoreInformation from "@/components/MoreInformation";
-import moment from "moment";
-import csvtojson from "csvtojson";
 import ColourUnit from "@/components/ColourUnit";
+
 export default {
   name: "EventManagerDialog",
   data() {
     return {
-      eventData: {},
+      eventsInformation: {},
+      templatesInformation: {},
       loading: false,
-      fileContent: "",
-      currentTab: 0,
-      timeSheetError: null,
-      timeSheetData: "",
-      userTemplates: null,
-      syncWithGcal: false
+      currentTab: 0
     };
   },
 
-  deactivated() {
-    this.resetData();
-  },
   computed: {
-    ...mapGetters([
-      "getIsAdmin",
-      "getInstructions",
-      "getName",
-      "getActiveDialog"
-    ]),
-    ...mapState("Admin", ["teamInformation"]),
-    ...mapState([
-      "token",
-      "userInformation",
-      "weeklyTimesheetUploaded",
-      "clientInformation"
-    ]),
+    ...mapState(["clientInformation", "daysOfWeek"]),
+
+    ...mapGetters(["getIsAdmin", "getActiveDialog", "getCurrentTabXref"]),
     ...mapGetters("Admin", [
-      "getTeamMember",
       "getDropdownTeamMembers",
       "getEnabledEvents",
       "getUserGroups"
     ]),
 
     isNotShiftOrHoliday() {
-      let type = this.eventData.type;
+      let type = this.eventsInformation.type;
       const isAdmin = this.getIsAdmin;
       return !isAdmin && type > 3;
+    },
+    tabXref() {
+      return this.getCurrentTabXref({
+        tabs: this.tabs,
+        currentTab: this.currentTab
+      });
     },
 
     tabs() {
@@ -168,28 +137,36 @@ export default {
           end_placeholder: "End date & time",
           model: "date",
           optional: true
+        },
+
+        {
+          "component-type": "select",
+          placeholder: "Repeat for (days of week)",
+          options: this.daysOfWeek,
+          required: true,
+          multiple: true,
+          model: "weekdays"
+        },
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time",
+          placeholder: "Repeat until",
+          model: "until",
+          optional: true,
+          hint: ""
         }
       ];
 
       // Check if it is an admin or not
-      let isAdmin = this.getIsAdmin;
 
-      if (isAdmin) {
-        createEventConfig.unshift(
-          {
-            placeholder: "Select Team Member",
-            "component-type": "select",
-            model: "assignedTo",
-            options: this.getDropdownTeamMembers,
-            multiple: true
-          },
-          {
-            placeholder: "Repeat For (in days)",
-            id: "repeat_days",
-            "component-type": "text",
-            model: "repeat_days"
-          }
-        );
+      if (this.getIsAdmin) {
+        createEventConfig.unshift({
+          placeholder: "Select Team Member",
+          "component-type": "select",
+          model: "assignedTo",
+          options: this.getDropdownTeamMembers,
+          multiple: true
+        });
       }
 
       return createEventConfig;
@@ -206,32 +183,51 @@ export default {
   },
   methods: {
     ...mapActions(["request", "closeDialog", "genPromptBox"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_DIALOG_INDEX"]),
+    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
+    ...mapActions("Admin", ["createEvent", "createEventTemplate"]),
+    eventsCtrl(information) {
+      this.eventsInformation = information;
+      switch (this.tabXref.name) {
+        case "create_event_group":
+          break;
+        case "create_event": {
+          this.genEvent();
+          break;
+        }
+
+        default:
+          break;
+      }
+    },
     // Submit one event
-    createOneEvent() {
+    genEvent() {
       this.loading = true;
-      let { date } = this.eventData;
+      let { date } = this.eventsInformation;
 
-      let startDate = moment(date[0]).toISOString();
-      let endDate = moment(date[1]).toISOString();
-
-      this.eventData = {
-        ...this.eventData,
-        startDate,
-        endDate
+      let startDate = this.initMoment(date[0]).toISOString();
+      let endDate = this.initMoment(date[1]).toISOString();
+      this.eventsInformation.startDate = startDate;
+      this.eventsInformation.endDate = endDate;
+      this.eventsInformation.until = this.initMoment(
+        this.eventsInformation.until
+      ).toISOString();
+      this.eventsInformation = {
+        ...this.eventsInformation,
+        repeat: {
+          until: this.eventsInformation.until,
+          weekdays: this.eventsInformation.weekdays
+        }
       };
-      this.request({
-        method: "POST",
-        url: "events/create",
-        data: this.eventData
-      })
+      this.templatesInformation = {
+        content: {
+          ...this.eventsInformation
+        }
+      };
+
+      this.createEvent(this.eventsInformation)
         .then(response => {
           this.loading = false;
           this.view = false;
-          this.UPDATE_NOTIFICATIONS({
-            type: "success",
-            message: "Event successfully created"
-          });
           this.initSaveTemplate();
         })
         .catch(error => {
@@ -247,68 +243,29 @@ export default {
           "Would you like to save this event as a template to use for later.",
         type: "info"
       })
-        .then(response => {
-          this.saveTemplate(response);
+        .then(({ value }) => {
+          this.resolveSaveTemplate(value);
         })
         .catch(err => {
           return err;
         });
     },
-    saveTemplate(response) {
-      let getDayOfStart = moment(this.eventData.startDate).get("day");
-      this.request({
-        method: "POST",
-        url: "events/templates/create",
-        data: {
-          name: response,
-          content: {
-            ...this.eventData,
-            repeat: { weekdays: [getDayOfStart], until: moment().toISOString() }
-          }
-        }
-      })
-        .then(response => {
-          return response;
-        })
-        .catch(err => {
-          return err;
-        });
-    },
-    createEventController() {
-      if (this.hasEntries(this.fileContent)) {
-        this.createEventWithTimeSheet();
-      } else {
-        this.createOneEvent();
-      }
+    resolveSaveTemplate(value) {
+      this.templatesInformation.name = value;
+      this.createEventTemplate(this.templatesInformation).catch(err => {
+        this.initSaveTemplate();
+      });
     },
 
-    eventManagerController(val) {
-      this.eventData = val;
-      switch (this.currentTab) {
-        case 0: {
-          this.createEventGroup();
-          break;
-        }
-
-        case 1: {
-          this.createEventController();
-          break;
-        }
-
-        default: {
-          break;
-        }
-      }
-    },
     createEventGroup() {
-      let eventData = {
-        ...this.eventData,
+      let eventsInformation = {
+        ...this.eventsInformation,
         value: this.clientInformation.eventGroups.length + 1
       };
       this.request({
         method: "POST",
         url: "clients/group",
-        data: { name: "eventGroups", value: eventData }
+        data: { name: "eventGroups", value: eventsInformation }
       })
         .then(response => {
           this.loading = false;
@@ -318,19 +275,6 @@ export default {
           this.loading = false;
           this.view = false;
         });
-    },
-    resetData() {
-      this.timeSheetError = null;
-      this.fileContent = "";
-      this.timeSheetData = "";
-      this.loading = true;
-
-      let loadingTimeout;
-      clearTimeout(loadingTimeout);
-
-      loadingTimeout = setTimeout(() => {
-        this.loading = false;
-      }, 1000);
     }
   },
 

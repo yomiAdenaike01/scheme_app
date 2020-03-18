@@ -74,12 +74,39 @@ export default {
     Vue.set(settings, index, data);
   },
   UPDATE_NOTIFICATIONS(state, notification) {
-    let notificationTypes = ["success", "error", "info"];
+    let notificationTypes = [
+      "success",
+      "error",
+      "warning",
+      "message",
+      "annoucement",
+      "info"
+    ];
+    notification.showClose = true;
     notification.dangerouslyUseHTMLString = true;
 
     if (notificationTypes.indexOf(notification.type) == -1) {
       notification.type = "info";
     }
+    switch (notification.type) {
+      case "message":
+        notification.icon = "message-rounded";
+        notification.title = "New Message";
+        break;
+      case "announcement": {
+        (notification.icon = "bx-user-voice"),
+          (notification.title = "Announcement");
+        break;
+      }
+
+      default:
+        break;
+    }
+    if (notification?.icon) {
+      notification.iconClass = `custom_notification_icon bx bx-${notification?.icon} bx-tada`;
+      delete notification.type;
+    }
+
     if (notification.type == "success") {
       notification.title = "Operation Successful";
     } else if (notification.type == "error") {

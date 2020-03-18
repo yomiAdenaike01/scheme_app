@@ -31,7 +31,6 @@ import Title from "@/components/Title";
 import EventFilters from "./components/EventFilters";
 import UserSidebar from "./components/UserSidebar";
 import ViewEventDialog from "./components/ViewEventDialog";
-
 export default {
   name: "EventsManager",
   created() {
@@ -41,21 +40,34 @@ export default {
       data: "scheduling"
     });
   },
-  activated() {
-    this.loading = true;
-    Promise.all([this.getEvents(), this.getTeam()]).then(response => {
-      this.loading = false;
-    });
-  },
+
   data() {
     return {
-      loading: false
+      loading: false,
+      getTemplatesInterval: null
     };
   },
-
+  deactivated() {
+    clearInterval(this.getTemplatesInterval);
+  },
+  activated() {
+    this.loading = true;
+    clearInterval(this.getTemplatesInterval);
+    this.getTemplatesInterval = setInterval(() => {
+      this.getTemplates();
+    }, this.requestIntervals.templates);
+    Promise.all([this.getEvents(), this.getTeam(), this.getTemplates()]).then(
+      response => {
+        this.loading = false;
+      }
+    );
+  },
   methods: {
-    ...mapActions("Admin", ["getEvents", "getTeam"]),
+    ...mapActions("Admin", ["getEvents", "getTeam", "getTemplates"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"])
+  },
+  computed: {
+    ...mapState(["requestIntervals"])
   },
 
   components: {

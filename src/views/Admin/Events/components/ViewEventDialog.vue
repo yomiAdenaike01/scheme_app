@@ -112,9 +112,9 @@
         </div>
 
         <!-- Assign a user -->
-        <div class="no_users" v-else>
+        <!-- <div class="no_users" v-else>
           <Nocontent v-bind="noAssignedUsers" />
-        </div>
+        </div> -->
 
         <h3 class="mb-3 mt-3">Event date information</h3>
 
@@ -143,7 +143,6 @@
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 import Title from "@/components/Title";
-import moment from "moment";
 import Dropdown from "@/components/Dropdown";
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
@@ -174,14 +173,17 @@ export default {
     },
 
     canAddMoreUsers() {
-      return this.event.assignedToIDs.length - 1 == this.teamInformation.length;
+      return this.event.assignedToIDs.length < this.teamInformation.length;
     },
 
     event() {
       return this.dialogIndex.viewEvent.data;
     },
     isEventToday() {
-      return moment(this.event.startDate).diff(moment(), "hours") < 24;
+      return (
+        this.initMoment(this.event.startDate).diff(this.initMoment(), "hours") <
+        24
+      );
     },
     hasClockedIn() {
       return this.event.clockedIn.some(assingnee => {
@@ -265,9 +267,9 @@ export default {
 
     dropUserFromEvent(userName) {
       // Cannot be the last one
-      const newLen = this.event.assignedToIDs.length - 1;
-      if (newLen > 1) {
-        let userID = this.getUserInformation(userName, "name")._id;
+      const newLen = this.event.assignedToIDs.length ;
+      if (newLen >= 1) {
+        let userID = this.getUserInformation(userName, "name")?._id;
         this.request({
           method: "DELETE",
           url: "events/user",
@@ -277,7 +279,6 @@ export default {
           }
         })
           .then(response => {
-            this.$forceUpdate();
             this.getEvents();
             // Notify user they have been dropped
             this.genNotification({
@@ -286,20 +287,6 @@ export default {
               message: "You have been removed from an event",
               for: userID
             });
-
-            // this.genEmail({
-            //   subject: "Removed from event",
-            //   to: this.getEmail,
-            //   context: {
-            //     body: contentMessage
-            //   },
-            //   notification: {
-            //     type: "reminder",
-            //     title: contentMessage,
-            //     for: assignedTo,
-            //     message: contentMessage
-            //   }
-            // });
           })
           .catch(err => {
             return err;
@@ -310,6 +297,7 @@ export default {
             "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so.",
           title: "Removal warning",
           type: "warning",
+          duration: 6000,
           onClick: () => {
             this.deleteEvent();
           }

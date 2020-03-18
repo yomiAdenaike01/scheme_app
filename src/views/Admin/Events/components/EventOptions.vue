@@ -8,8 +8,8 @@
     /> -->
     <div
       class="flex columns"
-      v-if="templates.length > 0"
-      v-loading="templateLoading"
+      v-if="eventTemplates.length > 0"
+      v-loading="loading"
     >
       <div class="flex_center input_container p-4">
         <el-input
@@ -20,7 +20,6 @@
         <el-button
           size="mini"
           class="ml-4"
-          type="text"
           plain
           round
           @click="displayCreateTemplate = !displayCreateTemplate"
@@ -34,7 +33,7 @@
       </div>
       <EventTemplate
         @toggle="displayCreateTemplate = false"
-        v-for="template in templates"
+        v-for="template in eventTemplates"
         :key="template._id"
         :data="template"
       />
@@ -47,7 +46,6 @@
           <el-button
             size="mini"
             class="ml-4"
-            type="primary"
             plain
             round
             @click="displayCreateTemplate = !displayCreateTemplate"
@@ -73,41 +71,45 @@
 </template>
 
 <script>
-import ToggleSlideDown from "@/components/ToggleSlideDown";
 import Title from "@/components/Title";
 import EventTemplate from "./EventTemplate";
-import MoreInformation from "@/components/MoreInformation";
 import { mapState, mapActions, mapGetters } from "vuex";
 import Nocontent from "@/components/Nocontent";
 import CreateTemplate from "./CreateTemplate";
+import EventManagerBus from "./EventsManagerBus";
 export default {
   name: "EventOptions",
   data() {
     return {
-      templates: "",
       templateNamesSearch: "",
-      templateLoading: false,
+      loading: false,
       displayCreateTemplate: false
     };
   },
-
-  async mounted() {
-    await this.getTemplates();
+  props: {
+    templates: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
   },
+
   computed: {
-    ...mapState(["userInformation"]),
+    ...mapState(["userInformation", "requestIntervals"]),
+    ...mapState("Admin", ["eventTemplates"]),
     ...mapGetters(["getIsAdmin"]),
     filteredTemplates() {
       let filteredTemplates = [];
-      for (let i = 0; i < this.templates.length; i++) {
-        let { name } = this.templates[i];
+      for (let i = 0; i < this.eventTemplates.length; i++) {
+        let { name } = this.eventTemplates[i];
         if (
           name.trim().toLowerCase() !=
           this.templateNamesSearch.trim().toLowerCase()
         ) {
           continue;
         }
-        filteredTemplates.push(this.templates[i]);
+        filteredTemplates.push(this.eventTemplates[i]);
       }
       return filteredTemplates;
     },
@@ -119,23 +121,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
-    async getTemplates() {
-      try {
-        this.templates = await this.request({
-          method: "GET",
-          url: "events/templates/all"
-        });
-        this.loadingTemplates = false;
-      } catch (error) {
-        this.loadingTemplates = false;
-      }
-    }
+    ...mapActions(["request"])
   },
   components: {
-    ToggleSlideDown,
     EventTemplate,
-    MoreInformation,
     Nocontent,
     CreateTemplate
   }
@@ -143,7 +132,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .indicator {
-  will-transform: rotate;
+  will-change: transform;
   transition: $default_transition;
   &.active {
     transform: rotate(90deg);
