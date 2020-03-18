@@ -36,5 +36,25 @@ export default {
           reject();
         });
     });
+  },
+  updateEvents({ dispatch, commit }, { update, id }) {
+    return new Promise((resolve, reject) => {
+      dispatch(
+        "request",
+        {
+          method: "PUT",
+          url: "events/update",
+          data: { update, id }
+        },
+        { root: true }
+      )
+        .then(() => {
+          dispatch("getEvents");
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 };

@@ -117,6 +117,21 @@
         </div> -->
 
         <h3 class="mb-3 mt-3">Event date information</h3>
+        <Popover trigger="click">
+          <Form
+            slot="content"
+            @val="updateEvent"
+            :config="configXref"
+            submitText="Update"
+          />
+          <el-button
+            slot="trigger"
+            @click="selectedConfig = 'date'"
+            size="mini"
+            class="mb-2"
+            >Make changes</el-button
+          >
+        </Popover>
 
         <div class="info_unit">
           <span class="info_label">Event start:</span>
@@ -127,6 +142,21 @@
           <span>{{ dates.end }}</span>
         </div>
         <h3 class="mt-4 mb-2">Event type & duration</h3>
+        <Popover trigger="click">
+          <Form
+            slot="content"
+            @val="updateEvent"
+            :config="configXref"
+            submitText="Update"
+          />
+          <el-button
+            slot="trigger"
+            @click="selectedConfig = 'type'"
+            size="mini"
+            class="mb-2"
+            >Make changes</el-button
+          >
+        </Popover>
 
         <div class="info_unit">
           <span class="info_label">Event duration:</span>
@@ -143,14 +173,16 @@
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 import Title from "@/components/Title";
-import Dropdown from "@/components/Dropdown";
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
+import Form from "@/components/Form";
 export default {
   name: "ViewEventDialog",
   data() {
     return {
-      loading: false
+      loading: false,
+      selectedConfig: "date",
+      updates: {}
     };
   },
 
@@ -161,8 +193,45 @@ export default {
     ...mapGetters("Admin", [
       "getEventAssginedTo",
       "getFilteredTeam",
-      "getUserInformation"
+      "getUserInformation",
+      "getEnabledEvents"
     ]),
+    updateConfigs() {
+      return [
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time",
+          placeholder: "Start date time",
+          model: "startDate",
+          optional: true,
+          hint: "",
+          tag: "date"
+        },
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time",
+          placeholder: "End date time",
+          model: "endDate",
+          optional: true,
+          hint: "",
+          tag: "date"
+        },
+        {
+          "component-type": "select",
+          placeholder: "Select event type",
+          options: this.getEnabledEvents,
+          model: "type",
+          validType: "number",
+          tag: "type",
+          optional: true
+        }
+      ];
+    },
+    configXref() {
+      return this.updateConfigs.filter(({ tag }) => {
+        return tag == this.selectedConfig;
+      });
+    },
     noAssignedUsers() {
       return {
         text:
@@ -256,8 +325,19 @@ export default {
       "closeDialog",
       "genNotification"
     ]),
-    ...mapActions("Admin", ["getEvents"]),
+    ...mapActions("Admin", ["getEvents", "updateEvents"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
+
+    updateEvent(e) {
+      this.loading = true;
+      this.updateEvents({ update: e, id: this.event.id })
+        .then(() => {
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    },
 
     getOneEmail(id) {
       return this.getEmail.findIndex(assignee => {
@@ -267,7 +347,7 @@ export default {
 
     dropUserFromEvent(userName) {
       // Cannot be the last one
-      const newLen = this.event.assignedToIDs.length ;
+      const newLen = this.event.assignedToIDs.length;
       if (newLen >= 1) {
         let userID = this.getUserInformation(userName, "name")?._id;
         this.request({
@@ -306,7 +386,7 @@ export default {
     },
     assignNewUser(userID) {
       this.request({
-        method: "POST",
+        method: "PUT",
         url: "events/user",
         data: {
           eventID: this.event.id,
@@ -418,9 +498,9 @@ export default {
 
   components: {
     Title,
-    Dropdown,
     Avatar,
-    Popover
+    Popover,
+    Form
   }
 };
 </script>

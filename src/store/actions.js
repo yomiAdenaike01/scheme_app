@@ -44,7 +44,7 @@ export default {
         .dispatch("request", {
           method: "GET",
           url: "clients/get",
-          params: { clientSubdomain: subdomain }
+          params: { subdomain }
         })
 
         .then(response => {
@@ -60,12 +60,12 @@ export default {
         });
     });
   },
-  closeDialog({ commit, state: { dialogIndex } }, name) {
+  closeDialog({ commit, state: { dialogIndex } }, name = "") {
     commit(
       "UPDATE_DIALOG_INDEX",
       {
         view: false,
-        dialog: name ? name : "",
+        dialog: name,
         data: null
       },
       { root: true }

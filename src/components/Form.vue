@@ -14,7 +14,6 @@
         :key="`${index}${input.name}`"
         :prop="input.name"
         :label="input.label || ' '"
-        :required="!input.hasOwnProperty('ignoreRequired')"
       >
         <component
           :size="size"
@@ -79,7 +78,7 @@
       <!-- Submit button -->
       <div class="button_container mt-4" v-if="!disable">
         <el-button
-          size="mini"
+          :size="size"
           type="primary"
           class="button_text"
           round
@@ -145,6 +144,10 @@ export default {
     liveUpdate: {
       type: Boolean,
       default: false
+    },
+    size: {
+      type: String,
+      default: "mini"
     }
   },
   computed: {
@@ -167,19 +170,19 @@ export default {
             trigger = "change";
           }
 
-          // if (compType == "date-picker") {
-          //   type = "date";
-          //   trigger = "change";
-          // }
-
           if (
             (compType == "select" && formItem?.multiple) ||
             inputType == "dates" ||
-            formItem?.isRange
+            formItem?.isRange ||
+            inputType == "date-time-range"
           ) {
             type = "array";
           } else if (compType == "select" && formItem?.validType == "number") {
             type = "number";
+          }
+
+          if (inputType == "date-time") {
+            type = "date";
           }
 
           let validObj = {
@@ -263,7 +266,7 @@ export default {
   text-transform: capitalize;
 }
 .dialog_item {
-  width: 70%;
+  min-width: 70%;
 }
 .description {
   display: block;

@@ -125,7 +125,6 @@ export default {
           "component-type": "select",
           placeholder: "Select event type",
           options: this.getEnabledEvents,
-          required: true,
           model: "type",
           validType: "number"
         },
@@ -135,15 +134,13 @@ export default {
           placeholder: "Timings",
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",
-          model: "date",
-          optional: true
+          model: "date"
         },
 
         {
           "component-type": "select",
           placeholder: "Repeat for (days of week)",
           options: this.daysOfWeek,
-          required: true,
           multiple: true,
           model: "weekdays"
         },
@@ -152,7 +149,6 @@ export default {
           "input-type": "date-time",
           placeholder: "Repeat until",
           model: "until",
-          optional: true,
           hint: ""
         }
       ];

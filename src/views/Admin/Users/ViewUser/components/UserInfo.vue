@@ -89,7 +89,7 @@ export default {
       this.request({
         method: "DELETE",
         url: "users/remove",
-        data: { id: this.data._id }
+        data: { _id: this.data._id }
       })
         .then(() => {
           this.loading = false;
