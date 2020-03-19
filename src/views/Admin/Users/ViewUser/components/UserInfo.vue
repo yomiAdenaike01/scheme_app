@@ -3,7 +3,7 @@
   
  
     <h2 class="mb-3">Personal Information</h2>
-     <el-collapse  >
+     <el-collapse>
   <el-collapse-item title="Quick Actions" name="1">
        <div class="quick_actions_container flex  align-center">
       <el-button type='primary' plain round size='mini'  @click="requestgenEmail">Contact</el-button>
@@ -25,13 +25,14 @@
           </el-option>
         </el-select>
       </Popover>
-      <el-button type='primary' plain round size='mini' v-if="getIsAdmin"  @click="removeUser"
-        >Delete Account</el-button
-      >
+   
       <Popover trigger='click'>
       <el-button type='primary' plain round size='mini' slot='trigger'>Update Personal Information</el-button>
       <Form submitText='Update user' slot='content' :config='updateUserForm' @val='updateUser'/>
       </Popover>
+         <el-button type='danger' plain round size='mini' v-if="getIsAdmin"  @click="removeUser"
+        >Delete Account</el-button
+      >
     </div>
   </el-collapse-item>
    </el-collapse>
@@ -41,6 +42,7 @@
     <p>{{ data.name }}</p>
     <p>{{ data.email }}</p>
     <p class="member_name">{{ group }}</p>
+    
     </div>
   </div>
 </template>
@@ -112,7 +114,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["genEmail", "request", "closeDialog"]),
+    ...mapActions(["genEmail", "request", "closeDialog",'genPromptBox']),
     ...mapActions('Admin',['getTeam']),
     ...mapMutations(['UPDATE_NOTIFICATIONS']),
     updateUser(e){
@@ -153,6 +155,12 @@ export default {
         });
     },
     removeUser() {
+        this.genPromptBox({
+        boxType: "confirm",
+        title: "Confirm",
+        text: "Are you sure you want to delete this user ?",
+        confirm: "Yes"
+      }).then(()=>{
       this.loading = true;
       this.request({
         method: "DELETE",
@@ -167,6 +175,8 @@ export default {
           this.loading = false;
                  this.reset();
         });
+      })
+     
     },
     reset(){
       this.getTeam();

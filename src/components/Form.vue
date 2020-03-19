@@ -36,7 +36,7 @@
           :min="input.min"
           :max="input.max"
           :picker-options="input.pickerOptions"
-          range-separator="To"
+          range-separator="to"
           :is-range="input.isRange"
           :type="
             input['input-type'] == 'date'

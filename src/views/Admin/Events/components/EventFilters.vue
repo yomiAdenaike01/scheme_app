@@ -82,8 +82,9 @@ export default {
     ...mapActions("Admin", ["getEvents"])
   },
   watch: {
-    localFilters({ userGroup = 0, eventGroup = 0 }) {
-      this.getEvents({ userGroup, eventGroup });
+    localFilters(val = { userGroup: 0, eventGroup: 0 }) {
+      console.log(val);
+      this.getEvents(val);
     }
   }
 };
