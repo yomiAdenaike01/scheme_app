@@ -1,9 +1,14 @@
 <template>
   <div class="user_info_container" v-loading="loading">
-    <div class="quick_actions_container flex flex--end align-center">
-      <el-button round size='mini'  @click="requestgenEmail">Contact</el-button>
+  
+ 
+    <h2 class="mb-3">Personal Information</h2>
+     <el-collapse  >
+  <el-collapse-item title="Quick Actions" name="1">
+       <div class="quick_actions_container flex  align-center">
+      <el-button type='primary' plain round size='mini'  @click="requestgenEmail">Contact</el-button>
       <Popover trigger="click">
-        <el-button slot="trigger" round size='mini' v-if="getIsAdmin" >{{
+        <el-button slot="trigger" type='primary' plain round size='mini' v-if="getIsAdmin" >{{
           data.groupID == 0 ? "Assign to group" : "Reassign to group"
         }}</el-button>
         <el-select
@@ -20,15 +25,16 @@
           </el-option>
         </el-select>
       </Popover>
-      <el-button round size='mini' v-if="getIsAdmin"  @click="removeUser"
+      <el-button type='primary' plain round size='mini' v-if="getIsAdmin"  @click="removeUser"
         >Delete Account</el-button
       >
       <Popover trigger='click'>
-      <el-button round size='mini' slot='trigger'>Update Personal Information</el-button>
+      <el-button type='primary' plain round size='mini' slot='trigger'>Update Personal Information</el-button>
       <Form submitText='Update user' slot='content' :config='updateUserForm' @val='updateUser'/>
       </Popover>
     </div>
-    <h1>User Info</h1>
+  </el-collapse-item>
+   </el-collapse>
     <div class="info_container">
 
     <p>{{ date }}</p>
