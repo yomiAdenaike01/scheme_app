@@ -4,11 +4,8 @@
     v-resize-text="defaultSize"
     :class="{ mobile: $mq != 'lg' }"
     v-loading="loading"
-    element-loading-background="rgba(255, 255, 255, 1)"
-    element-loading-text="
-      Loading
-    client instance please wait....
-    "
+    element-loading-background="rgb(255, 255, 255)"
+    element-loading-text="Loading client instance please wait...."
   >
     <DefaultTransition>
       <keep-alive>
@@ -22,7 +19,7 @@
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import DefaultTransition from "@/components/DefaultTransition";
 export default {
-  name: "app",
+  name: "App",
   data() {
     return {
       clientInterval: null,
@@ -31,17 +28,15 @@ export default {
   },
 
   created() {
-    this.loggerController();
     if (this.getIsIE) {
       this.$router.push({
-        name:'intro'
+        name: "intro"
       });
       alert(
         "Your browser is IE11, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
       );
     }
 
-   
     clearInterval(this.clientInterval);
     this.clientInterval = setInterval(() => {
       let res = this.getClient()
@@ -50,7 +45,7 @@ export default {
         })
         .catch(err => {
           this.$router.push({
-            name:'intro'
+            name: "intro"
           });
           this.loading = false;
           clearInterval(this.clientInterval);
@@ -60,13 +55,16 @@ export default {
   destroyed() {
     clearInterval(this.clientInterval);
   },
+  components: {
+    DefaultTransition
+  },
   computed: {
     ...mapState([
       "requestIntervals",
       "notifications",
       "defaultSize",
       "clientInformation",
-      "criticalNetworkError",
+      "criticalNetworkError"
     ]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsIE"]),
@@ -76,22 +74,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["getClient"]),
-
-    loggerController() {
-      if (process.env.NODE_ENV != "development") {
-        window.console.log = function() {};
-        window.console.warn = function() {};
-        window.console.error = function() {};
-      }
-    }
-  },
-  components: {
-    DefaultTransition
+    ...mapActions(["getClient"])
   },
 
   watch: {
-  
     notifications(val) {
       this.$notify(val[0]);
     },

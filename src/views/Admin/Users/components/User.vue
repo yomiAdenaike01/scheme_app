@@ -17,7 +17,7 @@
 
     <div class="flex columns">
       <div class="text_content ml-2">
-        <p class="member_name m-0 p-0">{{name }}</p>
+        <p class="member_name m-0 p-0">{{ name }}</p>
         <small>{{ group }}</small>
       </div>
     </div>

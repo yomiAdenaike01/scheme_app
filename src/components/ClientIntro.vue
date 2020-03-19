@@ -5,15 +5,14 @@
         <div class="title_wrapper">
           <h1 v-if="!isError">
             Welcome to
-            <span class="logo">S</span>cheme <span class="logo">C</span>loud
+            <span class="logo">S</span>cheme
+            <span class="logo">C</span>loud
           </h1>
           <h1 v-else>
             An
             <span class="logo">E</span>rror occured.
           </h1>
-          <h5 class="grey">
-            Enter your company name or domain name into the field below
-          </h5>
+          <h5 class="grey">Enter your company name or domain name into the field below</h5>
         </div>
         <el-input
           class="domain_input"
@@ -25,12 +24,7 @@
           :class="{ active: clientDomain.length > 0 }"
           class="flex flex--end align-center button_container"
         >
-          <el-button
-            @click="refactorWindowLocation(clientDomain)"
-            type="primary"
-            size="mini"
-            round
-          >
+          <el-button @click="refactorWindowLocation(clientDomain)" type="primary" size="mini" round>
             Load cloud instance
             <i class="el-icon-arrow-right"></i>
           </el-button>
@@ -41,8 +35,10 @@
 </template>
 
 <script>
-import refactorLocation from "@/mixins/refactorLocation";
 import { mapState } from "vuex";
+
+import refactorLocation from "@/mixins/refactorLocation";
+
 export default {
   name: "ClientIntro",
   data() {
@@ -52,16 +48,10 @@ export default {
   },
   mixins: [refactorLocation],
   activated() {
-    if (this.isError) {
+    if (this.invalidClient.error) {
       this.$message.error(
         "There was an error, please enter your client domain again to restart"
       );
-    }
-  },
-  computed: {
-    ...mapState(["invalidClient"]),
-    isError() {
-      return this.invalidClient.error;
     }
   }
 };

@@ -3,10 +3,7 @@
     type="flex"
     class="user_container"
     v-loading="loading"
-    element-loading-text="
-      Getting
-    team please wait....
-    "
+    element-loading-text="Getting team please wait...."
   >
     <UserGroup v-if="getIsAdmin" addNew @createUserGroup="displayDialog = $event" />
 
