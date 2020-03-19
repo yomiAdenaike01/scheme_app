@@ -111,9 +111,10 @@ export default {
         {
           "component-type": "select",
           options: this.getUserGroups,
-          placeholder: "(Optional) Enable for user group",
+          placeholder: "Enable for user group",
           model: "enabledFor",
-          multiple: true
+          multiple: true,
+          optional:true
         }
       ];
     },
@@ -142,14 +143,15 @@ export default {
           placeholder: "Repeat for (days of week)",
           options: this.daysOfWeek,
           multiple: true,
-          model: "weekdays"
+          model: "weekdays",
+          optional:true
         },
         {
           "component-type": "date-picker",
           "input-type": "date-time",
           placeholder: "Repeat until",
           model: "until",
-          hint: ""
+          optional:true
         }
       ];
 

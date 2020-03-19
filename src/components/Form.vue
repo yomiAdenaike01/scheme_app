@@ -52,6 +52,7 @@
               : null
           "
           v-bind="input"
+          :placeholder="input.optional ? `(Optional) ${input.placeholder}`: input.placeholder"
           :disabled="input.disabled"
           :start-placeholder="input.start_placeholder"
           :end-placeholder="input.end_placeholder"
