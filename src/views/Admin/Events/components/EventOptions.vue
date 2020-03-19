@@ -1,16 +1,8 @@
 <template>
   <div class="create_shift_options_container p-4">
- 
-    <div
-      class="flex columns"
-      v-if="eventTemplates.length > 0"
-      v-loading="loading"
-    >
+    <div class="flex columns" v-if="eventTemplates.length > 0" v-loading="loading">
       <div class="flex_center input_container p-4">
-        <el-input
-          v-model="templateNamesSearch"
-          placeholder="Seach Templates"
-        ></el-input>
+        <el-input v-model="templateNamesSearch" placeholder="Seach Templates"></el-input>
         <el-button
           size="small"
           class="ml-4"
@@ -26,12 +18,12 @@
         </el-button>
       </div>
       <transition-group name="el-fade-in">
-      <EventTemplate
-        @toggle="displayCreateTemplate = false"
-        v-for="template in filteredTemplates"
-        :key="template._id"
-        :data="template"
-      />
+        <EventTemplate
+          @toggle="displayCreateTemplate = false"
+          v-for="template in filteredTemplates"
+          :key="template._id"
+          :data="template"
+        />
       </transition-group>
     </div>
 
@@ -58,10 +50,7 @@
 
     <!-- Create template -->
     <el-collapse-transition>
-      <CreateTemplate
-        v-if="displayCreateTemplate"
-        @toggle="displayCreateTemplate = false"
-      />
+      <CreateTemplate v-if="displayCreateTemplate" @toggle="displayCreateTemplate = false" />
     </el-collapse-transition>
   </div>
 </template>
@@ -72,7 +61,7 @@ import EventTemplate from "./EventTemplate";
 import { mapState, mapActions, mapGetters } from "vuex";
 import InformationDisplay from "@/components/InformationDisplay";
 import CreateTemplate from "./CreateTemplate";
-import EventManagerBus from "./EventsManagerBus";
+import EventModuleBus from "./EventsModuleBus";
 export default {
   name: "EventOptions",
   data() {
@@ -107,7 +96,9 @@ export default {
         }
         filteredTemplates.push(this.eventTemplates[i]);
       }
-      return filteredTemplates.length == 0 ? this.eventTemplates : filteredTemplates;
+      return filteredTemplates.length == 0
+        ? this.eventTemplates
+        : filteredTemplates;
     },
     noTemplateOptions() {
       return {

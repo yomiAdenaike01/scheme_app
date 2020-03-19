@@ -5,22 +5,18 @@
       :tabs="tabs"
       @fileContent="fileContent = $event"
       @deleteContent="fileContent = $event"
-      @val="userManagerController"
+      @val="userModuleController"
       :disableForm="fileContent != null"
       v-loading="loading"
     >
       <div slot="header_content">
-        <Title
-          title="Manager users"
-          subtitle="Manage all users and groups here."
-        />
+        <Title title="Module users" subtitle="Manage all users and groups here." />
       </div>
     </Tabs>
   </el-dialog>
 </template>
 
 <script>
-
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 
 import ManageUserGroups from "./ManageUserGroups";
@@ -30,7 +26,7 @@ import Tabs from "@/components/Tabs";
 import Title from "@/components/Title";
 
 export default {
-  name: "UserManagerDialog",
+  name: "UserModuleDialog",
 
   data() {
     return {
@@ -46,7 +42,7 @@ export default {
   props: {
     display: Boolean
   },
- components: {
+  components: {
     Title,
     Tabs,
     ManageUserGroups,
@@ -155,7 +151,7 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
-    userManagerController(val) {
+    userModuleController(val) {
       switch (this.currentTab) {
         case 1: {
           if (!this.fileContent) {
@@ -238,9 +234,7 @@ export default {
           .catch(error => reject(error));
       });
     }
-  },
-
-
+  }
 };
 </script>
 

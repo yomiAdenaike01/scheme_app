@@ -1,33 +1,22 @@
 <template>
   <el-row
     type="flex"
-    class="user_container p-4"
+    class="user_container"
     v-loading="loading"
     element-loading-text="
       Getting
     team please wait....
     "
   >
-    <UserGroup
-      v-if="getIsAdmin"
-      addNew
-      @createUserGroup="displayDialog = $event"
-    />
+    <UserGroup v-if="getIsAdmin" addNew @createUserGroup="displayDialog = $event" />
 
     <UserGroup>
       <div class="h-100 overflow">
         <Title title="User Groups" subtitle="Manage and contact users here" />
 
         <div v-if="hasEntries(getFilteredTeam)">
-          <el-row
-            v-for="(count, i) in filteredGroupsWithUsers"
-            :key="`${count}${i}`"
-          >
-            <el-col
-              :span="$mq != 'lg' ? 12 : 8"
-              v-for="(group, index) in count"
-              :key="index"
-            >
+          <el-row v-for="(count, i) in filteredGroupsWithUsers" :key="`${count}${i}`">
+            <el-col :span="$mq != 'lg' ? 12 : 8" v-for="(group, index) in count" :key="index">
               <div class="p-4 m-1 user_group_container">
                 <div
                   class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
@@ -39,7 +28,7 @@
                 </div>
                 <User
                   v-for="member in group.teamMembers"
-                  :data="{ ...member, groupID: group.value }"
+                  :userInformation="{ ...member, groupID: group.value }"
                   :key="member._id"
                   @viewUser="viewUser = $event"
                 />
@@ -61,19 +50,15 @@
             "
             text="No team members detected, click the button below to go to user management."
             icon="bx bx-user-circle"
-          >
-          </InformationDisplay>
+          ></InformationDisplay>
         </div>
       </div>
     </UserGroup>
 
     <!-- Quick actions -->
-    <QuickActions v-if="getIsAdmin && teamInformation.length > 0" />
-    <!-- User manager dialog -->
-    <UserManagerDialog
-      :display="displayDialog"
-      @toggle="displayDialog = $event"
-    />
+    <UserManagementActions v-if="getIsAdmin && teamInformation.length > 0" />
+    <!-- User Module dialog -->
+    <UserModuleDialog :display="displayDialog" @toggle="displayDialog = $event" />
   </el-row>
 </template>
 
@@ -81,23 +66,25 @@
 import { mapState, mapActions, mapGetters } from "vuex";
 
 import User from "./components/User";
-import UserManagerDialog from "./components/UserManagerDialog";
+import UserModuleDialog from "./components/UserModuleDialog";
 import UserGroup from "./components/UserGroup";
-import QuickActions from "./components/QuickActions";
+import UserManagementActions from "./components/UserManagementActions";
 
 import Title from "@/components/Title";
 import Popover from "@/components/Popover";
 import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
-  name: "UserManager",
-   data() {
+  name: "UserModule",
+
+  data() {
     return {
       displayDialog: false,
       loading: true,
       viewUser: false
     };
   },
+
   activated() {
     Promise.all([this.getEvents(), this.getTeam()])
       .then(response => {
@@ -107,27 +94,23 @@ export default {
         this.loading = false;
       });
   },
-   components: {
+
+  components: {
     Title,
     User,
     UserGroup,
-    UserManagerDialog,
-    QuickActions,
+    UserModuleDialog,
+    UserManagementActions,
     Popover,
     InformationDisplay
   },
+
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState("Admin", ["teamInformation", "groupIDs"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
-    InformationDisplay() {
-      return {
-        text: "",
-        icon: "el-icon-warning-outline",
-        buttonText: "Hello"
-      };
-    },
+
     filteredGroupsWithUsers() {
       let groups = this.groupsWithUsers.filter(({ label, teamMembers }) => {
         return label != "System Administrator" && teamMembers.length > 0;
@@ -139,9 +122,11 @@ export default {
       let { userGroups } = { ...this.clientInformation };
       let userGroupArr = [];
       let team = [...this.teamInformation];
+
       for (let j = 0, len = userGroups.length; j < len; j++) {
         let userGroup = { ...userGroups[j], teamMembers: [] };
         let { value } = userGroup;
+
         team.map(member => {
           if (member.groupID == value) {
             userGroup.teamMembers.push(member);
@@ -154,20 +139,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["getTeam", "getEvents"]),
-
-    logChanges(e) {
-      console.log(e);
-    }
-  },
-
+    ...mapActions("Admin", ["getTeam", "getEvents"])
+  }
 };
 </script>
 
 <style lang="scss" scoped>
 .user_container {
-  font-size: 0.9em;
   height: 90%;
+  padding: 20px;
+  font-size: 0.9em;
   & > * {
     flex: 1;
   }

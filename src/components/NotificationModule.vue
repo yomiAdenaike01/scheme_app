@@ -15,8 +15,7 @@
         @click="readAll"
         size="small"
         v-if="getUserNotificationsLength > 0"
-        >Mark all as read</el-button
-      >
+      >Mark all as read</el-button>
     </div>
     <InformationDisplay v-else v-bind="infoDisplay" />
   </div>
@@ -28,7 +27,7 @@ import UserNotification from "./UserNotification";
 import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
-  name: "NotificationManager",
+  name: "NotificationModule",
   data() {
     return {
       loading: false,
@@ -44,7 +43,7 @@ export default {
         this.loading = false;
       });
   },
- components: {
+  components: {
     UserNotification,
     InformationDisplay
   },
@@ -86,9 +85,8 @@ export default {
         method: "POST",
         url: "/notifications/read/all"
       });
-}
-  },
- 
+    }
+  }
 };
 </script>
 

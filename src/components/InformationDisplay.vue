@@ -1,9 +1,9 @@
-<template functional>
+<template>
   <div class="flex_center h-100 columns">
-    <i :class="`${props.icon} icon-large grey`"></i>
-    <p class="desc m-4 txt-center l-height-large" v-html="props.text"></p>
-    <MoreInformation v-if="props.moreInformation" v-bind="props.moreInformation" />
-    
+    <i :class="`${icon} icon-large grey`"></i>
+    <p class="desc m-4 txt-center l-height-large" v-html="text"></p>
+    <MoreInformation v-if="moreInformation" v-bind="moreInformation" />
+
     <slot v-else></slot>
   </div>
 </template>
@@ -21,7 +21,7 @@ export default {
     },
     moreInformation: {
       type: Object
-    },
+    }
   },
   components: {
     MoreInformation

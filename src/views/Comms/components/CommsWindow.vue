@@ -1,7 +1,8 @@
 <template>
   <transition name="el-fade-in">
     <div class="comms_window_container flex columns" v-loading="loading">
-      <div class="messages_container" v-if="activeTranscript">
+      <div class="messages_container" v-if="hasEntries(activeTranscript)">
+        <!-- Comms toolbar -->
         <CommsToolbar :recieverInformation="info" />
         <!-- Messages -->
         <Message
@@ -157,7 +158,7 @@ export default {
   font-size: 1.5em;
 }
 .no_content_container {
-  background: rgb(250, 250, 250);
+  background: rgb(253, 253, 253);
   flex: 1;
   color: #ccc;
 }

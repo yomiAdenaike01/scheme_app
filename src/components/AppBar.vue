@@ -1,17 +1,10 @@
 <template>
   <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col
-      class="client_indicator"
-      :style="{ borderRight: `1.5px solid #efefef` }"
-    >
+    <el-col class="client_indicator" :style="{ borderRight: `1.5px solid #efefef` }">
       <div class="client_image_container p-2" v-if="$mq == 'lg'">
-        <Logo/>
+        <Logo />
       </div>
-      <div
-        v-else
-        class="nav_toggle"
-        @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
-      >
+      <div v-else class="nav_toggle" @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)">
         <i class="el-icon el-icon-menu"></i>
       </div>
     </el-col>
@@ -20,29 +13,16 @@
         <Dropdown :items="items" @method="handleCommands" :icon="false">
           <Avatar :name="userInformation.name" />
         </Dropdown>
-        <el-badge
-          :value="getUserNotificationsLength"
-          class="item ml-2 mt-1 primary"
-        >
-          <Popover
-            width="350"
-            trigger="click"
-            traisition="el-collapse-transition"
-          >
+        <el-badge :value="getUserNotificationsLength" class="item ml-2 mt-1 primary">
+          <Popover width="350" trigger="click" traisition="el-collapse-transition">
             <div class="notifications_center" slot="content">
-              <NotificationManager />
+              <NotificationModule />
             </div>
-            <el-button
-              slot="trigger"
-              size="small"
-              circle
-              icon="el-icon-bell trigger"
-            ></el-button>
+            <el-button slot="trigger" size="small" circle icon="el-icon-bell trigger"></el-button>
           </Popover>
         </el-badge>
       </div>
     </el-col>
-
   </el-row>
 </template>
 
@@ -54,7 +34,7 @@ import Avatar from "./Avatar.vue";
 import Dropdown from "@/components/Dropdown";
 import Logo from "@/components/Logo";
 import Popover from "@/components/Popover";
-import NotificationManager from "@/components/NotificationManager";
+import NotificationModule from "@/components/NotificationModule";
 
 export default {
   name: "AppBar",
@@ -63,7 +43,7 @@ export default {
     Avatar,
     Logo,
     Popover,
-    NotificationManager
+    NotificationModule
   },
   computed: {
     ...mapState([
@@ -108,7 +88,6 @@ export default {
           command: "view_profile"
         },
 
-     
         {
           name: "Help",
           command: "support",
@@ -158,14 +137,11 @@ export default {
           break;
         }
 
-    
-
         default:
           break;
       }
     }
-  },
- 
+  }
 };
 </script>
 <style lang="scss" scoped>

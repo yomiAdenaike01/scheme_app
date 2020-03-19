@@ -5,6 +5,7 @@ export default {
     events: 6000,
     client: 10000,
     messages: 3000,
+    transcripts: 3000,
     templates: 3000
   },
   clientInformation: localStorage.getItem("clientInformation")
@@ -26,12 +27,16 @@ export default {
   hasSeenNotifications: false,
   userNotifications: [],
   viewMobileMenu: false,
-  defaultSize: { minFontSize: "10px", maxFontSize: "16px" },
+
+  defaultSize: {
+    minFontSize: "10px",
+    maxFontSize: "16px"
+  },
 
   dialogIndex: {
     viewUser: { view: null, data: null, tabIndex: 0 },
     viewEvent: { view: null, data: null, tabIndex: 0 },
-    eventManager: { view: null, data: null, tabIndex: 0 },
+    eventModule: { view: null, data: null, tabIndex: 0 },
     tutorial: { view: null, data: null, tabIndex: 0 },
     prevEvents: { view: null, data: null, tabIndex: 0 }
   },

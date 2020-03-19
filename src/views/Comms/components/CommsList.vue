@@ -1,6 +1,5 @@
 <template>
   <div class="comms_list_container">
-    <!-- Transcripts -->
     <div class="comms_list_toolbar flex_center p-3">
       <el-input placeholder="Seach chats" class="mr-3" size="small" v-model="transcriptSearch"></el-input>
       <Popover width="200" trigger="click">
@@ -18,6 +17,7 @@
       <div class="no_content_wrapper flex_center" v-if="transcripts.length == 0">
         <InformationDisplay v-bind="infoDisplay" />
       </div>
+      <!-- Transcripts -->
       <div v-else>
         <CommsTranscript
           v-for="transcript in transcripts"
@@ -125,6 +125,10 @@ export default {
         userName
       })
         .then(() => {
+          // Set active transcript to the chat
+          this.UPDATE_ACTIVE_TRANSCRIPT(
+            this.transcripts[this.transcripts.length - 1]
+          );
           reset();
         })
         .catch(() => {

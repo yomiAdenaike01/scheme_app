@@ -25,9 +25,7 @@
           v-if="tabXref.name == 'create_event_group' && getIsAdmin"
         >
           <ColourUnit v-model="eventsInformation.colour" />
-          <p class="mb-3 ml-4 desc grey">
-            Press to select an event colour (optional):
-          </p>
+          <p class="mb-3 ml-4 desc grey">Press to select an event colour (optional):</p>
         </div>
       </div>
     </Tabs>
@@ -46,7 +44,7 @@ import MoreInformation from "@/components/MoreInformation";
 import ColourUnit from "@/components/ColourUnit";
 
 export default {
-  name: "EventManagerDialog",
+  name: "EventModuleDialog",
   data() {
     return {
       eventsInformation: {},
@@ -71,9 +69,7 @@ export default {
     ]),
 
     isNotShiftOrHoliday() {
-      let type = this.eventsInformation.type;
-      const isAdmin = this.getIsAdmin;
-      return !isAdmin && type > 3;
+      return !this.getIsAdmin && this.eventsInformation.type > 3;
     },
     tabXref() {
       return this.getCurrentTabXref({
@@ -118,7 +114,7 @@ export default {
           placeholder: "Enable for user group",
           model: "enabledFor",
           multiple: true,
-          optional:true
+          optional: true
         }
       ];
     },
@@ -148,14 +144,14 @@ export default {
           options: this.daysOfWeek,
           multiple: true,
           model: "weekdays",
-          optional:true
+          optional: true
         },
         {
           "component-type": "date-picker",
           "input-type": "date-time",
           placeholder: "Repeat until",
           model: "until",
-          optional:true
+          optional: true
         }
       ];
 
@@ -176,10 +172,10 @@ export default {
     //  control the current view
     view: {
       get() {
-        return this.getActiveDialog("eventManager");
+        return this.getActiveDialog("eventModule");
       },
       set(toggle) {
-        this.closeDialog("eventManager");
+        this.closeDialog("eventModule");
       }
     }
   },
@@ -190,8 +186,9 @@ export default {
     eventsCtrl(information) {
       this.eventsInformation = information;
       switch (this.tabXref.name) {
-        case "create_event_group":
+        case "create_event_group": {
           break;
+        }
         case "create_event": {
           this.genEvent();
           break;
@@ -254,6 +251,7 @@ export default {
     },
     resolveSaveTemplate(value) {
       this.templatesInformation.name = value;
+      // If there is an error reinitiate the create template
       this.createEventTemplate(this.templatesInformation).catch(err => {
         this.initSaveTemplate();
       });
@@ -278,9 +276,7 @@ export default {
           this.view = false;
         });
     }
-  },
-
-
+  }
 };
 </script>
 

@@ -1,14 +1,12 @@
-const EventsManager = () => import("@/views/Admin/Events/EventsManager");
-const UserManager = () => import("@/views/Admin/Users/UserManager");
-const Comms = () => import("@/views/Comms/CommsManager");
+const EventsModule = () => import("@/views/Admin/Events/EventsModule");
+const UserModule = () => import("@/views/Admin/Users/UserModule");
+const Comms = () => import("@/views/Comms/CommsModule");
 
 export default [
-
-
   {
     path: "events",
     name: "events",
-    component: EventsManager,
+    component: EventsModule,
     meta: {
       authRequired: true
     }
@@ -17,7 +15,7 @@ export default [
   {
     path: "user",
     name: "user",
-    component: UserManager,
+    component: UserModule,
     meta: {
       authRequired: true
     }
@@ -29,6 +27,5 @@ export default [
     meta: {
       authRequired: true
     }
-  },
-
+  }
 ];

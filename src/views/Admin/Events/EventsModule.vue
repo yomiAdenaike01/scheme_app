@@ -1,19 +1,16 @@
 <template>
   <div
-    class="eventmanager_container h-100"
+    class="eventModule_container h-100"
     v-loading="loading"
     element-loading-text="Loading team members and events please wait..."
   >
     <!-- Shift and calendar view -->
     <EventFilters v-if="$mq == 'lg'" />
 
-    <div class="eventmanager_inner_container h-100 overflow">
+    <div class="eventModule_inner_container h-100 overflow">
       <Toolbar class="m-3" />
 
-      <EventsCalendar
-        @refreshShift="getEvents"
-        @displayCreateEvent="modals.createEvent = $event"
-      />
+      <EventsCalendar @refreshShift="getEvents" @displayCreateEvent="modals.createEvent = $event" />
       <EventMangerDialog />
       <ViewEventDialog />
     </div>
@@ -31,7 +28,7 @@ import EventFilters from "./components/EventFilters";
 import UserSidebar from "./components/UserSidebar";
 import ViewEventDialog from "./components/ViewEventDialog";
 export default {
-  name: "EventsManager",
+  name: "EventsModule",
   created() {
     this.UPDATE_DIALOG_INDEX({
       dialog: "tutorial",
@@ -80,12 +77,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.eventmanager_container {
+.eventModule_container {
   display: flex;
   flex: 1;
   overflow: auto;
 }
-.eventmanager_inner_container {
+.eventModule_inner_container {
   flex: 1;
 }
 </style>

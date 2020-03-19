@@ -14,17 +14,22 @@ import CommsWindow from "./components/CommsWindow";
 import CommsEventBus from "./components/CommsEventBus";
 import CommsFilters from "./components/CommsFilters";
 export default {
-  name: "CommsManager",
+  name: "CommsModule",
   data() {
     return {
-      loading: false
+      loading: false,
+      commsInterval: null
     };
   },
   activated() {
+    clearInterval(this.commsInterval);
+    this.commsInterval = setInterval(() => {
+      this.getTranscripts();
+    }, this.requestsIntervals.transcripts);
     if (
       !this.hasEntries(this.activeTranscript) &&
-      !this.hasEntries(this.$route.params) && this.transcripts.length > 0
-      
+      !this.hasEntries(this.$route.params) &&
+      this.transcripts.length > 0
     ) {
       this.loading = true;
       this.getTranscripts()
@@ -56,22 +61,20 @@ export default {
       }
     }
   },
-    components: {
+  components: {
     CommsList,
     CommsWindow,
     CommsFilters,
     CommsEventBus
   },
-    computed: {
+  computed: {
     ...mapState("Comms", ["activeTranscript", "transcripts"]),
     ...mapState(["userInformation"])
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),
     ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"])
-  },
-
-
+  }
 };
 </script>
 
