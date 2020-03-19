@@ -31,7 +31,7 @@
         v-for="(tab, index) in tabItems"
         :label="tab.label"
       >
-        <slot></slot>
+        <slot class="p-4"></slot>
       </el-tab-pane>
     </el-tabs>
   </div>

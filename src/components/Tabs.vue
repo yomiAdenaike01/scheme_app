@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs_container">
+  <div class="tabs_container pt-4 pb-4">
     <slot name="header_content"></slot>
     <el-tabs
       :closable="false"
@@ -12,7 +12,7 @@
     >
       <slot name="body_content"></slot>
       <el-tab-pane
-        class="p-3"
+        class="p-4"
         v-for="(tab, index) in tabs"
         :disabled="tab.disabled"
         :label="tab.label"

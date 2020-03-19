@@ -370,8 +370,8 @@ span {
 
 .el-dialog {
   border-radius: 10px;
-  padding: 0;
-  width: 60%;
+  padding: 40px 0;
+  width: 35% !important;
   &/deep/ {
     .el-dialog__body {
       padding: 0;

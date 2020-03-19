@@ -1,4 +1,7 @@
 <template>
+<div>
+        <h2 class="capitalize mr-3">{{ data.name }}</h2>
+
   <div
     class="event_template_container p-3 m-3 trigger"
     ref="templateContainer"
@@ -7,7 +10,6 @@
   >
     <div class="flex flex--space-between align-center">
       <div>
-        <h2 class="member_name">{{ data.name }}</h2>
         <small
           ><strong>{{ formatDate(data.dateCreated) }}</strong></small
         >
@@ -42,6 +44,7 @@
         >
       </div>
     </el-collapse-transition>
+  </div>
   </div>
 </template>
 
