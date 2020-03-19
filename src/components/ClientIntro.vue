@@ -19,7 +19,7 @@
           class="domain_input"
           placeholder="Domain Name"
           v-model="clientDomain"
-          @keydown.enter="refactorWindowLocation(clientDomain)"
+          @keydown.enter="refactorWindowLocation(clientDomain.replace(/\s/g,'').toLowerCase())"
         ></el-input>
         <div
           :class="{ active: clientDomain.length > 0 }"

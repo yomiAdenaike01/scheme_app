@@ -1,6 +1,4 @@
-// sub views
 const UserAuth = () => import("@/views/Auth/UserAuth");
-const ClientAuth = () => import("@/views/Auth/ClientAuth");
 
 export default [
   {
@@ -8,9 +6,5 @@ export default [
     name: "login",
     component: UserAuth
   }
-  // {
-  //   path: "/auth/client",
-  //   name: "register",
-  //   component: ClientAuth
-  // }
+ 
 ];

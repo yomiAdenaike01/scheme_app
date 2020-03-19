@@ -20,27 +20,28 @@
 
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
-import alterTheme from "@/mixins/alterTheme";
 import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "app",
   data() {
     return {
       clientInterval: null,
-      loading: true
+      loading: false
     };
   },
+  
   created() {
     this.loggerController();
     if (this.getIsIE) {
+      this.$router.push({
+        name:'intro'
+      });
       alert(
         "Your browser is IE11, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
       );
     }
 
-    if (this.isValidClient) {
-      this.SET_THEME();
-    }
+   
     clearInterval(this.clientInterval);
     this.clientInterval = setInterval(() => {
       let res = this.getClient()
@@ -48,8 +49,11 @@ export default {
           this.loading = false;
         })
         .catch(err => {
-          console.error(err);
+          this.$router.push({
+            name:'intro'
+          });
           this.loading = false;
+          clearInterval(this.clientInterval);
         });
     }, this.requestIntervals.client);
   },
@@ -60,23 +64,19 @@ export default {
     ...mapState([
       "requestIntervals",
       "notifications",
-      "userInformation",
       "defaultSize",
       "clientInformation",
       "criticalNetworkError",
-      "invalidClient"
     ]),
-    ...mapState("Admin", ["teamInformation", "shifts"]),
+    ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsIE"]),
 
     isValidClient() {
       return this.hasEntries(this.clientInformation);
     }
   },
-  mixins: [alterTheme],
   methods: {
     ...mapActions(["request", "getClient"]),
-    ...mapMutations(["SET_THEME"]),
     loggerController() {
       if (process.env.NODE_ENV != "development") {
         window.console.log = function() {};
@@ -90,9 +90,7 @@ export default {
   },
 
   watch: {
-    "clientInformation.colours"(val) {
-      this.mutateTheme(val);
-    },
+  
     notifications(val) {
       this.$notify(val[0]);
     },

@@ -20,14 +20,14 @@
 </template>
 
 <script>
+
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
-import Tabs from "@/components/Tabs";
-import Title from "@/components/Title";
-import ValidationUnit from "@/components/ValidationUnit";
+
 import ManageUserGroups from "./ManageUserGroups";
 import CreateUserOptions from "./CreateUserOptions";
 
-const csvtojson = require("csvtojson");
+import Tabs from "@/components/Tabs";
+import Title from "@/components/Title";
 
 export default {
   name: "UserManagerDialog",
@@ -46,7 +46,12 @@ export default {
   props: {
     display: Boolean
   },
-
+ components: {
+    Title,
+    Tabs,
+    ManageUserGroups,
+    CreateUserOptions
+  },
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters("Admin", ["getUserGroups"]),
@@ -235,39 +240,7 @@ export default {
     }
   },
 
-  components: {
-    Title,
-    Tabs,
-    ValidationUnit,
-    ManageUserGroups,
-    CreateUserOptions
-  },
 
-  watch: {
-    fileContent(val) {
-      this.loading = true;
-      this.cleanData(val)
-
-        .then(response => {
-          this.createUsers(response).then(response => {
-            this.fileError = false;
-            this.loading = false;
-          });
-        })
-
-        .catch(error => {
-          this.loading = false;
-          this.fileError = true;
-
-          this.UPDATE_NOTIFICATIONS({
-            title: "Error when processing the employee sheet",
-            "component-type": "info",
-            message: error
-          });
-        });
-    }
-  }
 };
 </script>
 
-<style></style>

@@ -7,11 +7,12 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapMutations } from "vuex";
+
 import CommsList from "./components/CommsList";
 import CommsWindow from "./components/CommsWindow";
 import CommsEventBus from "./components/CommsEventBus";
 import CommsFilters from "./components/CommsFilters";
-import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   name: "CommsManager",
   data() {
@@ -54,20 +55,22 @@ export default {
       }
     }
   },
-  methods: {
-    ...mapActions("Comms", ["getTranscripts"]),
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"])
-  },
-  computed: {
-    ...mapState("Comms", ["activeTranscript", "transcripts"]),
-    ...mapState(["userInformation"])
-  },
-  components: {
+    components: {
     CommsList,
     CommsWindow,
     CommsFilters,
     CommsEventBus
-  }
+  },
+    computed: {
+    ...mapState("Comms", ["activeTranscript", "transcripts"]),
+    ...mapState(["userInformation"])
+  },
+  methods: {
+    ...mapActions("Comms", ["getTranscripts"]),
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"])
+  },
+
+
 };
 </script>
 

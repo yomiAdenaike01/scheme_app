@@ -1,10 +1,11 @@
 <template>
-  <transition name="el-fade-in">
-    <div class="comms_window_container flex columns">
+  <transition name="el-fade-in" >
+    <div class="comms_window_container flex columns" v-loading='loading'>
       <div class="messages_container" v-if="hasEntries(activeTranscript)">
         <div class="comms_window_toolbar">
           <p>{{ username }}</p>
         </div>
+        <!-- Messages -->
         <Message
           v-for="(message, index) in messages"
           :data="message"
@@ -47,15 +48,17 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 import Popover from "@/components/Popover";
 import Message from "./Message";
 import Nocontent from "@/components/Nocontent";
-import { mapState, mapActions } from "vuex";
+
 export default {
   name: "CommsWindow",
   data() {
     return {
-      loading: false,
+      loading: true,
       messagesInterval: null,
       chat: {
         content: "",
@@ -64,16 +67,22 @@ export default {
     };
   },
 
-  deactivated() {
-    clearInterval(this.messagesInterval);
-  },
-  async activated() {
-    await this.getMessages();
-    this.readMessages();
+
+  activated() {
     clearInterval(this.messagesInterval);
     this.messagesInterval = setInterval(() => {
-      this.getMessages();
+      this.getMessages().then(response=>{
+        this.loading =false;
+      })
     }, this.requestIntervals.messages);
+  },
+    deactivated() {
+    clearInterval(this.messagesInterval);
+  },
+  components: {
+    Message,
+    Popover,
+    Nocontent
   },
   computed: {
     ...mapState(["requestIntervals"]),
@@ -123,11 +132,7 @@ export default {
         });
     }
   },
-  components: {
-    Message,
-    Popover,
-    Nocontent
-  }
+
 };
 </script>
 

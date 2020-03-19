@@ -12,20 +12,7 @@ export default {
   UPDATE_SERVER_HEALTH_STATUS(state, payload) {
     Vue.set(state, "serverHealth", payload);
   },
-  UPDATE_COLOURS(state, { target, val }) {
-    state.localSettings.colours[target] = val;
-  },
-  SET_THEME() {
-    let id = "chalk-style";
-    let styleTag = document.getElementById(id);
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.setAttribute("id", id);
-      styleTag.innerText = localStorage.getItem("cssText");
 
-      document.head.appendChild(styleTag);
-    }
-  },
   UPDATE_INVALID_CLIENT(state, payload) {
     Vue.set(state, "invalidClient", payload);
   },
@@ -33,15 +20,7 @@ export default {
     Vue.set(state, "clientInformation", payload);
     localStorage.setItem("clientInformation", JSON.stringify(payload));
   },
-  UPDATE_UPLOAD_TIMESHEET(state, payload) {
-    Vue.set(state, "weeklyTimesheetUploaded", payload);
-  },
-  UPDATE_DEFAULT_FONT(state, payload) {
-    Vue.set(state, "defaultSize", {
-      minFontSize: payload.min,
-      maxFontSize: payload.max
-    });
-  },
+
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
     Vue.set(state, "viewMobileMenu", payload);
   },
@@ -49,16 +28,11 @@ export default {
     Vue.set(state, "userNotifications", payload);
   },
 
-  UPDATE_SETTINGS(state, { category, key, value }) {
-    Vue.set(state["localSettings"], category[key], value);
-  },
   UPDATE_GLOBAL_LOADER(state, payload) {
     Vue.set(state, "globalLoader", payload);
   },
-  REMOVE_USER(state) {
-    Vue.set(state, "userInformation", {});
-    Vue.set(state, "token", {});
-
+  REMOVE_USER() {
+    router.push({name:'login'})
     localStorage.removeItem("token");
     localStorage.removeItem("userInformation");
   },
@@ -69,10 +43,7 @@ export default {
     localStorage.setItem("token", token);
     localStorage.setItem("userInformation", JSON.stringify(user));
   },
-  UPDATE_USER_PREFERENCES(state, { index, data }) {
-    let { settings } = state.userInformation;
-    Vue.set(settings, index, data);
-  },
+
   UPDATE_NOTIFICATIONS(state, notification) {
     let notificationTypes = [
       "success",

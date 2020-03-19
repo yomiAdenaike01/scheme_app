@@ -54,7 +54,7 @@
 import LeadIcon from "@/components/LeadIcon";
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
-  name: "CriticalError",
+  name: "Error",
   activated() {
     if (!this.hasEntries(this.errorInformation)) {
       this.$router.push({ name: "events" });

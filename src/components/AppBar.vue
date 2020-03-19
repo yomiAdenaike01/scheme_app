@@ -43,24 +43,27 @@
       </div>
     </el-col>
 
-    <Settings :display="displaySettings" @toggle="displaySettings = $event" />
   </el-row>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
-import Dropdown from "@/components/Dropdown";
-import Settings from "@/views/Settings/Settings";
+
 import Avatar from "./Avatar.vue";
+
+import Dropdown from "@/components/Dropdown";
 import ClientImage from "@/components/ClientImage";
 import Popover from "@/components/Popover";
 import NotificationManager from "@/components/NotificationManager";
+
 export default {
   name: "AppBar",
-  data() {
-    return {
-      displaySettings: false
-    };
+  components: {
+    Dropdown,
+    Avatar,
+    ClientImage,
+    Popover,
+    NotificationManager
   },
   computed: {
     ...mapState([
@@ -105,11 +108,7 @@ export default {
           command: "view_profile"
         },
 
-        {
-          name: "<i class='bx bx-cog'></i> Settings",
-          command: "settings",
-          divided: true
-        },
+     
         {
           name: "Help",
           command: "support",
@@ -152,36 +151,21 @@ export default {
           })
             .then(response => {
               this.REMOVE_USER();
-              this.$router.push({ name: "login" });
             })
             .catch(error => {
               this.UPDATE_GLOBAL_LOADER(false);
             });
           break;
         }
-        case "settings": {
-          this.displaySettings = true;
-          break;
-        }
 
-        case "support": {
-          this.$router.push({ name: "supportCentre" });
-          break;
-        }
+    
 
         default:
           break;
       }
     }
   },
-  components: {
-    Dropdown,
-    Settings,
-    Avatar,
-    ClientImage,
-    Popover,
-    NotificationManager
-  }
+ 
 };
 </script>
 <style lang="scss" scoped>

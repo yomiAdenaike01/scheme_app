@@ -11,13 +11,11 @@
           <ServerHealth />
           <DefaultTransition>
             <keep-alive>
-              <router-view :key="key" />
+              <router-view />
             </keep-alive>
           </DefaultTransition>
         </el-col>
       </div>
-      <Tutorial />
-      <PreviousEventsDialog />
     </div>
   </div>
 </template>
@@ -26,13 +24,8 @@
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
-import moment, * as moments from "moment";
-import CriticalError from "@/components/CriticalError";
-import InvalidClient from "@/components/InvalidClient";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
-import Tutorial from "@/components/Tutorial";
-import PreviousEventsDialog from "@/components/PreviousEventsDialog";
 import ServerHealth from "@/components/ServerHealth";
 export default {
   name: "Main",
@@ -58,23 +51,16 @@ export default {
     this.displayWeeklyNotification();
   },
   computed: {
-    key() {
-      return this.$route.path;
-    },
     ...mapState([
-      "localNotifications",
-      "globalLoader",
       "userInformation",
       "userNotifications",
       "viewMobileMenu",
-      "defaultSize",
       "weeklyTimesheetUploaded",
-      "localSettings"
     ]),
     ...mapGetters(["getUAInformation"]),
-    ...mapState("Admin", ["shifts", "teamInformation"]),
+    ...mapState("Admin", ["teamInformation"]),
     returnIsStartOfWeek() {
-      return moment().get("day") <= 1;
+      return this.initMoment().get("day") <= 1;
     },
     hasRequestOrNotifications() {
       return this.userNotifications.length > 0;
@@ -98,9 +84,7 @@ export default {
   methods: {
     ...mapActions(["checkServerHealth", "updateDevices"]),
     ...mapMutations([
-      "REMOVE_USER",
       "UPDATE_NOTIFICATIONS",
-      "UPDATE_VIEW_NOTIFICATIONS_CENTER"
     ]),
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
@@ -167,8 +151,6 @@ export default {
     AppBar,
     NprogressContainer,
     DefaultTransition,
-    Tutorial,
-    PreviousEventsDialog,
     ServerHealth
   },
   watch: {

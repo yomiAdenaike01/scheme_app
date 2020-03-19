@@ -55,7 +55,11 @@ export default {
       currentTab: 0
     };
   },
-
+  components: {
+    Title,
+    Tabs,
+    ColourUnit
+  },
   computed: {
     ...mapState(["clientInformation", "daysOfWeek"]),
 
@@ -276,11 +280,7 @@ export default {
     }
   },
 
-  components: {
-    Title,
-    Tabs,
-    ColourUnit
-  }
+
 };
 </script>
 

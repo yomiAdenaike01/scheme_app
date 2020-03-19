@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import dates from "@/mixins/dates";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import EventMangerDialog from "./components/EventMangerDialog";
 import Toolbar from "./components/Toolbar";

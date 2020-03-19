@@ -129,7 +129,7 @@
             @click="selectedConfig = 'date'"
             size="mini"
             class="mb-2"
-            >Make changes</el-button
+            >Update date information</el-button
           >
         </Popover>
 
@@ -154,7 +154,7 @@
             @click="selectedConfig = 'type'"
             size="mini"
             class="mb-2"
-            >Make changes</el-button
+            >Update event type information</el-button
           >
         </Popover>
 
@@ -172,10 +172,12 @@
 
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
+
 import Title from "@/components/Title";
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
 import Form from "@/components/Form";
+
 export default {
   name: "ViewEventDialog",
   data() {
@@ -185,7 +187,12 @@ export default {
       updates: {}
     };
   },
-
+ components: {
+    Title,
+    Avatar,
+    Popover,
+    Form
+  },
   computed: {
     ...mapState("Admin", ["teamInformation", "eventsInformation"]),
     ...mapState(["userInformation", "dialogIndex"]),
@@ -196,6 +203,7 @@ export default {
       "getUserInformation",
       "getEnabledEvents"
     ]),
+  
     updateConfigs() {
       return [
         {
@@ -328,10 +336,10 @@ export default {
     ...mapActions("Admin", ["getEvents", "updateEvents"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
 
-    updateEvent(e) {
-      if (Object.values(e).length > 0) {
+    updateEvent(updateInformation) {
+      if (Object.values(updateInformation).length > 0) {
         this.loading = true;
-        this.updateEvents({ update: e, id: this.event.id })
+        this.updateEvents({ update: updateInformation, id: this.event.id })
           .then(() => {
             this.loading = false;
           })
@@ -503,12 +511,7 @@ export default {
     }
   },
 
-  components: {
-    Title,
-    Avatar,
-    Popover,
-    Form
-  }
+ 
 };
 </script>
 <style lang="scss" scoped>

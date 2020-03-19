@@ -29,10 +29,11 @@
 </template>
 
 <script>
+import { mapGetters, mapState, mapActions } from "vuex";
+
 import Title from "@/components/Title";
 import Form from "@/components/Form";
-import { mapGetters, mapState, mapActions } from "vuex";
-import moment from "moment";
+
 export default {
   name: "CreateTemplate",
   data() {
@@ -40,6 +41,10 @@ export default {
       configDisplay: ["disableRepeatFor", "individualUserGroups"],
       loading: false
     };
+  },
+   components: {
+    Form,
+    Title
   },
   computed: {
     ...mapGetters(["getIsAdmin"]),
@@ -162,7 +167,7 @@ export default {
     ) {
       // this.loading = true;
 
-      let nextWeek = moment()
+      let nextWeek = this.initMoment()
         .add(1, "week")
         .endOf("week")
         .toISOString();
@@ -200,10 +205,7 @@ export default {
         });
     }
   },
-  components: {
-    Form,
-    Title
-  }
+ 
 };
 </script>
 <style lang="scss" scoped>

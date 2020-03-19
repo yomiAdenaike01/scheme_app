@@ -79,15 +79,25 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
+
 import User from "./components/User";
 import UserManagerDialog from "./components/UserManagerDialog";
 import UserGroup from "./components/UserGroup";
-import Title from "@/components/Title";
 import QuickActions from "./components/QuickActions";
+
+import Title from "@/components/Title";
 import Popover from "@/components/Popover";
 import Nocontent from "@/components/Nocontent";
+
 export default {
   name: "UserManager",
+   data() {
+    return {
+      displayDialog: false,
+      loading: true,
+      viewUser: false
+    };
+  },
   activated() {
     Promise.all([this.getEvents(), this.getTeam()])
       .then(response => {
@@ -97,12 +107,14 @@ export default {
         this.loading = false;
       });
   },
-  data() {
-    return {
-      displayDialog: false,
-      loading: true,
-      viewUser: false
-    };
+   components: {
+    Title,
+    User,
+    UserGroup,
+    UserManagerDialog,
+    QuickActions,
+    Popover,
+    Nocontent
   },
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
@@ -148,15 +160,7 @@ export default {
       console.log(e);
     }
   },
-  components: {
-    Title,
-    User,
-    UserGroup,
-    UserManagerDialog,
-    QuickActions,
-    Popover,
-    Nocontent
-  }
+
 };
 </script>
 
