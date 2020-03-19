@@ -1,11 +1,6 @@
 <template>
   <div class="create_shift_options_container p-4">
-    <!-- Displaying templates -->
-    <!-- <MoreInformation
-      slot="titleContent"
-      index="admin"
-      instruction="create_template"
-    /> -->
+ 
     <div
       class="flex columns"
       v-if="eventTemplates.length > 0"
@@ -15,10 +10,9 @@
         <el-input
           v-model="templateNamesSearch"
           placeholder="Seach Templates"
-          size="mini"
         ></el-input>
         <el-button
-          size="mini"
+          size="small"
           class="ml-4"
           plain
           round
@@ -31,12 +25,14 @@
           ></i>
         </el-button>
       </div>
+      <transition-group name="el-fade-in">
       <EventTemplate
         @toggle="displayCreateTemplate = false"
         v-for="template in filteredTemplates"
         :key="template._id"
         :data="template"
       />
+      </transition-group>
     </div>
 
     <!-- No templates -->

@@ -38,8 +38,8 @@
 </template>
 
 <script>
-import Avatar from "@/components/Avatar";
 import { mapGetters } from "vuex";
+import Avatar from "@/components/Avatar";
 
 export default {
   name: "ViewUserWrapper",
