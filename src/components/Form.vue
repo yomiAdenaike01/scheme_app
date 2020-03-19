@@ -149,7 +149,7 @@ export default {
     },
     resetOnSubmit: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   computed: {
@@ -183,7 +183,7 @@ export default {
             type = "number";
           }
 
-          if (inputType == "date-time") {
+          if (inputType == "date-time" || inputType == 'date') {
             type = "date";
           }
 
@@ -226,7 +226,9 @@ export default {
       });
     },
     completeForm() {
-      this.$emit("val", this.formContent);
+      return new Promise((resolve,reject)=>{
+        try {
+           this.$emit("val", this.formContent);
 
       if (this.customMethod) {
         this.customMethod();
@@ -235,14 +237,22 @@ export default {
       if (this.nextTab) {
         this.$emit("changeTab");
       }
+      resolve();
+        } catch (error) {
+          reject(error)
+        }
+      })
+     
     },
     submitForm() {
       this.runValidation()
         .then(response => {
-          this.completeForm();
+          this.completeForm().then(response=>{
           if (this.resetOnSubmit) {
             this.resetForm();
           }
+          })
+         
         })
         .catch(error => {
           return error;

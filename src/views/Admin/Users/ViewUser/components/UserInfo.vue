@@ -1,9 +1,9 @@
 <template>
   <div class="user_info_container" v-loading="loading">
-    <div class="flex flex--end align-center">
-      <el-button round @click="requestgenEmail">Contact</el-button>
+    <div class="quick_actions_container flex flex--end align-center">
+      <el-button round size='mini'  @click="requestgenEmail">Contact</el-button>
       <Popover trigger="click">
-        <el-button slot="trigger" v-if="getIsAdmin" round>{{
+        <el-button slot="trigger" round size='mini' v-if="getIsAdmin" >{{
           data.groupID == 0 ? "Assign to group" : "Reassign to group"
         }}</el-button>
         <el-select
@@ -20,21 +20,29 @@
           </el-option>
         </el-select>
       </Popover>
-      <el-button type="danger" plain v-if="getIsAdmin" round @click="removeUser"
+      <el-button round size='mini' v-if="getIsAdmin"  @click="removeUser"
         >Delete Account</el-button
       >
+      <Popover trigger='click'>
+      <el-button round size='mini' slot='trigger'>Make Changes</el-button>
+      <Form submitText='Update user' slot='content' :config='updateUserForm' @val='updateUser'/>
+      </Popover>
     </div>
-    <h3>User Info</h3>
+    <h1>User Info</h1>
+    <div class="info_container">
+
     <p>{{ date }}</p>
     <p>{{ data.name }}</p>
     <p>{{ data.email }}</p>
     <p class="member_name">{{ group }}</p>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import Popover from "@/components/Popover";
+import Form from '@/components/Form';
 export default {
   name: "UserInfo",
   data() {
@@ -52,6 +60,31 @@ export default {
   computed: {
     ...mapGetters("Admin", ["getGroupName", "getUserGroups"]),
     ...mapGetters(["getIsAdmin", "getUserDevices"]),
+    updateUserForm(){
+      return [
+        {
+          'component-type':'text',
+          model:'name',
+          placeholder:'Team member name',
+          optional:true
+        },
+        {
+          'component-type':'select',
+          placeholder:'User groups',
+          options:this.getUserGroups,
+          "validType":'number',
+          model:'userGroup',
+          optional:true
+        },
+        {
+          'component-type':'date-picker',
+          placeholder:'Date Of Birth',
+          'input-type':'date',
+          model:'dateOfBirth',
+          optional:true
+        }
+      ]
+    },
     date() {
       return this.formatDate(this.data.dateCreated);
     },
@@ -68,6 +101,29 @@ export default {
   },
   methods: {
     ...mapActions(["genEmail", "request", "closeDialog"]),
+    ...mapActions('Admin',['getTeam']),
+    ...mapMutations(['UPDATE_NOTIFICATIONS']),
+    updateUser(e){
+      if(!this.hasEntries(e)){
+        this.UPDATE_NOTIFICATIONS({
+          type:'error',
+          message:'Error updating user, params are missing'
+        })
+      }else{
+    e.dateOfBirth = this.initMoment(e?.dateOfBirth).toISOString()
+      this.request({
+        method:'PUT',
+        url:'users/update',
+        data:{update:{...e},_id:this.data._id}
+      }).then(response=>{
+        this.getTeam();
+        this.closeDialog();
+      }).catch(err=>{
+        console.log(err);
+      })
+      }
+
+    }, 
     assignUserToGroup() {
       this.loading = true;
       this.request({
@@ -118,7 +174,8 @@ export default {
     }
   },
   components: {
-    Popover
+    Popover,
+    Form
   }
 };
 </script>
@@ -126,5 +183,19 @@ export default {
 <style lang="scss" scoped>
 .user_info_container {
   line-height: 2em;
+}
+.info_container{
+  margin-top: 20px;
+  padding:20px;
+  border-radius: 5px;
+  border: 2px solid whitesmoke;
+  font-size: 1.2em;
+  line-height: 2.2em;
+
+}
+.quick_actions_container{
+  & /deep/ > *{
+    margin-right:10px
+  }
 }
 </style>
