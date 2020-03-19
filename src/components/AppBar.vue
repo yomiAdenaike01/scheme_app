@@ -140,7 +140,7 @@ export default {
           this.UPDATE_DIALOG_INDEX({
             dialog: "viewUser",
             view: true,
-            id: this.userInformation._id
+            data: this.userInformation
           });
           break;
         }

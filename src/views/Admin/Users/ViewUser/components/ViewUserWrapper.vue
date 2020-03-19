@@ -10,7 +10,7 @@
     <div class="avatar_info_container flex_center columns">
       <el-badge
         is-dot
-        :type="userData.isOnline ? 'success' : 'danger'"
+        :type="badgeType"
         class="dot_container"
       >
         <Avatar class="sidebar_avatar full" :name="returnUsername" />
@@ -60,11 +60,14 @@ export default {
   computed: {
     ...mapGetters("Admin", ["getGroupName"]),
     ...mapGetters(["getDefaultColour"]),
+    badgeType(){
+      return this.userData?.isOnline ? 'success' : 'danger'
+    },
     returnUsername() {
-      return this.userData.name;
+      return this.userData?.name;
     },
     returnGroupName() {
-      return this.getGroupName("user", this.userData.groupID)?.name;
+      return this.getGroupName("user", this.userData?.groupID)?.name;
     },
     selectedTab: {
       get() {

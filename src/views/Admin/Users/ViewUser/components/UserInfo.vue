@@ -24,7 +24,7 @@
         >Delete Account</el-button
       >
       <Popover trigger='click'>
-      <el-button round size='mini' slot='trigger'>Make Changes</el-button>
+      <el-button round size='mini' slot='trigger'>Update Personal Information</el-button>
       <Form submitText='Update user' slot='content' :config='updateUserForm' @val='updateUser'/>
       </Popover>
     </div>
@@ -65,7 +65,13 @@ export default {
         {
           'component-type':'text',
           model:'name',
-          placeholder:'Team member name',
+          placeholder:'Name',
+          optional:true
+        },
+          {
+          'component-type':'text',
+          model:'email',
+          placeholder:'Email address',
           optional:true
         },
         {
@@ -116,10 +122,10 @@ export default {
         url:'users/update',
         data:{update:{...e},_id:this.data._id}
       }).then(response=>{
-        this.getTeam();
-        this.closeDialog();
+                this.reset();
       }).catch(err=>{
         console.log(err);
+                 this.reset();
       })
       }
 
@@ -133,11 +139,11 @@ export default {
       })
         .then(() => {
           this.loading = false;
-          this.closeDialog();
+                  this.reset();
         })
         .catch(() => {
           this.loading = false;
-          this.closeDialog();
+                 this.reset();
         });
     },
     removeUser() {
@@ -149,12 +155,16 @@ export default {
       })
         .then(() => {
           this.loading = false;
-          this.closeDialog();
+         this.reset();
         })
         .catch(() => {
           this.loading = false;
-          this.closeDialog();
+                 this.reset();
         });
+    },
+    reset(){
+      this.getTeam();
+          this.closeDialog();
     },
     requestgenEmail() {
       let emailContent = {
