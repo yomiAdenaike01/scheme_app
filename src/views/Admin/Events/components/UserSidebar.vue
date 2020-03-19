@@ -26,7 +26,7 @@
         </Dropdown>
       </div>
     </div>
-    <Nocontent
+    <InformationDisplay
       class="pr-4 pl-4"
       v-else
       :moreInformation="
@@ -48,7 +48,7 @@
         size="mini"
         >Go to user management</el-button
       >
-    </Nocontent>
+    </InformationDisplay>
   </div>
 </template>
 
@@ -58,7 +58,7 @@ import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 import Title from "@/components/Title";
 import MoreInformation from "@/components/MoreInformation";
-import Nocontent from "@/components/Nocontent";
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserSidebar",
 
@@ -121,7 +121,7 @@ export default {
     Avatar,
     Title,
     MoreInformation,
-    Nocontent
+    InformationDisplay
   }
 };
 </script>

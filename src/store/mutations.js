@@ -9,9 +9,7 @@ export default {
   ) {
     Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
   },
-  UPDATE_SERVER_HEALTH_STATUS(state, payload) {
-    Vue.set(state, "serverHealth", payload);
-  },
+ 
 
   UPDATE_INVALID_CLIENT(state, payload) {
     Vue.set(state, "invalidClient", payload);

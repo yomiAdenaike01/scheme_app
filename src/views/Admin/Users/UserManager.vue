@@ -48,7 +48,7 @@
           </el-row>
         </div>
         <div v-else class="h-100 no_content_container flex_center">
-          <Nocontent
+          <InformationDisplay
             class="pr-4 pl-4"
             :moreInformation="
               getIsAdmin
@@ -62,7 +62,7 @@
             text="No team members detected, click the button below to go to user management."
             icon="bx bx-user-circle"
           >
-          </Nocontent>
+          </InformationDisplay>
         </div>
       </div>
     </UserGroup>
@@ -87,7 +87,7 @@ import QuickActions from "./components/QuickActions";
 
 import Title from "@/components/Title";
 import Popover from "@/components/Popover";
-import Nocontent from "@/components/Nocontent";
+import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "UserManager",
@@ -114,14 +114,14 @@ export default {
     UserManagerDialog,
     QuickActions,
     Popover,
-    Nocontent
+    InformationDisplay
   },
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState("Admin", ["teamInformation", "groupIDs"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
-    noContent() {
+    InformationDisplay() {
       return {
         text: "",
         icon: "el-icon-warning-outline",

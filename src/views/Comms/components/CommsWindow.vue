@@ -1,10 +1,8 @@
 <template>
   <transition name="el-fade-in" >
-    <div class="comms_window_container flex columns" v-loading='loading'>
-      <div class="messages_container" v-if="hasEntries(activeTranscript)">
-        <div class="comms_window_toolbar">
-          <p>{{ username }}</p>
-        </div>
+    <div class="comms_window_container flex columns" v-loading="!info">
+      <div class="messages_container" v-if="activeTranscript">
+        <CommsToolbar :recieverInformation="info"/>
         <!-- Messages -->
         <Message
           v-for="(message, index) in messages"
@@ -32,7 +30,6 @@
             type="textarea"
           ></el-input>
           <el-button
-            v-loading="loading"
             @click="prepareSendMessage"
             plain
             type="primary"
@@ -40,8 +37,9 @@
           >
         </div>
       </div>
+      <!-- Information display -->
       <div v-else class="no_content_container">
-        <Nocontent v-bind="noContent" />
+        <InformationDisplay v-bind="infoDisplay" />
       </div>
     </div>
   </transition>
@@ -50,9 +48,11 @@
 <script>
 import { mapState, mapActions } from "vuex";
 
-import Popover from "@/components/Popover";
 import Message from "./Message";
-import Nocontent from "@/components/Nocontent";
+import CommsToolbar from './CommsToolbar';
+
+import Popover from "@/components/Popover";
+import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "CommsWindow",
@@ -66,14 +66,10 @@ export default {
       }
     };
   },
-
-
   activated() {
     clearInterval(this.messagesInterval);
     this.messagesInterval = setInterval(() => {
-      this.getMessages().then(response=>{
-        this.loading =false;
-      })
+      this.getMessages()
     }, this.requestIntervals.messages);
   },
     deactivated() {
@@ -81,24 +77,23 @@ export default {
   },
   components: {
     Message,
+    CommsToolbar,
     Popover,
-    Nocontent
+    InformationDisplay,
   },
   computed: {
     ...mapState(["requestIntervals"]),
     ...mapState("Comms", ["activeTranscript", "messages"]),
-    noContent() {
+    infoDisplay() {
       return {
         text: "No chat selected",
         icon: "bx bx-conversation"
       };
     },
     info() {
-      return this.activeTranscript.userInfo;
+      return this.activeTranscript?.userInfo;
     },
-    username() {
-      return this.info?.name ?? "John Doe";
-    },
+
     isMuted() {
       return (
         this.activeTranscript.mutedNotifications.indexOf(this.userInformation) >
@@ -116,7 +111,6 @@ export default {
         ...this.chat,
         recieverID: this.activeTranscript.userTwo,
         transcriptID: this.activeTranscript._id,
-        userName: this.username,
         isMuted: this.isMuted
       };
       this.chat.content = "";
@@ -128,7 +122,6 @@ export default {
         })
         .catch(() => {
           this.loading = false;
-          return;
         });
     }
   },
@@ -139,13 +132,6 @@ export default {
 <style lang="scss" scoped>
 .comms_window_container {
   flex: 1;
-  color: grey;
-}
-.comms_window_toolbar {
-  border-bottom: $border;
-  padding: 10px;
-  width: 100%;
-  pointer-events: none;
 }
 .messages_container {
   position: relative;

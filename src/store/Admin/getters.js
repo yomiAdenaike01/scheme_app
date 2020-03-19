@@ -81,9 +81,9 @@ export default {
       let eventGroups = [...clientInformation.eventGroups];
       let { groupID } = userInformation;
 
-      return eventGroups.filter(evnt => {
+      return eventGroups.filter(group => {
         // enabled for equal to user group
-        let index = evnt.enabledFor.findIndex(enbled => {
+        let index = group.enabledFor.findIndex(enbled => {
           return enbled == groupID;
         });
         return index > -1;
@@ -116,7 +116,6 @@ export default {
     }
     return res;
   },
-
   getUserInformation: ({ teamInformation }, getters, { userInformation }) => (
     match,
     params = "_id"

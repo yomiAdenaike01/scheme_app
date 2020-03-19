@@ -5,7 +5,6 @@
     </div>
 
     <div v-if="addNew" class="flex_center columns new_group_container">
-      <LeadIcon class="large_icon shadow grey mb-5" icon="bx bx-group" />
       <h2 class="large">Manage users</h2>
       <small class="grey">Create, edit, remove users / groups.</small>
       <el-button
@@ -19,7 +18,6 @@
 </template>
 
 <script>
-import LeadIcon from "@/components/LeadIcon";
 import { mapGetters } from "vuex";
 export default {
   name: "UserGroup",
@@ -34,12 +32,9 @@ export default {
   },
 
   computed: {
-    // Can display a list of users
     ...mapGetters(["getDefaultColour"])
   },
-  components: {
-    LeadIcon
-  }
+
 };
 </script>
 <style lang="scss" scoped>

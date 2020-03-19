@@ -1,10 +1,11 @@
 <template>
   <transition name="el-fade-in">
     <div
+    v-loading='loading'
       class="p-2 server_health_container flex_center"
       :class="[
-        { healthy: serverHealth.healthy },
-        { unhealthy: !serverHealth.healthy }
+        { healthy: serverInformation.healthy },
+        { unhealthy: !serverInformation.healthy }
       ]"
     >
       {{ displayText }}
@@ -13,20 +14,44 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import {  mapActions } from "vuex";
 export default {
-  name: "ServerHealth",
+  name: "InstanceCheck",
+  data(){
+    return{
+      loading:true,
+      serverInformation:{}
+    }
+  },
+  activated(){
+    this.checkInstance();
+  },
   computed: {
-    ...mapState(["serverHealth"]),
-
     displayText() {
-      let { healthy } = this.serverHealth;
+      let healthy  = this.serverInformation?.healthy;
       if (healthy) {
         return "Your cloud instance is healthy";
       } else {
         return "Server error detected please contact your admin";
       }
     }
+  },
+  methods:{
+    ...mapActions(['request']),
+    checkInstance() {
+    this.request({
+        method: "GET",
+        url: "/healthcheck"
+      })
+      .then(response => {
+        this.loading = false;
+        this.serverInformation = response;
+      })
+      .catch(error => {
+        this.loading = false;
+      });
+  },
+    
   }
 };
 </script>

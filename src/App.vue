@@ -29,7 +29,7 @@ export default {
       loading: false
     };
   },
-  
+
   created() {
     this.loggerController();
     if (this.getIsIE) {
@@ -76,7 +76,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "getClient"]),
+    ...mapActions(["getClient"]),
+
     loggerController() {
       if (process.env.NODE_ENV != "development") {
         window.console.log = function() {};

@@ -13,10 +13,12 @@ export default {
     } else {
       Vue.set(state, "transcripts", [...state.transcripts, ...{ type, data }]);
     }
-
-    //  Think about auto selecting the transcript
   },
   UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
-    Vue.set(state, "activeTranscript", payload);
+    if(!payload){
+      Vue.set(state,'activeTranscript',state.transcripts[0]);
+    }else{
+      Vue.set(state, "activeTranscript", payload);
+    }
   }
 };

@@ -46,19 +46,7 @@ export default {
       loading: false
     };
   },
-  computed: {
-    ...mapState(["userInformation"]),
-    ...mapState("Comms", ["activeTranscript"]),
-    ...mapGetters("Admin", ["getUserInformation"]),
-    user() {
-      return this.getUserInformation(this.data.userTwo);
-    },
-    isMuted() {
-      return this.data.mutedNotifications.indexOf(this.userInformation) > -1;
-    }
-  },
-
-  props: {
+    props: {
     loadingTranscript: {
       type: Boolean,
       deafault: false
@@ -68,6 +56,21 @@ export default {
       default: () => {
         return {};
       }
+    }
+  },
+    components: {
+    Avatar,
+    Popover
+  },
+  computed: {
+    ...mapState(["userInformation"]),
+    ...mapState("Comms", ["activeTranscript"]),
+    ...mapGetters("Admin", ["getUserInformation"]),
+    user() {
+      return this.getUserInformation(this.data.userTwo);
+    },
+    isMuted() {
+      return this.data.mutedNotifications.indexOf(this.userInformation) > -1;
     }
   },
   methods: {
@@ -105,11 +108,13 @@ export default {
     deleteTranscript() {
       this.loading = true;
       this.request({
+        url:'messengers/transcripts',
         method: "DELETE",
-        data: { id: this.data.transcriptID }
+        data: { _id: this.data.transcriptID }
       })
         .then(() => {
           this.loading = false;
+          this.UPDATE_ACTIVE_TRANSCRIPT();
         })
         .catch(() => {
           this.loading = false;
@@ -117,10 +122,7 @@ export default {
     }
   },
 
-  components: {
-    Avatar,
-    Popover
-  }
+
 };
 </script>
 

@@ -15,12 +15,8 @@ export default {
   },
   computed: {
     ...mapState(["defaultCustomColours", "userInformation"]),
-    ...mapState("Admin", [, "teamInformation"]),
-    findUserColour() {
-      return this.teamInformation.find(member => {
-        return member.name.toLowerCase() == this.name.toLowerCase();
-      });
-    },
+    ...mapState("Admin", ["teamInformation"]),
+
     isNameTheSame() {
       return (
         this.userInformation.name.trim().toLowerCase() ==

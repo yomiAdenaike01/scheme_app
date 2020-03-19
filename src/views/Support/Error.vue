@@ -4,7 +4,6 @@
       <div class="error_container flex_center">
         <!-- Text container for what to do on errors -->
         <div class="text_container flex_center columns">
-          <LeadIcon class="large_icon" icon="el-icon-warning-outline" />
           <br />
           <p class="grey error_content">
             An error has occured with your schemeapp instance, please contact
@@ -51,19 +50,19 @@
 </template>
 
 <script>
-import LeadIcon from "@/components/LeadIcon";
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "Error",
-  activated() {
-    if (!this.hasEntries(this.errorInformation)) {
-      this.$router.push({ name: "events" });
-    }
-  },
+
   data() {
     return {
       email: ""
     };
+  },
+    activated() {
+    if (!this.hasEntries(this.errorInformation)) {
+      this.$router.push({ name: "events" });
+    }
   },
   computed: {
     ...mapState(["userInformation", "errorInformation"]),
@@ -94,9 +93,7 @@ export default {
         });
     }
   },
-  components: {
-    LeadIcon
-  }
+ 
 };
 </script>
 

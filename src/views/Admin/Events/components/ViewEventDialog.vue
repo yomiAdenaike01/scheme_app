@@ -113,7 +113,7 @@
 
         <!-- Assign a user -->
         <!-- <div class="no_users" v-else>
-          <Nocontent v-bind="noAssignedUsers" />
+          <InformationDisplay v-bind="noAssignedUsers" />
         </div> -->
 
         <h3 class="mb-3 mt-3">Event date information</h3>

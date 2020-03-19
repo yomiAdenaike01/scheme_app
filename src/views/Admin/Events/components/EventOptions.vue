@@ -38,7 +38,7 @@
     <!-- No templates -->
     <div v-else>
       <div class="flex_center">
-        <Nocontent v-bind="noTemplateOptions">
+        <InformationDisplay v-bind="noTemplateOptions">
           <el-button
             size="mini"
             class="ml-4"
@@ -52,7 +52,7 @@
               class="indicator el-icon-arrow-right"
             ></i>
           </el-button>
-        </Nocontent>
+        </InformationDisplay>
       </div>
     </div>
 
@@ -70,7 +70,7 @@
 import Title from "@/components/Title";
 import EventTemplate from "./EventTemplate";
 import { mapState, mapActions, mapGetters } from "vuex";
-import Nocontent from "@/components/Nocontent";
+import InformationDisplay from "@/components/InformationDisplay";
 import CreateTemplate from "./CreateTemplate";
 import EventManagerBus from "./EventsManagerBus";
 export default {
@@ -121,7 +121,7 @@ export default {
   },
   components: {
     EventTemplate,
-    Nocontent,
+    InformationDisplay,
     CreateTemplate
   }
 };

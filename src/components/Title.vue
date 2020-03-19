@@ -1,16 +1,14 @@
-<template>
-  <div class="title_wrapper" :class="defaultClass">
-    <component v-if="title" :is="tag">{{ title }}</component>
-    <p v-if="subtitle" class="desc mb-2" v-html="subtitle"></p>
+<template functional>
+  <div class="title_wrapper" :class="props.defaultClass">
+    <component v-if="title" :is="tag">{{ props.title }}</component>
+    <p v-if="subtitle" class="desc mb-2" v-html="props.subtitle"></p>
     <slot></slot>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
 export default {
   name: "Title",
-
   props: {
     tag: {
       type: String,
@@ -23,7 +21,6 @@ export default {
     title: String | Number,
     subtitle: String | Number
   },
-  computed: { ...mapState(["defaultSize"]) }
 };
 </script>
 <style lang="scss" scoped>

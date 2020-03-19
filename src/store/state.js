@@ -1,7 +1,5 @@
 import vars from "@/assets/Styles/defaults.scss";
 export default {
-  theme: localStorage.getItem("cssText"),
-  serverHealth: {},
   requestIntervals: {
     team: 6000,
     events: 6000,
@@ -27,16 +25,8 @@ export default {
   weeklyTimesheetUploaded: false,
   hasSeenNotifications: false,
   userNotifications: [],
-  currentInterval: "",
   viewMobileMenu: false,
   defaultSize: { minFontSize: "10px", maxFontSize: "16px" },
-  intervals: {
-    clientInterval: null
-  },
-  invalidClient: {
-    display: false,
-    isError: false
-  },
 
   dialogIndex: {
     viewUser: { view: null, data: null, tabIndex: 0 },

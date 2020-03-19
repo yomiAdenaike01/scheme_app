@@ -5,7 +5,7 @@
       :style="{ borderRight: `1.5px solid #efefef` }"
     >
       <div class="client_image_container p-2" v-if="$mq == 'lg'">
-        <ClientImage :responsive="true" :center="true" />
+        <Logo/>
       </div>
       <div
         v-else
@@ -52,7 +52,7 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Avatar from "./Avatar.vue";
 
 import Dropdown from "@/components/Dropdown";
-import ClientImage from "@/components/ClientImage";
+import Logo from "@/components/Logo";
 import Popover from "@/components/Popover";
 import NotificationManager from "@/components/NotificationManager";
 
@@ -61,7 +61,7 @@ export default {
   components: {
     Dropdown,
     Avatar,
-    ClientImage,
+    Logo,
     Popover,
     NotificationManager
   },

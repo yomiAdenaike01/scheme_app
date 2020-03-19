@@ -4,7 +4,7 @@
       <h5 class="mb-2">All Events</h5>
       <Event v-for="event in data" :event="event" :key="event._id" />
     </div>
-    <Nocontent v-bind="noContent" v-else>
+    <InformationDisplay v-bind="InformationDisplay" v-else>
       <el-button
         v-if="getIsAdmin"
         :disabled="$route.name == 'events'"
@@ -16,14 +16,14 @@
           $route.name == "events" ? "Already in events" : "Go to events"
         }}</el-button
       >
-    </Nocontent>
+    </InformationDisplay>
   </div>
 </template>
 
 <script>
 import Event from "@/views/Admin/Events/components/Event";
 import { mapState, mapGetters } from "vuex";
-import Nocontent from "@/components/Nocontent";
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserEvents",
   props: {
@@ -36,7 +36,7 @@ export default {
     ...mapState(["userInformation"]),
     ...mapState("Admin", ["eventsInformation", "viewTeamMember"]),
     ...mapGetters(["getIsAdmin"]),
-    noContent() {
+    InformationDisplay() {
       return {
         text:
           "No events are detected for this user, you can create a event for them below",
@@ -46,7 +46,7 @@ export default {
   },
   components: {
     Event,
-    Nocontent
+    InformationDisplay
   }
 };
 </script>

@@ -22,13 +22,16 @@
 <script>
 import { mapActions, mapMutations } from "vuex";
 export default {
-  name: "Notification",
+  name: "UserNotification",
   data() {
     return {
       viewDetails: false,
       formatString: "DD/MMMM/YYYY HH:mm",
       loading: false
     };
+  },
+    props: {
+    notification: Object
   },
   computed: {
     notificationSendDate() {
@@ -70,9 +73,7 @@ export default {
       return type;
     }
   },
-  props: {
-    notification: Object
-  },
+
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_USER_NOTIFICATIONS"]),

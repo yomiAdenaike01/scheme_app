@@ -8,7 +8,7 @@
           <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
         </div>
         <el-col class="main_col_container">
-          <ServerHealth />
+          <InstanceCheck />
           <DefaultTransition>
             <keep-alive>
               <router-view />
@@ -26,12 +26,12 @@ import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
-import ServerHealth from "@/components/ServerHealth";
+import InstanceCheck from "@/components/InstanceCheck";
 export default {
   name: "Main",
 
   activated() {
-    this.checkServerHealth();
+    this.checkInstanceCheck();
     this.checkDevice();
 
     let isVerified = this.userInformation.verified;
@@ -82,7 +82,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["checkServerHealth", "updateDevices"]),
+    ...mapActions(["updateDevices"]),
     ...mapMutations([
       "UPDATE_NOTIFICATIONS",
     ]),
@@ -151,7 +151,7 @@ export default {
     AppBar,
     NprogressContainer,
     DefaultTransition,
-    ServerHealth
+    InstanceCheck
   },
   watch: {
     hasAnnoucement: {

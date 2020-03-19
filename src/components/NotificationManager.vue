@@ -4,8 +4,8 @@
       <h3 class="bold">Notifications</h3>
       <el-switch v-model="dnd" active-text="Do not disturb"></el-switch>
     </div>
-    <div v-if="hasEntries(userNotifications)">
-      <Notification
+    <div v-if="userNotifications">
+      <UserNotification
         v-for="notification in userNotifications"
         :key="notification._id"
         :notification="notification"
@@ -14,18 +14,18 @@
         class="block_button m-0"
         @click="readAll"
         size="small"
-        v-if="hasEntries(getUserNotificationsLength)"
+        v-if="getUserNotificationsLength > 0"
         >Mark all as read</el-button
       >
     </div>
-    <Nocontent v-else v-bind="noContent" />
+    <InformationDisplay v-else v-bind="infoDisplay" />
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
-import Notification from "./Notification";
-import Nocontent from "@/components/Nocontent";
+import UserNotification from "./UserNotification";
+import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "NotificationManager",
@@ -44,12 +44,15 @@ export default {
         this.loading = false;
       });
   },
-
+ components: {
+    UserNotification,
+    InformationDisplay
+  },
   computed: {
     ...mapState(["userNotifications", "userInformation"]),
     ...mapGetters(["getUserNotificationsLength"]),
 
-    noContent() {
+    infoDisplay() {
       return {
         moreInformation: {
           index: "admin",
@@ -64,7 +67,6 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapActions("Admin", ["getNotifications"]),
-    ...mapMutations(["UPDATE_USER_NOTIFICATIONS"]),
     deleteReadNotifications() {
       this.loading = true;
       this.request({
@@ -73,13 +75,9 @@ export default {
       })
         .then(response => {
           this.loading = false;
-
-          return response;
         })
         .catch(err => {
           this.loading = false;
-
-          return err;
         });
     },
     readAll() {
@@ -87,16 +85,10 @@ export default {
       this.request({
         method: "POST",
         url: "/notifications/read/all"
-      })
-        .then(response => {})
-        .catch(error => {});
-      this.loading = false;
-    }
+      });
+}
   },
-  components: {
-    Notification,
-    Nocontent
-  }
+ 
 };
 </script>
 
