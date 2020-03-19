@@ -5,13 +5,6 @@
     <MoreInformation v-if="props.moreInformation" v-bind="props.moreInformation" />
     
     <slot v-else></slot>
-
-
-    <div class="title_wrapper" v-if="Object.keys(props.title).length > 0" :class="props.defaultClass">
-    <component v-if="props.title" :is="props.tag">{{ props.title }}</component>
-    <p v-if="subtitle" class="desc mb-2" v-html="props.subtitle"></p>
-    <slot></slot>
-  </div>
   </div>
 </template>
 
@@ -29,10 +22,6 @@ export default {
     moreInformation: {
       type: Object
     },
-    title:{
-      type:Object,
-    }
-
   },
   components: {
     MoreInformation

@@ -22,6 +22,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
@@ -31,7 +32,6 @@ export default {
   name: "Main",
 
   activated() {
-    this.checkInstanceCheck();
     this.checkDevice();
 
     let isVerified = this.userInformation.verified;

@@ -1,8 +1,8 @@
 <template>
-  <transition name="el-fade-in" >
-    <div class="comms_window_container flex columns" v-loading="!info">
+  <transition name="el-fade-in">
+    <div class="comms_window_container flex columns" v-loading="loading">
       <div class="messages_container" v-if="activeTranscript">
-        <CommsToolbar :recieverInformation="info"/>
+        <CommsToolbar :recieverInformation="info" />
         <!-- Messages -->
         <Message
           v-for="(message, index) in messages"
@@ -19,22 +19,14 @@
             <Popover trigger="click">
               <i class="bx bx-plus grey show_actions" slot="trigger"></i>
               <div class="flex flex--start columns" slot="content">
-                <el-button><i class="bx bx-plus"></i>Add attachment</el-button>
+                <el-button>
+                  <i class="bx bx-plus"></i>Add attachment
+                </el-button>
               </div>
             </Popover>
           </div>
-          <el-input
-            clearable
-            class="chat_input"
-            v-model="chat.content"
-            type="textarea"
-          ></el-input>
-          <el-button
-            @click="prepareSendMessage"
-            plain
-            type="primary"
-            >Send</el-button
-          >
+          <el-input clearable class="chat_input" v-model="chat.content" type="textarea"></el-input>
+          <el-button @click="prepareSendMessage" plain type="primary">Send</el-button>
         </div>
       </div>
       <!-- Information display -->
@@ -49,7 +41,7 @@
 import { mapState, mapActions } from "vuex";
 
 import Message from "./Message";
-import CommsToolbar from './CommsToolbar';
+import CommsToolbar from "./CommsToolbar";
 
 import Popover from "@/components/Popover";
 import InformationDisplay from "@/components/InformationDisplay";
@@ -58,7 +50,7 @@ export default {
   name: "CommsWindow",
   data() {
     return {
-      loading: true,
+      loading: false,
       messagesInterval: null,
       chat: {
         content: "",
@@ -69,17 +61,17 @@ export default {
   activated() {
     clearInterval(this.messagesInterval);
     this.messagesInterval = setInterval(() => {
-      this.getMessages()
+      this.getMessages();
     }, this.requestIntervals.messages);
   },
-    deactivated() {
+  deactivated() {
     clearInterval(this.messagesInterval);
   },
   components: {
     Message,
     CommsToolbar,
     Popover,
-    InformationDisplay,
+    InformationDisplay
   },
   computed: {
     ...mapState(["requestIntervals"]),
@@ -124,8 +116,7 @@ export default {
           this.loading = false;
         });
     }
-  },
-
+  }
 };
 </script>
 

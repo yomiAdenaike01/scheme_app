@@ -23,14 +23,15 @@ export default {
   activated() {
     if (
       !this.hasEntries(this.activeTranscript) &&
-      !this.hasEntries(this.$route.params)
+      !this.hasEntries(this.$route.params) && this.transcripts.length > 0
+      
     ) {
       this.loading = true;
       this.getTranscripts()
         .then(response => {
           this.loading = false;
           if (response.length > 0) {
-            this.UPDATE_ACTIVE_TRANSCRIPT(response[0]);
+            this.UPDATE_ACTIVE_TRANSCRIPT(response?.[0]);
           }
         })
         .catch(() => {

@@ -1,32 +1,23 @@
 <template>
   <div class="comms_list_container">
-      <!-- Transcripts -->
+    <!-- Transcripts -->
     <div class="comms_list_toolbar flex_center p-3">
-      <el-input
-        placeholder="Seach chats"
-        class="mr-3"
-        size="small"
-        v-model="transcriptSearch"
-      ></el-input>
+      <el-input placeholder="Seach chats" class="mr-3" size="small" v-model="transcriptSearch"></el-input>
       <Popover width="200" trigger="click">
-        <Form slot='content' v-loading='loading' :config="createChatForm" @val="initChat" submitText='Initate Chat'/>
-        <el-button
-          icon="el-icon-plus"
-          round
-          size="small"
-          circle
-          slot="trigger"
-        ></el-button>
+        <Form
+          slot="content"
+          v-loading="loading"
+          :config="createChatForm"
+          @val="initChat"
+          submitText="Initate Chat"
+        />
+        <el-button icon="el-icon-plus" round size="small" circle slot="trigger"></el-button>
       </Popover>
     </div>
     <div class="comms_list">
-      <div
-        class="no_content_wrapper flex_center"
-        v-if="transcripts.length == 0"
-      >
+      <div class="no_content_wrapper flex_center" v-if="transcripts.length == 0">
         <InformationDisplay v-bind="infoDisplay" />
       </div>
-      <!-- Transcripts -->
       <div v-else>
         <CommsTranscript
           v-for="transcript in transcripts"
@@ -46,7 +37,7 @@ import CommsEventBus from "./CommsEventBus";
 
 import InformationDisplay from "@/components/InformationDisplay";
 import Popover from "@/components/Popover";
-import Form from '@/components/Form'
+import Form from "@/components/Form";
 
 export default {
   name: "CommsList",
@@ -82,22 +73,22 @@ export default {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["transcripts"]),
     ...mapState("Admin", ["teamInformation"]),
-    ...mapGetters("Admin", ["getUserInformation",'getDropdownTeamMembers']),
+    ...mapGetters("Admin", ["getUserInformation", "getDropdownTeamMembers"]),
 
-    createChatForm(){
+    createChatForm() {
       return [
         {
-          'component-type':'text',
-          model:'content',
-          placeholder:'Chat content'
+          "component-type": "text",
+          model: "content",
+          placeholder: "Chat content"
         },
         {
-          'component-type':'select',
-          placeholder:'Reciever',
-          model:'recieverID',
-          options:this.getDropdownTeamMembers,
+          "component-type": "select",
+          placeholder: "Reciever",
+          model: "recieverID",
+          options: this.getDropdownTeamMembers
         }
-      ]
+      ];
     },
     team() {
       return this.teamInformation.filter(member => {
@@ -110,11 +101,10 @@ export default {
           index: "admin",
           instruction: "requests"
         },
-        text: "No chats founds, you can create a new chat above.",
+        text: "No chats found, you can create a new chat above.",
         icon: "bx bx-message-rounded"
       };
-    },
-
+    }
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts", "startChat"]),
@@ -140,10 +130,8 @@ export default {
         .catch(() => {
           reset();
         });
-    },
-  
-  },
-
+    }
+  }
 };
 </script>
 
