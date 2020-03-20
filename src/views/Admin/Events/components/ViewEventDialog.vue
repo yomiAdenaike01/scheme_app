@@ -27,7 +27,7 @@
           size="small"
           @click="clockIn"
           v-if="isEventMine && isEventToday && !hasClockedIn"
-          >Clock In</el-button
+          >Clock in</el-button
         >
 
         <el-button
@@ -111,11 +111,6 @@
           </div>
         </div>
 
-        <!-- Assign a user -->
-        <!-- <div class="no_users" v-else>
-          <InformationDisplay v-bind="noAssignedUsers" />
-        </div> -->
-
         <h3 class="mb-3 mt-3">Event date information</h3>
         <Popover trigger="click">
           <Form
@@ -187,7 +182,7 @@ export default {
       updates: {}
     };
   },
- components: {
+  components: {
     Title,
     Avatar,
     Popover,
@@ -203,7 +198,7 @@ export default {
       "getUserInformation",
       "getEnabledEvents"
     ]),
-  
+
     updateConfigs() {
       return [
         {
@@ -428,7 +423,7 @@ export default {
             method: "DELETE",
             url: "events/delete",
             data: {
-              id: this.event.id
+              _id: this.event.id
             }
           })
             .then(response => {
@@ -509,9 +504,7 @@ export default {
           return err;
         });
     }
-  },
-
- 
+  }
 };
 </script>
 <style lang="scss" scoped>

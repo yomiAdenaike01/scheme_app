@@ -70,8 +70,6 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
-import Dropdown from "@/components/Dropdown";
-import ViewEventDialog from "../../Events/components/ViewEventDialog";
 import Popover from "@/components/Popover";
 import moment from "moment";
 export default {
@@ -88,9 +86,7 @@ export default {
   props: {
     event: Object
   },
-    components: {
-    Dropdown,
-    ViewEventDialog,
+  components: {
     Popover
   },
   computed: {
@@ -98,7 +94,7 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getGroupName", "getEventAssignedTo"]),
     ...mapState("Admin", ["groupIDs", "teamInformation"]),
-    
+
     isEventMine() {
       return (
         this.event.assignedTo.some(e => {
@@ -169,8 +165,7 @@ export default {
         return error;
       }
     }
-  },
-
+  }
 };
 </script>
 

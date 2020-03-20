@@ -2,24 +2,13 @@
   <transition name="fade-transform" mode="out-in" tag="div">
     <div class="critical_error_wrapper h-100 p-4">
       <div class="error_container flex_center">
-        <!-- Text container for what to do on errors -->
         <div class="text_container flex_center columns">
-          <br />
           <p class="grey error_content">
             An error has occured with your schemeapp instance, please contact
             your assigned systems administrator to get this resolved. If you
             don't want to do this please click the button below to view the
             FAQ's.
           </p>
-          <div class="button_container flex_center mt-3">
-            <el-button
-              round
-              type="primary"
-              plain
-              @click="$router.push({ name: 'faqs' })"
-              >View FAQ's</el-button
-            >
-          </div>
         </div>
       </div>
       <el-collapse-transition>
@@ -59,11 +48,12 @@ export default {
       email: ""
     };
   },
-    activated() {
+  activated() {
     if (!this.hasEntries(this.errorInformation)) {
       this.$router.push({ name: "events" });
     }
   },
+
   computed: {
     ...mapState(["userInformation", "errorInformation"]),
     ...mapGetters(["getUAInformation"]),
@@ -92,8 +82,7 @@ export default {
           return err;
         });
     }
-  },
- 
+  }
 };
 </script>
 

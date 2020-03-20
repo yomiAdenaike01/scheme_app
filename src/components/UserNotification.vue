@@ -30,7 +30,7 @@ export default {
       loading: false
     };
   },
-    props: {
+  props: {
     notification: Object
   },
   computed: {

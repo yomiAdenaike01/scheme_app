@@ -26,13 +26,20 @@
               </div>
             </Popover>
           </div>
-          <el-input clearable class="chat_input" v-model="chat.content" type="textarea"></el-input>
-          <el-button @click="prepareSendMessage" plain type="primary">Send</el-button>
+          <el-input
+            clearable
+            class="chat_input"
+            v-model="chat.content"
+            type="textarea"
+          ></el-input>
+          <el-button @click="prepareSendMessage" plain type="primary"
+            >Send</el-button
+          >
         </div>
       </div>
       <!-- Information display -->
       <div v-else class="no_content_container">
-        <InformationDisplay v-bind="infoDisplay" />
+        <p>No data</p>
       </div>
     </div>
   </transition>
@@ -45,7 +52,6 @@ import Message from "./Message";
 import CommsToolbar from "./CommsToolbar";
 
 import Popover from "@/components/Popover";
-import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "CommsWindow",
@@ -71,8 +77,7 @@ export default {
   components: {
     Message,
     CommsToolbar,
-    Popover,
-    InformationDisplay
+    Popover
   },
   computed: {
     ...mapState(["requestIntervals"]),

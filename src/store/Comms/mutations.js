@@ -15,9 +15,9 @@ export default {
     }
   },
   UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
-    if(!payload){
-      Vue.set(state,'activeTranscript',state.transcripts[0]);
-    }else{
+    if (!payload) {
+      Vue.set(state, "activeTranscript", state.transcripts[0]);
+    } else {
       Vue.set(state, "activeTranscript", payload);
     }
   }

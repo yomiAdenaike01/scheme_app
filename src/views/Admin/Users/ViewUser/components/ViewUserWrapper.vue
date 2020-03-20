@@ -8,11 +8,7 @@
       </h2>
     </div>
     <div class="avatar_info_container flex_center columns">
-      <el-badge
-        is-dot
-        :type="badgeType"
-        class="dot_container"
-      >
+      <el-badge is-dot :type="badgeType" class="dot_container">
         <Avatar class="sidebar_avatar full" :name="returnUsername" />
       </el-badge>
       <h3 class="mt-4 mb-2 capitalize">{{ returnUsername }}</h3>
@@ -60,8 +56,8 @@ export default {
   computed: {
     ...mapGetters("Admin", ["getGroupName"]),
     ...mapGetters(["getDefaultColour"]),
-    badgeType(){
-      return this.userData?.isOnline ? 'success' : 'danger'
+    badgeType() {
+      return this.userData?.isOnline ? "success" : "danger";
     },
     returnUsername() {
       return this.userData?.name;

@@ -55,7 +55,7 @@ export default {
       "userInformation",
       "userNotifications",
       "viewMobileMenu",
-      "weeklyTimesheetUploaded",
+      "weeklyTimesheetUploaded"
     ]),
     ...mapGetters(["getUAInformation"]),
     ...mapState("Admin", ["teamInformation"]),
@@ -83,9 +83,7 @@ export default {
 
   methods: {
     ...mapActions(["updateDevices"]),
-    ...mapMutations([
-      "UPDATE_NOTIFICATIONS",
-    ]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
         title: "Register new device detected",

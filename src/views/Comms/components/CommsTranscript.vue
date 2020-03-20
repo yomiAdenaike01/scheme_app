@@ -46,7 +46,7 @@ export default {
       loading: false
     };
   },
-    props: {
+  props: {
     loadingTranscript: {
       type: Boolean,
       deafault: false
@@ -58,7 +58,7 @@ export default {
       }
     }
   },
-    components: {
+  components: {
     Avatar,
     Popover
   },
@@ -108,7 +108,7 @@ export default {
     deleteTranscript() {
       this.loading = true;
       this.request({
-        url:'messengers/transcripts',
+        url: "messengers/transcripts",
         method: "DELETE",
         data: { _id: this.data.transcriptID }
       })
@@ -120,9 +120,7 @@ export default {
           this.loading = false;
         });
     }
-  },
-
-
+  }
 };
 </script>
 

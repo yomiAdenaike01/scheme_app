@@ -15,16 +15,15 @@
         @click="readAll"
         size="small"
         v-if="getUserNotificationsLength > 0"
-      >Mark all as read</el-button>
+        >Mark all as read</el-button
+      >
     </div>
-    <InformationDisplay v-else v-bind="infoDisplay" />
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import UserNotification from "./UserNotification";
-import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "NotificationModule",
@@ -44,24 +43,11 @@ export default {
       });
   },
   components: {
-    UserNotification,
-    InformationDisplay
+    UserNotification
   },
   computed: {
     ...mapState(["userNotifications", "userInformation"]),
-    ...mapGetters(["getUserNotificationsLength"]),
-
-    infoDisplay() {
-      return {
-        moreInformation: {
-          index: "admin",
-          instruction: "requests"
-        },
-        text:
-          "No notifications present. Usually your notifications and requests will be displayed here",
-        icon: "el-icon-bell"
-      };
-    }
+    ...mapGetters(["getUserNotificationsLength"])
   },
   methods: {
     ...mapActions(["request"]),

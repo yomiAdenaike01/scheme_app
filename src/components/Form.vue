@@ -51,7 +51,11 @@
               : null
           "
           v-bind="input"
-          :placeholder="input.optional ? `(Optional) ${input.placeholder}`: input.placeholder"
+          :placeholder="
+            input.optional
+              ? `(Optional) ${input.placeholder}`
+              : input.placeholder
+          "
           :disabled="input.disabled"
           :start-placeholder="input.start_placeholder"
           :end-placeholder="input.end_placeholder"
@@ -135,10 +139,7 @@ export default {
       type: Function,
       default: null
     },
-    size: {
-      type: String,
-      default: "medium"
-    },
+
     liveUpdate: {
       type: Boolean,
       default: false
@@ -183,7 +184,7 @@ export default {
             type = "number";
           }
 
-          if (inputType == "date-time" || inputType == 'date') {
+          if (inputType == "date-time" || inputType == "date") {
             type = "date";
           }
 
@@ -226,33 +227,31 @@ export default {
       });
     },
     completeForm() {
-      return new Promise((resolve,reject)=>{
+      return new Promise((resolve, reject) => {
         try {
-           this.$emit("val", this.formContent);
+          this.$emit("val", this.formContent);
 
-      if (this.customMethod) {
-        this.customMethod();
-      }
+          if (this.customMethod) {
+            this.customMethod();
+          }
 
-      if (this.nextTab) {
-        this.$emit("changeTab");
-      }
-      resolve();
+          if (this.nextTab) {
+            this.$emit("changeTab");
+          }
+          resolve();
         } catch (error) {
-          reject(error)
+          reject(error);
         }
-      })
-     
+      });
     },
     submitForm() {
       this.runValidation()
         .then(response => {
-          this.completeForm().then(response=>{
-          if (this.resetOnSubmit) {
-            this.resetForm();
-          }
-          })
-         
+          this.completeForm().then(response => {
+            if (this.resetOnSubmit) {
+              this.resetForm();
+            }
+          });
         })
         .catch(error => {
           return error;

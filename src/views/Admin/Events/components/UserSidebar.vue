@@ -26,29 +26,6 @@
         </Dropdown>
       </div>
     </div>
-    <InformationDisplay
-      class="pr-4 pl-4"
-      v-else
-      :moreInformation="
-        getIsAdmin
-          ? null
-          : {
-              index: 'admin',
-              instruction: 'team_viewing',
-              hoverPosition: 'bottom-end'
-            }
-      "
-      text="No team members detected, click the button below to go to user management."
-      icon="bx bx-user-circle "
-    >
-      <el-button
-        round
-        type="primary"
-        @click="$router.push({ name: 'user' })"
-        size="mini"
-        >Go to user management</el-button
-      >
-    </InformationDisplay>
   </div>
 </template>
 
@@ -56,9 +33,6 @@
 import { mapState, mapGetters, mapMutations } from "vuex";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
-import Title from "@/components/Title";
-import MoreInformation from "@/components/MoreInformation";
-import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserSidebar",
 
@@ -68,6 +42,10 @@ export default {
       loaderTimeout: null,
       loadingTeam: true
     };
+  },
+  components: {
+    Dropdown,
+    Avatar
   },
   computed: {
     ...mapState("Admin", ["teamInformation"]),
@@ -115,13 +93,6 @@ export default {
           break;
       }
     }
-  },
-  components: {
-    Dropdown,
-    Avatar,
-    Title,
-    MoreInformation,
-    InformationDisplay
   }
 };
 </script>

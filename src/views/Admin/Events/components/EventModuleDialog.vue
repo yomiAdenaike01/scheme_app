@@ -25,7 +25,9 @@
           v-if="tabXref.name == 'create_event_group' && getIsAdmin"
         >
           <ColourUnit v-model="eventsInformation.colour" />
-          <p class="mb-3 ml-4 desc grey">Press to select an event colour (optional):</p>
+          <p class="mb-3 ml-4 desc grey">
+            Press to select an event colour (optional):
+          </p>
         </div>
       </div>
     </Tabs>
@@ -40,7 +42,6 @@ import EventOptions from "./EventOptions";
 
 import Title from "@/components/Title";
 import Tabs from "@/components/Tabs";
-import MoreInformation from "@/components/MoreInformation";
 import ColourUnit from "@/components/ColourUnit";
 
 export default {
@@ -183,8 +184,10 @@ export default {
     ...mapActions(["request", "closeDialog", "genPromptBox"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
     ...mapActions("Admin", ["createEvent", "createEventTemplate"]),
+
     eventsCtrl(information) {
       this.eventsInformation = information;
+
       switch (this.tabXref.name) {
         case "create_event_group": {
           break;

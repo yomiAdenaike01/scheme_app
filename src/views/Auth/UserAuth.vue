@@ -39,7 +39,7 @@ export default {
       loading: false
     };
   },
- 
+
   activated() {
     if (this.hasEntries(this.$route.params)) {
       this.login(this.$route.params);
@@ -54,7 +54,7 @@ export default {
         });
     }
   },
-    components: {
+  components: {
     Form,
     Logo
   },
@@ -133,8 +133,7 @@ export default {
           this.loading = false;
         });
     }
-  },
- 
+  }
 };
 </script>
 

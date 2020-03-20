@@ -1,18 +1,19 @@
 <template>
-    
   <div
     class="event_template_container p-4"
     v-loading="loading"
     @click="displayDetails = !displayDetails"
   >
     <div class="template_title_container flex flex--space-between align-center">
-     <h3 class="capitalize mr-3">{{ data.name }}</h3>
+      <h3 class="capitalize mr-3">{{ data.name }}</h3>
       <div class="button_container">
         <!-- <Popover trigger='click'>
         <el-button plain type='primary' round size='mini' slot='trigger' @click="$event.stopPropagation()">Update</el-button>
         <Form submitText='update' slot='content' @val='updateTemplate' :config="updateTemplateConfig"/>
         </Popover> -->
-        <el-button round type='danger' size='mini'  @click="deleteTemplate">Delete</el-button>
+        <el-button round type="danger" size="mini" @click="deleteTemplate"
+          >Delete</el-button
+        >
       </div>
     </div>
     <el-collapse-transition>
@@ -42,8 +43,6 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
-import Popover from '@/components/Popover';
-import Form from '@/components/Form'
 export default {
   name: "EventTemplate",
   data() {
@@ -58,73 +57,69 @@ export default {
       default: () => {}
     }
   },
-  components:{
-    Popover,
-    Form
-  },
+
   computed: {
-    ...mapGetters("Admin", ["getGroupName",'getDropdownTeamMembers', "getEventAssignedTo",'getEnabledEvents']),
+    ...mapGetters("Admin", [
+      "getGroupName",
+      "getDropdownTeamMembers",
+      "getEventAssignedTo",
+      "getEnabledEvents"
+    ]),
     ...mapState(["daysOfWeek"]),
-    updateTemplateConfig(){
-      return[
+    updateTemplateConfig() {
+      return [
         {
-          'component-type':'text',
-          placeholder:'Template name',
-          model:'name',
-          optional:true
-
+          "component-type": "text",
+          placeholder: "Template name",
+          model: "name",
+          optional: true
         },
-       
-     
+
         {
-          'component-type':'select',
-          placeholder:'Repeat for',
-          options:this.daysOfWeek,
-          model:'repeat',
-          multiple:true,
-          optional:true
-        }
-        ,
-         {
-          'component-type':'select',
-          placeholder:'Event type',
+          "component-type": "select",
+          placeholder: "Repeat for",
+          options: this.daysOfWeek,
+          model: "repeat",
+          multiple: true,
+          optional: true
+        },
+        {
+          "component-type": "select",
+          placeholder: "Event type",
           options: this.getEnabledEvents,
-          model:'type',
-          optional:true
+          model: "type",
+          optional: true
         },
         {
-          'component-type':'select',
-          placeholder:'Assign event to users',
+          "component-type": "select",
+          placeholder: "Assign event to users",
           options: this.getDropdownTeamMembers,
-          model:'assingedTo',
-          optional:true
+          model: "assingedTo",
+          optional: true
         },
- {
-          'component-type':'select',
-          placeholder:'Assign event to user groups',
+        {
+          "component-type": "select",
+          placeholder: "Assign event to user groups",
           options: this.getDropdownTeamMembers,
-          model:'assingedTo',
-          optional:true
+          model: "assingedTo",
+          optional: true
         },
-         {
-          'component-type':'date-picker',
-          'input-type':'date-time-range',
-          start_placeholder:'Event start date time',
-          end_placeholder:'Event end date time',
-          model:'date',
-          optional:true
-
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time-range",
+          start_placeholder: "Event start date time",
+          end_placeholder: "Event end date time",
+          model: "date",
+          optional: true
         },
-          {
-          'component-type':'date-picker',
-          'input-type':'date-time',
-          placeholder:'Expire at',
-          model:'until',
-          optional:true
-
-        },
-
-      ]
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time",
+          placeholder: "Expire at",
+          model: "until",
+          optional: true
+        }
+      ];
     },
     content() {
       return this.data.content;
@@ -163,20 +158,18 @@ export default {
      * @description update a template
      */
     updateTemplate(templateInformation) {
-      
-     let update = {...templateInformation,...this.data};
-    update.content = {
-      ...this.data.content,
-      type:templateInformation.type,
-      
-    }
-     update.content.repeat = {
-       weekdays: templateInformation.content.repeat.weekdays,
-       ...this.data.content.repeat
-     }
-     delete templateInformation.date;
-    return console.log(update);
-    this.request({
+      let update = { ...templateInformation, ...this.data };
+      update.content = {
+        ...this.data.content,
+        type: templateInformation.type
+      };
+      update.content.repeat = {
+        weekdays: templateInformation.content.repeat.weekdays,
+        ...this.data.content.repeat
+      };
+      delete templateInformation.date;
+      return console.log(update);
+      this.request({
         method: "PUT",
         url: "events/templates/update",
         data: { _id: this.data._id, update }
@@ -191,7 +184,7 @@ export default {
         });
     },
     /**
-     * 
+     *@name deleteTemplate
      */
     deleteTemplate(e) {
       e.stopPropagation();
@@ -211,13 +204,12 @@ export default {
           this.getTemplates();
         });
     }
-  },
-
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-.template_title_container{
+.template_title_container {
   cursor: pointer;
 }
 strong {
@@ -228,6 +220,6 @@ strong {
   border-radius: 10px;
 }
 .button_container > * {
-  margin-right:10px;
+  margin-right: 10px;
 }
 </style>

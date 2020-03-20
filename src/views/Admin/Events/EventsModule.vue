@@ -10,8 +10,11 @@
     <div class="eventModule_inner_container h-100 overflow">
       <Toolbar class="m-3" />
 
-      <EventsCalendar @refreshShift="getEvents" @displayCreateEvent="modals.createEvent = $event" />
-      <EventMangerDialog />
+      <EventsCalendar
+        @refreshShift="getEvents"
+        @displayCreateEvent="modals.createEvent = $event"
+      />
+      <EventModuleDialog />
       <ViewEventDialog />
     </div>
     <UserSidebar />
@@ -20,13 +23,14 @@
 
 <script>
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
-import EventMangerDialog from "./components/EventMangerDialog";
+
+import EventModuleDialog from "./components/EventModuleDialog";
 import Toolbar from "./components/Toolbar";
 import EventsCalendar from "./components/EventsCalendar";
-import Title from "@/components/Title";
 import EventFilters from "./components/EventFilters";
 import UserSidebar from "./components/UserSidebar";
 import ViewEventDialog from "./components/ViewEventDialog";
+
 export default {
   name: "EventsModule",
   created() {
@@ -68,7 +72,7 @@ export default {
 
   components: {
     EventsCalendar,
-    EventMangerDialog,
+    EventModuleDialog,
     Toolbar,
     EventFilters,
     UserSidebar,

@@ -8,9 +8,12 @@ module.exports = {
       }
     }
   },
+
   configureWebpack: {
     devServer: {
       disableHostCheck: true
     }
-  }
+  },
+
+  lintOnSave: false
 };

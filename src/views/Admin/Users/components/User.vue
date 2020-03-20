@@ -2,7 +2,11 @@
   <div
     class="team_member flex p-4 mt-1"
     @click="
-      UPDATE_DIALOG_INDEX({ dialog: 'viewUser', view: true, data: userInformation._id })
+      UPDATE_DIALOG_INDEX({
+        dialog: 'viewUser',
+        view: true,
+        data: userInformation._id
+      })
     "
   >
     <el-badge

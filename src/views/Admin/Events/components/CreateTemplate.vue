@@ -42,7 +42,7 @@ export default {
       loading: false
     };
   },
-   components: {
+  components: {
     Form,
     Title
   },
@@ -204,8 +204,7 @@ export default {
           this.$emit("toggle", false);
         });
     }
-  },
- 
+  }
 };
 </script>
 <style lang="scss" scoped>

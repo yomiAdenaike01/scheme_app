@@ -5,15 +5,26 @@
     v-loading="loading"
     element-loading-text="Getting team please wait...."
   >
-    <UserGroup v-if="getIsAdmin" addNew @createUserGroup="displayDialog = $event" />
+    <UserGroup
+      v-if="getIsAdmin"
+      addNew
+      @createUserGroup="displayDialog = $event"
+    />
 
     <UserGroup>
       <div class="h-100 overflow">
         <Title title="User Groups" subtitle="Manage and contact users here" />
 
         <div v-if="hasEntries(getFilteredTeam)">
-          <el-row v-for="(count, i) in filteredGroupsWithUsers" :key="`${count}${i}`">
-            <el-col :span="$mq != 'lg' ? 12 : 8" v-for="(group, index) in count" :key="index">
+          <el-row
+            v-for="(count, i) in filteredGroupsWithUsers"
+            :key="`${count}${i}`"
+          >
+            <el-col
+              :span="$mq != 'lg' ? 12 : 8"
+              v-for="(group, index) in count"
+              :key="index"
+            >
               <div class="p-4 m-1 user_group_container">
                 <div
                   class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
@@ -33,29 +44,17 @@
             </el-col>
           </el-row>
         </div>
-        <div v-else class="h-100 no_content_container flex_center">
-          <InformationDisplay
-            class="pr-4 pl-4"
-            :moreInformation="
-              getIsAdmin
-                ? null
-                : {
-                    index: 'admin',
-                    instruction: 'team_viewing',
-                    hoverPosition: 'bottom-end'
-                  }
-            "
-            text="No team members detected, click the button below to go to user management."
-            icon="bx bx-user-circle"
-          ></InformationDisplay>
-        </div>
+        <div v-else class="h-100 no_content_container flex_center"></div>
       </div>
     </UserGroup>
 
     <!-- Quick actions -->
     <UserManagementActions v-if="getIsAdmin && teamInformation.length > 0" />
     <!-- User Module dialog -->
-    <UserModuleDialog :display="displayDialog" @toggle="displayDialog = $event" />
+    <UserModuleDialog
+      :display="displayDialog"
+      @toggle="displayDialog = $event"
+    />
   </el-row>
 </template>
 
@@ -68,8 +67,6 @@ import UserGroup from "./components/UserGroup";
 import UserManagementActions from "./components/UserManagementActions";
 
 import Title from "@/components/Title";
-import Popover from "@/components/Popover";
-import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "UserModule",
@@ -97,9 +94,7 @@ export default {
     User,
     UserGroup,
     UserModuleDialog,
-    UserManagementActions,
-    Popover,
-    InformationDisplay
+    UserManagementActions
   },
 
   computed: {

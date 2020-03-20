@@ -9,7 +9,6 @@ export default {
   ) {
     Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
   },
- 
 
   UPDATE_INVALID_CLIENT(state, payload) {
     Vue.set(state, "invalidClient", payload);
@@ -30,7 +29,7 @@ export default {
     Vue.set(state, "globalLoader", payload);
   },
   REMOVE_USER() {
-    router.push({name:'login'})
+    router.push({ name: "login" });
     localStorage.removeItem("token");
     localStorage.removeItem("userInformation");
   },

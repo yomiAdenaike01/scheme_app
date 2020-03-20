@@ -5,20 +5,28 @@
     </div>
 
     <div v-if="addNew" class="flex_center columns new_group_container">
-      <h2 class="large">Manage users</h2>
-      <small class="grey">Create, edit, remove users / groups.</small>
-      <el-button
-        class="mt-4"
-        icon="el-icon-plus"
-        circle
-        @click="$emit('createUserGroup', true)"
-      ></el-button>
+      <InformationDisplay
+        class="txt_center"
+        mode="title"
+        :displayText="{
+          heading: 'Manage users',
+          content: `<small class='grey'>Create, edit, remove users / groups.</small>`
+        }"
+      >
+        <el-button
+          class="mt-4"
+          icon="el-icon-plus"
+          circle
+          @click="$emit('createUserGroup', true)"
+        ></el-button>
+      </InformationDisplay>
     </div>
   </el-card>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserGroup",
   props: {
@@ -30,11 +38,12 @@ export default {
   data() {
     return {};
   },
-
+  components: {
+    InformationDisplay
+  },
   computed: {
     ...mapGetters(["getDefaultColour"])
-  },
-
+  }
 };
 </script>
 <style lang="scss" scoped>

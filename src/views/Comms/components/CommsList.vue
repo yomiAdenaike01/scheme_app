@@ -1,7 +1,12 @@
 <template>
   <div class="comms_list_container">
     <div class="comms_list_toolbar flex_center p-3">
-      <el-input placeholder="Seach chats" class="mr-3" size="small" v-model="transcriptSearch"></el-input>
+      <el-input
+        placeholder="Seach chats"
+        class="mr-3"
+        size="small"
+        v-model="transcriptSearch"
+      ></el-input>
       <Popover width="200" trigger="click">
         <Form
           slot="content"
@@ -10,13 +15,20 @@
           @val="initChat"
           submitText="Initate Chat"
         />
-        <el-button icon="el-icon-plus" round size="small" circle slot="trigger"></el-button>
+        <el-button
+          icon="el-icon-plus"
+          round
+          size="small"
+          circle
+          slot="trigger"
+        ></el-button>
       </Popover>
     </div>
     <div class="comms_list">
-      <div class="no_content_wrapper flex_center" v-if="transcripts.length == 0">
-        <InformationDisplay v-bind="infoDisplay" />
-      </div>
+      <div
+        class="no_content_wrapper flex_center"
+        v-if="transcripts.length == 0"
+      ></div>
       <!-- Transcripts -->
       <div v-else>
         <CommsTranscript
@@ -35,7 +47,6 @@ import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import CommsTranscript from "./CommsTranscript";
 import CommsEventBus from "./CommsEventBus";
 
-import InformationDisplay from "@/components/InformationDisplay";
 import Popover from "@/components/Popover";
 import Form from "@/components/Form";
 
@@ -63,7 +74,6 @@ export default {
     });
   },
   components: {
-    InformationDisplay,
     Popover,
     CommsTranscript,
     CommsEventBus,
@@ -94,16 +104,6 @@ export default {
       return this.teamInformation.filter(member => {
         return member._id != this.userInformation._id;
       });
-    },
-    infoDisplay() {
-      return {
-        moreInformation: {
-          index: "admin",
-          instruction: "requests"
-        },
-        text: "No chats found, you can create a new chat above.",
-        icon: "bx bx-message-rounded"
-      };
     }
   },
   methods: {

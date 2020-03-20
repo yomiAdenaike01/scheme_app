@@ -4,7 +4,6 @@
     v-resize-text="defaultSize"
     :class="{ mobile: $mq != 'lg' }"
     v-loading="loading"
-    element-loading-background="rgb(255, 255, 255)"
     element-loading-text="Loading client instance please wait...."
   >
     <DefaultTransition>

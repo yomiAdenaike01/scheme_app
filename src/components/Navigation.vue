@@ -45,7 +45,6 @@ export default {
           path: "/admin/user",
           icon: "bx bx-group"
         }
-       
       ];
 
       return allowedRoutes;

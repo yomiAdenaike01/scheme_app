@@ -20,7 +20,7 @@ export default {
     },
     title: String | Number,
     subtitle: String | Number
-  },
+  }
 };
 </script>
 <style lang="scss" scoped>

@@ -1,6 +1,5 @@
 <template>
   <div class="comms_container" v-loading="loading">
-    <CommsFilters />
     <CommsList />
     <CommsWindow />
   </div>
@@ -12,7 +11,7 @@ import { mapState, mapActions, mapMutations } from "vuex";
 import CommsList from "./components/CommsList";
 import CommsWindow from "./components/CommsWindow";
 import CommsEventBus from "./components/CommsEventBus";
-import CommsFilters from "./components/CommsFilters";
+
 export default {
   name: "CommsModule",
   data() {
@@ -23,13 +22,19 @@ export default {
   },
   activated() {
     clearInterval(this.commsInterval);
+    this.loading = true;
     this.commsInterval = setInterval(() => {
-      this.getTranscripts();
-    }, this.requestsIntervals.transcripts);
+      this.getTranscripts()
+        .then(() => {
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    }, this.requestIntervals.transcripts);
     if (
       !this.hasEntries(this.activeTranscript) &&
-      !this.hasEntries(this.$route.params) &&
-      this.transcripts.length > 0
+      !this.hasEntries(this.$route.params)
     ) {
       this.loading = true;
       this.getTranscripts()
@@ -44,36 +49,39 @@ export default {
         });
     }
 
-    if (this.hasEntries(this.$route.params)) {
-      let { id } = this.$route.params;
-      // Find a transcript with the user of that user;
-      let paramsTranscript = this.transcripts.find(transcript => {
-        return (
-          transcript.userTwo == id &&
-          transcript.userOne == this.userInformation._id
-        );
-      });
-
-      if (this.hasEntries(paramsTranscript)) {
-        this.UPDATE_ACTIVE_TRANSCRIPT(paramsTranscript);
-      } else {
-        CommsEventBus.$emit("createNewChat", id);
-      }
-    }
+    // Setting transcript to the one found in the router
+    this.setTranscriptFromRoute();
   },
   components: {
     CommsList,
     CommsWindow,
-    CommsFilters,
     CommsEventBus
   },
   computed: {
     ...mapState("Comms", ["activeTranscript", "transcripts"]),
-    ...mapState(["userInformation"])
+    ...mapState(["userInformation", "requestIntervals"])
   },
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"])
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"]),
+    setTranscriptFromRoute() {
+      if (this.hasEntries(this.$route.params)) {
+        let id = this.$route.params?.id;
+        // Find a transcript with the user of that user;
+        let paramsTranscript = this.transcripts.find(transcript => {
+          return (
+            transcript.userTwo == id &&
+            transcript.userOne == this.userInformation._id
+          );
+        });
+
+        if (this.hasEntries(paramsTranscript)) {
+          this.UPDATE_ACTIVE_TRANSCRIPT(paramsTranscript);
+        } else {
+          CommsEventBus.$emit("createNewChat", id);
+        }
+      }
+    }
   }
 };
 </script>

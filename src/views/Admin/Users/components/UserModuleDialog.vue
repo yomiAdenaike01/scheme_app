@@ -10,7 +10,7 @@
       v-loading="loading"
     >
       <div slot="header_content">
-        <Title title="Module users" subtitle="Manage all users and groups here." />
+        <InformationDisplay :displayText="{heading:'Module users',content:'Manage all users and groups here.'}" mode='title'/>
       </div>
     </Tabs>
   </el-dialog>
@@ -23,7 +23,7 @@ import ManageUserGroups from "./ManageUserGroups";
 import CreateUserOptions from "./CreateUserOptions";
 
 import Tabs from "@/components/Tabs";
-import Title from "@/components/Title";
+import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "UserModuleDialog",
@@ -43,7 +43,7 @@ export default {
     display: Boolean
   },
   components: {
-    Title,
+    InformationDisplay,
     Tabs,
     ManageUserGroups,
     CreateUserOptions
@@ -56,7 +56,7 @@ export default {
       return this.createUserForm.name
         .trim()
         .toLowerCase()
-        .replace(" ", "");
+        .replace(/\s/g, "");
     },
 
     tabs() {
@@ -237,4 +237,3 @@ export default {
   }
 };
 </script>
-

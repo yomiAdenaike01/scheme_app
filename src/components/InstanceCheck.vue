@@ -1,7 +1,7 @@
 <template>
   <transition name="el-fade-in">
     <div
-    v-loading='loading'
+      v-loading="loading"
       class="p-2 server_health_container flex_center"
       :class="[
         { healthy: serverInformation.healthy },
@@ -14,21 +14,21 @@
 </template>
 
 <script>
-import {  mapActions } from "vuex";
+import { mapActions } from "vuex";
 export default {
   name: "InstanceCheck",
-  data(){
-    return{
-      loading:true,
-      serverInformation:{}
-    }
+  data() {
+    return {
+      loading: true,
+      serverInformation: {}
+    };
   },
-  activated(){
+  activated() {
     this.checkInstance();
   },
   computed: {
     displayText() {
-      let healthy  = this.serverInformation?.healthy;
+      let healthy = this.serverInformation?.healthy;
       if (healthy) {
         return "Your cloud instance is healthy";
       } else {
@@ -36,22 +36,21 @@ export default {
       }
     }
   },
-  methods:{
-    ...mapActions(['request']),
+  methods: {
+    ...mapActions(["request"]),
     checkInstance() {
-    this.request({
+      this.request({
         method: "GET",
         url: "/healthcheck"
       })
-      .then(response => {
-        this.loading = false;
-        this.serverInformation = response;
-      })
-      .catch(error => {
-        this.loading = false;
-      });
-  },
-    
+        .then(response => {
+          this.loading = false;
+          this.serverInformation = response;
+        })
+        .catch(error => {
+          this.loading = false;
+        });
+    }
   }
 };
 </script>
