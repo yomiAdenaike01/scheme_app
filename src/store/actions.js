@@ -3,7 +3,7 @@ import Vue from "vue";
 if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:7070/v1/";
 } else {
-  axios.defaults.baseURL = "https://dev-schemapi.now.sh/v1/";
+  axios.defaults.baseURL = "https://schemeapi.herokuapp.com/v1/";
 }
 
 const sortPayload = ({ state, getters }, payload) => {
