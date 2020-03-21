@@ -37,15 +37,17 @@ export default {
     return isSignedUser;
   },
   getActiveDialog: ({ dialogIndex }) => dialogName => {
+    let foundDialog = null;
     if (dialogName) {
-      return dialogIndex[dialogName].view;
+      foundDialog =  dialogIndex[dialogName].view;
     } else {
       for (let property in dialogIndex) {
         if (dialogIndex[property].view) {
-          context;
+          foundDialog = dialogIndex[property];
         }
       }
     }
+    return foundDialog
   },
   getUserNotificationsLength({ userNotifications }) {
     return userNotifications.filter(notification => {
@@ -60,28 +62,28 @@ export default {
   getUserSettings(state) {
     return state.userInformation.settings;
   },
-  getClient(state, getters) {
-    if (getters.isValidClient) {
-      return state.clientInformation;
+  getClient({clientInformation}, {isValidClient}) {
+    if (isValidClient) {
+      return clientInformation;
     } else {
       return {};
     }
   },
-  getPreferences(state) {
-    return state.userInformation.preferences;
+  getPreferences({userInformation:{preferences}}) {
+    return preferences;
   },
   getIsAdmin({ userInformation: { groupID } }) {
     return groupID == 1;
   },
-  getClientColours(state) {
-    return state.clientInformation.colours;
+  getClientColours({clientInformation:{colours}}) {
+    return colours;
   },
 
   getGuide() {
     return guide;
   },
-  getDefaultColour(state) {
-    return state.defaultCustomColours[0];
+  getDefaultColour({defaultCustomColours}) {
+    return defaultCustomColours[0];
   },
   getRandomColour({ defaultCustomColours }) {
     return defaultCustomColours[

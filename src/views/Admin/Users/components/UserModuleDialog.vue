@@ -20,7 +20,6 @@
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 
 import ManageUserGroups from "./ManageUserGroups";
-import CreateUserOptions from "./CreateUserOptions";
 
 import Tabs from "@/components/Tabs";
 import InformationDisplay from "@/components/InformationDisplay";
@@ -46,7 +45,6 @@ export default {
     InformationDisplay,
     Tabs,
     ManageUserGroups,
-    CreateUserOptions
   },
   computed: {
     ...mapState(["clientInformation"]),
@@ -72,13 +70,7 @@ export default {
           label: "Create users",
           formContent: this.formItems
         },
-        {
-          label: "Upload users",
-          view: {
-            props: "",
-            component: CreateUserOptions
-          }
-        }
+        
       ];
     },
 

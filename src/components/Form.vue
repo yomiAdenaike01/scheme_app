@@ -96,11 +96,7 @@
 <script>
 export default {
   name: "Form",
-  activated() {
-    if (this.preModel) {
-      this.$set(this, "formContent", this.preModel);
-    }
-  },
+
 
   data() {
     return {
@@ -115,10 +111,6 @@ export default {
     inline: {
       type: Boolean,
       default: false
-    },
-    preModel: {
-      default: Object,
-      required: false
     },
     disableForm: {
       type: Boolean,
@@ -151,7 +143,8 @@ export default {
     resetOnSubmit: {
       type: Boolean,
       default: false
-    }
+    },
+    
   },
   computed: {
     form() {
@@ -257,18 +250,8 @@ export default {
           return error;
         });
     }
-  },
-  watch: {
-    formContent: {
-      deep: true,
-      handler(val) {
-        if (this.liveUpdate) {
-          this.$emit("val", val);
-        }
-      }
-    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

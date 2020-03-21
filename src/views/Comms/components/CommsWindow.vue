@@ -1,13 +1,13 @@
 <template>
   <transition name="el-fade-in">
-    <div class="comms_window_container flex columns" v-loading="loading">
+    <div class="comms_window_container flex columns" v-loading="transcriptLoading">
       <div class="messages_container" v-if="hasEntries(activeTranscript)">
         <!-- Comms toolbar -->
         <CommsToolbar :recieverInformation="info" />
         <!-- Messages -->
         <Message
           v-for="(message, index) in messages"
-          :data="message"
+          :data="{...message,isSender:message.senderID == userInformation._id,sentAt:initMoment(message.sentAt).calendar()}"
           :key="
             `${index}${Math.random()
               .toString(16)
@@ -29,7 +29,7 @@
           <el-input
             clearable
             class="chat_input"
-            v-model="chat.content"
+            v-model="chatInformation.content"
             type="textarea"
           ></el-input>
           <el-button @click="prepareSendMessage" plain type="primary"
@@ -46,10 +46,11 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 import Message from "./Message";
 import CommsToolbar from "./CommsToolbar";
+import CommsEventBus from "./CommsEventBus";
 
 import Popover from "@/components/Popover";
 
@@ -57,16 +58,16 @@ export default {
   name: "CommsWindow",
   data() {
     return {
-      loading: false,
       messagesInterval: null,
-      chat: {
+      transcriptError:true,
+      chatInformation: {
         content: "",
         attachments: ""
       }
     };
   },
+
   activated() {
-    clearInterval(this.messagesInterval);
     this.messagesInterval = setInterval(() => {
       this.getMessages();
     }, this.requestIntervals.messages);
@@ -80,8 +81,8 @@ export default {
     Popover
   },
   computed: {
-    ...mapState(["requestIntervals"]),
-    ...mapState("Comms", ["activeTranscript", "messages"]),
+    ...mapState(["requestIntervals",'userInformation']),
+    ...mapState("Comms", ["activeTranscript", "messages",'transcriptLoading']),
     infoDisplay() {
       return {
         text: "No chat selected",
@@ -101,17 +102,19 @@ export default {
   },
   methods: {
     ...mapActions("Comms", ["getMessages", "sendMessage", "readMessages"]),
+    ...mapMutations('Comms',['UPDATE_ACTIVE_TRANSCRIPT']),
 
     prepareSendMessage() {
       this.loading = true;
 
       let messagePayload = {
-        ...this.chat,
+        ...this.chatInformation,
         recieverID: this.activeTranscript.userTwo,
         transcriptID: this.activeTranscript._id,
         isMuted: this.isMuted
       };
-      this.chat.content = "";
+
+      this.chatInformation.content = "";
 
       this.sendMessage(messagePayload)
         .then(response => {
@@ -143,7 +146,7 @@ export default {
   border-bottom: $border;
   flex: 1;
 }
-.chat_input {
+.chatInformation_input {
   font-size: 15px;
   height: 100%;
   &/deep/ {

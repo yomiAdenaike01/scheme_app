@@ -101,16 +101,18 @@ export default {
     },
     updateNotification(update) {
       this.loading = true;
+      this.UPDATE_USER_NOTIFICATIONS({_id:this.notification._id,update})
       this.request({
         method: "POST",
         url: "notifications/update",
         data: {
-          id: this.notification._id,
+          _id: this.notification._id,
           update
         }
       })
         .then(response => {
           this.loading = false;
+
         })
         .catch(error => {
           this.loading = false;

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-100">
+  <div class="h-100" v-loading='loading'>
     <NprogressContainer />
     <AppBar />
     <div class="main_wrapper flex">
@@ -23,16 +23,26 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
+import NprogressContainer from "vue-nprogress/src/NprogressContainer";
+
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
-import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
 import InstanceCheck from "@/components/InstanceCheck";
 export default {
   name: "Main",
-
+  data(){
+    return{
+      loading:true
+    }
+  },
   activated() {
     this.checkDevice();
+      Promise.all([this.getEvents(), this.getTeam()]).then(
+      response => {
+        this.loading = false;
+      }
+    );
 
     let isVerified = this.userInformation.verified;
     if (!isVerified) {
@@ -49,6 +59,13 @@ export default {
     }
 
     this.displayWeeklyNotification();
+  },
+    components: {
+    Navigation,
+    AppBar,
+    NprogressContainer,
+    DefaultTransition,
+    InstanceCheck
   },
   computed: {
     ...mapState([
@@ -83,6 +100,7 @@ export default {
 
   methods: {
     ...mapActions(["updateDevices"]),
+    ...mapActions('Admin',['getEvents','getTeam']),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
@@ -144,13 +162,7 @@ export default {
         });
     }
   },
-  components: {
-    Navigation,
-    AppBar,
-    NprogressContainer,
-    DefaultTransition,
-    InstanceCheck
-  },
+
   watch: {
     hasAnnoucement: {
       immediate: true,

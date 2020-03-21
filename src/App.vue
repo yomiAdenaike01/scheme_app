@@ -6,17 +6,15 @@
     v-loading="loading"
     element-loading-text="Loading client instance please wait...."
   >
-    <DefaultTransition>
+  
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
-    </DefaultTransition>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
-import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "App",
   data() {
@@ -54,9 +52,7 @@ export default {
   destroyed() {
     clearInterval(this.clientInterval);
   },
-  components: {
-    DefaultTransition
-  },
+
   computed: {
     ...mapState([
       "requestIntervals",

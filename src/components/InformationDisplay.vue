@@ -2,10 +2,13 @@
   <div class="information_display_container">
     <!-- Tutorial -->
     <div v-if="mode == 'tutorial' || mode == 'both'" class="tutorial_container">
-      <Popover trigger='click'>
-          <i class='bx bx-help-circle tutorial_icon' slot="trigger"></i>
+      <Popover popperclass='p-0' trigger='click'>
+          <i class='bx bx-help-circle tutorial_icon trigger' slot="trigger"></i>
 
         <div slot='content' class="popover_inner_container flex columns">
+          <div class="tutorial_title_bar flex flex--end">
+            <small class="capitalize">{{makePretty(tutorial.feature)}}</small>
+          </div>
           <div class="information_container flex_center ">
             <i
               @click="slideController('decrease')"
@@ -13,8 +16,8 @@
             ></i>
               <div class="popover_inner_text_container flex_center columns"
               >
-                <h2>{{ guideXref[slideIndex].content }}</h2>
-                <p>{{guideXref[slideIndex].heading}}</p>
+                <h2>{{ guideXref[slideIndex].heading }}</h2>
+                <p>{{guideXref[slideIndex].content}}</p>
               </div>
 
             <i
@@ -31,12 +34,17 @@
     </div>
     <!-- Title display -->
     <div class="headings_wrapper m-0 p-0" v-if="mode == 'title' || mode == 'both'">
+      <div class="slot_container mb-4">
+        <slot name="above_header"></slot>
+      </div>
       <component
-        class="heading"
-        :is="displayText.tag ? displayText.tag : 'h2'"
+        class="heading mb-3"
+        :class="{txt_center:displayCenter.heading}"
+        :is="displayText.tag ? displayText.tag : 'h3'"
         v-html="displayText.heading"
       />
-      <div v-html="displayText.content"></div>
+        
+      <div :class="{txt_center:displayCenter.text}" class="heading_text_content mb-4" v-html="displayText.content"></div>
       <slot name="information"></slot>
     </div>
   </div>
@@ -56,7 +64,7 @@ export default {
   props: {
     mode: {
       type: String,
-      default: "tutorial"
+      default: "title"
     },
     tutorial: {
       type: Object,
@@ -74,7 +82,8 @@ export default {
         return {
           heading: "",
           content: "",
-          tag: "h2"
+          tag: "h2",
+          headingAlign:'center'
         };
       }
     }
@@ -84,6 +93,13 @@ export default {
   },
   computed: {
     ...mapGetters(["getGuide"]),
+
+    displayCenter(){
+      return {
+        heading:this.displayText?.headingAlign ?? true,
+        text:this.displayText?.textAlign ?? true
+    }
+    },
 
     guideXref() {
       let moduleContent = this.getGuide[this.tutorial.module];
@@ -118,18 +134,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .popover_inner_container {
   display: flex;
   justify-content: space-between;
 }
 .bx{
   font-size: 2em;
+  color: #999;
 }
 .headings_wrapper {
-  line-height: 2.5em;
   .heading {
     color: #888;
   }
+}
+.heading{
+&.center{
+  text-align: center;
+}
+
+}
+.tutorial_title_bar{
+  background:rgb(250,250,250);
+  padding:10px;
+  color: #999;
+  font-size: 1.2em;
 }
 .popover_inner_text_container{
   margin: 40px 50px;
@@ -138,7 +167,7 @@ export default {
   display:flex;
   width: 100%;
   justify-content: center;
-  margin-top: 20px;
+  margin: 25px 0px;
 }
 .indicator{
   cursor: pointer;
@@ -152,5 +181,8 @@ export default {
   &.active{
     box-shadow: $box_shadow;
   }
+}
+.heading_text_content{
+  font-size: .9em;
 }
 </style>

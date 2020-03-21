@@ -1,31 +1,23 @@
-<template>
-  <div class="message_container flex" :class="{ sender: isSender }">
+<template functional>
+  <div class="message_container flex" :class="{ sender: props.data.isSender }">
     <div
       class="message"
-      :data-timestamp="initMoment(data.sentAt).calendar()"
-      :class="{ sender: isSender }"
+      :data-timestamp="props.data.sentAt"
+      :class="{ sender: props.data.isSender }"
     >
-      <p>{{ data.content }}</p>
+      <p>{{ props.data.content }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
 export default {
   name: "Message",
-  computed: {
-    ...mapState(["userInformation"]),
-    isSender() {
-      return this.data.senderID == this.userInformation._id;
-    }
-  },
+
   props: {
     data: {
       type: Object,
-      default: () => {
-        return {};
-      }
+      required:true
     }
   }
 };

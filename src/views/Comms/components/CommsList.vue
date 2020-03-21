@@ -1,5 +1,5 @@
 <template>
-  <div class="comms_list_container">
+  <div class="comms_list_container" v-loading=''>
     <div class="comms_list_toolbar flex_center p-3">
       <el-input
         placeholder="Seach chats"

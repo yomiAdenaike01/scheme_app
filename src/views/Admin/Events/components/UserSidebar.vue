@@ -26,11 +26,18 @@
         </Dropdown>
       </div>
     </div>
+    <div class="flex_center h-100">
+    <InformationDisplay class="p-4" :displayText="{heading:'No team members found', headingAlign:'center', textAlign:'center', content:'To create a team member please navigate to user management and manage users to create team members'}" mode='title'>
+      <i class="bx bx-user flex_center" slot="above_header"></i>
+      <el-button round slot="information" @click="$router.push({name:'user'})">Go to user management</el-button>
+    </InformationDisplay>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
+import InformationDisplay from '@/components/InformationDisplay'
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 export default {
@@ -45,7 +52,8 @@ export default {
   },
   components: {
     Dropdown,
-    Avatar
+    Avatar,
+    InformationDisplay
   },
   computed: {
     ...mapState("Admin", ["teamInformation"]),

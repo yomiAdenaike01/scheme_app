@@ -29,6 +29,7 @@
             Press to select an event colour (optional):
           </p>
         </div>
+    
       </div>
     </Tabs>
   </el-dialog>
@@ -59,6 +60,7 @@ export default {
     Tabs,
     ColourUnit
   },
+
   computed: {
     ...mapState(["clientInformation", "daysOfWeek"]),
 
@@ -66,12 +68,29 @@ export default {
     ...mapGetters("Admin", [
       "getDropdownTeamMembers",
       "getEnabledEvents",
-      "getUserGroups"
+      "getUserGroups",
+      'getUserInformation'
     ]),
 
+    assignToUsernames(){
+      let usernames = '';
+      if(this.activeDialogInformation?.assignedTo){
+      let assignToUsernames = [...this.activeDialogInformation?.assignedTo];
+      usernames =  assignToUsernames.map(assignee=>{
+         return this.getUserInformation(assignee)?.name
+      });
+
+      return usernames.length > 1 ? usernames.join(",") : usernames;
+      }
+    },
+
+    activeDialogInformation(){
+      return this.getActiveDialog()?.data;
+    },
     isNotShiftOrHoliday() {
       return !this.getIsAdmin && this.eventsInformation.type > 3;
     },
+
     tabXref() {
       return this.getCurrentTabXref({
         tabs: this.tabs,
@@ -159,8 +178,9 @@ export default {
       // Check if it is an admin or not
 
       if (this.getIsAdmin) {
+        let teamMemberPlaceholder = this.assignToUsernames?.length > 0  ? `Select team members including (${this.assignToUsernames})` : 'Select team members';
         createEventConfig.unshift({
-          placeholder: "Select Team Member",
+          placeholder: teamMemberPlaceholder,
           "component-type": "select",
           model: "assignedTo",
           options: this.getDropdownTeamMembers,

@@ -21,8 +21,16 @@ export default {
     };
   },
   activated() {
-    clearInterval(this.commsInterval);
     this.loading = true;
+       this.getTranscripts()
+        .then(() => {
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+
+    clearInterval(this.commsInterval);
     this.commsInterval = setInterval(() => {
       this.getTranscripts()
         .then(() => {
@@ -48,9 +56,11 @@ export default {
           this.loading = false;
         });
     }
-
     // Setting transcript to the one found in the router
     this.setTranscriptFromRoute();
+  },
+  deactivated(){
+    clearInterval(this.commsInterval)
   },
   components: {
     CommsList,
@@ -64,6 +74,7 @@ export default {
   methods: {
     ...mapActions("Comms", ["getTranscripts"]),
     ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"]),
+
     setTranscriptFromRoute() {
       if (this.hasEntries(this.$route.params)) {
         let id = this.$route.params?.id;

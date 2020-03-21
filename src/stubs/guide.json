@@ -10,12 +10,8 @@
       {
         "template_management":[
           {
-            "heading":"Delete Template",
-            "content":"Delete template here"
-          },
-          {
-            "heading":"Delete Template 2",
-            "content":"Delete template here 2"
+            "heading":"Create template",
+            "content":"When creating a template there are many options"
           }
         ]
       }

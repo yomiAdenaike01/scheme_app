@@ -7,13 +7,13 @@
     <div v-if="addNew" class="flex_center columns new_group_container">
       <InformationDisplay
         class="txt_center"
-        mode="title"
         :displayText="{
           heading: 'Manage users',
           content: `<small class='grey'>Create, edit, remove users / groups.</small>`
         }"
       >
         <el-button
+        slot="information"
           class="mt-4"
           icon="el-icon-plus"
           circle

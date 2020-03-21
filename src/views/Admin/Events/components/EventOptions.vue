@@ -1,5 +1,5 @@
 <template>
-  <div class="create_shift_options_container p-4">
+  <div class="p-4">
     <div
       class="flex columns"
       v-if="eventTemplates.length > 0"
@@ -35,10 +35,10 @@
     </div>
 
     <!-- No templates -->
-    <div v-else>
-      <div class="flex_center">
-        <InformationDisplay mode='both' :displayText="{heading:'Heading',content:'Content'}" :tutorial="{module:'admin', feature:'template_management',displayType:'hover'}" />
-      </div>
+    <div class="flex flex_center" v-else>
+        <InformationDisplay mode='both' class="flex_center columns" :displayText="{heading:'Create a template',content:'You currently have no templates, you can hover over the help button above for more information on how to create templates and how they work.'}" :tutorial="{module:'admin', feature:'template_management',displayType:'hover'}">
+          <el-button slot="information" size='mini' @click="displayCreateTemplate = !displayCreateTemplate">Create Template</el-button>
+        </InformationDisplay>
     </div>
 
     <!-- Create template -->

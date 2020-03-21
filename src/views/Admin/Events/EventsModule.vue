@@ -2,14 +2,10 @@
   <div
     class="eventModule_container h-100"
     v-loading="loading"
-    element-loading-text="Loading team members and events please wait..."
   >
-    <!-- Shift and calendar view -->
-    <EventFilters v-if="$mq == 'lg'" />
 
     <div class="eventModule_inner_container h-100 overflow">
       <Toolbar class="m-3" />
-
       <EventsCalendar
         @refreshShift="getEvents"
         @displayCreateEvent="modals.createEvent = $event"
@@ -27,57 +23,47 @@ import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import EventModuleDialog from "./components/EventModuleDialog";
 import Toolbar from "./components/Toolbar";
 import EventsCalendar from "./components/EventsCalendar";
-import EventFilters from "./components/EventFilters";
 import UserSidebar from "./components/UserSidebar";
 import ViewEventDialog from "./components/ViewEventDialog";
 
 export default {
   name: "EventsModule",
-  created() {
-    this.UPDATE_DIALOG_INDEX({
-      dialog: "tutorial",
-      view: true,
-      data: "scheduling"
-    });
-  },
-
-  data() {
+    data() {
     return {
-      loading: false,
+      loading: true,
       getTemplatesInterval: null
     };
   },
-  deactivated() {
-    clearInterval(this.getTemplatesInterval);
-  },
   activated() {
-    this.loading = true;
+     this.getTemplates().then(response=>{
+      this.loading = false
+    }).catch(()=>{
+      this.loading = false;
+    })
     clearInterval(this.getTemplatesInterval);
     this.getTemplatesInterval = setInterval(() => {
       this.getTemplates();
     }, this.requestIntervals.templates);
-    Promise.all([this.getEvents(), this.getTeam(), this.getTemplates()]).then(
-      response => {
-        this.loading = false;
-      }
-    );
+  
+  },
+    deactivated() {
+    clearInterval(this.getTemplatesInterval);
+  },
+    components: {
+    EventsCalendar,
+    EventModuleDialog,
+    Toolbar,
+    UserSidebar,
+    ViewEventDialog
   },
   methods: {
     ...mapActions("Admin", ["getEvents", "getTeam", "getTemplates"]),
-    ...mapMutations(["UPDATE_DIALOG_INDEX"])
   },
   computed: {
     ...mapState(["requestIntervals"])
   },
 
-  components: {
-    EventsCalendar,
-    EventModuleDialog,
-    Toolbar,
-    EventFilters,
-    UserSidebar,
-    ViewEventDialog
-  }
+
 };
 </script>
 <style lang="scss" scoped>

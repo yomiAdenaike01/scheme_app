@@ -44,7 +44,12 @@
             </el-col>
           </el-row>
         </div>
-        <div v-else class="h-100 no_content_container flex_center"></div>
+        <div v-else class="h-100 no_content_container flex_center">
+          <InformationDisplay :displayText="{heading:'',content:'',textAlign:'center',headingAlign:'center'}">
+            <i class="bx bx-user" slot="above_header"></i>
+            <el-button slot='information' @click="displayDialog = !displayDialog">Open user management dialog</el-button>
+          </InformationDisplay>
+        </div>
       </div>
     </UserGroup>
 
@@ -67,7 +72,7 @@ import UserGroup from "./components/UserGroup";
 import UserManagementActions from "./components/UserManagementActions";
 
 import Title from "@/components/Title";
-
+import InformationDisplay from "@/components/InformationDisplay"
 export default {
   name: "UserModule",
 
@@ -94,7 +99,8 @@ export default {
     User,
     UserGroup,
     UserModuleDialog,
-    UserManagementActions
+    UserManagementActions,
+    InformationDisplay
   },
 
   computed: {

@@ -4,13 +4,7 @@
     :class="{
       active: hasEntries(activeTranscript) && activeTranscript._id == data._id
     }"
-    v-loading="loading || loadingTranscript"
-    @click="
-      UPDATE_ACTIVE_TRANSCRIPT({
-        ...data,
-        userInfo: { ...user }
-      })
-    "
+    @click="updateComms"
   >
     <div class="text_wrapper p-3 flex_center posr">
       <div v-if="hasEntries(user)">
@@ -36,9 +30,12 @@
 </template>
 
 <script>
+import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
+
+import CommsEventBus from './CommsEventBus';
+
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
-import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
 export default {
   name: "CommsTranscript",
   data() {
@@ -47,10 +44,6 @@ export default {
     };
   },
   props: {
-    loadingTranscript: {
-      type: Boolean,
-      deafault: false
-    },
     data: {
       type: Object,
       default: () => {
@@ -74,8 +67,9 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"]),
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT",'UPDATE_TRANSCRIPT_LOADING']),
     ...mapActions(["request"]),
+    ...mapActions('Comms',['getMessages']),
     muteController() {
       let mutedNotifications = [...this.activetTranscript.mutedNotifications];
       let data;
@@ -119,6 +113,27 @@ export default {
         .catch(() => {
           this.loading = false;
         });
+    },
+    updateTranscript(){
+      return new Promise((resolve,reject)=>{
+      try {
+        this.UPDATE_ACTIVE_TRANSCRIPT({
+        ...this.data,
+        userInfo: { ...this.user }});
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+      });
+
+    },
+    updateComms(){
+        this.UPDATE_TRANSCRIPT_LOADING(true)
+      Promise.all([this.getMessages(),this.updateTranscript()]).then(()=>{
+        this.UPDATE_TRANSCRIPT_LOADING(false)
+      }).catch(err=>{
+        this.UPDATE_TRANSCRIPT_LOADING(false);
+      })
     }
   }
 };

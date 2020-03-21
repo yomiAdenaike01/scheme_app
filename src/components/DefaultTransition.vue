@@ -1,4 +1,4 @@
-<template functional>
+<template>
   <transition name="fade-transform" mode="out-in">
     <slot></slot>
   </transition>

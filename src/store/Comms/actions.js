@@ -1,4 +1,5 @@
 export default {
+  
   deleteChat(context, payload) {
     return new Promise((resolve, reject) => {
       context
@@ -66,6 +67,7 @@ export default {
     } = context;
     let transcriptID =
       Object.keys(activeTranscript).length > 0 ? activeTranscript._id : "";
+
     return new Promise((resolve, reject) => {
       if (transcriptID.length > 0) {
         context
@@ -125,9 +127,7 @@ export default {
           .catch(error => {
             reject(error);
           });
-      } else {
-        resolve();
-      }
+      } 
     });
   }
 };
