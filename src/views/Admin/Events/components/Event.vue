@@ -24,11 +24,9 @@
             >{{ approval.text }}</el-tag
           >
           <el-tag v-else effect="dark" type="danger">Not approved</el-tag>
-
           <el-tag class="capitalize" type="primary">{{ event.timeTag }}</el-tag>
         </div>
       </el-col>
-
       <el-col
         v-if="$mq == 'lg'"
         :class="['event_times flex details_unit', event.class]"
@@ -72,8 +70,6 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
-import Dropdown from "@/components/Dropdown";
-import ViewEventDialog from "../../Events/components/ViewEventDialog";
 import Popover from "@/components/Popover";
 import moment from "moment";
 export default {
@@ -90,11 +86,15 @@ export default {
   props: {
     event: Object
   },
+  components: {
+    Popover
+  },
   computed: {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getGroupName", "getEventAssignedTo"]),
     ...mapState("Admin", ["groupIDs", "teamInformation"]),
+
     isEventMine() {
       return (
         this.event.assignedTo.some(e => {
@@ -165,11 +165,6 @@ export default {
         return error;
       }
     }
-  },
-  components: {
-    Dropdown,
-    ViewEventDialog,
-    Popover
   }
 };
 </script>

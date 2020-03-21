@@ -19,7 +19,11 @@
           class="domain_input"
           placeholder="Domain Name"
           v-model="clientDomain"
-          @keydown.enter="refactorWindowLocation(clientDomain)"
+          @keydown.enter="
+            refactorWindowLocation(
+              clientDomain.replace(/\s/g, '').toLowerCase()
+            )
+          "
         ></el-input>
         <div
           :class="{ active: clientDomain.length > 0 }"
@@ -41,8 +45,10 @@
 </template>
 
 <script>
-import refactorLocation from "@/mixins/refactorLocation";
 import { mapState } from "vuex";
+
+import refactorLocation from "@/mixins/refactorLocation";
+
 export default {
   name: "ClientIntro",
   data() {
@@ -52,16 +58,10 @@ export default {
   },
   mixins: [refactorLocation],
   activated() {
-    if (this.isError) {
+    if (this.invalidClient.error) {
       this.$message.error(
         "There was an error, please enter your client domain again to restart"
       );
-    }
-  },
-  computed: {
-    ...mapState(["invalidClient"]),
-    isError() {
-      return this.invalidClient.error;
     }
   }
 };

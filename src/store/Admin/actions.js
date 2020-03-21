@@ -1,4 +1,9 @@
+import templateActions from "./subactions/templateActions";
+import eventActions from "./subactions/eventActions";
+
 export default {
+  ...templateActions,
+  ...eventActions,
   getNotes(context, id) {
     return new Promise((resolve, reject) => {
       context
@@ -52,24 +57,6 @@ export default {
         .dispatch("request", payload, { root: true })
         .then(response => {
           context.commit("UPDATE_USER_NOTIFICATIONS", response, { root: true });
-          resolve();
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  },
-  getEvents(context, params = {}) {
-    return new Promise((resolve, reject) => {
-      const payload = {
-        method: "GET",
-        url: "events/all",
-        params
-      };
-      context
-        .dispatch("request", payload, { root: true })
-        .then(response => {
-          context.commit("UPDATE_EVENTS", response);
           resolve();
         })
         .catch(err => {

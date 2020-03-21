@@ -4,16 +4,13 @@
       <el-card class="form_container">
         <el-container class="h-100">
           <el-main class="login_wrapper">
-            <!-- Display the clients image -->
-            <ClientImage :center="true" class="mb-4" />
-            <!-- Auth Register &  Login -->
+            <Logo class="mb-4" />
             <Form :config="formConfig" submitText="Login" @val="login" />
             <!-- New client registration -->
             <div
               class="new_client_button_container mb-4 mt-4"
               slot="header_content"
             >
-              <!-- New client registration -->
               <el-button
                 v-if="!isValidClient"
                 @click="$router.push({ name: 'register' })"
@@ -33,7 +30,7 @@
 <script>
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
-import ClientImage from "@/components/ClientImage";
+import Logo from "@/components/Logo";
 export default {
   name: "UserAuth",
   data() {
@@ -42,7 +39,11 @@ export default {
       loading: false
     };
   },
+
   activated() {
+    if (this.hasEntries(this.$route.params)) {
+      this.login(this.$route.params);
+    }
     if (!this.hasEntries(this.clientInformation)) {
       this.getClient()
         .then(response => {
@@ -52,6 +53,10 @@ export default {
           return;
         });
     }
+  },
+  components: {
+    Form,
+    Logo
   },
   computed: {
     isValidClient() {
@@ -128,10 +133,6 @@ export default {
           this.loading = false;
         });
     }
-  },
-  components: {
-    Form,
-    ClientImage
   }
 };
 </script>

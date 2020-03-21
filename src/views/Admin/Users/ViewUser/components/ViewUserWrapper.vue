@@ -8,11 +8,7 @@
       </h2>
     </div>
     <div class="avatar_info_container flex_center columns">
-      <el-badge
-        is-dot
-        :type="userData.isOnline ? 'success' : 'danger'"
-        class="dot_container"
-      >
+      <el-badge is-dot :type="badgeType" class="dot_container">
         <Avatar class="sidebar_avatar full" :name="returnUsername" />
       </el-badge>
       <h3 class="mt-4 mb-2 capitalize">{{ returnUsername }}</h3>
@@ -31,15 +27,15 @@
         v-for="(tab, index) in tabItems"
         :label="tab.label"
       >
-        <slot></slot>
+        <slot class="p-4"></slot>
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
-import Avatar from "@/components/Avatar";
 import { mapGetters } from "vuex";
+import Avatar from "@/components/Avatar";
 
 export default {
   name: "ViewUserWrapper",
@@ -60,11 +56,14 @@ export default {
   computed: {
     ...mapGetters("Admin", ["getGroupName"]),
     ...mapGetters(["getDefaultColour"]),
+    badgeType() {
+      return this.userData?.isOnline ? "success" : "danger";
+    },
     returnUsername() {
-      return this.userData.name;
+      return this.userData?.name;
     },
     returnGroupName() {
-      return this.getGroupName("user", this.userData.groupID).name;
+      return this.getGroupName("user", this.userData?.groupID)?.name;
     },
     selectedTab: {
       get() {

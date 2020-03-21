@@ -1,16 +1,24 @@
 module.exports = {
-  root: true,
+  root: false,
+
   env: {
     node: true
   },
-  extends: ["plugin:vue/essential", "@vue/prettier"],
+
+  extends: ['plugin:vue/recommended'],
+
   rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-    "vue/no-side-effects-in-computed-properties": "off",
-    "vue/require-prop-type-constructor": "off"
+    'no-console': 'off',
+    'no-debugger': 'off',
+    'vue/no-side-effects-in-computed-properties': 'off',
+    'vue/require-prop-type-constructor': 'off'
   },
+
   parserOptions: {
-    parser: "babel-eslint"
-  }
+    parser: 'babel-eslint'
+  },
+
+  'extends': [
+    'plugin:vue/essential'
+  ]
 };

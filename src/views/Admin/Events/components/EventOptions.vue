@@ -1,26 +1,18 @@
 <template>
-  <div class="create_shift_options_container p-4">
-    <!-- Displaying templates -->
-    <!-- <MoreInformation
-      slot="titleContent"
-      index="admin"
-      instruction="create_template"
-    /> -->
+  <div class="p-4">
     <div
       class="flex columns"
-      v-if="templates.length > 0"
-      v-loading="templateLoading"
+      v-if="eventTemplates.length > 0"
+      v-loading="loading"
     >
       <div class="flex_center input_container p-4">
         <el-input
           v-model="templateNamesSearch"
           placeholder="Seach Templates"
-          size="mini"
         ></el-input>
         <el-button
-          size="mini"
+          size="small"
           class="ml-4"
-          type="text"
           plain
           round
           @click="displayCreateTemplate = !displayCreateTemplate"
@@ -32,34 +24,21 @@
           ></i>
         </el-button>
       </div>
-      <EventTemplate
-        @toggle="displayCreateTemplate = false"
-        v-for="template in templates"
-        :key="template._id"
-        :data="template"
-      />
+      <transition-group name="el-fade-in">
+        <EventTemplate
+          @toggle="displayCreateTemplate = false"
+          v-for="template in filteredTemplates"
+          :key="template._id"
+          :data="template"
+        />
+      </transition-group>
     </div>
 
     <!-- No templates -->
-    <div v-else>
-      <div class="flex_center">
-        <Nocontent v-bind="noTemplateOptions">
-          <el-button
-            size="mini"
-            class="ml-4"
-            type="primary"
-            plain
-            round
-            @click="displayCreateTemplate = !displayCreateTemplate"
-          >
-            Create new template
-            <i
-              :class="{ active: displayCreateTemplate }"
-              class="indicator el-icon-arrow-right"
-            ></i>
-          </el-button>
-        </Nocontent>
-      </div>
+    <div class="flex flex_center" v-else>
+        <InformationDisplay mode='both' class="flex_center columns" :displayText="{heading:'Create a template',content:'You currently have no templates, you can hover over the help button above for more information on how to create templates and how they work.'}" :tutorial="{module:'admin', feature:'template_management',displayType:'hover'}">
+          <el-button slot="information" size='mini' @click="displayCreateTemplate = !displayCreateTemplate">Create Template</el-button>
+        </InformationDisplay>
     </div>
 
     <!-- Create template -->
@@ -73,43 +52,55 @@
 </template>
 
 <script>
-import ToggleSlideDown from "@/components/ToggleSlideDown";
-import Title from "@/components/Title";
-import EventTemplate from "./EventTemplate";
-import MoreInformation from "@/components/MoreInformation";
 import { mapState, mapActions, mapGetters } from "vuex";
-import Nocontent from "@/components/Nocontent";
+
+import EventTemplate from "./EventTemplate";
 import CreateTemplate from "./CreateTemplate";
+import EventModuleBus from "./EventsModuleBus";
+
+import InformationDisplay from '@/components/InformationDisplay'
 export default {
   name: "EventOptions",
   data() {
     return {
-      templates: "",
       templateNamesSearch: "",
-      templateLoading: false,
+      loading: false,
       displayCreateTemplate: false
     };
   },
-
-  async mounted() {
-    await this.getTemplates();
+  props: {
+    templates: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
+  },
+  components: {
+    EventTemplate,
+    CreateTemplate,
+    InformationDisplay
   },
   computed: {
-    ...mapState(["userInformation"]),
+    ...mapState(["userInformation", "requestIntervals"]),
+    ...mapState("Admin", ["eventTemplates"]),
     ...mapGetters(["getIsAdmin"]),
+
     filteredTemplates() {
       let filteredTemplates = [];
-      for (let i = 0; i < this.templates.length; i++) {
-        let { name } = this.templates[i];
+      for (let i = 0; i < this.eventTemplates.length; i++) {
+        let { name } = this.eventTemplates[i];
         if (
           name.trim().toLowerCase() !=
           this.templateNamesSearch.trim().toLowerCase()
         ) {
           continue;
         }
-        filteredTemplates.push(this.templates[i]);
+        filteredTemplates.push(this.eventTemplates[i]);
       }
-      return filteredTemplates;
+      return filteredTemplates.length == 0
+        ? this.eventTemplates
+        : filteredTemplates;
     },
     noTemplateOptions() {
       return {
@@ -119,31 +110,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
-    async getTemplates() {
-      try {
-        this.templates = await this.request({
-          method: "GET",
-          url: "events/templates/all"
-        });
-        this.loadingTemplates = false;
-      } catch (error) {
-        this.loadingTemplates = false;
-      }
-    }
-  },
-  components: {
-    ToggleSlideDown,
-    EventTemplate,
-    MoreInformation,
-    Nocontent,
-    CreateTemplate
+    ...mapActions(["request"])
   }
 };
 </script>
 <style lang="scss" scoped>
 .indicator {
-  will-transform: rotate;
+  will-change: transform;
   transition: $default_transition;
   &.active {
     transform: rotate(90deg);

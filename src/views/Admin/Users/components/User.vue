@@ -2,22 +2,26 @@
   <div
     class="team_member flex p-4 mt-1"
     @click="
-      UPDATE_DIALOG_INDEX({ dialog: 'viewUser', view: true, data: data._id })
+      UPDATE_DIALOG_INDEX({
+        dialog: 'viewUser',
+        view: true,
+        data: userInformation._id
+      })
     "
   >
     <el-badge
       v-if="displayPrescence"
       is-dot
-      :type="data.isOnline ? 'success' : 'danger'"
+      :type="userInformation.isOnline ? 'success' : 'danger'"
       class="item"
     >
-      <Avatar :name="data.name" />
+      <Avatar :name="name" />
     </el-badge>
-    <Avatar v-else :name="data.name" />
+    <Avatar v-else :name="name" />
 
     <div class="flex columns">
       <div class="text_content ml-2">
-        <p class="member_name m-0 p-0">{{ data.name }}</p>
+        <p class="member_name m-0 p-0">{{ name }}</p>
         <small>{{ group }}</small>
       </div>
     </div>
@@ -25,9 +29,9 @@
 </template>
 
 <script>
-import Avatar from "@/components/Avatar";
-
 import { mapState, mapMutations, mapGetters } from "vuex";
+
+import Avatar from "@/components/Avatar";
 export default {
   name: "User",
   props: {
@@ -35,20 +39,26 @@ export default {
       type: Boolean,
       default: true
     },
-    data: {
+    userInformation: {
       type: Object,
       default: () => {},
       required: true
     }
   },
+  components: {
+    Avatar
+  },
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters("Admin", ["getGroupName"]),
+    name() {
+      return this.userInformation.name;
+    },
     foundGroupName() {
-      return this.getGroupName("user", this.data.groupID).name;
+      return this.getGroupName("user", this.userInformation.groupID).name;
     },
     group() {
-      let { groupID } = this.data;
+      let { groupID } = this.userInformation;
       let name = "Group not found";
       if (this.hasEntries(this.clientInformation)) {
         let { userGroups } = this.clientInformation;
@@ -59,9 +69,6 @@ export default {
   },
   methods: {
     ...mapMutations(["UPDATE_DIALOG_INDEX"])
-  },
-  components: {
-    Avatar
   }
 };
 </script>

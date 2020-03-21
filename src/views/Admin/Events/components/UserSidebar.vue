@@ -1,12 +1,7 @@
 <template>
-  <div class="team_container" v-loading="false">
+  <div class="team_container">
     <!-- Display if in mobile view -->
-    <Title
-      style="text-align:center"
-      v-if="$mq != 'lg'"
-      title="teamInformation"
-      subtitle="View and interact with your team members here"
-    />
+
     <div v-if="getFilteredTeam.length > 0">
       <div
         v-for="(member, index) in teamInformation"
@@ -31,44 +26,23 @@
         </Dropdown>
       </div>
     </div>
-    <Nocontent
-      class="pr-4 pl-4"
-      v-else
-      :moreInformation="
-        getIsAdmin
-          ? null
-          : {
-              index: 'admin',
-              instruction: 'team_viewing',
-              hoverPosition: 'bottom-end'
-            }
-      "
-      text="No team members detected, click the button below to go to user management."
-      icon="bx bx-user-circle "
-    >
-      <el-button
-        round
-        type="primary"
-        @click="$router.push({ name: 'user' })"
-        size="mini"
-        >Create Team Member</el-button
-      >
-    </Nocontent>
+    <div class="flex_center h-100" v-else>
+    <InformationDisplay class="p-4" :displayText="{heading:'No team members found', headingAlign:'center', textAlign:'center', content:'To create a team member please navigate to user management and manage users to create team members'}" mode='title'>
+      <i class="bx bx-user flex_center" slot="above_header"></i>
+      <el-button round slot="information" @click="$router.push({name:'user'})">Go to user management</el-button>
+    </InformationDisplay>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
+import InformationDisplay from '@/components/InformationDisplay'
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
-import Title from "@/components/Title";
-import MoreInformation from "@/components/MoreInformation";
-import Nocontent from "@/components/Nocontent";
 export default {
   name: "UserSidebar",
-  created() {
-    this.teamLoaderManager();
-  },
+
   data() {
     return {
       hoveredTeamMember: null,
@@ -76,43 +50,41 @@ export default {
       loadingTeam: true
     };
   },
+  components: {
+    Dropdown,
+    Avatar,
+    InformationDisplay
+  },
   computed: {
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsAdmin", "getOnlineTeam"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {
       let items = [
+        // {
+        //   name: "Message Team Member",
+        //   command: "message"
+        // },
         {
-          name: "Message Team Member",
-          command: "message"
+          name: "View Team Member",
+          command: "view_team_member"
         }
       ];
 
-      if (this.getIsAdmin) {
-        items.push({
-          name: "View Team Member",
-          command: "view_team_member"
-        });
-      }
+   
       return items;
     }
   },
   methods: {
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
-    teamLoaderManager() {
-      this.loaderTimeout = setTimeout(() => {
-        if (this.teamInformation.length <= 0) {
-          this.loadingTeam = false;
-          this.noTeam = true;
-        } else {
-          this.loadingTeam;
-        }
-      }, 5000);
-    },
+
     handleEvents(event) {
       switch (event) {
         case "message": {
-          this.$router.push({ name: "messenger" });
+          this.$router.push({
+            name: "comms",
+            params: { id: this.hoveredTeamMember }
+          });
           break;
         }
         case "view_team_member": {
@@ -128,13 +100,6 @@ export default {
           break;
       }
     }
-  },
-  components: {
-    Dropdown,
-    Avatar,
-    Title,
-    MoreInformation,
-    Nocontent
   }
 };
 </script>

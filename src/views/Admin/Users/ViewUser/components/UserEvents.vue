@@ -4,26 +4,19 @@
       <h5 class="mb-2">All Events</h5>
       <Event v-for="event in data" :event="event" :key="event._id" />
     </div>
-    <Nocontent v-bind="noContent" v-else>
-      <el-button
-        v-if="getIsAdmin"
-        :disabled="$route.name == 'events'"
-        @click="
-          $router.push({ name: 'events' });
-          $emit('toggle');
-        "
-        >{{
-          $route.name == "events" ? "Already in events" : "Go to events"
-        }}</el-button
-      >
-    </Nocontent>
+  <InformationDisplay v-else class="flex_center" :displayText="{heading:'No events found for this user',content:''}">
+   <div slot="above_header">
+    <i class='bx bx-calendar-plus' ></i>
+    </div>
+    <el-button slot="information" @click=" UPDATE_DIALOG_INDEX({dialog:'eventModule',view:true,data:{assignedTo:[getActiveDialog().data]}});">Create event for this user</el-button>
+  </InformationDisplay>
   </div>
 </template>
 
 <script>
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import Event from "@/views/Admin/Events/components/Event";
-import { mapState, mapGetters } from "vuex";
-import Nocontent from "@/components/Nocontent";
+import InformationDisplay from '@/components/InformationDisplay'
 export default {
   name: "UserEvents",
   props: {
@@ -32,21 +25,19 @@ export default {
       default: () => {}
     }
   },
+  components: {
+    Event,
+    InformationDisplay
+  },
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Admin", ["eventsInformation", "viewTeamMember"]),
-    ...mapGetters(["getIsAdmin"]),
-    noContent() {
-      return {
-        text:
-          "No events are detected for this user, you can create a event for them below",
-        icon: "el-icon-s-management"
-      };
-    }
+    ...mapGetters(["getIsAdmin",'getActiveDialog'])
+  
   },
-  components: {
-    Event,
-    Nocontent
+  methods:{
+    ...mapMutations(['UPDATE_DIALOG_INDEX']),
+    ...mapActions(['closeDialog'])
   }
 };
 </script>

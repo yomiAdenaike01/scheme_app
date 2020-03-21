@@ -1,15 +1,6 @@
 <template>
-  <el-col class="filters_container p-3 mr-1" :class="{ active: displayState }">
-    <div
-      class="hide_show_indicator shadow pl-3 pr-3 pt-2 pb-2"
-      @click="displayState = !displayState"
-    >
-      <i
-        class="el-icon-arrow-right active_arrow"
-        :class="{ ' el-icon-arrow-left': !displayState }"
-      ></i>
-    </div>
-    <div class="inner_filter_container" :class="{ active: displayState }">
+  <el-col class="filters_container p-3 mr-1">
+    <div class="inner_filter_container">
       <div class="title_container">
         <h4>Filters</h4>
         <small class="grey filter_desc"
@@ -39,7 +30,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "EventFilters",
   props: {
@@ -51,7 +42,6 @@ export default {
   data() {
     return {
       selectedTeamMember: "",
-      displayState: false,
       localFilters: {}
     };
   },
@@ -60,6 +50,7 @@ export default {
     ...mapState("Admin", ["teamInformation"]),
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["eventFilters"]),
+    ...mapGetters("Admin", ["getUserGroups"]),
     /**
      * display placeholders based on the group names
      */
@@ -81,7 +72,7 @@ export default {
       };
 
       if (this.hasEntries(this.clientInformation)) {
-        groups.userGroup = this.clientInformation.userGroups;
+        groups.userGroup = this.getUserGroups;
         groups.eventGroup = this.clientInformation.eventGroups;
       }
       return groups;
@@ -91,8 +82,9 @@ export default {
     ...mapActions("Admin", ["getEvents"])
   },
   watch: {
-    localFilters({ userGroup = 0, eventGroup = 0 }) {
-      this.getEvents({ userGroup, eventGroup });
+    localFilters(val = { userGroup: 0, eventGroup: 0 }) {
+      console.log(val);
+      this.getEvents(val);
     }
   }
 };
@@ -109,25 +101,5 @@ export default {
 }
 .filter_desc {
   font-size: 0.7em;
-}
-.hide_show_indicator {
-  position: absolute;
-  top: 50%;
-  right: -20px;
-  border-radius: 40px;
-  z-index: 4;
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  &.active_arrow {
-    right: -100px;
-  }
-}
-.inner_filter_container {
-  &.active {
-    visibility: hidden;
-  }
 }
 </style>

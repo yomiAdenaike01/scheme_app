@@ -22,7 +22,7 @@ const routes = [
   },
   {
     path: "/intro",
-    name: "clientIntro",
+    name: "intro",
     component: ClientIntro
   },
 

@@ -1,22 +1,31 @@
 import Vue from "vue";
 export default {
+
+  UPDATE_TRANSCRIPT_LOADING(state,payload=false){
+    state.transcriptLoading=payload
+  },
   UPDATE_START_NEW_CHAT(state, payload) {
     state.startNewChat = payload;
   },
   UPDATE_MESSAGES(state, payload) {
-    Vue.set(state, "messages", payload);
+    state.messages = payload;
   },
 
   UPDATE_TRANSCRIPTS(state, { type, data }) {
-    if (type == "all") {
-      Vue.set(state, "transcripts", data);
-    } else {
-      Vue.set(state, "transcripts", [...state.transcripts, ...{ type, data }]);
-    }
-
-    //  Think about auto selecting the transcript
+        if (type == "all") {
+         state.transcripts = data;
+        } else {
+          state.transcripts = [...state.transcripts, ...{ type, data }]
+        }
+   
   },
   UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
-    Vue.set(state, "activeTranscript", payload);
-  }
+
+      if (!payload) {
+        Vue.set(state, "activeTranscript", state.transcripts[0]);
+      } else {
+        Vue.set(state, "activeTranscript", payload);
+      }
+    
+}
 };

@@ -1,46 +1,48 @@
 <template>
-  <div class="main_wrapper flex columns">
+  <div class="h-100" v-loading='loading'>
     <NprogressContainer />
     <AppBar />
-    <div class="inner_wrapper flex">
-      <div class="nav_wrapper">
-        <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
+    <div class="main_wrapper flex">
+      <div class="inner_wrapper h-100 flex">
+        <div class="nav_wrapper">
+          <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
+        </div>
+        <el-col class="main_col_container">
+          <InstanceCheck />
+          <DefaultTransition>
+            <keep-alive>
+              <router-view />
+            </keep-alive>
+          </DefaultTransition>
+        </el-col>
       </div>
-      <el-col class="main_col_container">
-        <!-- <ServerHealth /> -->
-        <DefaultTransition>
-          <keep-alive>
-            <router-view :key="key" />
-          </keep-alive>
-        </DefaultTransition>
-      </el-col>
     </div>
-    <Tutorial />
-    <PreviousEventsDialog />
-    <transition name="el-fade-in">
-      <div class="new_version_container shadow" v-if="isNewVersion">
-        <p>This is a new version</p>
-      </div>
-    </transition>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+
+import NprogressContainer from "vue-nprogress/src/NprogressContainer";
+
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
-import moment, * as moments from "moment";
-import CriticalError from "@/components/CriticalError";
-import InvalidClient from "@/components/InvalidClient";
-import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import DefaultTransition from "@/components/DefaultTransition";
-import Tutorial from "@/components/Tutorial";
-import PreviousEventsDialog from "@/components/PreviousEventsDialog";
+import InstanceCheck from "@/components/InstanceCheck";
 export default {
   name: "Main",
-
+  data(){
+    return{
+      loading:true
+    }
+  },
   activated() {
-    this.checkServerHealth();
+    this.checkDevice();
+      Promise.all([this.getEvents(), this.getTeam()]).then(
+      response => {
+        this.loading = false;
+      }
+    );
 
     let isVerified = this.userInformation.verified;
     if (!isVerified) {
@@ -58,28 +60,24 @@ export default {
 
     this.displayWeeklyNotification();
   },
+    components: {
+    Navigation,
+    AppBar,
+    NprogressContainer,
+    DefaultTransition,
+    InstanceCheck
+  },
   computed: {
-    key() {
-      return this.$route.path;
-    },
     ...mapState([
-      "localNotifications",
-      "globalLoader",
       "userInformation",
       "userNotifications",
       "viewMobileMenu",
-      "defaultSize",
-      "criticalNetworkError",
-      "weeklyTimesheetUploaded",
-      "localSettings"
+      "weeklyTimesheetUploaded"
     ]),
     ...mapGetters(["getUAInformation"]),
-    ...mapState("Admin", ["shifts", "teamInformation"]),
-    isNewVersion() {
-      return this.userInformation.usedVersions != this.getCurrentVersion;
-    },
+    ...mapState("Admin", ["teamInformation"]),
     returnIsStartOfWeek() {
-      return moment().get("day") <= 1;
+      return this.initMoment().get("day") <= 1;
     },
     hasRequestOrNotifications() {
       return this.userNotifications.length > 0;
@@ -101,13 +99,38 @@ export default {
   },
 
   methods: {
-    ...mapActions(["checkServerHealth"]),
-    ...mapMutations([
-      "REMOVE_USER",
-      "UPDATE_NOTIFICATIONS",
-      "UPDATE_VIEW_NOTIFICATIONS_CENTER"
-    ]),
-
+    ...mapActions(["updateDevices"]),
+    ...mapActions('Admin',['getEvents','getTeam']),
+    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    triggerDeviceNotification() {
+      this.UPDATE_NOTIFICATIONS({
+        title: "Register new device detected",
+        message:
+          "Would you like this device to be added to your library  (click to confirm) ?",
+        click: () => {
+          this.updateDevices();
+        },
+        type: "info"
+      });
+    },
+    checkDevice() {
+      if (this.userInformation?.devicesInformation?.length === 0) {
+        this.triggerDeviceNotification();
+      } else {
+        // Find in array
+        let deviceIndex = this.userInformation?.devicesInformation?.findIndex(
+          ({ os: { name, version } }) => {
+            return (
+              name === this.getUAInformation.os.name &&
+              version === this.getUAInformation.os.version
+            );
+          }
+        );
+        if (deviceIndex == -1) {
+          this.triggerDeviceNotification();
+        }
+      }
+    },
     requestNotificationPermission() {
       if (!window.Notification) {
         let {
@@ -139,14 +162,7 @@ export default {
         });
     }
   },
-  components: {
-    Navigation,
-    AppBar,
-    NprogressContainer,
-    DefaultTransition,
-    Tutorial,
-    PreviousEventsDialog
-  },
+
   watch: {
     hasAnnoucement: {
       immediate: true,
@@ -172,12 +188,10 @@ export default {
       immediate: true,
       handler(val) {
         if (val) {
-          this.UPDATE_NOTIFICATIONS({
-            title: "Pending notifications",
-            message:
-              "You have notifications pending, press the bell to view them",
-            type: "info"
-          });
+          let userNoty = this.userNotifications;
+          for (let i = 0, len = userNoty.length; i < len; i++) {
+            this.UPDATE_NOTIFICATIONS(userNoty[i]);
+          }
         }
       }
     },
@@ -208,14 +222,9 @@ export default {
 
 <style lang="scss" scoped>
 .main_wrapper {
-  height: 100%;
-  width: 100%;
-  flex: 1;
+  height: calc(100% - #{$app_bar_height});
 }
 .inner_wrapper {
-  flex: 1;
-}
-.main_col_container {
   flex: 1;
 }
 </style>

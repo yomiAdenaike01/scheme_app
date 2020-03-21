@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation", "localSettings"]),
-    ...mapGetters(["getDefaultColour", "getIsSignedUser"]),
+    ...mapGetters(["getDefaultColour", "getIsSignedUser",'getIsAdmin']),
 
     routes() {
       let allowedRoutes = [
@@ -35,39 +35,20 @@ export default {
           path: "/admin/events",
           icon: "el-icon-date"
         },
-        {
-          name: "Messenger",
-          path: "/admin/messenger",
-          icon: "bx bx-conversation"
-        },
-        {
+        // {
+        //   name: "Messenger",
+        //   path: "/admin/messenger",
+        //   icon: "bx bx-conversation"
+        // },
+     
+      ];
+if(this.getIsAdmin){
+  allowedRoutes.push({
           name: "User management",
           path: "/admin/user",
           icon: "bx bx-group"
-        }
-        // {
-        //   name: "Analytics",
-        //   path: "/admin/analytics",
-        //   icon: "bx bx-bar-chart-alt-2"
-        // },
-        // {
-        //   name: "Utilities",
-        //   path: "/admin/utilities",
-        //   icon: "bx bx-task"
-        // },
-        // {
-        //   name: "Support",
-        //   path: "/support/dashboard",
-        //   icon: "bx bx-support"
-        // }
-      ];
-      // if (this.getIsSignedUser) {
-      //   allowedRoutes.push({
-      //     name: "Client Settings",
-      //     icon: "bx bx-cog",
-      //     path: "preferences/client"
-      //   });
-      // }
+        });
+}
       return allowedRoutes;
     },
 

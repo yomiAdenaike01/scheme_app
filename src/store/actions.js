@@ -11,13 +11,29 @@ const sortPayload = ({ state, getters }, payload) => {
   if (token) {
     payload.headers = {
       authorisation: token,
-      version: getters.getCurrentVersion()
+      version: getters.getCurrentVersion
     };
   }
   return payload;
 };
 
 export default {
+  updateDevices(context) {
+    return new Promise((resolve, reject) => {
+      context
+        .dispatch("request", {
+          method: "POST",
+          url: "users/devices",
+          data: { device: context.getters.getUAInformation }
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
   getClient(context) {
     return new Promise((resolve, reject) => {
       let currentHostname = window.location.hostname.toString().split(".");
@@ -28,7 +44,7 @@ export default {
         .dispatch("request", {
           method: "GET",
           url: "clients/get",
-          params: { clientSubdomain: subdomain }
+          params: { subdomain }
         })
 
         .then(response => {
@@ -44,16 +60,29 @@ export default {
         });
     });
   },
-  closeDialog(context, name) {
-    context.commit(
+  closeDialog({ commit, state: { dialogIndex } }, name = "") {
+    commit(
       "UPDATE_DIALOG_INDEX",
       {
         view: false,
-        dialog: name ? name : "",
+        dialog: name,
         data: null
       },
       { root: true }
     );
+
+    if (!name) {
+      for (let property in dialogIndex) {
+        console.log(dialogIndex[property]);
+        if (dialogIndex[property].view == true) {
+          commit("UPDATE_DIALOG_INDEX", {
+            view: false,
+            dialog: property,
+            data: null
+          });
+        }
+      }
+    }
   },
   /**
    *
@@ -78,19 +107,7 @@ export default {
         });
     });
   },
-  checkServerHealth(context) {
-    context
-      .dispatch("request", {
-        method: "GET",
-        url: "/healthcheck"
-      })
-      .then(response => {
-        context.commit("UPDATE_SERVER_HEALTH_STATUS", response);
-      })
-      .catch(error => {
-        return error;
-      });
-  },
+
   updateTheme(context, content) {
     context.dispatch("request", {
       method: "POST",
@@ -197,7 +214,7 @@ export default {
         }
       })
       .catch(error => {
-        const { status } = error.request;
+        const status = error?.request?.status;
 
         // Web token error
         if (status === 401) {

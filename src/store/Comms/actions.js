@@ -1,4 +1,5 @@
 export default {
+  
   deleteChat(context, payload) {
     return new Promise((resolve, reject) => {
       context
@@ -26,7 +27,7 @@ export default {
           "request",
           {
             method: "POST",
-            url: "messengers/read",
+            url: "messenger/read",
             data: { transcriptID: activeTranscript._id }
           },
           { root: true }
@@ -66,6 +67,7 @@ export default {
     } = context;
     let transcriptID =
       Object.keys(activeTranscript).length > 0 ? activeTranscript._id : "";
+
     return new Promise((resolve, reject) => {
       if (transcriptID.length > 0) {
         context
@@ -80,7 +82,6 @@ export default {
           )
           .then(response => {
             context.commit("UPDATE_MESSAGES", response);
-            console.log(response);
             resolve();
           })
           .catch(error => {
@@ -126,9 +127,7 @@ export default {
           .catch(error => {
             reject(error);
           });
-      } else {
-        resolve();
-      }
+      } 
     });
   }
 };

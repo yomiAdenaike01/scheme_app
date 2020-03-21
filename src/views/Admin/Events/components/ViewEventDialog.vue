@@ -27,7 +27,7 @@
           size="small"
           @click="clockIn"
           v-if="isEventMine && isEventToday && !hasClockedIn"
-          >Clock In</el-button
+          >Clock in</el-button
         >
 
         <el-button
@@ -111,12 +111,22 @@
           </div>
         </div>
 
-        <!-- Assign a user -->
-        <div class="no_users" v-else>
-          <Nocontent v-bind="noAssignedUsers" />
-        </div>
-
         <h3 class="mb-3 mt-3">Event date information</h3>
+        <Popover trigger="click">
+          <Form
+            slot="content"
+            @val="updateEvent"
+            :config="configXref"
+            submitText="Update"
+          />
+          <el-button
+            slot="trigger"
+            @click="selectedConfig = 'date'"
+            size="mini"
+            class="mb-2"
+            >Update date information</el-button
+          >
+        </Popover>
 
         <div class="info_unit">
           <span class="info_label">Event start:</span>
@@ -127,6 +137,21 @@
           <span>{{ dates.end }}</span>
         </div>
         <h3 class="mt-4 mb-2">Event type & duration</h3>
+        <Popover trigger="click">
+          <Form
+            slot="content"
+            @val="updateEvent"
+            :config="configXref"
+            submitText="Update"
+          />
+          <el-button
+            slot="trigger"
+            @click="selectedConfig = 'type'"
+            size="mini"
+            class="mb-2"
+            >Update event type information</el-button
+          >
+        </Popover>
 
         <div class="info_unit">
           <span class="info_label">Event duration:</span>
@@ -142,19 +167,27 @@
 
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
+
 import Title from "@/components/Title";
-import moment from "moment";
-import Dropdown from "@/components/Dropdown";
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
+import Form from "@/components/Form";
+
 export default {
   name: "ViewEventDialog",
   data() {
     return {
-      loading: false
+      loading: false,
+      selectedConfig: "date",
+      updates: {}
     };
   },
-
+  components: {
+    Title,
+    Avatar,
+    Popover,
+    Form
+  },
   computed: {
     ...mapState("Admin", ["teamInformation", "eventsInformation"]),
     ...mapState(["userInformation", "dialogIndex"]),
@@ -162,8 +195,46 @@ export default {
     ...mapGetters("Admin", [
       "getEventAssginedTo",
       "getFilteredTeam",
-      "getUserInformation"
+      "getUserInformation",
+      "getEnabledEvents"
     ]),
+
+    updateConfigs() {
+      return [
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time",
+          placeholder: "Start date time",
+          model: "startDate",
+          optional: true,
+          hint: "",
+          tag: "date"
+        },
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time",
+          placeholder: "End date time",
+          model: "endDate",
+          optional: true,
+          hint: "",
+          tag: "date"
+        },
+        {
+          "component-type": "select",
+          placeholder: "Select event type",
+          options: this.getEnabledEvents,
+          model: "type",
+          validType: "number",
+          tag: "type",
+          optional: true
+        }
+      ];
+    },
+    configXref() {
+      return this.updateConfigs.filter(({ tag }) => {
+        return tag == this.selectedConfig;
+      });
+    },
     noAssignedUsers() {
       return {
         text:
@@ -174,14 +245,17 @@ export default {
     },
 
     canAddMoreUsers() {
-      return this.event.assignedToIDs.length - 1 == this.teamInformation.length;
+      return this.event.assignedToIDs.length < this.teamInformation.length;
     },
 
     event() {
       return this.dialogIndex.viewEvent.data;
     },
     isEventToday() {
-      return moment(this.event.startDate).diff(moment(), "hours") < 24;
+      return (
+        this.initMoment(this.event.startDate).diff(this.initMoment(), "hours") <
+        24
+      );
     },
     hasClockedIn() {
       return this.event.clockedIn.some(assingnee => {
@@ -254,8 +328,26 @@ export default {
       "closeDialog",
       "genNotification"
     ]),
-    ...mapActions("Admin", ["getEvents"]),
+    ...mapActions("Admin", ["getEvents", "updateEvents"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
+
+    updateEvent(updateInformation) {
+      if (Object.values(updateInformation).length > 0) {
+        this.loading = true;
+        this.updateEvents({ update: updateInformation, id: this.event.id })
+          .then(() => {
+            this.loading = false;
+          })
+          .catch(() => {
+            this.loading = false;
+          });
+      } else {
+        return this.UPDATE_NOTIFICATIONS({
+          type: "error",
+          message: "You must add data to the inputs to make changes to an event"
+        });
+      }
+    },
 
     getOneEmail(id) {
       return this.getEmail.findIndex(assignee => {
@@ -265,9 +357,9 @@ export default {
 
     dropUserFromEvent(userName) {
       // Cannot be the last one
-      const newLen = this.event.assignedToIDs.length - 1;
-      if (newLen > 1) {
-        let userID = this.getUserInformation(userName, "name")._id;
+      const newLen = this.event.assignedToIDs.length;
+      if (newLen >= 1) {
+        let userID = this.getUserInformation(userName, "name")?._id;
         this.request({
           method: "DELETE",
           url: "events/user",
@@ -277,7 +369,6 @@ export default {
           }
         })
           .then(response => {
-            this.$forceUpdate();
             this.getEvents();
             // Notify user they have been dropped
             this.genNotification({
@@ -286,20 +377,6 @@ export default {
               message: "You have been removed from an event",
               for: userID
             });
-
-            // this.genEmail({
-            //   subject: "Removed from event",
-            //   to: this.getEmail,
-            //   context: {
-            //     body: contentMessage
-            //   },
-            //   notification: {
-            //     type: "reminder",
-            //     title: contentMessage,
-            //     for: assignedTo,
-            //     message: contentMessage
-            //   }
-            // });
           })
           .catch(err => {
             return err;
@@ -310,6 +387,7 @@ export default {
             "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so.",
           title: "Removal warning",
           type: "warning",
+          duration: 6000,
           onClick: () => {
             this.deleteEvent();
           }
@@ -318,7 +396,7 @@ export default {
     },
     assignNewUser(userID) {
       this.request({
-        method: "POST",
+        method: "PUT",
         url: "events/user",
         data: {
           eventID: this.event.id,
@@ -345,7 +423,7 @@ export default {
             method: "DELETE",
             url: "events/delete",
             data: {
-              id: this.event.id
+              _id: this.event.id
             }
           })
             .then(response => {
@@ -426,13 +504,6 @@ export default {
           return err;
         });
     }
-  },
-
-  components: {
-    Title,
-    Dropdown,
-    Avatar,
-    Popover
   }
 };
 </script>

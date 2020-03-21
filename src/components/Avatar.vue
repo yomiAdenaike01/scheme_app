@@ -1,6 +1,6 @@
 <template>
   <div class="shadow_border flex_center avatar_container">
-    <el-avatar :style="{ background: randColour }">{{
+    <el-avatar :style="{ background: randColour() }">{{
       !isNameTheSame ? initials : "ME"
     }}</el-avatar>
   </div>
@@ -15,23 +15,15 @@ export default {
   },
   computed: {
     ...mapState(["defaultCustomColours", "userInformation"]),
-    ...mapState("Admin", [, "teamInformation"]),
-    findUserColour() {
-      return this.teamInformation.find(member => {
-        return member.name.toLowerCase() == this.name.toLowerCase();
-      });
-    },
+    ...mapState("Admin", ["teamInformation"]),
+
     isNameTheSame() {
       return (
         this.userInformation.name.trim().toLowerCase() ==
         this.name.trim().toLowerCase()
       );
     },
-    randColour() {
-      return this.defaultCustomColours[
-        Math.round(Math.random() * this.defaultCustomColours.length)
-      ];
-    },
+
     initials() {
       let initials, username;
       username = "John Doe";
@@ -48,6 +40,13 @@ export default {
         initials = initials.substr(0, 3).toUpperCase();
       }
       return initials;
+    }
+  },
+  methods: {
+    randColour() {
+      return this.defaultCustomColours[
+        Math.round(Math.random() * this.defaultCustomColours.length)
+      ];
     }
   }
 };

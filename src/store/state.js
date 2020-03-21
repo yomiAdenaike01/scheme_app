@@ -1,12 +1,12 @@
 import vars from "@/assets/Styles/defaults.scss";
 export default {
-  theme: localStorage.getItem("cssText"),
-  serverHealth: {},
   requestIntervals: {
     team: 6000,
     events: 6000,
     client: 10000,
-    messages: 3000
+    messages: 3000,
+    transcripts: 3000,
+    templates: 3000
   },
   clientInformation: localStorage.getItem("clientInformation")
     ? JSON.parse(localStorage.getItem("clientInformation"))
@@ -26,21 +26,17 @@ export default {
   weeklyTimesheetUploaded: false,
   hasSeenNotifications: false,
   userNotifications: [],
-  currentInterval: "",
   viewMobileMenu: false,
-  defaultSize: { minFontSize: "10px", maxFontSize: "16px" },
-  intervals: {
-    clientInterval: null
-  },
-  invalidClient: {
-    display: false,
-    isError: false
+
+  defaultSize: {
+    minFontSize: "10px",
+    maxFontSize: "16px"
   },
 
   dialogIndex: {
     viewUser: { view: null, data: null, tabIndex: 0 },
     viewEvent: { view: null, data: null, tabIndex: 0 },
-    eventManager: { view: null, data: null, tabIndex: 0 },
+    eventModule: { view: null, data: null, tabIndex: 0 },
     tutorial: { view: null, data: null, tabIndex: 0 },
     prevEvents: { view: null, data: null, tabIndex: 0 }
   },

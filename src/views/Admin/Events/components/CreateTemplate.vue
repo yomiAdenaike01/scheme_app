@@ -29,10 +29,11 @@
 </template>
 
 <script>
+import { mapGetters, mapState, mapActions } from "vuex";
+
 import Title from "@/components/Title";
 import Form from "@/components/Form";
-import { mapGetters, mapState, mapActions } from "vuex";
-import moment from "moment";
+
 export default {
   name: "CreateTemplate",
   data() {
@@ -41,10 +42,15 @@ export default {
       loading: false
     };
   },
+  components: {
+    Form,
+    Title
+  },
   computed: {
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", [
       "getTeamMember",
+      "getUserGroups",
       "getDropdownTeamMembers",
       "teamInformation",
       "getUsersInUserGroup"
@@ -54,7 +60,7 @@ export default {
     switches() {
       return [
         {
-          text: "Generate for working week (Mon-Fri)",
+          text: "Generate for working week",
           model: "disableRepeatFor"
         },
         {
@@ -75,6 +81,10 @@ export default {
       ];
     },
 
+    defaultName() {
+      return `template ${new Date().toISOString()}`;
+    },
+
     templateForm() {
       let templateConfig = [
         {
@@ -82,7 +92,7 @@ export default {
           "component-type": "text",
           placeholder: "Template name",
           optional: true,
-          hint: `Optional: Default name will be <strong>template_${new Date().toISOString()}</strong>`
+          hint: `Optional: Default name will be <strong>template_${this.defaultName}</strong>`
         },
         {
           model: "type",
@@ -126,7 +136,7 @@ export default {
           model: "userGroup",
           "component-type": "select",
           placeholder: "Select user group",
-          options: this.clientInformation.userGroups,
+          options: this.getUserGroups,
           optional: true,
           mutiple: true
         });
@@ -140,11 +150,24 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
+    ...mapActions("Admin", ["createEventTemplate"]),
     contains(item) {
       return this.configDisplay.some(x => x == item);
     },
-    createTemplate(form) {
-      let nextWeek = moment()
+    createTemplate(
+      form = {
+        weekdays: [1, 2, 3, 4, 5],
+        type: 1,
+        name: this.defaultName,
+        timeRange: [
+          new Date().toISOString(),
+          new Date(new Date().setDate(new Date().getDay() + 2))
+        ]
+      }
+    ) {
+      // this.loading = true;
+
+      let nextWeek = this.initMoment()
         .add(1, "week")
         .endOf("week")
         .toISOString();
@@ -154,14 +177,15 @@ export default {
         content: {
           type: form.type,
           assignedTo: [],
-          repeat: { weekdays: [], until: nextWeek },
+          repeat: { weekdays: form.weekdays, until: nextWeek },
           startDate: form.timeRange[0].toISOString(),
           endDate: form.timeRange[1].toISOString()
         }
       };
 
       if (this.contains("disableRepeatFor")) {
-        templateForm.content.repeat.weekdays = [1, 2, 3, 4, 5];
+        templateForm.content.repeat.weekdays = this.clientInformation.timings
+          ?.workingDays ?? [1, 2, 3, 4, 5];
       }
 
       if (this.contains("individualUserGroups")) {
@@ -170,24 +194,16 @@ export default {
           selectedUserGroup
         );
       }
-
-      this.loading = true;
-      this.request({
-        method: "POST",
-        url: "events/templates/create",
-        data: { ...templateForm }
-      })
+      this.createEventTemplate({ ...templateForm })
         .then(response => {
           this.loading = false;
+          this.$emit("toggle", false);
         })
         .catch(err => {
           this.loading = false;
+          this.$emit("toggle", false);
         });
     }
-  },
-  components: {
-    Form,
-    Title
   }
 };
 </script>

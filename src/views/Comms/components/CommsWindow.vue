@@ -1,105 +1,120 @@
 <template>
   <transition name="el-fade-in">
-    <div class="comms_window_container flex columns">
+    <div class="comms_window_container flex columns" v-loading="transcriptLoading">
       <div class="messages_container" v-if="hasEntries(activeTranscript)">
-        <div class="comms_window_toolbar">
-          <p>{{ username }}</p>
-        </div>
-        <transition-group name="el-fade-in">
-          <Message
-            v-for="(message, index) in messages"
-            :data="message"
-            :key="index"
-          />
-        </transition-group>
+        <!-- Comms toolbar -->
+        <CommsToolbar :recieverInformation="info" />
+        <!-- Messages -->
+        <Message
+          v-for="(message, index) in messages"
+          :data="{...message,isSender:message.senderID == userInformation._id,sentAt:initMoment(message.sentAt).calendar()}"
+          :key="
+            `${index}${Math.random()
+              .toString(16)
+              .slice(2)}`
+          "
+        />
         <!-- Message input -->
         <div class="input_container flex">
           <div class="actions_container">
             <Popover trigger="click">
               <i class="bx bx-plus grey show_actions" slot="trigger"></i>
               <div class="flex flex--start columns" slot="content">
-                <el-button><i class="bx bx-plus"></i>Add attachment</el-button>
+                <el-button>
+                  <i class="bx bx-plus"></i>Add attachment
+                </el-button>
               </div>
             </Popover>
           </div>
           <el-input
             clearable
             class="chat_input"
-            v-model="chat.content"
+            v-model="chatInformation.content"
             type="textarea"
           ></el-input>
-          <el-button
-            v-loading="loading"
-            @click="prepareSendMessage"
-            plain
-            type="primary"
+          <el-button @click="prepareSendMessage" plain type="primary"
             >Send</el-button
           >
         </div>
       </div>
-      <Nocontent v-bind="noContent" />
+      <!-- Information display -->
+      <div v-else class="no_content_container">
+        <p>No data</p>
+      </div>
     </div>
   </transition>
 </template>
 
 <script>
-import Popover from "@/components/Popover";
+import { mapState, mapActions, mapMutations } from "vuex";
+
 import Message from "./Message";
-import Nocontent from "@/components/Nocontent";
-import { mapState, mapActions } from "vuex";
+import CommsToolbar from "./CommsToolbar";
+import CommsEventBus from "./CommsEventBus";
+
+import Popover from "@/components/Popover";
+
 export default {
   name: "CommsWindow",
   data() {
     return {
-      loading: false,
       messagesInterval: null,
-      chat: {
+      transcriptError:true,
+      chatInformation: {
         content: "",
         attachments: ""
       }
     };
   },
 
-  deactivated() {
-    clearInterval(this.messagesInterval);
-  },
-  async activated() {
-    await this.getMessages();
-    this.readMessages();
-    clearInterval(this.messagesInterval);
+  activated() {
     this.messagesInterval = setInterval(() => {
       this.getMessages();
     }, this.requestIntervals.messages);
   },
+  deactivated() {
+    clearInterval(this.messagesInterval);
+  },
+  components: {
+    Message,
+    CommsToolbar,
+    Popover
+  },
   computed: {
-    ...mapState(["requestIntervals"]),
-    ...mapState("Comms", ["activeTranscript", "messages"]),
-    noContent() {
+    ...mapState(["requestIntervals",'userInformation']),
+    ...mapState("Comms", ["activeTranscript", "messages",'transcriptLoading']),
+    infoDisplay() {
       return {
         text: "No chat selected",
         icon: "bx bx-conversation"
       };
     },
     info() {
-      return this.activeTranscript.userInfo;
+      return this.activeTranscript?.userInfo;
     },
-    username() {
-      return this.info?.name ?? "John Doe";
+
+    isMuted() {
+      return (
+        this.activeTranscript.mutedNotifications.indexOf(this.userInformation) >
+        -1
+      );
     }
   },
   methods: {
     ...mapActions("Comms", ["getMessages", "sendMessage", "readMessages"]),
+    ...mapMutations('Comms',['UPDATE_ACTIVE_TRANSCRIPT']),
 
     prepareSendMessage() {
       this.loading = true;
 
       let messagePayload = {
-        ...this.chat,
+        ...this.chatInformation,
         recieverID: this.activeTranscript.userTwo,
         transcriptID: this.activeTranscript._id,
-        userName: this.username
+        isMuted: this.isMuted
       };
-      this.chat.content = "";
+
+      this.chatInformation.content = "";
 
       this.sendMessage(messagePayload)
         .then(response => {
@@ -108,30 +123,15 @@ export default {
         })
         .catch(() => {
           this.loading = false;
-          return;
         });
     }
-  },
-  components: {
-    Message,
-    Popover,
-    Nocontent
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .comms_window_container {
-  width: 100%;
-  height: 100%;
-  color: grey;
-}
-.comms_window_toolbar {
-  border-bottom: $border;
-  padding: 10px;
-  width: 100%;
-  pointer-events: none;
-  //   box-shadow: 0px 4px 10px whitesmoke;
+  flex: 1;
 }
 .messages_container {
   position: relative;
@@ -146,7 +146,7 @@ export default {
   border-bottom: $border;
   flex: 1;
 }
-.chat_input {
+.chatInformation_input {
   font-size: 15px;
   height: 100%;
   &/deep/ {
@@ -164,5 +164,10 @@ export default {
 }
 .show_actions {
   font-size: 1.5em;
+}
+.no_content_container {
+  background: rgb(253, 253, 253);
+  flex: 1;
+  color: #ccc;
 }
 </style>

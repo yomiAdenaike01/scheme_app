@@ -4,7 +4,6 @@
       class="p-1"
       :inline="inline"
       :disabled="disableForm"
-      :size="size"
       ref="form"
       :rules="form.validate"
       :model="formContent"
@@ -13,11 +12,9 @@
         v-for="(input, index) in form.formData"
         :key="`${index}${input.name}`"
         :prop="input.name"
-        :label="input.label || ' '"
-        :required="!input.hasOwnProperty('ignoreRequired')"
+        :label="input.label || ''"
       >
         <component
-          :size="size"
           class="dialog_item"
           :is="
             input['component-type'] == 'text' ||
@@ -39,7 +36,6 @@
           :min="input.min"
           :max="input.max"
           :picker-options="input.pickerOptions"
-          range-separator="To"
           :is-range="input.isRange"
           :type="
             input['input-type'] == 'date'
@@ -55,6 +51,11 @@
               : null
           "
           v-bind="input"
+          :placeholder="
+            input.optional
+              ? `(Optional) ${input.placeholder}`
+              : input.placeholder
+          "
           :disabled="input.disabled"
           :start-placeholder="input.start_placeholder"
           :end-placeholder="input.end_placeholder"
@@ -63,11 +64,10 @@
         >
           <el-option
             v-for="option in input.options"
-            :label="option.text || option.name"
+            :label="option.text || option.name || option.label"
             :key="option.value"
             :value="option.value ? option.value : option.text"
-            >{{ option.text || option.name }}</el-option
-          >
+          />
         </component>
         <!-- Hint -->
         <small
@@ -80,7 +80,7 @@
       <!-- Submit button -->
       <div class="button_container mt-4" v-if="!disable">
         <el-button
-          size="mini"
+          :size="size"
           type="primary"
           class="button_text"
           round
@@ -96,11 +96,7 @@
 <script>
 export default {
   name: "Form",
-  activated() {
-    if (this.preModel) {
-      this.$set(this, "formContent", this.preModel);
-    }
-  },
+
 
   data() {
     return {
@@ -115,10 +111,6 @@ export default {
     inline: {
       type: Boolean,
       default: false
-    },
-    preModel: {
-      default: Object,
-      required: false
     },
     disableForm: {
       type: Boolean,
@@ -139,14 +131,20 @@ export default {
       type: Function,
       default: null
     },
-    size: {
-      type: String,
-      default: "medium"
-    },
+
     liveUpdate: {
       type: Boolean,
       default: false
-    }
+    },
+    size: {
+      type: String,
+      default: "mini"
+    },
+    resetOnSubmit: {
+      type: Boolean,
+      default: false
+    },
+    
   },
   computed: {
     form() {
@@ -158,7 +156,7 @@ export default {
           ? formItem.name
           : formItem.model;
 
-        if (!formItem.hasOwnProperty("optional")) {
+        if (!formItem?.optional) {
           let validArr = [];
           let compType = formItem["component-type"];
           let inputType = formItem["input-type"];
@@ -168,23 +166,19 @@ export default {
             trigger = "change";
           }
 
-          // if (compType == "date-picker") {
-          //   type = "date";
-          //   trigger = "change";
-          // }
-
           if (
-            (compType == "select" && formItem.hasOwnProperty("multiple")) ||
+            (compType == "select" && formItem?.multiple) ||
             inputType == "dates" ||
-            formItem.hasOwnProperty("isRange")
+            formItem?.isRange ||
+            inputType == "date-time-range"
           ) {
             type = "array";
-          } else if (
-            compType == "select" &&
-            "validType" in formItem &&
-            formItem.validType == "number"
-          ) {
+          } else if (compType == "select" && formItem?.validType == "number") {
             type = "number";
+          }
+
+          if (inputType == "date-time" || inputType == "date") {
+            type = "date";
           }
 
           let validObj = {
@@ -195,7 +189,7 @@ export default {
             type
           };
 
-          if (!formItem.hasOwnProperty("name")) {
+          if (!formItem?.name) {
             formItem.name = formItem.model;
           }
 
@@ -226,37 +220,38 @@ export default {
       });
     },
     completeForm() {
-      this.$emit("val", this.formContent);
+      return new Promise((resolve, reject) => {
+        try {
+          this.$emit("val", this.formContent);
 
-      if (this.customMethod) {
-        this.customMethod();
-      }
+          if (this.customMethod) {
+            this.customMethod();
+          }
 
-      if (this.nextTab) {
-        this.$emit("changeTab");
-      }
+          if (this.nextTab) {
+            this.$emit("changeTab");
+          }
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
     },
     submitForm() {
       this.runValidation()
         .then(response => {
-          this.completeForm();
+          this.completeForm().then(response => {
+            if (this.resetOnSubmit) {
+              this.resetForm();
+            }
+          });
         })
         .catch(error => {
           return error;
         });
     }
-  },
-  watch: {
-    formContent: {
-      deep: true,
-      handler(val) {
-        if (this.liveUpdate) {
-          this.$emit("val", val);
-        }
-      }
-    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -268,7 +263,7 @@ export default {
   text-transform: capitalize;
 }
 .dialog_item {
-  width: 70%;
+  min-width: 70%;
 }
 .description {
   display: block;

@@ -1,40 +1,21 @@
-const EventsManager = () => import("@/views/Admin/Events/EventsManager");
-const Analytics = () => import("@/views/Admin/Analytics/AnalyticsManager");
-const UserManager = () => import("@/views/Admin/Users/UserManager");
-const Utilities = () => import("@/views/Admin/Utilities/UtilitiesManager");
-const Integrations = () => import("@/views/Admin/Integrations/Integrations");
-const Comms = () => import("@/views/Comms/CommsManager");
+const EventsModule = () => import("@/views/Admin/Events/EventsModule");
+const UserModule = () => import("@/views/Admin/Users/UserModule");
+const Comms = () => import("@/views/Comms/CommsModule");
 
 export default [
   {
-    path: "utilities",
-    name: "utilities",
-    component: Utilities,
+    path: "events",
+    name: "events",
+    component: EventsModule,
     meta: {
       authRequired: true
     }
   },
 
   {
-    path: "events",
-    name: "events",
-    component: EventsManager,
-    meta: {
-      authRequired: true
-    }
-  },
-  {
-    path: "analytics",
-    name: "analytics",
-    component: Analytics,
-    meta: {
-      authRequired: true
-    }
-  },
-  {
     path: "user",
     name: "user",
-    component: UserManager,
+    component: UserModule,
     meta: {
       authRequired: true
     }
@@ -43,14 +24,6 @@ export default [
     path: "messenger",
     name: "comms",
     component: Comms,
-    meta: {
-      authRequired: true
-    }
-  },
-  {
-    path: "integrations",
-    name: "integrations",
-    component: Integrations,
     meta: {
       authRequired: true
     }

@@ -17,20 +17,7 @@ export default {
       adminInterval: null
     };
   },
-  computed: {
-    ...mapState([
-      "localSettings",
-      "userInformation",
-      "criticalNetworkError",
-      "requestIntervals"
-    ]),
-    ...mapState("Admin", ["eventsInformation"]),
-    hasEventsToday() {
-      return this.eventsInformation.today.length > 0;
-    }
-  },
-
-  deactivated() {
+    deactivated() {
     clearInterval(this.adminInterval);
   },
   activated() {
@@ -52,6 +39,21 @@ export default {
       this.getEvents();
     }, this.requestIntervals.events);
   },
+  components: {
+    ViewUserDialog
+  },
+  computed: {
+    ...mapState([
+      "localSettings",
+      "userInformation",
+      "criticalNetworkError",
+      "requestIntervals"
+    ]),
+    ...mapState("Admin", ["eventsInformation"]),
+    hasEventsToday() {
+      return this.eventsInformation.today.length > 0;
+    }
+  },
   methods: {
     ...mapActions("Admin", ["getTeam", "getEvents", "getNotifications"]),
     displayNewNotification() {
@@ -63,9 +65,7 @@ export default {
       });
     }
   },
-  components: {
-    ViewUserDialog
-  },
+
   watch: {
     criticalNetworkError() {
       clearInterval(this.adminInterval);

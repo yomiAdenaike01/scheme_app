@@ -12,8 +12,9 @@
         :plain="button.plain"
         :disabled="button.disabled"
         @click="button.method"
-        ><span v-html="button.label"></span
-      ></el-button>
+      >
+        <span v-html="button.label"></span>
+      </el-button>
       <!-- <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
@@ -27,7 +28,7 @@
             ? "Integrate with google calendar"
             : "Integrated with google calendar"
         }}
-      </el-button> -->
+      </el-button>-->
     </el-col>
   </el-row>
 </template>
@@ -94,7 +95,7 @@ export default {
           type: "primary",
           method: () => {
             this.UPDATE_DIALOG_INDEX({
-              dialog: "eventManager",
+              dialog: "eventModule",
               view: true
             });
           },

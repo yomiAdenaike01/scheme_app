@@ -4,38 +4,36 @@
     v-resize-text="defaultSize"
     :class="{ mobile: $mq != 'lg' }"
     v-loading="loading"
-    element-loading-background="rgba(255, 255, 255, 1)"
-    element-loading-text="
-      Loading
-    client instance please wait....
-    "
+    element-loading-text="Loading client instance please wait...."
   >
-    <DefaultTransition>
+  
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
-    </DefaultTransition>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
-import alterTheme from "@/mixins/alterTheme";
-import DefaultTransition from "@/components/DefaultTransition";
 export default {
-  name: "app",
+  name: "App",
   data() {
     return {
       clientInterval: null,
-      loading: true
+      loading: false
     };
   },
-  created() {
-    this.loggerController();
 
-    if (this.isValidClient) {
-      this.SET_THEME();
+  created() {
+    if (this.getIsIE) {
+      this.$router.push({
+        name: "intro"
+      });
+      alert(
+        "Your browser is IE11, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
+      );
     }
+
     clearInterval(this.clientInterval);
     this.clientInterval = setInterval(() => {
       let res = this.getClient()
@@ -43,49 +41,38 @@ export default {
           this.loading = false;
         })
         .catch(err => {
+          this.$router.push({
+            name: "intro"
+          });
           this.loading = false;
+          clearInterval(this.clientInterval);
         });
     }, this.requestIntervals.client);
   },
   destroyed() {
     clearInterval(this.clientInterval);
   },
+
   computed: {
     ...mapState([
       "requestIntervals",
       "notifications",
-      "userInformation",
       "defaultSize",
       "clientInformation",
-      "criticalNetworkError",
-      "invalidClient"
+      "criticalNetworkError"
     ]),
-    ...mapState("Admin", ["teamInformation", "shifts"]),
+    ...mapState("Admin", ["teamInformation"]),
+    ...mapGetters(["getIsIE"]),
 
     isValidClient() {
       return this.hasEntries(this.clientInformation);
     }
   },
-  mixins: [alterTheme],
   methods: {
-    ...mapActions(["request", "getClient"]),
-    ...mapMutations(["SET_THEME"]),
-    loggerController() {
-      if (process.env.NODE_ENV != "development") {
-        window.console.log = function() {};
-        window.console.warn = function() {};
-        window.console.error = function() {};
-      }
-    }
-  },
-  components: {
-    DefaultTransition
+    ...mapActions(["getClient"])
   },
 
   watch: {
-    "clientInformation.colours"(val) {
-      this.mutateTheme(val);
-    },
     notifications(val) {
       this.$notify(val[0]);
     },
@@ -110,7 +97,6 @@ html,
   height: 100%;
   width: 100%;
   margin: 0;
-  overflow: hidden;
   padding: 0;
 }
 /*
@@ -271,7 +257,6 @@ span {
 }
 
 .h-100 {
-  flex: 1;
   height: 100%;
 }
 .h-90 {
@@ -334,11 +319,7 @@ span {
   font-weight: bold;
 }
 .overflow {
-  overflow-x: hidden;
-  &:after {
-    content: "";
-    display: block;
-  }
+  overflow: auto;
 }
 
 .rounded {
@@ -369,15 +350,32 @@ span {
 
 .el-dialog {
   border-radius: 10px;
-  padding: 0;
-  width: 45%;
+  padding: 40px 0;
+  width: 35% !important;
   &/deep/ {
     .el-dialog__body {
       padding: 0;
     }
   }
 }
+.el-card__body {
+  height: 100%;
+  overflow-x: scroll;
+}
 
+//   _   _       _   _  __ _           _   _
+//  | \ | |     | | (_)/ _(_)         | | (_)
+//  |  \| | ___ | |_ _| |_ _  ___ __ _| |_ _  ___  _ __  ___
+//  | . ` |/ _ \| __| |  _| |/ __/ _` | __| |/ _ \| '_ \/ __|
+//  | |\  | (_) | |_| | | | | (_| (_| | |_| | (_) | | | \__ \
+//  |_| \_|\___/ \__|_|_| |_|\___\__,_|\__|_|\___/|_| |_|___/
+
+.custom_notification_icon {
+  color: #909399;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 50%;
+}
 /**
     _   _  _  ___ _  _    ___
     | \_/ |/ \| o ) || |  | __|

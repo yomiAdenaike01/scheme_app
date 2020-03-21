@@ -5,7 +5,7 @@
       :style="{ borderRight: `1.5px solid #efefef` }"
     >
       <div class="client_image_container p-2" v-if="$mq == 'lg'">
-        <ClientImage :responsive="true" :center="true" />
+        <Logo />
       </div>
       <div
         v-else
@@ -30,7 +30,7 @@
             traisition="el-collapse-transition"
           >
             <div class="notifications_center" slot="content">
-              <NotificationManager />
+              <NotificationModule />
             </div>
             <el-button
               slot="trigger"
@@ -42,25 +42,27 @@
         </el-badge>
       </div>
     </el-col>
-
-    <Settings :display="displaySettings" @toggle="displaySettings = $event" />
   </el-row>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
-import Dropdown from "@/components/Dropdown";
-import Settings from "@/views/Settings/Settings";
+
 import Avatar from "./Avatar.vue";
-import ClientImage from "@/components/ClientImage";
+
+import Dropdown from "@/components/Dropdown";
+import Logo from "@/components/Logo";
 import Popover from "@/components/Popover";
-import NotificationManager from "@/components/NotificationManager";
+import NotificationModule from "@/components/NotificationModule";
+
 export default {
   name: "AppBar",
-  data() {
-    return {
-      displaySettings: false
-    };
+  components: {
+    Dropdown,
+    Avatar,
+    Logo,
+    Popover,
+    NotificationModule
   },
   computed: {
     ...mapState([
@@ -106,11 +108,6 @@ export default {
         },
 
         {
-          name: "<i class='bx bx-cog'></i> Settings",
-          command: "settings",
-          divided: true
-        },
-        {
           name: "Help",
           command: "support",
           divided: true,
@@ -140,7 +137,7 @@ export default {
           this.UPDATE_DIALOG_INDEX({
             dialog: "viewUser",
             view: true,
-            id: this.userInformation._id
+            data: this.userInformation
           });
           break;
         }
@@ -152,20 +149,10 @@ export default {
           })
             .then(response => {
               this.REMOVE_USER();
-              this.$router.push({ name: "login" });
             })
             .catch(error => {
               this.UPDATE_GLOBAL_LOADER(false);
             });
-          break;
-        }
-        case "settings": {
-          this.displaySettings = true;
-          break;
-        }
-
-        case "support": {
-          this.$router.push({ name: "supportCentre" });
           break;
         }
 
@@ -173,14 +160,6 @@ export default {
           break;
       }
     }
-  },
-  components: {
-    Dropdown,
-    Settings,
-    Avatar,
-    ClientImage,
-    Popover,
-    NotificationManager
   }
 };
 </script>
@@ -194,6 +173,7 @@ export default {
 .infobar_wrapper {
   border-bottom: solid 1px #e6e6e6;
   box-shadow: $box_shadow;
+  max-height: $app_bar_height;
 }
 .nav_toggle {
   cursor: pointer;

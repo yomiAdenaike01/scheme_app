@@ -2,8 +2,29 @@ import { guide } from "@/stubs/guide";
 var UAParser = require("ua-parser-js");
 
 export default {
+  getCurrentTabXref: () => ({ tabs, currentTab }) => {
+    let tabLabel = tabs[currentTab].label;
+    return {
+      name: tabLabel.replace(/\s/g, "_").toLowerCase(),
+      display: tabLabel
+    };
+  },
+  getUserDevices({ userInformation: { devicesInformation } }) {
+    return devicesInformation;
+  },
   getCurrentVersion() {
-    return require("../package.json").version;
+    return require("../../package.json").version;
+  },
+  getIsIE(
+    state,
+    {
+      getUAInformation: {
+        browser: { name }
+      }
+    }
+  ) {
+    let nonSupportedBrowsers = ["IE", "IEMobile"];
+    return nonSupportedBrowsers.indexOf(name) > -1;
   },
   getIsSignedUser: (
     { userInformation: { groupID, _id }, clientInformation: { signedUser } },
@@ -16,7 +37,17 @@ export default {
     return isSignedUser;
   },
   getActiveDialog: ({ dialogIndex }) => dialogName => {
-    return dialogIndex[dialogName].view;
+    let foundDialog = null;
+    if (dialogName) {
+      foundDialog =  dialogIndex[dialogName].view;
+    } else {
+      for (let property in dialogIndex) {
+        if (dialogIndex[property].view) {
+          foundDialog = dialogIndex[property];
+        }
+      }
+    }
+    return foundDialog
   },
   getUserNotificationsLength({ userNotifications }) {
     return userNotifications.filter(notification => {
@@ -31,28 +62,28 @@ export default {
   getUserSettings(state) {
     return state.userInformation.settings;
   },
-  getClient(state, getters) {
-    if (getters.isValidClient) {
-      return state.clientInformation;
+  getClient({clientInformation}, {isValidClient}) {
+    if (isValidClient) {
+      return clientInformation;
     } else {
       return {};
     }
   },
-  getPreferences(state) {
-    return state.userInformation.preferences;
+  getPreferences({userInformation:{preferences}}) {
+    return preferences;
   },
   getIsAdmin({ userInformation: { groupID } }) {
     return groupID == 1;
   },
-  getClientColours(state) {
-    return state.clientInformation.colours;
+  getClientColours({clientInformation:{colours}}) {
+    return colours;
   },
 
   getGuide() {
     return guide;
   },
-  getDefaultColour(state) {
-    return state.defaultCustomColours[0];
+  getDefaultColour({defaultCustomColours}) {
+    return defaultCustomColours[0];
   },
   getRandomColour({ defaultCustomColours }) {
     return defaultCustomColours[

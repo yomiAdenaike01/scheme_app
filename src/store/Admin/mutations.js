@@ -1,5 +1,8 @@
 import Vue from "vue";
 export default {
+  UPDATE_EVENT_TEMPLATES(state, payload) {
+    Vue.set(state, "eventTemplates", payload);
+  },
   // Reports
   UPDATE_EVENT_FILTERS(state, payload) {
     Vue.set(state, "eventFilters", payload);

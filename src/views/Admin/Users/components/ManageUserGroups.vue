@@ -31,7 +31,7 @@
           <el-row type="flex">
             <div
               class="group_container p-4 m-3 flex_center columns flex-1"
-              v-for="(group, index) in clientInformation.userGroups"
+              v-for="(group, index) in getUserGroups"
               :key="index"
               @click="toggleDelete(group.value)"
               :class="[
@@ -41,20 +41,21 @@
                 }
               ]"
             >
-              <p class="mb-3" v-loading="runningDelete == group.value">
+              <p class="mb-3" v-loading="inArray(group.value)">
                 {{ group.label }}
               </p>
-              <DefaultTransition>
-                <el-button
-                  v-if="inArray(group.value)"
-                  icon="el-icon-delete"
-                  circle
-                  type="danger"
-                  @click="deleteGroup(group.value)"
-                ></el-button>
-              </DefaultTransition>
             </div>
           </el-row>
+          <div class="flex flex--end align_end">
+            <el-button
+              plain
+              round
+              type="danger"
+              v-if="toDelete.length > 0"
+              @click="deleteGroup"
+              >Confirm</el-button
+            >
+          </div>
         </div>
       </el-collapse-transition>
     </div>
@@ -62,9 +63,8 @@
 </template>
 
 <script>
-import DefaultTransition from "@/components/DefaultTransition";
 import Form from "@/components/Form";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "ManageUserGroups",
   data() {
@@ -77,14 +77,11 @@ export default {
   computed: {
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["teamInformation"]),
-
+    ...mapGetters("Admin", ["getUserGroups"]),
     managementConfig() {
       return [
         {
           name: "Create Group"
-        },
-        {
-          name: "Edit Group"
         },
 
         {
@@ -98,14 +95,14 @@ export default {
         {
           "component-type": "text",
           clearable: true,
-          placeholder: "Name",
-          model: "name"
+          placeholder: "Group name",
+          model: "label"
         }
       ];
     }
   },
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
+    ...mapActions(["request", "genPromptBox", "closeDialogBox"]),
     inArray(item) {
       return this.toDelete.indexOf(item) > -1;
     },
@@ -138,49 +135,31 @@ export default {
       }
     },
 
-    runRequest(payload) {
-      this.request(payload)
+    deleteGroup() {
+      // Are users assigned to this group
+      this.runningDelete = this.toDelete;
+      this.request({
+        method: "DELETE",
+        url: "clients/group",
+        data: { groupType: "userGroups", value: this.toDelete }
+      })
         .then(response => {
-          console.log(response);
+          this.closeDialog();
         })
         .catch(err => {
-          console.log(err);
+          this.closeDialog();
         });
     },
 
-    deleteGroup(content) {
-      // Are users assigned to this group
-      let assignedUserIndex = this.teamInformation.findIndex(({ groupID }) => {
-        return groupID == content;
-      });
-
-      if (assignedUserIndex > -1) {
-        this.genPromptBox({
-          text: "Users are assigned to this group this may cause errors.",
-          title: "User group warning",
-          type: "warning"
-        })
-          .then(response => {
-            // Users are assigned to the group
-            // this.runRequest();
-            this.runningDelete = content;
-          })
-          .catch(err => {
-            console.error(err);
-          });
-      }
-    },
     updateGroup(content) {},
     createUserGroup(content) {
+      content.groupType = "userGroups";
       content.value = this.clientInformation.userGroups.length + 1;
+      this.currentDisplay = "";
       this.request({
         method: "POST",
-        url: "clients/update",
-        data: {
-          update: {
-            content
-          }
-        }
+        url: "clients/group",
+        data: content
       })
         .then(response => {
           console.log(response);
@@ -191,8 +170,7 @@ export default {
     }
   },
   components: {
-    Form,
-    DefaultTransition
+    Form
   }
 };
 </script>
