@@ -61,18 +61,17 @@ export default {
     ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {
       let items = [
+        // {
+        //   name: "Message Team Member",
+        //   command: "message"
+        // },
         {
-          name: "Message Team Member",
-          command: "message"
+          name: "View Team Member",
+          command: "view_team_member"
         }
       ];
 
-      if (this.getIsAdmin) {
-        items.push({
-          name: "View Team Member",
-          command: "view_team_member"
-        });
-      }
+   
       return items;
     }
   },

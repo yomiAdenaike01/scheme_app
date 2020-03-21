@@ -62,8 +62,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["clientInformation", "daysOfWeek"]),
-
+    ...mapState(["clientInformation", "daysOfWeek",'userInformation']),
     ...mapGetters(["getIsAdmin", "getActiveDialog", "getCurrentTabXref"]),
     ...mapGetters("Admin", [
       "getDropdownTeamMembers",
@@ -103,21 +102,25 @@ export default {
         {
           label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm
-        },
-        {
-          label: "Manage event templates",
-          view: {
-            component: EventOptions
-          }
         }
       ];
-
-      if (this.getIsAdmin) {
+       
+        if(this.getIsAdmin){
+        
         tabs.unshift({
           label: "Create event group",
           formContent: this.createEventGroupForm
         });
-      }
+
+          tabs.push( {
+          label: "Manage event templates",
+          view: {
+            component: EventOptions
+          }
+        })
+        }
+
+       
       return tabs;
     },
     createEventGroupForm() {
@@ -139,7 +142,6 @@ export default {
       ];
     },
     createEventForm() {
-      let isShiftOrHoliday = this.isNotShiftOrHoliday;
 
       let createEventConfig = [
         {
@@ -158,21 +160,7 @@ export default {
           model: "date"
         },
 
-        {
-          "component-type": "select",
-          placeholder: "Repeat for (days of week)",
-          options: this.daysOfWeek,
-          multiple: true,
-          model: "weekdays",
-          optional: true
-        },
-        {
-          "component-type": "date-picker",
-          "input-type": "date-time",
-          placeholder: "Repeat until",
-          model: "until",
-          optional: true
-        }
+      
       ];
 
       // Check if it is an admin or not
@@ -185,7 +173,24 @@ export default {
           model: "assignedTo",
           options: this.getDropdownTeamMembers,
           multiple: true
-        });
+        },
+          {
+          "component-type": "select",
+          placeholder: "Repeat for (days of week)",
+          options: this.daysOfWeek,
+          multiple: true,
+          model: "weekdays",
+          optional: true
+        },
+        
+        {
+          "component-type": "date-picker",
+          "input-type": "date-time",
+          placeholder: "Repeat until",
+          model: "until",
+          optional: true
+        }
+        );
       }
 
       return createEventConfig;
@@ -231,15 +236,21 @@ export default {
       this.eventsInformation.startDate = startDate;
       this.eventsInformation.endDate = endDate;
       this.eventsInformation.until = this.initMoment(
-        this.eventsInformation.until
+        this.eventsInformation?.until ?? new Date()
       ).toISOString();
+      
+      
       this.eventsInformation = {
         ...this.eventsInformation,
         repeat: {
           until: this.eventsInformation.until,
-          weekdays: this.eventsInformation.weekdays
+          weekdays: this.eventsInformation?.weekdays ?? 0
         }
       };
+      
+      if(!this.getIsAdmin){
+        this.eventsInformation.assignedTo = [this.userInformation._id];
+      }
       this.templatesInformation = {
         content: {
           ...this.eventsInformation
@@ -250,7 +261,9 @@ export default {
         .then(response => {
           this.loading = false;
           this.view = false;
-          this.initSaveTemplate();
+          if(this.getIsAdmin){
+            this.initSaveTemplate();
+          }
         })
         .catch(error => {
           this.loading = false;
