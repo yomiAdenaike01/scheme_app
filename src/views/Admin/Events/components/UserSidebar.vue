@@ -26,7 +26,7 @@
         </Dropdown>
       </div>
     </div>
-    <div class="flex_center h-100">
+    <div class="flex_center h-100" v-else>
     <InformationDisplay class="p-4" :displayText="{heading:'No team members found', headingAlign:'center', textAlign:'center', content:'To create a team member please navigate to user management and manage users to create team members'}" mode='title'>
       <i class="bx bx-user flex_center" slot="above_header"></i>
       <el-button round slot="information" @click="$router.push({name:'user'})">Go to user management</el-button>

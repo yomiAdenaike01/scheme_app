@@ -239,6 +239,9 @@ export default {
         this.eventsInformation?.until ?? new Date()
       ).toISOString();
       
+      if(this.activeDialogInformation?.length > 0){
+        this.eventsInformation.assignedTo = this.eventsInformation.assignedTo.concat(this.activeDialogInformation)
+      }
       
       this.eventsInformation = {
         ...this.eventsInformation,
