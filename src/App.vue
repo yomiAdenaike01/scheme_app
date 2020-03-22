@@ -350,12 +350,12 @@ span {
 }
 
 .el-dialog {
-  border-radius: 10px;
-  padding: 40px 0;
+  border-radius: 10px !important;
+  padding: 10px 0 !important;
   width: 35% !important;
   &/deep/ {
     .el-dialog__body {
-      padding: 0;
+      padding: 0 !important;
     }
   }
 }

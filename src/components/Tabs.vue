@@ -1,6 +1,6 @@
 <template>
   <div class="tabs_container pt-4 pb-4">
-    <slot name="header_content"></slot>
+    <slot name="header"></slot>
     <el-tabs
       :closable="false"
       stretch
@@ -10,7 +10,7 @@
       :tab-position="position"
       v-loading="loading"
     >
-      <slot name="body_content"></slot>
+      <slot name="body"></slot>
       <el-tab-pane
         class="p-4"
         v-for="(tab, index) in tabs"
@@ -40,7 +40,7 @@
         </div>
 
         <!--  Footer -->
-        <slot name="footer_content"></slot>
+        <slot name="footer"></slot>
       </el-tab-pane>
     </el-tabs>
   </div>

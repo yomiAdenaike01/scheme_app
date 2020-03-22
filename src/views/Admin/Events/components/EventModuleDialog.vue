@@ -11,16 +11,14 @@
       @formValChange="eventInformation= $event"
     >
       <!-- Confirmation unit for a template or csv content -->
-      <div slot="header_content">
-        <Title
-          defaultClass="mb-5"
-          class="p-4"
-          title="Event Management"
-          subtitle="Select different tabs to create groups or events."
+      <div slot="header">
+        <InformationDisplay
+        class="mb-5"
+        :displayText="informationDisplay"
         />
       </div>
 
-      <div slot="body_content">
+      <div slot="body">
         <div
           class="ml-4 mt-4 flex align-center"
           v-if="tabXref.name == 'create_event_group' && getIsAdmin"
@@ -42,7 +40,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import EventTemplate from "./EventTemplate";
 import EventOptions from "./EventOptions";
 
-import Title from "@/components/Title";
+import InformationDisplay from "@/components/InformationDisplay";
 import Tabs from "@/components/Tabs";
 import ColourUnit from "@/components/ColourUnit";
 
@@ -57,7 +55,7 @@ export default {
     };
   },
   components: {
-    Title,
+    InformationDisplay,
     Tabs,
     ColourUnit
   },
@@ -72,6 +70,17 @@ export default {
       'getUserInformation',
       'getUsersInUserGroup'
     ]),
+
+    informationDisplay(){
+      let content = 'You can create a request here that will be sent to an admin for approval';
+      if(this.getIsAdmin){
+        content = 'As an admin you can create templates to batch create events. You can also create event groups and singular events.';
+      }
+      return{
+        heading:'Event Management',
+        content
+      }
+    },
 
     assignToUsernames(){
       let usernames = '';

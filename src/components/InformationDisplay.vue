@@ -33,18 +33,16 @@
       </Popover>
     </div>
     <!-- Title display -->
-    <div :class="displayText.class" class="headings_wrapper m-0 p-0" v-if="mode == 'title' || mode == 'both'">
-      <div class="slot_container mb-4">
+    <div :class="displayText.class" class="headings_wrapper" v-if="mode == 'title' || mode == 'both'">
         <slot slot="header"></slot>
-      </div>
       <component
-        class="heading mb-3"
+        class="heading"
         :class="{txt_center:displayCenter.heading}"
-        :is="displayText.tag ? displayText.tag : 'h3'"
+        :is="displayText.tag ? displayText.tag : 'h1'"
         v-html="displayText.heading"
       />
         
-      <div :class="{txt_center:displayCenter.text}" class="heading_text_content mb-4" v-html="displayText.content"></div>
+      <div :class="{txt_center:displayCenter.text}" class="heading_text_content" v-html="displayText.content"></div>
       <slot name="body"></slot>
     </div>
   </div>
@@ -148,19 +146,15 @@ export default {
   color: #999;
 }
 .headings_wrapper {
-  .heading {
-    color: #888;
-  }
+  margin:0;
+  padding:0;
   &.extra_line_height{
     line-height: 2em;
   }
 }
-.heading{
-&.center{
-  text-align: center;
-}
 
-}
+
+
 .tutorial_title_bar{
   background:rgb(250,250,250);
   padding:10px;

@@ -9,7 +9,7 @@
       :disableForm="fileContent != null"
       v-loading="loading"
     >
-      <div slot="header_content">
+      <div slot="header">
         <InformationDisplay :displayText="{heading:'Module users',content:'Manage all users and groups here.'}" mode='title'/>
       </div>
     </Tabs>

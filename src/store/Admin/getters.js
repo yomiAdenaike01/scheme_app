@@ -84,7 +84,7 @@ export default {
       return eventGroups.filter(group => {
         // enabled for equal to user group
         let index = group.enabledFor.findIndex(enbled => {
-          return enbled == groupID;
+          return enbled == groupID || enbled == 0;
         });
         return index > -1;
       });
