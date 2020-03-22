@@ -168,7 +168,7 @@ export default {
       this.request({
         method: "PUT",
         url: "users/update",
-        data: { update: { _id: this.data._id, groupID: this.selectedGroup } }
+        data: {  _id: this.data._id, update: { groupID: this.selectedGroup } }
       })
         .then(() => {
           this.loading = false;
