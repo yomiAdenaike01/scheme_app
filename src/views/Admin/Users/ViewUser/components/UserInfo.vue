@@ -127,7 +127,7 @@ export default {
       return this.formatDate(this.data.dateCreated);
     },
     group() {
-      return this.getGroupName("event", this.data.groupID)?.name;
+      return this.getGroupName("user", this.data.groupID)?.label;
     },
     removeUnwantedProperties() {
       let cleanedProperties = {};
