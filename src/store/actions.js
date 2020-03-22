@@ -1,5 +1,6 @@
 import axios from "axios";
 import Vue from "vue";
+
 if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:7070/v1/";
 } else {
