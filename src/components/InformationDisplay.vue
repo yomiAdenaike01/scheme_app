@@ -34,7 +34,7 @@
     </div>
     <!-- Title display -->
     <div :class="displayText.class" class="headings_wrapper" v-if="mode == 'title' || mode == 'both'">
-        <slot slot="header"></slot>
+      <slot name="header"></slot>
       <component
         class="heading"
         :class="{txt_center:displayCenter.heading}"

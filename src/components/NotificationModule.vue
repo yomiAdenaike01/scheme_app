@@ -17,8 +17,8 @@
         >Mark all as read</el-button
       >
     </div>
-    <InformationDisplay v-else :displayText="{heading:'No notifications found', content:'Your notifications will appear here once they have come in.'}">
-      <i class="bx bx-bell flex_center mt-4 mb-4" slot="header"></i>
+    <InformationDisplay class="mt-5" v-else :displayText="{ tag:'h3',heading:'No notifications found', content:'Your notifications will appear here once they have come in.'}">
+      <i class="bx bx-bell flex_center mt-4 mb-4" slot="header" ></i>
     </InformationDisplay>
   </div>
 </template>

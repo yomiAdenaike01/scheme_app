@@ -74,8 +74,9 @@ export default {
       "viewMobileMenu",
       "weeklyTimesheetUploaded"
     ]),
-    ...mapGetters(["getDeviceInformation"]),
     ...mapState("Admin", ["teamInformation"]),
+    ...mapGetters(["getDeviceInformation",'getIsAdmin']),
+
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
     },
@@ -102,8 +103,10 @@ export default {
     ...mapActions(["updateDevices"]),
     ...mapActions('Admin',['getEvents','getTeam']),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+
     triggerDeviceNotification() {
-      this.UPDATE_NOTIFICATIONS({
+    
+    this.UPDATE_NOTIFICATIONS({
         title: "Register new device detected",
         message:
           "Would you like this device to be added to your library  (click to confirm) ?",
@@ -113,6 +116,7 @@ export default {
         type: "info"
       });
     },
+    
     checkDevice() {
       if (this.userInformation?.devicesInformation?.length === 0) {
         this.triggerDeviceNotification();
@@ -145,7 +149,7 @@ export default {
     },
 
     displayWeeklyNotification() {
-      if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek)
+      if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek && this.getIsAdmin)
         this.UPDATE_NOTIFICATIONS({
           type: "info",
           message: "Start the new week off by uploading a new weekly timesheet",

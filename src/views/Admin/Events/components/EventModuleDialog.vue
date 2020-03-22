@@ -71,6 +71,52 @@ export default {
       'getUsersInUserGroup'
     ]),
 
+    eventContent(){
+         // this.loading = true;
+      let eventsInformation = {...this.eventsInformation};
+      let date = eventsInformation?.date;
+
+      let startDate = this.initMoment(date[0]).toISOString();
+      let endDate = this.initMoment(date[1]).toISOString();
+      eventsInformation.startDate = startDate;
+      eventsInformation.endDate = endDate;
+      eventsInformation.until = this.initMoment(
+        eventsInformation?.until ?? new Date()
+      ).toISOString();
+      
+      if(this.activeDialogInformation?.length > 0){
+        eventsInformation.assignedTo = eventsInformation.assignedTo.concat(this.activeDialogInformation)
+      }
+      
+      eventsInformation = {
+        ...eventsInformation,
+        repeat: {
+          until: eventsInformation.until,
+          weekdays: eventsInformation?.weekdays ?? 0
+        }
+      };
+      
+      if(!this.getIsAdmin){
+        eventsInformation.assignedTo = [this.userInformation._id];
+      }
+      templatesInformation = {
+        content: {
+          ...eventsInformation
+        }
+      };
+
+      if(eventsInformation?.userGroups){
+        // Changed the assigned to to all of the user groups
+        let uGroups = eventsInformation.userGroups;
+        
+        for(let i = 0, len = uGroups.length; i<len; i++){
+          eventsInformation.assignedTo = [...this.getUsersInUserGroup(uGroups[i])];
+        }
+        
+      }
+      return eventsInformation;
+    },
+
     informationDisplay(){
       let content = 'You can create a request here that will be sent to an admin for approval';
       if(this.getIsAdmin){
@@ -236,6 +282,7 @@ export default {
 
     eventsCtrl(information) {
       this.eventsInformation = information;
+      console.log(information);
 
       switch (this.tabXref.name) {
         case "create_event_group": {
@@ -245,56 +292,25 @@ export default {
           this.genEvent();
           break;
         }
+        case 'create_request':{
+          this.genRequest();
+        }
 
         default:
           break;
       }
     },
+    genRequest(){
+      this.request({
+        method:'POST',
+        url:'requests/create',
+        data:{}
+      })
+    },
     // Submit one event
     genEvent() {
-      // this.loading = true;
-      let { date } = this.eventsInformation;
-
-      let startDate = this.initMoment(date[0]).toISOString();
-      let endDate = this.initMoment(date[1]).toISOString();
-      this.eventsInformation.startDate = startDate;
-      this.eventsInformation.endDate = endDate;
-      this.eventsInformation.until = this.initMoment(
-        this.eventsInformation?.until ?? new Date()
-      ).toISOString();
-      
-      if(this.activeDialogInformation?.length > 0){
-        this.eventsInformation.assignedTo = this.eventsInformation.assignedTo.concat(this.activeDialogInformation)
-      }
-      
-      this.eventsInformation = {
-        ...this.eventsInformation,
-        repeat: {
-          until: this.eventsInformation.until,
-          weekdays: this.eventsInformation?.weekdays ?? 0
-        }
-      };
-      
-      if(!this.getIsAdmin){
-        this.eventsInformation.assignedTo = [this.userInformation._id];
-      }
-      this.templatesInformation = {
-        content: {
-          ...this.eventsInformation
-        }
-      };
-
-      if(this.eventsInformation?.userGroups){
-        // Changed the assigned to to all of the user groups
-        let uGroups = this.eventsInformation.userGroups;
-        
-        for(let i = 0, len = uGroups.length; i<len; i++){
-          this.eventsInformation.assignedTo = [...this.getUsersInUserGroup(uGroups[i])];
-        }
-        
-      }
-
-      this.createEvent(this.eventsInformation)
+   
+      this.createEvent(this.eventContent)
         .then(response => {
           this.loading = false;
           this.view = false;
