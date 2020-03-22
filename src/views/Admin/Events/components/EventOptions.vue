@@ -36,8 +36,10 @@
 
     <!-- No templates -->
     <div class="flex flex_center" v-else>
-        <InformationDisplay mode='both' class="flex_center columns" :displayText="{heading:'Create a template',content:'You currently have no templates, you can hover over the help button above for more information on how to create templates and how they work.'}" :tutorial="{module:'admin', feature:'template_management',displayType:'hover'}">
-          <el-button slot="information" size='mini' @click="displayCreateTemplate = !displayCreateTemplate">Create Template</el-button>
+        <InformationDisplay mode='both' class="flex_center columns" :displayText="{class:'extra_line_height',heading:'Create a template',content:'You currently have no templates, you can hover over the help button above for more information on how to create templates and how they work.'}" :tutorial="{module:'admin', feature:'template_management',displayType:'hover'}">
+          <div class="flex_center" slot="body">
+          <el-button size='mini' @click="displayCreateTemplate = !displayCreateTemplate">Create Template</el-button>
+        </div>
         </InformationDisplay>
     </div>
 

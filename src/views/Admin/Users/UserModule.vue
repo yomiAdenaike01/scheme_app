@@ -46,7 +46,7 @@
         </div>
         <div v-else class="h-100 no_content_container flex_center">
           <InformationDisplay :displayText="{heading:'',content:'',textAlign:'center',headingAlign:'center'}">
-            <i class="bx bx-user" slot="above_header"></i>
+            <i class="bx bx-user" slot="header"></i>
             <el-button slot='information' @click="displayDialog = !displayDialog">Open user management dialog</el-button>
           </InformationDisplay>
         </div>

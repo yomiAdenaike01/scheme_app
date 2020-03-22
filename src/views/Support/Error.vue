@@ -21,7 +21,7 @@
             <div class="flex_center columns">
               <div class="info_wrapper p-2 m-3 txt_center">
                 <small class="error_information">{{
-                  JSON.stringify(getUAInformation)
+                  JSON.stringify(getDeviceInformation)
                 }}</small>
                 <small class="error_information">{{
                   JSON.stringify(errorInformation)
@@ -56,10 +56,10 @@ export default {
 
   computed: {
     ...mapState(["userInformation", "errorInformation"]),
-    ...mapGetters(["getUAInformation"]),
+    ...mapGetters(["getDeviceInformation"]),
     emailInformation() {
       return {
-        ...this.getUAInformation,
+        ...this.getDeviceInformation,
         ...this.errorInformation
       };
     }

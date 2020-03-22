@@ -9,7 +9,6 @@
       v-model="tabChange"
       :tab-position="position"
       v-loading="loading"
-      type="card"
     >
       <slot name="body_content"></slot>
       <el-tab-pane
@@ -29,6 +28,8 @@
           v-if="tab.hasOwnProperty('formContent')"
           :config="tab.formContent"
           :submitText="submitText"
+          :emitOnChange="tab.emitOnChange"
+          @formValChange="$emit('formValChange',$event)"
         />
         <div v-else>
           <component

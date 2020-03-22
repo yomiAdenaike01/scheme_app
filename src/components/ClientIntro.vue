@@ -3,14 +3,11 @@
     <div class="intro_container h-100 flex_center columns">
       <div class="intro_inner_container">
         <div class="title_wrapper">
-          <h1 v-if="!isError">
+          <h1>
             Welcome to
             <span class="logo">S</span>cheme <span class="logo">C</span>loud
           </h1>
-          <h1 v-else>
-            An
-            <span class="logo">E</span>rror occured.
-          </h1>
+       
           <h5 class="grey">
             Enter your company name or domain name into the field below
           </h5>
@@ -58,7 +55,7 @@ export default {
   },
   mixins: [refactorLocation],
   activated() {
-    if (this.invalidClient.error) {
+    if (this.invalidClient?.error) {
       this.$message.error(
         "There was an error, please enter your client domain again to restart"
       );

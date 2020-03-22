@@ -1,5 +1,6 @@
 <template>
   <div @keyup.enter="submitForm">
+    <slot name='header'></slot>
     <el-form
       class="p-1"
       :inline="inline"
@@ -28,6 +29,8 @@
               ? 'el-input-number'
               : input['component-type'] == 'time-picker'
               ? 'el-time-picker'
+              : input['component-type'] == 'cascader'
+              ? 'el-cascader'
               : null
           "
           v-model="formContent[input.model]"
@@ -35,6 +38,8 @@
           :show-password="input['component-type'] == 'password'"
           :min="input.min"
           :max="input.max"
+          :option="input.options"
+          :props="input.cascaderProps"
           :picker-options="input.pickerOptions"
           :is-range="input.isRange"
           :type="
@@ -77,6 +82,8 @@
         ></small>
       </el-form-item>
 
+    <slot name='footer'></slot>
+
       <!-- Submit button -->
       <div class="button_container mt-4" v-if="!disable">
         <el-button
@@ -90,14 +97,13 @@
         <el-button v-if="displayReset" @click="resetForm">Reset</el-button>
       </div>
     </el-form>
+
   </div>
 </template>
 
 <script>
 export default {
   name: "Form",
-
-
   data() {
     return {
       formContent: {}
@@ -132,7 +138,7 @@ export default {
       default: null
     },
 
-    liveUpdate: {
+    emitOnChange: {
       type: Boolean,
       default: false
     },
@@ -156,7 +162,7 @@ export default {
           ? formItem.name
           : formItem.model;
 
-        if (!formItem?.optional) {
+        if (!formItem?.optional && !formItem?.disabled) {
           let validArr = [];
           let compType = formItem["component-type"];
           let inputType = formItem["input-type"];
@@ -249,6 +255,16 @@ export default {
         .catch(error => {
           return error;
         });
+    }
+  },
+  watch:{
+    formContent:{
+      deep:true,
+      handler(val){
+      if(this.emitOnChange){
+        this.$emit('formValChange',val);
+      }
+    }
     }
   }
 }

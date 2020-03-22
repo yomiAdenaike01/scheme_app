@@ -13,7 +13,7 @@
         }"
       >
         <el-button
-        slot="information"
+        slot="body"
           class="mt-4"
           icon="el-icon-plus"
           circle

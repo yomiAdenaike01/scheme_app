@@ -5,7 +5,6 @@
     shadow="none"
     v-loading="loading"
   >
-    <Title title="Create Template" class="m-0 p-0" />
 
     <!-- Predefined configs -->
     <el-checkbox-group v-model="configDisplay" size="mini" class="m-3">
@@ -31,7 +30,7 @@
 <script>
 import { mapGetters, mapState, mapActions } from "vuex";
 
-import Title from "@/components/Title";
+import InformationDisplay from "@/components/InformationDisplay";
 import Form from "@/components/Form";
 
 export default {
@@ -44,7 +43,7 @@ export default {
   },
   components: {
     Form,
-    Title
+    InformationDisplay
   },
   computed: {
     ...mapGetters(["getIsAdmin"]),

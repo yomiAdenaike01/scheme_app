@@ -1,7 +1,10 @@
 import { guide } from "@/stubs/guide";
-var UAParser = require("ua-parser-js");
+import UAParser from "ua-parser-js";
 
 export default {
+  getUA(){
+    return new UAParser();
+  },
   getCurrentTabXref: () => ({ tabs, currentTab }) => {
     let tabLabel = tabs[currentTab].label;
     return {
@@ -9,22 +12,14 @@ export default {
       display: tabLabel
     };
   },
-  getUserDevices({ userInformation: { devicesInformation } }) {
+  getPreviousDeviceInformation({ userInformation: { devicesInformation } }) {
     return devicesInformation;
   },
   getCurrentVersion() {
     return require("../../package.json").version;
   },
-  getIsIE(
-    state,
-    {
-      getUAInformation: {
-        browser: { name }
-      }
-    }
-  ) {
-    let nonSupportedBrowsers = ["IE", "IEMobile"];
-    return nonSupportedBrowsers.indexOf(name) > -1;
+  getIsIE(state,{getUA}){
+    return getUA.getBrowser().name == 'IE';
   },
   getIsSignedUser: (
     { userInformation: { groupID, _id }, clientInformation: { signedUser } },
@@ -56,8 +51,8 @@ export default {
       );
     }).length;
   },
-  getUAInformation() {
-    return new UAParser().getResult();
+  getDeviceInformation(state,{getUA}) {
+    return getUA.getOS();
   },
   getUserSettings(state) {
     return state.userInformation.settings;

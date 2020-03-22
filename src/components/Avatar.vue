@@ -19,8 +19,8 @@ export default {
 
     isNameTheSame() {
       return (
-        this.userInformation.name.trim().toLowerCase() ==
-        this.name.trim().toLowerCase()
+        this.userInformation?.name.trim().toLowerCase() ==
+        this.name?.trim().toLowerCase()
       );
     },
 

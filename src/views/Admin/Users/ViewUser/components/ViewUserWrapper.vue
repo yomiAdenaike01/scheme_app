@@ -103,7 +103,7 @@ export default {
     .el-avatar {
       width: 60px;
       height: 60px;
-      font-size: 30px;
+      font-size: 1.3em;
       text-align: center;
       display: flex;
       justify-content: center;

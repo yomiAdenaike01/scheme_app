@@ -2,9 +2,8 @@
   <div v-loading="loading" class="notifications_container overflow">
     <div class="title_switch_container p-3 flex align-center">
       <h3 class="bold">Notifications</h3>
-      <el-switch v-model="dnd" active-text="Do not disturb"></el-switch>
     </div>
-    <div v-if="userNotifications">
+    <div v-if="hasEntries(userNotifications)">
       <UserNotification
         v-for="notification in userNotifications"
         :key="notification._id"
@@ -18,19 +17,22 @@
         >Mark all as read</el-button
       >
     </div>
+    <InformationDisplay v-else :displayText="{heading:'No notifications found', content:'Your notifications will appear here once they have come in.'}">
+      <i class="bx bx-bell flex_center mt-4 mb-4" slot="header"></i>
+    </InformationDisplay>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
-import UserNotification from "./UserNotification";
 
+import UserNotification from "./UserNotification";
+import InformationDisplay from '@/components/InformationDisplay';
 export default {
   name: "NotificationModule",
   data() {
     return {
       loading: false,
-      dnd: false
     };
   },
   activated() {
@@ -43,7 +45,8 @@ export default {
       });
   },
   components: {
-    UserNotification
+    UserNotification,
+    InformationDisplay
   },
   computed: {
     ...mapState(["userNotifications", "userInformation"]),

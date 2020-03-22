@@ -25,6 +25,7 @@ export default {
   },
 
   created() {
+    this.setDeviceInformation();
     if (this.getIsIE) {
       this.$router.push({
         name: "intro"
@@ -69,7 +70,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["getClient"])
+    ...mapActions(["getClient",'setDeviceInformation'])
   },
 
   watch: {

@@ -74,7 +74,7 @@ export default {
       "viewMobileMenu",
       "weeklyTimesheetUploaded"
     ]),
-    ...mapGetters(["getUAInformation"]),
+    ...mapGetters(["getDeviceInformation"]),
     ...mapState("Admin", ["teamInformation"]),
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
@@ -118,24 +118,15 @@ export default {
         this.triggerDeviceNotification();
       } else {
         // Find in array
-        let deviceIndex = this.userInformation?.devicesInformation?.findIndex(
-          ({ os: { name, version } }) => {
-            return (
-              name === this.getUAInformation.os.name &&
-              version === this.getUAInformation.os.version
-            );
-          }
-        );
-        if (deviceIndex == -1) {
-          this.triggerDeviceNotification();
-        }
+      console.log('Find device in array or add a new one')
+
       }
     },
     requestNotificationPermission() {
       if (!window.Notification) {
         let {
           browser: { name, version }
-        } = this.getUAInformation;
+        } = this.getDeviceInformation;
         this.UPDATE_NOTIFICATIONS({
           title: "Browser version error",
           message: `The current browser doesn't support notifications ${name} ${Math.round(

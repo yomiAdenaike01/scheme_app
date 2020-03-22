@@ -4,26 +4,25 @@
       <el-card class="form_container">
         <el-container class="h-100">
           <el-main class="login_wrapper">
-            <Logo class="mb-4" />
-            <Form :config="formConfig" submitText="Login" @val="login" />
-            <!-- New client registration -->
+            <div class="logo_wrapper mb-4">
+            <Logo  />
+            </div>
+            <Form :config="formConfig" :submitText="submitText" @val="submitController">
             <div
               class="new_client_button_container mb-4 mt-4"
-              slot="header_content"
+              slot="footer"
             >
-              <el-button
-                v-if="!isValidClient"
-                @click="$router.push({ name: 'register' })"
-                round
-                size="small"
-                type="primary"
-                >Registering a new company ? Click here to register.</el-button
-              >
+            <el-button @click="selectedForm = 'forgotPassword'" size='small'>
+              Forgot password ?
+            </el-button>
+             
             </div>
+            </Form>
           </el-main>
         </el-container>
       </el-card>
     </div>
+
   </div>
 </template>
 
@@ -31,12 +30,16 @@
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
 import Logo from "@/components/Logo";
+
+import validateInput from '@/mixins/validateInput'
 export default {
   name: "UserAuth",
   data() {
     return {
       newUser: false,
-      loading: false
+      loading: false,
+      credentials:{},
+      selectedForm:'login'
     };
   },
 
@@ -58,21 +61,45 @@ export default {
     Form,
     Logo
   },
+  mixins:[validateInput],
   computed: {
-    isValidClient() {
-      return this.hasEntries(this.clientInformation);
-    },
-    ...mapState(["clientInformation"]),
 
-    returnPayload() {
-      return {};
+    ...mapState(["clientInformation"]),
+    ...mapGetters(['getDeviceInformation']),
+
+    submitText(){
+      return this.selectedForm == 'login' ? 'Login' :  'Submit new password';
     },
 
     returnForm() {
       return this.formConfig[this.selectedForm];
     },
-    formConfig() {
-      return [
+    formConfig(){
+      return this.forms[this.selectedForm]
+    },
+    forms() {
+      return {
+        forgotPassword:[
+          {
+            name:'email',
+            'component-type':'text',
+            placeholder:'Email',
+            model:'fp_email',
+          },
+           {
+          name: "password",
+          "component-type": "password",
+          placeholder: "Password",
+          model: "fp_password"
+        },
+         {
+          name: "password",
+          "component-type": "password",
+          placeholder: "Retype-Password",
+          model: "fp_reentered_password"
+        }
+        ],
+        login:[
         {
           name: "email",
           "component-type": "text",
@@ -85,28 +112,62 @@ export default {
           placeholder: "Password",
           model: "password"
         }
-      ];
+      ]};
     }
   },
   methods: {
     ...mapActions(["request", "getClient"]),
     ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
 
-    setFormAndProcessUser(e) {
-      try {
-        this.$set(this.formModel, this.selectedForm, e);
-        this.processUser();
-      } catch (error) {
-        console.log(error);
+    submitController(formInformation){
+      this.credentials = formInformation;
+      switch (this.selectedForm) {
+
+        case 'login':{
+          this.login();
+          break;
+        }
+
+        case 'forgotPassword':{
+          this.resetPassword();
+          break;
+        }
+        default:{
+          break;
+        }
       }
     },
-    login(credentials) {
+
+    resetPassword(){
+      // Validate the input;
+      let isValid = this.validateInput(this.formConfig,['fp_email','fp_password','fp_reentered_password']);
+      let equalPasswords = this.credentials?.fp_password?.toLowerCase()?.trim() === this.credentials?.fp_reentered_password?.toLowerCase()?.trim()
+      if(!isValid && !equalPasswords){
+        this.UPDATE_NOTIFICATIONS({
+          type:'error',
+          message:'Error processing reset password, please enter your desired password again'
+        });
+      }else{
+        this.request({
+          method:'POST',
+          url:'users/password',
+          data:{clientID:this.clientInformation._id,email:this.credentials.fp_email,password:this.credentials.fp_password}
+        }).then(response=>{
+          this.selectedForm = 'login';
+        });
+      }
+    },
+    /**
+     * 
+     */
+    login() {
       this.loading = true;
       this.request({
         method: "POST",
         data: {
           clientID: this.clientInformation._id,
-          ...credentials
+          ...this.credentials,
+          deviceInformation:this.getDeviceInformation
         },
         url: "/users/login"
       })

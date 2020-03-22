@@ -12,17 +12,17 @@
           <div class="information_container flex_center ">
             <i
               @click="slideController('decrease')"
-              class="bx bx-chevron-left "
+              class="bx bx-chevron-left trigger"
             ></i>
               <div class="popover_inner_text_container flex_center columns"
               >
-                <h2>{{ guideXref[slideIndex].heading }}</h2>
-                <p>{{guideXref[slideIndex].content}}</p>
+                <h2 v-html='guideXref[slideIndex].heading'></h2>
+                <p v-html='guideXref[slideIndex].content'></p>
               </div>
 
             <i
               @click="slideController('increase')"
-              class="bx bx-chevron-right"
+              class="bx bx-chevron-right trigger"
             ></i>
           </div>
           <!-- Indicators -->
@@ -33,9 +33,9 @@
       </Popover>
     </div>
     <!-- Title display -->
-    <div class="headings_wrapper m-0 p-0" v-if="mode == 'title' || mode == 'both'">
+    <div :class="displayText.class" class="headings_wrapper m-0 p-0" v-if="mode == 'title' || mode == 'both'">
       <div class="slot_container mb-4">
-        <slot name="above_header"></slot>
+        <slot slot="header"></slot>
       </div>
       <component
         class="heading mb-3"
@@ -45,7 +45,7 @@
       />
         
       <div :class="{txt_center:displayCenter.text}" class="heading_text_content mb-4" v-html="displayText.content"></div>
-      <slot name="information"></slot>
+      <slot name="body"></slot>
     </div>
   </div>
 </template>
@@ -58,7 +58,9 @@ export default {
   name: "InformationDisplay",
   data() {
     return {
-      slideIndex: 0
+      slideIndex: 0,
+      slideInTimeout:null,
+    
     };
   },
   props: {
@@ -115,6 +117,7 @@ export default {
   methods: {
     slideController(controlMethod) {
       const slideLength = this.guideXref.length;
+      
       if (controlMethod == "increase") {
         if (this.slideIndex + 1 >= slideLength) {
           this.slideIndex = 0;
@@ -129,7 +132,8 @@ export default {
         }
       }
     }
-  }
+  },
+
 };
 </script>
 
@@ -147,6 +151,9 @@ export default {
   .heading {
     color: #888;
   }
+  &.extra_line_height{
+    line-height: 2em;
+  }
 }
 .heading{
 &.center{
@@ -162,7 +169,9 @@ export default {
 }
 .popover_inner_text_container{
   margin: 40px 50px;
+
 }
+
 .indicator_container{
   display:flex;
   width: 100%;
@@ -185,4 +194,6 @@ export default {
 .heading_text_content{
   font-size: .9em;
 }
+
+
 </style>

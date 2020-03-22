@@ -8,6 +8,7 @@
       v-model="currentTab"
       :selectedTab="currentTab"
       :submitText="tabXref.display"
+      @formValChange="eventInformation= $event"
     >
       <!-- Confirmation unit for a template or csv content -->
       <div slot="header_content">
@@ -68,7 +69,8 @@ export default {
       "getDropdownTeamMembers",
       "getEnabledEvents",
       "getUserGroups",
-      'getUserInformation'
+      'getUserInformation',
+      'getUsersInUserGroup'
     ]),
 
     assignToUsernames(){
@@ -101,7 +103,8 @@ export default {
       let tabs = [
         {
           label: this.getIsAdmin ? "Create event" : "Create request",
-          formContent: this.createEventForm
+          formContent: this.createEventForm,
+          emitOnChange:true
         }
       ];
        
@@ -167,13 +170,24 @@ export default {
 
       if (this.getIsAdmin) {
         let teamMemberPlaceholder = this.assignToUsernames?.length > 0  ? `Select team members including (${this.assignToUsernames})` : 'Select team members';
-        createEventConfig.unshift({
+        createEventConfig.unshift(
+        {
           placeholder: teamMemberPlaceholder,
+          disabled:this.eventInformation?.userGroups?.length > 0,
           "component-type": "select",
           model: "assignedTo",
           options: this.getDropdownTeamMembers,
           multiple: true
         },
+           {
+           "component-type":'select',
+           options:this.getUserGroups,
+           disabled:this.eventInformation?.assignedTo?.length > 0,
+           multiple:true,
+           model:'userGroups',
+           placeholder:'Assign to a user group',
+           optional:true
+         },
           {
           "component-type": "select",
           placeholder: "Repeat for (days of week)",
@@ -182,7 +196,8 @@ export default {
           model: "weekdays",
           optional: true
         },
-        
+        // Assign to an event group,
+      
         {
           "component-type": "date-picker",
           "input-type": "date-time",
@@ -228,7 +243,7 @@ export default {
     },
     // Submit one event
     genEvent() {
-      this.loading = true;
+      // this.loading = true;
       let { date } = this.eventsInformation;
 
       let startDate = this.initMoment(date[0]).toISOString();
@@ -259,6 +274,16 @@ export default {
           ...this.eventsInformation
         }
       };
+
+      if(this.eventsInformation?.userGroups){
+        // Changed the assigned to to all of the user groups
+        let uGroups = this.eventsInformation.userGroups;
+        
+        for(let i = 0, len = uGroups.length; i<len; i++){
+          this.eventsInformation.assignedTo = [...this.getUsersInUserGroup(uGroups[i])];
+        }
+        
+      }
 
       this.createEvent(this.eventsInformation)
         .then(response => {

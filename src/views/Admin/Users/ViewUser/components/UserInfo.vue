@@ -91,7 +91,7 @@ export default {
   },
   computed: {
     ...mapGetters("Admin", ["getGroupName", "getUserGroups"]),
-    ...mapGetters(["getIsAdmin", "getUserDevices"]),
+    ...mapGetters(["getIsAdmin", "getPreviousDeviceInformation"]),
     updateUserForm() {
       return [
         {

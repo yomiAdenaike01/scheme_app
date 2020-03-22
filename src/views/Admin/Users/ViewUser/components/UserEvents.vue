@@ -5,10 +5,10 @@
       <Event v-for="event in data" :event="event" :key="event._id" />
     </div>
   <InformationDisplay v-else class="flex_center" :displayText="{heading:'No events found for this user',content:''}">
-   <div slot="above_header">
+   <div slot="header">
     <i class='bx bx-calendar-plus' ></i>
     </div>
-    <el-button slot="information" @click=" UPDATE_DIALOG_INDEX({dialog:'eventModule',view:true,data:{assignedTo:[getActiveDialog().data]}});">Create event for this user</el-button>
+    <el-button slot="body" @click=" UPDATE_DIALOG_INDEX({dialog:'eventModule',view:true,data:{assignedTo:[getActiveDialog().data]}});">Create event for this user</el-button>
   </InformationDisplay>
   </div>
 </template>

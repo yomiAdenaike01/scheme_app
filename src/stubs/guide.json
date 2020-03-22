@@ -12,6 +12,10 @@
           {
             "heading":"Create template",
             "content":"When creating a template there are many options"
+          },
+          {
+            "heading":"Options",
+            "content":"Tmeplate can be created for certain users or user groups."
           }
         ]
       }
