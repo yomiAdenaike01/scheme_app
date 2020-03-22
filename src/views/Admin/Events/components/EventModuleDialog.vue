@@ -294,6 +294,7 @@ export default {
         }
         case 'create_request':{
           this.genRequest();
+          break;
         }
 
         default:
