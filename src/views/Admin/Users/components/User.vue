@@ -34,6 +34,9 @@ import { mapState, mapMutations, mapGetters } from "vuex";
 import Avatar from "@/components/Avatar";
 export default {
   name: "User",
+  components: {
+    Avatar
+  },
   props: {
     displayPrescence: {
       type: Boolean,
@@ -44,9 +47,6 @@ export default {
       default: () => {},
       required: true
     }
-  },
-  components: {
-    Avatar
   },
   computed: {
     ...mapState(["clientInformation"]),

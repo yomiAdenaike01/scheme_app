@@ -1,5 +1,5 @@
 <template>
-  <div class="user_info_container" v-loading="loading">
+  <div v-loading="loading" class="user_info_container">
     <h2 class="mb-3">Personal Information</h2>
     <el-collapse>
       <el-collapse-item title="Quick Actions" name="1">
@@ -14,48 +14,48 @@
           >
           <Popover trigger="click">
             <el-button
+              v-if="getIsAdmin"
               slot="trigger"
               type="primary"
               plain
               round
               size="mini"
-              v-if="getIsAdmin"
               >{{
                 data.groupID == 0 ? "Assign to group" : "Reassign to group"
               }}</el-button
             >
             <el-select
               slot="content"
-              @change="assignUserToGroup"
               v-model="selectedGroup"
+              @change="assignUserToGroup"
             >
               <el-option
                 v-for="group in getUserGroups"
+                :key="group.value"
                 :label="group.label"
                 :value="group.value"
-                :key="group.value"
               >
               </el-option>
             </el-select>
           </Popover>
 
           <Popover trigger="click">
-            <el-button type="primary" plain round size="mini" slot="trigger"
+            <el-button slot="trigger" type="primary" plain round size="mini"
               >Update Personal Information</el-button
             >
             <Form
-              submitText="Update user"
               slot="content"
+              submit-text="Update user"
               :config="updateUserForm"
               @val="updateUser"
             />
           </Popover>
           <el-button
+            v-if="getIsAdmin"
             type="danger"
             plain
             round
             size="mini"
-            v-if="getIsAdmin"
             @click="removeUser"
             >Delete Account</el-button
           >
@@ -77,17 +77,17 @@ import Popover from "@/components/Popover";
 import Form from "@/components/Form";
 export default {
   name: "UserInfo",
-  data() {
-    return {
-      selectedGroup: "",
-      loading: false
-    };
-  },
   props: {
     data: {
       type: Object,
       default: () => {}
     }
+  },
+  data() {
+    return {
+      selectedGroup: "",
+      loading: false
+    };
   },
   computed: {
     ...mapGetters("Admin", ["getGroupName", "getUserGroups"]),
@@ -168,7 +168,7 @@ export default {
       this.request({
         method: "PUT",
         url: "users/update",
-        data: {  _id: this.data._id, update: { groupID: this.selectedGroup } }
+        data: { _id: this.data._id, update: { groupID: this.selectedGroup } }
       })
         .then(() => {
           this.loading = false;

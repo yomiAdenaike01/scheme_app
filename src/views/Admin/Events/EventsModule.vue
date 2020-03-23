@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="eventModule_container h-100"
-    v-loading="loading"
-  >
-
+  <div v-loading="loading" class="eventModule_container h-100">
     <div class="eventModule_inner_container h-100 overflow">
       <Toolbar class="m-3" />
       <EventsCalendar
@@ -28,42 +24,41 @@ import ViewEventDialog from "./components/ViewEventDialog";
 
 export default {
   name: "EventsModule",
-    data() {
-    return {
-      loading: true,
-      getTemplatesInterval: null
-    };
-  },
-  activated() {
-     this.getTemplates().then(response=>{
-      this.loading = false
-    }).catch(()=>{
-      this.loading = false;
-    })
-    clearInterval(this.getTemplatesInterval);
-    this.getTemplatesInterval = setInterval(() => {
-      this.getTemplates();
-    }, this.requestIntervals.templates);
-  
-  },
-    deactivated() {
-    clearInterval(this.getTemplatesInterval);
-  },
-    components: {
+  components: {
     EventsCalendar,
     EventModuleDialog,
     Toolbar,
     UserSidebar,
     ViewEventDialog
   },
+  data() {
+    return {
+      loading: true,
+      getTemplatesInterval: null
+    };
+  },
+  activated() {
+    this.getTemplates()
+      .then(response => {
+        this.loading = false;
+      })
+      .catch(() => {
+        this.loading = false;
+      });
+    clearInterval(this.getTemplatesInterval);
+    this.getTemplatesInterval = setInterval(() => {
+      this.getTemplates();
+    }, this.requestIntervals.templates);
+  },
+  deactivated() {
+    clearInterval(this.getTemplatesInterval);
+  },
   methods: {
-    ...mapActions("Admin", ["getEvents", "getTeam", "getTemplates"]),
+    ...mapActions("Admin", ["getEvents", "getTeam", "getTemplates"])
   },
   computed: {
     ...mapState(["requestIntervals"])
-  },
-
-
+  }
 };
 </script>
 <style lang="scss" scoped>

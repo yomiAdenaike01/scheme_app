@@ -1,5 +1,5 @@
 <template>
-  <div class="h-100" v-loading='loading'>
+  <div v-loading="loading" class="h-100">
     <NprogressContainer />
     <AppBar />
     <div class="main_wrapper flex">
@@ -31,18 +31,23 @@ import DefaultTransition from "@/components/DefaultTransition";
 import InstanceCheck from "@/components/InstanceCheck";
 export default {
   name: "Main",
-  data(){
-    return{
-      loading:true
-    }
+  components: {
+    Navigation,
+    AppBar,
+    NprogressContainer,
+    DefaultTransition,
+    InstanceCheck
+  },
+  data() {
+    return {
+      loading: true
+    };
   },
   activated() {
     this.checkDevice();
-      Promise.all([this.getEvents(), this.getTeam()]).then(
-      response => {
-        this.loading = false;
-      }
-    );
+    Promise.all([this.getEvents(), this.getTeam()]).then(response => {
+      this.loading = false;
+    });
 
     let isVerified = this.userInformation.verified;
     if (!isVerified) {
@@ -60,13 +65,6 @@ export default {
 
     this.displayWeeklyNotification();
   },
-    components: {
-    Navigation,
-    AppBar,
-    NprogressContainer,
-    DefaultTransition,
-    InstanceCheck
-  },
   computed: {
     ...mapState([
       "userInformation",
@@ -75,7 +73,7 @@ export default {
       "weeklyTimesheetUploaded"
     ]),
     ...mapState("Admin", ["teamInformation"]),
-    ...mapGetters(["getDeviceInformation",'getIsAdmin']),
+    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
 
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
@@ -101,12 +99,11 @@ export default {
 
   methods: {
     ...mapActions(["updateDevices"]),
-    ...mapActions('Admin',['getEvents','getTeam']),
+    ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
     triggerDeviceNotification() {
-    
-    this.UPDATE_NOTIFICATIONS({
+      this.UPDATE_NOTIFICATIONS({
         title: "Register new device detected",
         message:
           "Would you like this device to be added to your library  (click to confirm) ?",
@@ -116,14 +113,13 @@ export default {
         type: "info"
       });
     },
-    
+
     checkDevice() {
       if (this.userInformation?.devicesInformation?.length === 0) {
         this.triggerDeviceNotification();
       } else {
         // Find in array
-      console.log('Find device in array or add a new one')
-
+        console.log("Find device in array or add a new one");
       }
     },
     requestNotificationPermission() {
@@ -149,7 +145,11 @@ export default {
     },
 
     displayWeeklyNotification() {
-      if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek && this.getIsAdmin)
+      if (
+        !this.weeklyTimesheetUploaded &&
+        this.returnIsStartOfWeek &&
+        this.getIsAdmin
+      )
         this.UPDATE_NOTIFICATIONS({
           type: "info",
           message: "Start the new week off by uploading a new weekly timesheet",

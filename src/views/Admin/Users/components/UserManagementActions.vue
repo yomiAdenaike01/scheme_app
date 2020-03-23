@@ -6,11 +6,11 @@
       <small class="grey">Select a tab below to initiate a quick action</small>
     </div>
     <div
+      v-for="(action, index) in quickActions"
+      :key="index"
       v-loading="action.id == quickActionLoading"
       :class="{ disabled: action.condition }"
       class="quick_action_container"
-      v-for="(action, index) in quickActions"
-      :key="index"
       @click="action.click"
     >
       <div class="flex_center columns txt_center p-4">
@@ -22,7 +22,7 @@
           />
           <InformationDisplay
             mode="title"
-            :displayText="{ heading: action.heading, content: action.content }"
+            :display-text="{ heading: action.heading, content: action.content }"
           />
           <div v-if="isSuccess == action.id" class="check_container">
             <i class="bx bx-check"></i>
@@ -38,15 +38,15 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserManagementActions",
+  components: {
+    InformationDisplay
+  },
   data() {
     return {
       isSuccess: "",
       isSuccessInterval: "",
       quickActionLoading: ""
     };
-  },
-  components: {
-    InformationDisplay
   },
   computed: {
     ...mapState(["userInformation"]),
@@ -59,7 +59,8 @@ export default {
           id: "create_announcement",
           condition: this.teamInformation.length == 0,
           click: this.createAnnoucement,
-          content:"Create a system wide notification that will notify all users this can be through email or scheme messenger."
+          content:
+            "Create a system wide notification that will notify all users this can be through email or scheme messenger."
         }
       ];
     }

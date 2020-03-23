@@ -7,7 +7,7 @@
     :width="width"
   >
     <slot name="content"></slot>
-    <slot name="trigger" slot="reference"></slot>
+    <slot slot="reference" name="trigger"></slot>
   </el-popover>
 </template>
 

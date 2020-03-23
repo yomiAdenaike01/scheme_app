@@ -10,29 +10,41 @@
         :notification="notification"
       />
       <el-button
-        class="block_button m-0"
-        @click="readAll"
-        size="small"
         v-if="getUserNotificationsLength > 0"
+        class="block_button m-0"
+        size="small"
+        @click="readAll"
         >Mark all as read</el-button
       >
     </div>
-    <InformationDisplay class="mt-5" v-else :displayText="{ tag:'h3',heading:'No notifications found', content:'Your notifications will appear here once they have come in.'}">
-      <i class="bx bx-bell flex_center mt-4 mb-4" slot="header" ></i>
+    <InformationDisplay
+      v-else
+      class="mt-5"
+      :display-text="{
+        tag: 'h3',
+        heading: 'No notifications found',
+        content: 'Your notifications will appear here once they have come in.'
+      }"
+    >
+      <i slot="header" class="bx bx-bell flex_center mt-4 mb-4"></i>
     </InformationDisplay>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 
 import UserNotification from "./UserNotification";
-import InformationDisplay from '@/components/InformationDisplay';
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "NotificationModule",
+  components: {
+    UserNotification,
+    InformationDisplay
+  },
   data() {
     return {
-      loading: false,
+      loading: false
     };
   },
   activated() {
@@ -43,10 +55,6 @@ export default {
       .catch(err => {
         this.loading = false;
       });
-  },
-  components: {
-    UserNotification,
-    InformationDisplay
   },
   computed: {
     ...mapState(["userNotifications", "userInformation"]),

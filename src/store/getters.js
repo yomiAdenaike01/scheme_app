@@ -2,7 +2,7 @@ import { guide } from "@/stubs/guide";
 import UAParser from "ua-parser-js";
 
 export default {
-  getUA(){
+  getUA() {
     return new UAParser();
   },
   getCurrentTabXref: () => ({ tabs, currentTab }) => {
@@ -18,8 +18,8 @@ export default {
   getCurrentVersion() {
     return require("../../package.json").version;
   },
-  getIsIE(state,{getUA}){
-    return getUA.getBrowser().name == 'IE';
+  getIsIE(state, { getUA }) {
+    return getUA.getBrowser().name == "IE";
   },
   getIsSignedUser: (
     { userInformation: { groupID, _id }, clientInformation: { signedUser } },
@@ -34,7 +34,7 @@ export default {
   getActiveDialog: ({ dialogIndex }) => dialogName => {
     let foundDialog = null;
     if (dialogName) {
-      foundDialog =  dialogIndex[dialogName].view;
+      foundDialog = dialogIndex[dialogName].view;
     } else {
       for (let property in dialogIndex) {
         if (dialogIndex[property].view) {
@@ -42,7 +42,7 @@ export default {
         }
       }
     }
-    return foundDialog
+    return foundDialog;
   },
   getUserNotificationsLength({ userNotifications }) {
     return userNotifications.filter(notification => {
@@ -51,33 +51,33 @@ export default {
       );
     }).length;
   },
-  getDeviceInformation(state,{getUA}) {
+  getDeviceInformation(state, { getUA }) {
     return getUA.getOS();
   },
   getUserSettings(state) {
     return state.userInformation.settings;
   },
-  getClient({clientInformation}, {isValidClient}) {
+  getClient({ clientInformation }, { isValidClient }) {
     if (isValidClient) {
       return clientInformation;
     } else {
       return {};
     }
   },
-  getPreferences({userInformation:{preferences}}) {
+  getPreferences({ userInformation: { preferences } }) {
     return preferences;
   },
   getIsAdmin({ userInformation: { groupID } }) {
     return groupID == 1;
   },
-  getClientColours({clientInformation:{colours}}) {
+  getClientColours({ clientInformation: { colours } }) {
     return colours;
   },
 
   getGuide() {
     return guide;
   },
-  getDefaultColour({defaultCustomColours}) {
+  getDefaultColour({ defaultCustomColours }) {
     return defaultCustomColours[0];
   },
   getRandomColour({ defaultCustomColours }) {

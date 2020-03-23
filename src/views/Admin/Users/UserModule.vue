@@ -1,13 +1,13 @@
 <template>
   <el-row
+    v-loading="loading"
     type="flex"
     class="user_container"
-    v-loading="loading"
     element-loading-text="Getting team please wait...."
   >
     <UserGroup
       v-if="getIsAdmin"
-      addNew
+      add-new
       @createUserGroup="displayDialog = $event"
     />
 
@@ -21,9 +21,9 @@
             :key="`${count}${i}`"
           >
             <el-col
-              :span="$mq != 'lg' ? 12 : 8"
               v-for="(group, index) in count"
               :key="index"
+              :span="$mq != 'lg' ? 12 : 8"
             >
               <div class="p-4 m-1 user_group_container">
                 <div
@@ -36,8 +36,8 @@
                 </div>
                 <User
                   v-for="member in group.teamMembers"
-                  :userInformation="{ ...member, groupID: group.value }"
                   :key="member._id"
+                  :user-information="{ ...member, groupID: group.value }"
                   @viewUser="viewUser = $event"
                 />
               </div>
@@ -45,9 +45,20 @@
           </el-row>
         </div>
         <div v-else class="h-100 no_content_container flex_center">
-          <InformationDisplay :displayText="{heading:'',content:'',textAlign:'center',headingAlign:'center'}">
-            <i class="bx bx-user" slot="header"></i>
-            <el-button slot='information' @click="displayDialog = !displayDialog">Open user management dialog</el-button>
+          <InformationDisplay
+            :display-text="{
+              heading: '',
+              content: '',
+              textAlign: 'center',
+              headingAlign: 'center'
+            }"
+          >
+            <i slot="header" class="bx bx-user"></i>
+            <el-button
+              slot="information"
+              @click="displayDialog = !displayDialog"
+              >Open user management dialog</el-button
+            >
           </InformationDisplay>
         </div>
       </div>
@@ -72,9 +83,18 @@ import UserGroup from "./components/UserGroup";
 import UserManagementActions from "./components/UserManagementActions";
 
 import Title from "@/components/Title";
-import InformationDisplay from "@/components/InformationDisplay"
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserModule",
+
+  components: {
+    Title,
+    User,
+    UserGroup,
+    UserModuleDialog,
+    UserManagementActions,
+    InformationDisplay
+  },
 
   data() {
     return {
@@ -92,15 +112,6 @@ export default {
       .catch(err => {
         this.loading = false;
       });
-  },
-
-  components: {
-    Title,
-    User,
-    UserGroup,
-    UserModuleDialog,
-    UserManagementActions,
-    InformationDisplay
   },
 
   computed: {

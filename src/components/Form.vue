@@ -1,11 +1,11 @@
 <template>
   <div @keyup.enter="submitForm">
-    <slot name='header'></slot>
+    <slot name="header"></slot>
     <el-form
+      ref="form"
       class="p-1"
       :inline="inline"
       :disabled="disableForm"
-      ref="form"
       :rules="form.validate"
       :model="formContent"
     >
@@ -16,7 +16,6 @@
         :label="input.label || ''"
       >
         <component
-          class="dialog_item"
           :is="
             input['component-type'] == 'text' ||
             input['component-type'] == 'password'
@@ -34,6 +33,7 @@
               : null
           "
           v-model="formContent[input.model]"
+          class="dialog_item"
           :value-key="input.text || input.name"
           :show-password="input['component-type'] == 'password'"
           :min="input.min"
@@ -69,23 +69,23 @@
         >
           <el-option
             v-for="option in input.options"
-            :label="option.text || option.name || option.label"
             :key="option.value"
+            :label="option.text || option.name || option.label"
             :value="option.value ? option.value : option.text"
           />
         </component>
         <!-- Hint -->
         <small
-          class="description"
           v-if="input.hint"
+          class="description"
           v-html="input.hint"
         ></small>
       </el-form-item>
 
-    <slot name='footer'></slot>
+      <slot name="footer"></slot>
 
       <!-- Submit button -->
-      <div class="button_container mt-4" v-if="!disable">
+      <div v-if="!disable" class="button_container mt-4">
         <el-button
           :size="size"
           type="primary"
@@ -97,18 +97,12 @@
         <el-button v-if="displayReset" @click="resetForm">Reset</el-button>
       </div>
     </el-form>
-
   </div>
 </template>
 
 <script>
 export default {
   name: "Form",
-  data() {
-    return {
-      formContent: {}
-    };
-  },
   props: {
     displayReset: {
       type: Boolean,
@@ -149,8 +143,12 @@ export default {
     resetOnSubmit: {
       type: Boolean,
       default: false
-    },
-    
+    }
+  },
+  data() {
+    return {
+      formContent: {}
+    };
   },
   computed: {
     form() {
@@ -210,6 +208,16 @@ export default {
       };
     }
   },
+  watch: {
+    formContent: {
+      deep: true,
+      handler(val) {
+        if (this.emitOnChange) {
+          this.$emit("formValChange", val);
+        }
+      }
+    }
+  },
   methods: {
     resetForm() {
       this.$refs.form.resetFields();
@@ -256,18 +264,8 @@ export default {
           return error;
         });
     }
-  },
-  watch:{
-    formContent:{
-      deep:true,
-      handler(val){
-      if(this.emitOnChange){
-        this.$emit('formValChange',val);
-      }
-    }
-    }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

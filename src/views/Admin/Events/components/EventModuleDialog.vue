@@ -1,34 +1,30 @@
 <template>
   <el-dialog custom-class="event_dialog" :visible.sync="view">
     <Tabs
+      v-model="currentTab"
       v-loading="loading"
       :tabs="tabs"
-      @val="eventsCtrl"
       :disable="currentTab > 1"
-      v-model="currentTab"
-      :selectedTab="currentTab"
-      :submitText="tabXref.display"
-      @formValChange="eventInformation= $event"
+      :selected-tab="currentTab"
+      :submit-text="tabXref.display"
+      @val="eventsCtrl"
+      @formValChange="eventInformation = $event"
     >
       <!-- Confirmation unit for a template or csv content -->
       <div slot="header">
-        <InformationDisplay
-        class="mb-5"
-        :displayText="informationDisplay"
-        />
+        <InformationDisplay class="mb-5" :display-text="informationDisplay" />
       </div>
 
       <div slot="body">
         <div
-          class="ml-4 mt-4 flex align-center"
           v-if="tabXref.name == 'create_event_group' && getIsAdmin"
+          class="ml-4 mt-4 flex align-center"
         >
           <ColourUnit v-model="eventsInformation.colour" />
           <p class="mb-3 ml-4 desc grey">
             Press to select an event colour (optional):
           </p>
         </div>
-    
       </div>
     </Tabs>
   </el-dialog>
@@ -46,6 +42,11 @@ import ColourUnit from "@/components/ColourUnit";
 
 export default {
   name: "EventModuleDialog",
+  components: {
+    InformationDisplay,
+    Tabs,
+    ColourUnit
+  },
   data() {
     return {
       eventsInformation: {},
@@ -54,26 +55,21 @@ export default {
       currentTab: 0
     };
   },
-  components: {
-    InformationDisplay,
-    Tabs,
-    ColourUnit
-  },
 
   computed: {
-    ...mapState(["clientInformation", "daysOfWeek",'userInformation']),
+    ...mapState(["clientInformation", "daysOfWeek", "userInformation"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog", "getCurrentTabXref"]),
     ...mapGetters("Admin", [
       "getDropdownTeamMembers",
       "getEnabledEvents",
       "getUserGroups",
-      'getUserInformation',
-      'getUsersInUserGroup'
+      "getUserInformation",
+      "getUsersInUserGroup"
     ]),
 
-    eventContent(){
-         // this.loading = true;
-      let eventsInformation = {...this.eventsInformation};
+    eventContent() {
+      // this.loading = true;
+      let eventsInformation = { ...this.eventsInformation };
       let date = eventsInformation?.date;
 
       let startDate = this.initMoment(date[0]).toISOString();
@@ -83,11 +79,13 @@ export default {
       eventsInformation.until = this.initMoment(
         eventsInformation?.until ?? new Date()
       ).toISOString();
-      
-      if(this.activeDialogInformation?.length > 0){
-        eventsInformation.assignedTo = eventsInformation.assignedTo.concat(this.activeDialogInformation)
+
+      if (this.activeDialogInformation?.length > 0) {
+        eventsInformation.assignedTo = eventsInformation.assignedTo.concat(
+          this.activeDialogInformation
+        );
       }
-      
+
       eventsInformation = {
         ...eventsInformation,
         repeat: {
@@ -95,8 +93,8 @@ export default {
           weekdays: eventsInformation?.weekdays ?? 0
         }
       };
-      
-      if(!this.getIsAdmin){
+
+      if (!this.getIsAdmin) {
         eventsInformation.assignedTo = [this.userInformation._id];
       }
       templatesInformation = {
@@ -105,42 +103,45 @@ export default {
         }
       };
 
-      if(eventsInformation?.userGroups){
+      if (eventsInformation?.userGroups) {
         // Changed the assigned to to all of the user groups
         let uGroups = eventsInformation.userGroups;
-        
-        for(let i = 0, len = uGroups.length; i<len; i++){
-          eventsInformation.assignedTo = [...this.getUsersInUserGroup(uGroups[i])];
+
+        for (let i = 0, len = uGroups.length; i < len; i++) {
+          eventsInformation.assignedTo = [
+            ...this.getUsersInUserGroup(uGroups[i])
+          ];
         }
-        
       }
       return eventsInformation;
     },
 
-    informationDisplay(){
-      let content = 'You can create a request here that will be sent to an admin for approval';
-      if(this.getIsAdmin){
-        content = 'As an admin you can create templates to batch create events. You can also create event groups and singular events.';
+    informationDisplay() {
+      let content =
+        "You can create a request here that will be sent to an admin for approval";
+      if (this.getIsAdmin) {
+        content =
+          "As an admin you can create templates to batch create events. You can also create event groups and singular events.";
       }
-      return{
-        heading:'Event Management',
+      return {
+        heading: "Event Management",
         content
+      };
+    },
+
+    assignToUsernames() {
+      let usernames = "";
+      if (this.activeDialogInformation?.assignedTo) {
+        let assignToUsernames = [...this.activeDialogInformation?.assignedTo];
+        usernames = assignToUsernames.map(assignee => {
+          return this.getUserInformation(assignee)?.name;
+        });
+
+        return usernames.length > 1 ? usernames.join(",") : usernames;
       }
     },
 
-    assignToUsernames(){
-      let usernames = '';
-      if(this.activeDialogInformation?.assignedTo){
-      let assignToUsernames = [...this.activeDialogInformation?.assignedTo];
-      usernames =  assignToUsernames.map(assignee=>{
-         return this.getUserInformation(assignee)?.name
-      });
-
-      return usernames.length > 1 ? usernames.join(",") : usernames;
-      }
-    },
-
-    activeDialogInformation(){
+    activeDialogInformation() {
       return this.getActiveDialog()?.data;
     },
     isNotShiftOrHoliday() {
@@ -159,26 +160,24 @@ export default {
         {
           label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm,
-          emitOnChange:true
+          emitOnChange: true
         }
       ];
-       
-        if(this.getIsAdmin){
-        
+
+      if (this.getIsAdmin) {
         tabs.unshift({
           label: "Create event group",
           formContent: this.createEventGroupForm
         });
 
-          tabs.push( {
+        tabs.push({
           label: "Manage event templates",
           view: {
             component: EventOptions
           }
-        })
-        }
+        });
+      }
 
-       
       return tabs;
     },
     createEventGroupForm() {
@@ -200,7 +199,6 @@ export default {
       ];
     },
     createEventForm() {
-
       let createEventConfig = [
         {
           "component-type": "select",
@@ -216,50 +214,51 @@ export default {
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",
           model: "date"
-        },
-
-      
+        }
       ];
 
       // Check if it is an admin or not
 
       if (this.getIsAdmin) {
-        let teamMemberPlaceholder = this.assignToUsernames?.length > 0  ? `Select team members including (${this.assignToUsernames})` : 'Select team members';
+        let teamMemberPlaceholder =
+          this.assignToUsernames?.length > 0
+            ? `Select team members including (${this.assignToUsernames})`
+            : "Select team members";
         createEventConfig.unshift(
-        {
-          placeholder: teamMemberPlaceholder,
-          disabled:this.eventInformation?.userGroups?.length > 0,
-          "component-type": "select",
-          model: "assignedTo",
-          options: this.getDropdownTeamMembers,
-          multiple: true
-        },
-           {
-           "component-type":'select',
-           options:this.getUserGroups,
-           disabled:this.eventInformation?.assignedTo?.length > 0,
-           multiple:true,
-           model:'userGroups',
-           placeholder:'Assign to a user group',
-           optional:true
-         },
           {
-          "component-type": "select",
-          placeholder: "Repeat for (days of week)",
-          options: this.daysOfWeek,
-          multiple: true,
-          model: "weekdays",
-          optional: true
-        },
-        // Assign to an event group,
-      
-        {
-          "component-type": "date-picker",
-          "input-type": "date-time",
-          placeholder: "Repeat until",
-          model: "until",
-          optional: true
-        }
+            placeholder: teamMemberPlaceholder,
+            disabled: this.eventInformation?.userGroups?.length > 0,
+            "component-type": "select",
+            model: "assignedTo",
+            options: this.getDropdownTeamMembers,
+            multiple: true
+          },
+          {
+            "component-type": "select",
+            options: this.getUserGroups,
+            disabled: this.eventInformation?.assignedTo?.length > 0,
+            multiple: true,
+            model: "userGroups",
+            placeholder: "Assign to a user group",
+            optional: true
+          },
+          {
+            "component-type": "select",
+            placeholder: "Repeat for (days of week)",
+            options: this.daysOfWeek,
+            multiple: true,
+            model: "weekdays",
+            optional: true
+          },
+          // Assign to an event group,
+
+          {
+            "component-type": "date-picker",
+            "input-type": "date-time",
+            placeholder: "Repeat until",
+            model: "until",
+            optional: true
+          }
         );
       }
 
@@ -292,7 +291,7 @@ export default {
           this.genEvent();
           break;
         }
-        case 'create_request':{
+        case "create_request": {
           this.genRequest();
           break;
         }
@@ -301,21 +300,20 @@ export default {
           break;
       }
     },
-    genRequest(){
+    genRequest() {
       this.request({
-        method:'POST',
-        url:'requests/create',
-        data:{}
-      })
+        method: "POST",
+        url: "requests/create",
+        data: {}
+      });
     },
     // Submit one event
     genEvent() {
-   
       this.createEvent(this.eventContent)
         .then(response => {
           this.loading = false;
           this.view = false;
-          if(this.getIsAdmin){
+          if (this.getIsAdmin) {
             this.initSaveTemplate();
           }
         })

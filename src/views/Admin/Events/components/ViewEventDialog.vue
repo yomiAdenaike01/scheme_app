@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="computeDisplay" v-if="getActiveDialog('viewEvent')">
+  <el-dialog v-if="getActiveDialog('viewEvent')" :visible.sync="computeDisplay">
     <div class="view_event_dialog p-3">
       <Title
         title="View event"
@@ -22,11 +22,11 @@
           }}</el-button
         >
         <el-button
+          v-if="isEventMine && isEventToday && !hasClockedIn"
           round
           plain
           size="small"
           @click="clockIn"
-          v-if="isEventMine && isEventToday && !hasClockedIn"
           >Clock in</el-button
         >
 
@@ -34,8 +34,8 @@
           v-if="hasPermissions"
           size="small"
           plain
-          @click="sendReminderToUser"
           round
+          @click="sendReminderToUser"
         >
           {{
             event.assignedTo.length > 0
@@ -44,12 +44,12 @@
           }}
         </el-button>
         <el-button
+          v-if="hasPermissions"
           type="danger"
           size="small"
-          v-if="hasPermissions"
-          @click="deleteEvent"
           round
           plain
+          @click="deleteEvent"
           >Delete Event</el-button
         >
       </div>
@@ -59,12 +59,12 @@
         <h3 class="mb-3">Assigned users</h3>
 
         <div
-          class="info_unit avatar_wrapper"
           v-if="hasEntries(event.assignedTo)"
+          class="info_unit avatar_wrapper"
         >
           <div
-            ref="user"
             v-for="(member, index) in event.assignedTo"
+            ref="user"
             :key="index"
             :class="[
               'assigned_user_container mb-2 flex align-center',
@@ -90,17 +90,17 @@
             >
           </div>
 
-          <div class="add_new_user p-4 trigger" v-if="canAddMoreUsers">
+          <div v-if="canAddMoreUsers" class="add_new_user p-4 trigger">
             <Popover>
               <div
+                v-for="option in getFilteredTeam"
+                :key="option._id"
+                slot="content"
                 class="p-3 popover_item trigger"
                 :class="{
                   no_events: event.assignedToIDs.indexOf(option._id) > -1
                 }"
-                v-for="option in getFilteredTeam"
                 @click="assignNewUser(option._id)"
-                :key="option._id"
-                slot="content"
               >
                 <span>{{ option.name }}</span>
               </div>
@@ -115,15 +115,15 @@
         <Popover trigger="click">
           <Form
             slot="content"
-            @val="updateEvent"
             :config="configXref"
-            submitText="Update"
+            submit-text="Update"
+            @val="updateEvent"
           />
           <el-button
             slot="trigger"
-            @click="selectedConfig = 'date'"
             size="mini"
             class="mb-2"
+            @click="selectedConfig = 'date'"
             >Update date information</el-button
           >
         </Popover>
@@ -140,15 +140,15 @@
         <Popover trigger="click">
           <Form
             slot="content"
-            @val="updateEvent"
             :config="configXref"
-            submitText="Update"
+            submit-text="Update"
+            @val="updateEvent"
           />
           <el-button
             slot="trigger"
-            @click="selectedConfig = 'type'"
             size="mini"
             class="mb-2"
+            @click="selectedConfig = 'type'"
             >Update event type information</el-button
           >
         </Popover>
@@ -175,18 +175,18 @@ import Form from "@/components/Form";
 
 export default {
   name: "ViewEventDialog",
+  components: {
+    Title,
+    Avatar,
+    Popover,
+    Form
+  },
   data() {
     return {
       loading: false,
       selectedConfig: "date",
       updates: {}
     };
-  },
-  components: {
-    Title,
-    Avatar,
-    Popover,
-    Form
   },
   computed: {
     ...mapState("Admin", ["teamInformation", "eventsInformation"]),

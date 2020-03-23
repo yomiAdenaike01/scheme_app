@@ -1,7 +1,7 @@
 <template>
   <div
-    class="event_template_container p-4"
     v-loading="loading"
+    class="event_template_container p-4"
     @click="displayDetails = !displayDetails"
   >
     <div class="template_title_container flex flex--space-between align-center">
@@ -31,9 +31,9 @@
         <br />
         <el-button
           class="w-100 mt-3"
-          @click="applyTemplate"
           plain
           type="primary"
+          @click="applyTemplate"
           >Apply</el-button
         >
       </div>
@@ -45,17 +45,17 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 export default {
   name: "EventTemplate",
-  data() {
-    return {
-      loading: false,
-      displayDetails: false
-    };
-  },
   props: {
     data: {
       type: Object,
       default: () => {}
     }
+  },
+  data() {
+    return {
+      loading: false,
+      displayDetails: false
+    };
   },
 
   computed: {

@@ -1,6 +1,6 @@
 <template functional>
   <div class="title_wrapper" :class="props.defaultClass">
-    <component v-if="title" :is="tag">{{ props.title }}</component>
+    <component :is="tag" v-if="title">{{ props.title }}</component>
     <p v-if="subtitle" class="desc mb-2" v-html="props.subtitle"></p>
     <slot></slot>
   </div>

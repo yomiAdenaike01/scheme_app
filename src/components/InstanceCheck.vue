@@ -23,9 +23,6 @@ export default {
       serverInformation: {}
     };
   },
-  activated() {
-    this.checkInstance();
-  },
   computed: {
     displayText() {
       let healthy = this.serverInformation?.healthy;
@@ -35,6 +32,9 @@ export default {
         return "Server error detected please contact your admin";
       }
     }
+  },
+  activated() {
+    this.checkInstance();
   },
   methods: {
     ...mapActions(["request"]),

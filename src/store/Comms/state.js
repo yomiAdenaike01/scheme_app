@@ -4,5 +4,5 @@ export default {
   activeTranscript: {},
   startNewChat: false,
   selectedChat: "",
-  transcriptLoading:false,
+  transcriptLoading: false
 };

@@ -7,9 +7,9 @@
           >Select from dropdowns to filter the schedule.</small
         >
         <el-select
-          v-model="localFilters[key]"
           v-for="(group, key) in groups"
           :key="key"
+          v-model="localFilters[key]"
           :placeholder="`Select ${placeholders[key].name}`"
           class="mt-3"
           size="small"

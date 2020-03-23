@@ -9,7 +9,7 @@
   >
     <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
       <i :class="route.icon" class="home_icon"></i>
-      <small class="m-2" slot="title">{{ route.name }}</small>
+      <small slot="title" class="m-2">{{ route.name }}</small>
     </el-menu-item>
   </el-menu>
 </template>
@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation", "localSettings"]),
-    ...mapGetters(["getDefaultColour", "getIsSignedUser",'getIsAdmin']),
+    ...mapGetters(["getDefaultColour", "getIsSignedUser", "getIsAdmin"]),
 
     routes() {
       let allowedRoutes = [
@@ -34,21 +34,20 @@ export default {
           name: "Events management",
           path: "/admin/events",
           icon: "el-icon-date"
-        },
+        }
         // {
         //   name: "Messenger",
         //   path: "/admin/messenger",
         //   icon: "bx bx-conversation"
         // },
-     
       ];
-if(this.getIsAdmin){
-  allowedRoutes.push({
+      if (this.getIsAdmin) {
+        allowedRoutes.push({
           name: "User management",
           path: "/admin/user",
           icon: "bx bx-group"
         });
-}
+      }
       return allowedRoutes;
     },
 

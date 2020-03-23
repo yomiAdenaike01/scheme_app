@@ -1,35 +1,36 @@
 <template>
   <div class="tabs_container pt-4 pb-4">
     <slot name="header"></slot>
+
     <el-tabs
+      v-model="tabChange"
+      v-loading="loading"
       :closable="false"
       stretch
       :type="tabType"
       :addable="false"
-      v-model="tabChange"
       :tab-position="position"
-      v-loading="loading"
     >
       <slot name="body"></slot>
       <el-tab-pane
-        class="p-4"
         v-for="(tab, index) in tabs"
+        :key="index"
+        class="p-4"
         :disabled="tab.disabled"
         :label="tab.label"
-        :key="index"
       >
         <!-- Form component -->
 
         <Form
-          @val="$emit('val', $event)"
-          :customMethod="customMethod"
-          :disable="disable"
-          :disableForm="disableForm"
           v-if="tab.hasOwnProperty('formContent')"
+          :custom-method="customMethod"
+          :disable="disable"
+          :disable-form="disableForm"
           :config="tab.formContent"
-          :submitText="submitText"
-          :emitOnChange="tab.emitOnChange"
-          @formValChange="$emit('formValChange',$event)"
+          :submit-text="submitText"
+          :emit-on-change="tab.emitOnChange"
+          @val="$emit('val', $event)"
+          @formValChange="$emit('formValChange', $event)"
         />
         <div v-else>
           <component
@@ -38,7 +39,6 @@
             @conponentChanges="emitComponentData"
           />
         </div>
-
         <!--  Footer -->
         <slot name="footer"></slot>
       </el-tab-pane>
@@ -109,16 +109,16 @@ export default {
       }
     }
   },
-  methods: {
-    emitComponentData(e) {
-      this.$emit(e.eventname, e.eventdata);
-    }
-  },
   watch: {
     formContent(val) {
       if (this.liveChange) {
         this.$emit("val", val);
       }
+    }
+  },
+  methods: {
+    emitComponentData(e) {
+      this.$emit(e.eventname, e.eventdata);
     }
   }
 };

@@ -8,7 +8,7 @@
       <el-col class="event_details_container details_unit p-2">
         <h4 class="member_name">{{ getEventType }}</h4>
         <Popover>
-          <div class="content" slot="content">
+          <div slot="content" class="content">
             {{ assignedUsers.arr.join(", ") }}
           </div>
           <p slot="trigger" class="member_name black">
@@ -17,8 +17,8 @@
         </Popover>
         <div class="tag_container">
           <el-tag
-            class="mr-1"
             v-if="approval.boolean"
+            class="mr-1"
             :value="approval.text"
             type="success"
             >{{ approval.text }}</el-tag
@@ -54,7 +54,7 @@
       </el-col>
     </el-row>
     <el-collapse-transition>
-      <div class="p-2" v-if="displayMoreDetails">
+      <div v-if="displayMoreDetails" class="p-2">
         <el-button
           type="danger"
           plain
@@ -74,6 +74,12 @@ import Popover from "@/components/Popover";
 import moment from "moment";
 export default {
   name: "Event",
+  components: {
+    Popover
+  },
+  props: {
+    event: Object
+  },
 
   data() {
     return {
@@ -82,12 +88,6 @@ export default {
       displayViewEvent: false,
       displayMoreDetails: false
     };
-  },
-  props: {
-    event: Object
-  },
-  components: {
-    Popover
   },
   computed: {
     ...mapState(["userInformation"]),

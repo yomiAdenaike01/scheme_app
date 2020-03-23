@@ -15,16 +15,16 @@
       <h4 class="grey">{{ returnGroupName }}</h4>
     </div>
     <el-tabs
+      v-model="selectedTab"
       tab-position="top"
       type="card"
       stretch
       class="tab_container"
-      v-model="selectedTab"
     >
       <el-tab-pane
-        class="h-100"
-        :key="index"
         v-for="(tab, index) in tabItems"
+        :key="index"
+        class="h-100"
         :label="tab.label"
       >
         <slot class="p-4"></slot>

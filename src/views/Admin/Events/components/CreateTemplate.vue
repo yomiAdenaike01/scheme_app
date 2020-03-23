@@ -1,18 +1,17 @@
 <template>
   <!-- Slide download -->
   <el-card
+    v-loading="loading"
     class="create_template_container p-2 mt-4"
     shadow="none"
-    v-loading="loading"
   >
-
     <!-- Predefined configs -->
     <el-checkbox-group v-model="configDisplay" size="mini" class="m-3">
       <el-checkbox-button
         v-for="({ text, model, disable }, index) in switches"
+        :key="index"
         :label="model"
         :disabled="disable ? disable : false"
-        :key="index"
         >{{ text }}</el-checkbox-button
       >
     </el-checkbox-group>
@@ -20,9 +19,9 @@
     <!-- Form -->
     <Form
       :config="templateForm"
-      submitText="Submit Template"
-      @val="createTemplate"
+      submit-text="Submit Template"
       size="small"
+      @val="createTemplate"
     />
   </el-card>
 </template>
@@ -35,15 +34,15 @@ import Form from "@/components/Form";
 
 export default {
   name: "CreateTemplate",
+  components: {
+    Form,
+    InformationDisplay
+  },
   data() {
     return {
       configDisplay: ["disableRepeatFor", "individualUserGroups"],
       loading: false
     };
-  },
-  components: {
-    Form,
-    InformationDisplay
   },
   computed: {
     ...mapGetters(["getIsAdmin"]),

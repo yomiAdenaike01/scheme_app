@@ -3,11 +3,11 @@
     <el-col>
       <!-- Button collection -->
       <el-button
-        :icon="button.icon ? button.icon : null"
         v-for="(button, key) in buttons"
+        :key="key"
+        :icon="button.icon ? button.icon : null"
         :round="button.round"
         :type="button.type ? button.type : 'primary'"
-        :key="key"
         size="small"
         :plain="button.plain"
         :disabled="button.disabled"

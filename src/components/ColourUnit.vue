@@ -4,9 +4,9 @@
     :style="{ backgroundColor: colour }"
   >
     <el-color-picker
+      v-model="colour"
       :predefine="defaultCustomColours"
       class="inner_picker"
-      v-model="colour"
     ></el-color-picker>
   </div>
 </template>

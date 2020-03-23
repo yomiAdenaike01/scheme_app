@@ -4,7 +4,7 @@
       class="client_indicator"
       :style="{ borderRight: `1.5px solid #efefef` }"
     >
-      <div class="client_image_container p-2" v-if="$mq == 'lg'">
+      <div v-if="$mq == 'lg'" class="client_image_container p-2">
         <Logo />
       </div>
       <div
@@ -17,7 +17,7 @@
     </el-col>
     <el-col>
       <div class="profile_container">
-        <Dropdown :items="items" @method="handleCommands" :icon="false">
+        <Dropdown :items="items" :icon="false" @method="handleCommands">
           <Avatar :name="userInformation.name" />
         </Dropdown>
         <el-badge
@@ -29,7 +29,7 @@
             trigger="click"
             traisition="el-collapse-transition"
           >
-            <div class="notifications_center" slot="content">
+            <div slot="content" class="notifications_center">
               <NotificationModule />
             </div>
             <el-button

@@ -1,12 +1,12 @@
 <template>
   <div
     ref="notification"
+    v-loading="loading"
     class="notification_container pl-2 pr-2"
     :class="{
       is_read:
         notification.status == 'is_read' || notification.status == 'complete'
     }"
-    v-loading="loading"
     @click="updateNotification({ status: 'is_read' }), notificationController()"
   >
     <p class="flex" :title="notification.message">
@@ -23,15 +23,15 @@
 import { mapActions, mapMutations } from "vuex";
 export default {
   name: "UserNotification",
+  props: {
+    notification: Object
+  },
   data() {
     return {
       viewDetails: false,
       formatString: "DD/MMMM/YYYY HH:mm",
       loading: false
     };
-  },
-  props: {
-    notification: Object
   },
   computed: {
     notificationSendDate() {
@@ -101,7 +101,7 @@ export default {
     },
     updateNotification(update) {
       this.loading = true;
-      this.UPDATE_USER_NOTIFICATIONS({_id:this.notification._id,update})
+      this.UPDATE_USER_NOTIFICATIONS({ _id: this.notification._id, update });
       this.request({
         method: "POST",
         url: "notifications/update",
@@ -112,7 +112,6 @@ export default {
       })
         .then(response => {
           this.loading = false;
-
         })
         .catch(error => {
           this.loading = false;

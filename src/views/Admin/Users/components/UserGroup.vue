@@ -7,13 +7,13 @@
     <div v-if="addNew" class="flex_center columns new_group_container">
       <InformationDisplay
         class="txt_center"
-        :displayText="{
+        :display-text="{
           heading: 'Manage users',
           content: `<small class='grey'>Create, edit, remove users / groups.</small>`
         }"
       >
         <el-button
-        slot="body"
+          slot="body"
           class="mt-4"
           icon="el-icon-plus"
           circle
@@ -29,6 +29,9 @@ import { mapGetters } from "vuex";
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserGroup",
+  components: {
+    InformationDisplay
+  },
   props: {
     addNew: {
       type: Boolean,
@@ -37,9 +40,6 @@ export default {
   },
   data() {
     return {};
-  },
-  components: {
-    InformationDisplay
   },
   computed: {
     ...mapGetters(["getDefaultColour"])

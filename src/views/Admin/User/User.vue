@@ -1,7 +1,7 @@
 <template>
   <el-row type="flex" class="user_container p-4">
     <UserInformation class="ml-4" />
-    <el-col class="p-4 shadow" v-if="currentTab == 0">
+    <el-col v-if="currentTab == 0" class="p-4 shadow">
       <UserTeamMember v-for="member in team" :key="member._id" :data="member" />
     </el-col>
   </el-row>

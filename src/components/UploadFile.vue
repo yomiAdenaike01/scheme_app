@@ -8,7 +8,7 @@
       :on-remove="removeFileContent"
     >
       <el-button v-bind="buttonConfig">{{ buttonConfig.text }}</el-button>
-      <p class="el-upload__tip" slot="tip">{{ tip }}</p>
+      <p slot="tip" class="el-upload__tip">{{ tip }}</p>
     </el-upload>
   </div>
 </template>
@@ -16,11 +16,6 @@
 <script>
 export default {
   name: "UploadFile",
-  data() {
-    return {
-      uploadFileSuccess: false
-    };
-  },
   props: {
     buttonConfig: {
       type: Object,
@@ -45,6 +40,11 @@ export default {
         return "Supported files *.csv, *.png , *.jpg";
       }
     }
+  },
+  data() {
+    return {
+      uploadFileSuccess: false
+    };
   },
 
   methods: {

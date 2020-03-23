@@ -7,15 +7,15 @@
             Welcome to
             <span class="logo">S</span>cheme <span class="logo">C</span>loud
           </h1>
-       
+
           <h5 class="grey">
             Enter your company name or domain name into the field below
           </h5>
         </div>
         <el-input
+          v-model="clientDomain"
           class="domain_input"
           placeholder="Domain Name"
-          v-model="clientDomain"
           @keydown.enter="
             refactorWindowLocation(
               clientDomain.replace(/\s/g, '').toLowerCase()
@@ -27,10 +27,10 @@
           class="flex flex--end align-center button_container"
         >
           <el-button
-            @click="refactorWindowLocation(clientDomain)"
             type="primary"
             size="mini"
             round
+            @click="refactorWindowLocation(clientDomain)"
           >
             Load cloud instance
             <i class="el-icon-arrow-right"></i>
@@ -42,18 +42,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-
 import refactorLocation from "@/mixins/refactorLocation";
 
 export default {
   name: "ClientIntro",
+  mixins: [refactorLocation],
   data() {
     return {
       clientDomain: ""
     };
   },
-  mixins: [refactorLocation],
   activated() {
     if (this.invalidClient?.error) {
       this.$message.error(

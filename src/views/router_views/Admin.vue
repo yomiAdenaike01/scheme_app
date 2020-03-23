@@ -12,12 +12,15 @@ import { mapActions, mapState, mapMutations } from "vuex";
 import ViewUserDialog from "@/views/Admin/Users/ViewUser/ViewUserDialog";
 export default {
   name: "Admin",
+  components: {
+    ViewUserDialog
+  },
   data() {
     return {
       adminInterval: null
     };
   },
-    deactivated() {
+  deactivated() {
     clearInterval(this.adminInterval);
   },
   activated() {
@@ -38,9 +41,6 @@ export default {
       this.getNotifications();
       this.getEvents();
     }, this.requestIntervals.events);
-  },
-  components: {
-    ViewUserDialog
   },
   computed: {
     ...mapState([

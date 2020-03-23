@@ -1,16 +1,16 @@
 <template>
   <el-dialog
+    v-if="getActiveDialog('viewUser')"
     :visible.sync="toggleView"
     class="view_user_container"
-    v-if="getActiveDialog('viewUser')"
   >
     <el-row type="flex">
       <el-col>
         <ViewUserWrapper
-          :userData="getUserInfo"
+          :user-data="getUserInfo"
+          :tab-items="tabItems"
+          :current-tab="selectedTab"
           @changedTab="selectedTab = $event"
-          :tabItems="tabItems"
-          :currentTab="selectedTab"
         >
           <div class="p-4">
             <component

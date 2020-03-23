@@ -1,25 +1,32 @@
 <template>
   <transition name="el-fade-in">
-    <div class="comms_window_container flex columns" v-loading="transcriptLoading">
-      <div class="messages_container" v-if="hasEntries(activeTranscript)">
+    <div
+      v-loading="transcriptLoading"
+      class="comms_window_container flex columns"
+    >
+      <div v-if="hasEntries(activeTranscript)" class="messages_container">
         <!-- Comms toolbar -->
-        <CommsToolbar :recieverInformation="info" />
+        <CommsToolbar :reciever-information="info" />
         <!-- Messages -->
         <Message
           v-for="(message, index) in messages"
-          :data="{...message,isSender:message.senderID == userInformation._id,sentAt:initMoment(message.sentAt).calendar()}"
           :key="
             `${index}${Math.random()
               .toString(16)
               .slice(2)}`
           "
+          :data="{
+            ...message,
+            isSender: message.senderID == userInformation._id,
+            sentAt: initMoment(message.sentAt).calendar()
+          }"
         />
         <!-- Message input -->
         <div class="input_container flex">
           <div class="actions_container">
             <Popover trigger="click">
-              <i class="bx bx-plus grey show_actions" slot="trigger"></i>
-              <div class="flex flex--start columns" slot="content">
+              <i slot="trigger" class="bx bx-plus grey show_actions"></i>
+              <div slot="content" class="flex flex--start columns">
                 <el-button>
                   <i class="bx bx-plus"></i>Add attachment
                 </el-button>
@@ -27,12 +34,12 @@
             </Popover>
           </div>
           <el-input
+            v-model="chatInformation.content"
             clearable
             class="chat_input"
-            v-model="chatInformation.content"
             type="textarea"
           ></el-input>
-          <el-button @click="prepareSendMessage" plain type="primary"
+          <el-button plain type="primary" @click="prepareSendMessage"
             >Send</el-button
           >
         </div>
@@ -56,10 +63,15 @@ import Popover from "@/components/Popover";
 
 export default {
   name: "CommsWindow",
+  components: {
+    Message,
+    CommsToolbar,
+    Popover
+  },
   data() {
     return {
       messagesInterval: null,
-      transcriptError:true,
+      transcriptError: true,
       chatInformation: {
         content: "",
         attachments: ""
@@ -75,14 +87,9 @@ export default {
   deactivated() {
     clearInterval(this.messagesInterval);
   },
-  components: {
-    Message,
-    CommsToolbar,
-    Popover
-  },
   computed: {
-    ...mapState(["requestIntervals",'userInformation']),
-    ...mapState("Comms", ["activeTranscript", "messages",'transcriptLoading']),
+    ...mapState(["requestIntervals", "userInformation"]),
+    ...mapState("Comms", ["activeTranscript", "messages", "transcriptLoading"]),
     infoDisplay() {
       return {
         text: "No chat selected",
@@ -102,7 +109,7 @@ export default {
   },
   methods: {
     ...mapActions("Comms", ["getMessages", "sendMessage", "readMessages"]),
-    ...mapMutations('Comms',['UPDATE_ACTIVE_TRANSCRIPT']),
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"]),
 
     prepareSendMessage() {
       this.loading = true;

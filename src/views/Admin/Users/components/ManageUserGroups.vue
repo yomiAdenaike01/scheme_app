@@ -30,28 +30,28 @@
           </div>
           <el-row type="flex">
             <div
-              class="group_container p-4 m-3 flex_center columns flex-1"
               v-for="(group, index) in getUserGroups"
               :key="index"
-              @click="toggleDelete(group.value)"
+              class="group_container p-4 m-3 flex_center columns flex-1"
               :class="[
                 {
                   active: inArray(group.value),
                   no_events: runningDelete == group.value
                 }
               ]"
+              @click="toggleDelete(group.value)"
             >
-              <p class="mb-3" v-loading="inArray(group.value)">
+              <p v-loading="inArray(group.value)" class="mb-3">
                 {{ group.label }}
               </p>
             </div>
           </el-row>
           <div class="flex flex--end align_end">
             <el-button
+              v-if="toDelete.length > 0"
               plain
               round
               type="danger"
-              v-if="toDelete.length > 0"
               @click="deleteGroup"
               >Confirm</el-button
             >

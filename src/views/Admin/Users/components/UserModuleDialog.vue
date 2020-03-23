@@ -2,15 +2,21 @@
   <el-dialog width="40%" :visible.sync="view">
     <Tabs
       v-model.number="currentTab"
+      v-loading="loading"
       :tabs="tabs"
+      :disable-form="fileContent != null"
       @fileContent="fileContent = $event"
       @deleteContent="fileContent = $event"
       @val="userModuleController"
-      :disableForm="fileContent != null"
-      v-loading="loading"
     >
       <div slot="header">
-        <InformationDisplay :displayText="{heading:'Module users',content:'Manage all users and groups here.'}" mode='title'/>
+        <InformationDisplay
+          :display-text="{
+            heading: 'Module users',
+            content: 'Manage all users and groups here.'
+          }"
+          mode="title"
+        />
       </div>
     </Tabs>
   </el-dialog>
@@ -26,6 +32,15 @@ import InformationDisplay from "@/components/InformationDisplay";
 
 export default {
   name: "UserModuleDialog",
+  components: {
+    InformationDisplay,
+    Tabs,
+    ManageUserGroups
+  },
+
+  props: {
+    display: Boolean
+  },
 
   data() {
     return {
@@ -36,15 +51,6 @@ export default {
       convertedData: {},
       createUserForm: {}
     };
-  },
-
-  props: {
-    display: Boolean
-  },
-  components: {
-    InformationDisplay,
-    Tabs,
-    ManageUserGroups,
   },
   computed: {
     ...mapState(["clientInformation"]),
@@ -69,8 +75,7 @@ export default {
         {
           label: "Create users",
           formContent: this.formItems
-        },
-        
+        }
       ];
     },
 

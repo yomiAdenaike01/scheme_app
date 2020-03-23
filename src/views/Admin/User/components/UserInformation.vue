@@ -2,19 +2,19 @@
   <el-col class="shadow p-4 current_user_column mr-4">
     <header class="flex_center columns">
       <Avatar :name="currentUser.name" />
-      <strong>{{currentUser.name}}</strong>
-      <small>{{getEmployeeTypeLabel}}</small>
-      <span>{{currentUser.email}}</span>
+      <strong>{{ currentUser.name }}</strong>
+      <small>{{ getEmployeeTypeLabel }}</small>
+      <span>{{ currentUser.email }}</span>
     </header>
     <el-divider></el-divider>
     <Tabs
-      tabType="card"
       v-model.number="currentView"
+      tab-type="card"
       :tabs="renderTabs"
       :disable="true"
       class="w-100"
     />
-    <div v-if="currentView == 0">{{currentUser}}</div>
+    <div v-if="currentView == 0">{{ currentUser }}</div>
   </el-col>
 </template>
 

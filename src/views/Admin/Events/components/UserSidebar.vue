@@ -10,11 +10,11 @@
       >
         <Dropdown
           class="p-2"
-          @click.native="hoveredTeamMember = member._id"
           :items="items"
-          @method="handleEvents"
           position="left"
           :icon="false"
+          @click.native="hoveredTeamMember = member._id"
+          @method="handleEvents"
         >
           <el-badge
             is-dot
@@ -26,22 +26,39 @@
         </Dropdown>
       </div>
     </div>
-    <div class="flex_center h-100" v-else>
-    <InformationDisplay class="p-4" :displayText="{heading:'No team members found', headingAlign:'center', textAlign:'center', content:'To create a team member please navigate to user management and manage users to create team members'}" mode='title'>
-      <i class="bx bx-user flex_center" slot="header"></i>
-      <el-button round slot="body" @click="$router.push({name:'user'})">Go to user management</el-button>
-    </InformationDisplay>
+    <div v-else class="flex_center h-100">
+      <InformationDisplay
+        class="p-4"
+        :display-text="{
+          heading: 'No team members found',
+          headingAlign: 'center',
+          textAlign: 'center',
+          content:
+            'To create a team member please navigate to user management and manage users to create team members'
+        }"
+        mode="title"
+      >
+        <i slot="header" class="bx bx-user flex_center"></i>
+        <el-button slot="body" round @click="$router.push({ name: 'user' })"
+          >Go to user management</el-button
+        >
+      </InformationDisplay>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import InformationDisplay from '@/components/InformationDisplay'
+import InformationDisplay from "@/components/InformationDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 export default {
   name: "UserSidebar",
+  components: {
+    Dropdown,
+    Avatar,
+    InformationDisplay
+  },
 
   data() {
     return {
@@ -49,11 +66,6 @@ export default {
       loaderTimeout: null,
       loadingTeam: true
     };
-  },
-  components: {
-    Dropdown,
-    Avatar,
-    InformationDisplay
   },
   computed: {
     ...mapState("Admin", ["teamInformation"]),
@@ -71,7 +83,6 @@ export default {
         }
       ];
 
-   
       return items;
     }
   },

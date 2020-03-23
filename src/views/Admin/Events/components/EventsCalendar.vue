@@ -11,6 +11,7 @@
       </span>
     </div>
     <VueCal
+      ref="eventsCalendar"
       v-loading="loading"
       :events="allEvents"
       :on-event-click="viewEvent"
@@ -19,7 +20,6 @@
       :time-from="getCalTimings.from"
       :time-to="getCalTimings.to"
       editable-events
-      ref="eventsCalendar"
     />
   </div>
 </template>

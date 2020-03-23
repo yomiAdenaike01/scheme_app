@@ -23,7 +23,6 @@ export default {
   },
   UPDATE_USER_NOTIFICATIONS(state, payload) {
     Vue.set(state, "userNotifications", payload);
-    
   },
 
   UPDATE_GLOBAL_LOADER(state, payload) {

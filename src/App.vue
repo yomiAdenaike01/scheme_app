@@ -2,14 +2,13 @@
   <div
     id="app"
     v-resize-text="defaultSize"
-    :class="{ mobile: $mq != 'lg' }"
     v-loading="loading"
+    :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-  
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -70,7 +69,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["getClient",'setDeviceInformation'])
+    ...mapActions(["getClient", "setDeviceInformation"])
   },
 
   watch: {
