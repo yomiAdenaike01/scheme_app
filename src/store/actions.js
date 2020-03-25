@@ -35,32 +35,7 @@ export default {
         });
     });
   },
-  getClient(context) {
-    return new Promise((resolve, reject) => {
-      let currentHostname = window.location.hostname.toString().split(".");
-      let subdomain = currentHostname[0];
-      let domain = currentHostname[1];
-      // if (subdomain.length <= 0) {
-      context
-        .dispatch("request", {
-          method: "GET",
-          url: "clients/get",
-          params: { subdomain }
-        })
 
-        .then(response => {
-          context.commit("UPDATE_CLIENT", response);
-          resolve(response);
-        })
-        .catch(error => {
-          context.commit("UPDATE_INVALID_CLIENT", {
-            display: true,
-            error: true
-          });
-          reject(error);
-        });
-    });
-  },
   closeDialog({ commit, state: { dialogIndex } }, name = "") {
     commit(
       "UPDATE_DIALOG_INDEX",
@@ -194,7 +169,7 @@ export default {
 
     let enableNotifications = true;
 
-    if (payload.hasOwnProperty("disableNotification")) {
+    if (payload?.disableNotification) {
       enableNotifications = false;
     }
 

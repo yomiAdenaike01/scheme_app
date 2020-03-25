@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 
 import DefaultTransition from "@/components/DefaultTransition";
 export default {
@@ -53,34 +53,38 @@ export default {
   },
 
   created() {
-    this.setDeviceInformation();
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
       );
     }
 
-    clearInterval(this.clientInterval);
-    this.clientInterval = setInterval(() => {
-      this.getClient()
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.$router.push({
-            name: "error"
+    let currentHostname = window.location.hostname.toString().split(".");
+    let subdomain = currentHostname[0];
+
+    this.CREATE_INTERVAL({
+      method: () => {
+        return new Promise((resolve, reject) => {
+          this.request({
+            method: "GET",
+            url: "clients/get",
+            params: { subdomain }
+          }).catch(() => {
+            reject();
           });
-          this.loading = false;
-          clearInterval(this.clientInterval);
         });
-    }, this.requestIntervals.client);
+      },
+      ...this.requestIntervals.client
+    });
   },
+
   destroyed() {
-    clearInterval(this.clientInterval);
+    this.CLEAR_INTERVAL("getClient");
   },
 
   methods: {
-    ...mapActions(["getClient", "setDeviceInformation"])
+    ...mapActions(["request"]),
+    ...mapMutations(["CREATE_INTERVAL", "CLEAR_INTERVAL"])
   },
   components: {
     DefaultTransition

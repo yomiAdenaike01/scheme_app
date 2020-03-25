@@ -1,6 +1,21 @@
-import sounds from "@/mixins/playSound";
+// import sounds from "@/mixins/playSound";
 import Vue from "vue";
-import router from "../router";
+import VueRouter from "../router";
+
+function clearStateInterval(state, intervalID) {
+  if (!intervalID) {
+    for (let i = 0, len = state.runningIntervals.length; i < len; i++) {
+      clearTimeout(state.runningIntervals[i]);
+    }
+    Vue.set(state, "runningIntervals", []);
+  } else {
+    let intervalIndex = state.runningIntervals.findIndex(interval => {
+      return interval == intervalID;
+    });
+    clearInterval(intervalID);
+    Vue.delete(state.runningIntervals, intervalIndex);
+  }
+}
 
 export default {
   UPDATE_DIALOG_INDEX(
@@ -9,53 +24,26 @@ export default {
   ) {
     Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
   },
-  CREATE_INTERVAL(
-    state,
-    {
-      duration = 1000,
-      id = Math.random()
-        .toString(16)
-        .slice(2),
-      method,
-      immediate = false
+  CREATE_INTERVAL(state, { duration, method, id, immediate }) {
+    if (immediate) {
+      method();
     }
-  ) {
-    // Check that the ID
-    const runInterval = () => {
-      clearTimeout(id);
-      if (immediate) {
-        method();
-      } else {
-        setTimeout(() => {
-          method().finally(() => {
-            runInterval();
-          });
-        }, duration);
-      }
-    };
-    if (state.runningIntervals.indexOf(id) != -1) {
-      return;
-    } else {
+    clearInterval(id);
+    id = setInterval(() => {
+      method().catch(() => {
+        clearStateInterval(state, id);
+      });
+    }, duration);
+
+    if (state.runningIntervals.indexOf(id) == -1) {
       state.runningIntervals.push(id);
-      runInterval();
     }
   },
+
   CLEAR_INTERVAL(state, intervalID) {
-    if (!intervalID) {
-      for (let i = 0, len = state.runningIntervals.length; i < len; i++) {
-        clearTimeout(state.runningIntervals[i]);
-      }
-      Vue.set(state, "runningIntervals", []);
-    }
-    let intervalIndex = state.runningIntervals.findIndex(interval => {
-      return interval == intervalID;
-    });
-    clearTimeout(intervalID);
-    Vue.delete(state.runningIntervals, intervalIndex);
+    clearStateInterval(state, intervalID);
   },
-  UPDATE_INVALID_CLIENT(state, payload) {
-    Vue.set(state, "invalidClient", payload);
-  },
+
   UPDATE_CLIENT(state, payload) {
     Vue.set(state, "clientInformation", payload);
     localStorage.setItem("clientInformation", JSON.stringify(payload));
@@ -72,7 +60,7 @@ export default {
     Vue.set(state, "globalLoader", payload);
   },
   REMOVE_USER() {
-    router.push({ name: "login" });
+    VueRouter.push({ name: "login" });
     localStorage.removeItem("token");
     localStorage.removeItem("userInformation");
   },

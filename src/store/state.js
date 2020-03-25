@@ -1,10 +1,10 @@
 import vars from "@/assets/Styles/defaults.scss";
 export default {
-  runningIntervals:[],
+  runningIntervals: [],
   requestIntervals: {
     team: 6000,
     events: 6000,
-    client: 10000,
+    client: { id: "client", immediate: true, duration: 10000 },
     messages: 3000,
     transcripts: 3000,
     templates: 3000

@@ -29,6 +29,7 @@ import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
 import DefaultTransition from "@/components/DefaultTransition";
 import InstanceCheck from "@/components/InstanceCheck";
+
 export default {
   name: "Main",
   components: {
