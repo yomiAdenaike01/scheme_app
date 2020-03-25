@@ -167,8 +167,8 @@ export default {
 .client_indicator {
   color: white;
   height: 100%;
-  text-transform: capitalize;
   max-width: 7.4%;
+  text-transform: capitalize;
 }
 .infobar_wrapper {
   border-bottom: solid 1px #e6e6e6;
@@ -176,8 +176,8 @@ export default {
   max-height: $app_bar_height;
 }
 .nav_toggle {
-  cursor: pointer;
   background: transparent;
+  cursor: pointer;
 }
 .el-col {
   height: 100%;
@@ -193,10 +193,10 @@ export default {
   border-left: 1px solid #e6e6e6;
 }
 .profile_container {
+  align-items: center;
   display: flex;
   justify-content: flex-end;
   width: 95%;
-  align-items: center;
 }
 .text_wrapper {
   font-size: 0.9em;

@@ -44,8 +44,9 @@ export default {
     };
   },
   activated() {
+    this.clockInEvent();
     this.checkDevice();
-    Promise.all([this.getEvents(), this.getTeam()]).then(response => {
+    Promise.all([this.getEvents(), this.getTeam()]).then(() => {
       this.loading = false;
     });
 
@@ -58,7 +59,6 @@ export default {
       });
     }
 
-    let { general } = this.userInformation.settings;
     if (Notification.permission != "granted") {
       this.requestNotificationPermission();
     }
@@ -73,7 +73,7 @@ export default {
       "weeklyTimesheetUploaded"
     ]),
     ...mapState("Admin", ["teamInformation"]),
-    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
+    ...mapGetters(["getDeviceID", "getIsAdmin"]),
 
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
@@ -102,6 +102,15 @@ export default {
     ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
 
+    clockInEvent() {
+      let routeParams = this.$router.params;
+      if (this.hasEntries(routeParams)) {
+        this.UPDATE_DIALOG_INDEX({
+          dialog: ""
+        });
+      }
+    },
+
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
         title: "Register new device detected",
@@ -126,7 +135,7 @@ export default {
       if (!window.Notification) {
         let {
           browser: { name, version }
-        } = this.getDeviceInformation;
+        } = this.getDeviceID;
         this.UPDATE_NOTIFICATIONS({
           title: "Browser version error",
           message: `The current browser doesn't support notifications ${name} ${Math.round(

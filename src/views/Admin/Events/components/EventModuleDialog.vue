@@ -14,7 +14,6 @@
       <div slot="header">
         <InformationDisplay class="mb-5" :display-text="informationDisplay" />
       </div>
-
       <div slot="body">
         <div
           v-if="tabXref.name == 'create_event_group' && getIsAdmin"
@@ -97,7 +96,7 @@ export default {
       if (!this.getIsAdmin) {
         eventsInformation.assignedTo = [this.userInformation._id];
       }
-      templatesInformation = {
+      let templatesInformation = {
         content: {
           ...eventsInformation
         }
@@ -106,14 +105,15 @@ export default {
       if (eventsInformation?.userGroups) {
         // Changed the assigned to to all of the user groups
         let uGroups = eventsInformation.userGroups;
+        eventsInformation.assignedTo = [];
 
         for (let i = 0, len = uGroups.length; i < len; i++) {
-          eventsInformation.assignedTo = [
+          eventsInformation.assignedTo.push(
             ...this.getUsersInUserGroup(uGroups[i])
-          ];
+          );
         }
       }
-      return eventsInformation;
+      return { templatesInformation, eventsInformation };
     },
 
     informationDisplay() {
@@ -136,9 +136,8 @@ export default {
         usernames = assignToUsernames.map(assignee => {
           return this.getUserInformation(assignee)?.name;
         });
-
-        return usernames.length > 1 ? usernames.join(",") : usernames;
       }
+      return usernames.length > 1 ? usernames.join(",") : usernames;
     },
 
     activeDialogInformation() {
@@ -160,7 +159,7 @@ export default {
         {
           label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm,
-          emitOnChange: true
+          displayReset: true
         }
       ];
 
@@ -269,7 +268,7 @@ export default {
       get() {
         return this.getActiveDialog("eventModule");
       },
-      set(toggle) {
+      set() {
         this.closeDialog("eventModule");
       }
     }
@@ -281,7 +280,6 @@ export default {
 
     eventsCtrl(information) {
       this.eventsInformation = information;
-      console.log(information);
 
       switch (this.tabXref.name) {
         case "create_event_group": {
@@ -301,27 +299,31 @@ export default {
       }
     },
     genRequest() {
+      let requestInformation = {
+        type: 1,
+        content: this.eventContent.eventsInformation.startDate
+      };
       this.request({
         method: "POST",
-        url: "requests/create",
-        data: {}
+        url: "event/request/create",
+        data: requestInformation
       });
     },
     // Submit one event
     genEvent() {
-      this.createEvent(this.eventContent)
-        .then(response => {
+      this.createEvent(this.eventContent.eventsInformation)
+        .then(() => {
           this.loading = false;
           this.view = false;
           if (this.getIsAdmin) {
             this.initSaveTemplate();
           }
         })
-        .catch(error => {
+        .catch(() => {
           this.loading = false;
-          return error;
         });
     },
+
     initSaveTemplate() {
       this.genPromptBox({
         boxType: "prompt",
@@ -337,10 +339,13 @@ export default {
           return err;
         });
     },
+
     resolveSaveTemplate(value) {
-      this.templatesInformation.name = value;
-      // If there is an error reinitiate the create template
-      this.createEventTemplate(this.templatesInformation).catch(err => {
+      let localTemplateInformation = {
+        ...this.eventContent.templateInformation,
+        name: value
+      };
+      this.createEventTemplate(localTemplateInformation).catch(() => {
         this.initSaveTemplate();
       });
     },
@@ -355,11 +360,11 @@ export default {
         url: "clients/group",
         data: { name: "eventGroups", value: eventsInformation }
       })
-        .then(response => {
+        .then(() => {
           this.loading = false;
           this.view = false;
         })
-        .catch(err => {
+        .catch(() => {
           this.loading = false;
           this.view = false;
         });
@@ -378,9 +383,9 @@ export default {
 }
 .custom_form_item {
   background: rgb(253, 253, 253);
-  padding: 1em;
   border-radius: 10px;
   cursor: pointer;
+  padding: 1em;
 }
 .form_item {
   width: 100%;

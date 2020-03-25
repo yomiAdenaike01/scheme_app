@@ -57,9 +57,9 @@ export default {
 
 <style lang="scss" scoped>
 .server_health_container {
-  width: 100%;
   background: whitesmoke;
   color: white;
+  width: 100%;
   &.healthy {
     background: #99b898;
     // background-image: linear-gradient(

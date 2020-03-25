@@ -89,13 +89,13 @@ export default {
 
 <style lang="scss" scoped>
 .notifications_container {
-  position: relative;
   height: 400px;
+  position: relative;
 }
 .title_switch_container {
+  border-bottom: $border;
   display: flex;
   justify-content: space-between;
-  border-bottom: $border;
 }
 .block_button {
   width: 100%;

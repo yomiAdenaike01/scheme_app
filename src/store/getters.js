@@ -1,5 +1,6 @@
 import { guide } from "@/stubs/guide";
 import UAParser from "ua-parser-js";
+const genUUID = require("uuid-by-string");
 
 export default {
   getUA() {
@@ -15,6 +16,7 @@ export default {
   getPreviousDeviceInformation({ userInformation: { devicesInformation } }) {
     return devicesInformation;
   },
+
   getCurrentVersion() {
     return require("../../package.json").version;
   },
@@ -51,8 +53,8 @@ export default {
       );
     }).length;
   },
-  getDeviceInformation(state, { getUA }) {
-    return getUA.getOS();
+  getDeviceID() {
+    return genUUID(window.navigator.userAgent.toString().trim());
   },
   getUserSettings(state) {
     return state.userInformation.settings;

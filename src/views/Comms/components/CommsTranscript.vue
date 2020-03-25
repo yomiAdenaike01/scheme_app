@@ -146,11 +146,11 @@ export default {
 
 <style lang="scss" scoped>
 .transcript_container {
-  flex: 1;
-  border-top: $border;
   border-bottom: $border;
-  transition: 0.5s ease background;
+  border-top: $border;
   cursor: pointer;
+  flex: 1;
+  transition: 0.5s ease background;
   &:hover {
     background: rgb(252, 252, 252);
   }

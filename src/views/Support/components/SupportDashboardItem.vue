@@ -18,7 +18,7 @@ export default {
 
 <style lang="scss" scoped>
 .support_unit_container {
-  cursor: pointer;
   box-shadow: $box_shadow;
+  cursor: pointer;
 }
 </style>

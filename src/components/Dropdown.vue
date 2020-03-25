@@ -62,7 +62,7 @@ export default {
   cursor: pointer;
 }
 .dropdown_wrapper {
-  display: flex;
   align-items: center;
+  display: flex;
 }
 </style>

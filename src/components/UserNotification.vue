@@ -122,11 +122,11 @@ export default {
 </script>
 <style lang="scss">
 .update_content {
-  display: flex;
-  justify-content: center;
   align-items: center;
+  display: flex;
   flex-direction: column;
   font-size: 0.8em;
+  justify-content: center;
 }
 .check_button {
   border: 1px solid $element_colour;
@@ -135,8 +135,8 @@ export default {
   }
 }
 .notification_container {
-  cursor: pointer;
   border-bottom: $border;
+  cursor: pointer;
   &.is_read {
     opacity: 0.5;
     pointer-events: none;
@@ -156,11 +156,11 @@ export default {
 .notification_type_indicator {
   border-radius: 20px;
   color: white;
-  text-transform: capitalize;
-  max-width: 80px;
-  text-align: center;
-  padding: 3px 10px;
   margin-top: 5px;
+  max-width: 80px;
+  padding: 3px 10px;
+  text-align: center;
+  text-transform: capitalize;
   &.reminder {
     background: rgb(94, 114, 228);
   }

@@ -6,8 +6,6 @@ import AdminRoutes from "./AdminRoutes";
 import AuthRoutes from "./AuthRoutes";
 import SupportRoutes from "./SupportRoutes";
 
-const ClientIntro = () => import("@/components/ClientIntro");
-
 // Router views
 const MainApp = () => import("@/views/router_views/Main");
 const Admin = () => import("@/views/router_views/Admin");
@@ -19,11 +17,6 @@ const routes = [
   {
     path: "/",
     redirect: { name: "events" }
-  },
-  {
-    path: "/intro",
-    name: "intro",
-    component: ClientIntro
   },
 
   {

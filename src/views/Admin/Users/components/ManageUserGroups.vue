@@ -186,16 +186,16 @@ export default {
 }
 .group_container {
   border: 1.3px solid #ebeef5;
-  transition: 0.56s ease all;
   border-radius: 5px;
   color: #999;
   cursor: pointer;
-  min-height: 150px;
   max-height: 200px;
+  min-height: 150px;
+  transition: 0.56s ease all;
   &.active {
-    font-weight: bold;
     border-color: $error_colour;
     color: $error_colour;
+    font-weight: bold;
   }
   &/deep/ {
     .el-loading-spinner .path {

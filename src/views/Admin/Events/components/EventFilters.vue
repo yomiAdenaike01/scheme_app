@@ -92,10 +92,10 @@ export default {
 
 <style lang="scss" scoped>
 .filters_container {
-  flex: 0.15;
   background: rgb(252, 252, 252);
   border-right: 1px solid #efefef;
   border-top: 1px solid #efefef;
+  flex: 0.15;
 
   position: relative;
 }

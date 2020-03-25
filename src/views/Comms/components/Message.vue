@@ -25,30 +25,30 @@ export default {
 
 <style lang="scss" scoped>
 .message_container {
-  width: 100%;
-  padding: 10px;
   justify-content: flex-start;
+  padding: 10px;
+  width: 100%;
   &.sender {
     justify-content: flex-end;
   }
 }
 .message {
-  max-width: 300px;
-  word-break: normal;
-  margin: 20px 30px 0 0;
-  padding: 10px;
   background: whitesmoke;
   color: #4444;
+  margin: 20px 30px 0 0;
+  max-width: 300px;
+  padding: 10px;
+  word-break: normal;
   &:after {
-    content: attr(data-timestamp);
     color: white;
+    content: attr(data-timestamp);
     font-size: 0.6em;
   }
   &.sender {
-    color: white;
     background: grey;
     border-radius: 20px;
     border-bottom-right-radius: 0px;
+    color: white;
   }
 }
 </style>

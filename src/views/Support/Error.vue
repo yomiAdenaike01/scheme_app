@@ -21,7 +21,7 @@
             <div class="flex_center columns">
               <div class="info_wrapper p-2 m-3 txt_center">
                 <small class="error_information">{{
-                  JSON.stringify(getDeviceInformation)
+                  JSON.stringify(getDeviceID)
                 }}</small>
                 <small class="error_information">{{
                   JSON.stringify(errorInformation)
@@ -56,10 +56,10 @@ export default {
 
   computed: {
     ...mapState(["userInformation", "errorInformation"]),
-    ...mapGetters(["getDeviceInformation"]),
+    ...mapGetters(["getDeviceID"]),
     emailInformation() {
       return {
-        ...this.getDeviceInformation,
+        ...this.getDeviceID,
         ...this.errorInformation
       };
     }
@@ -92,21 +92,21 @@ export default {
   overflow-x: hidden;
 }
 .error_content {
+  line-height: 2em;
   text-align: center;
   width: 700px;
-  line-height: 2em;
 }
 .info_wrapper {
-  max-width: 500px;
-  border: $border;
   background: whitesmoke;
+  border: $border;
   color: rgb(50, 50, 50);
   max-height: 400px;
+  max-width: 500px;
   overflow-x: hidden;
 }
 .error_information {
+  display: inline-block;
   white-space: pre-wrap;
   word-break: break-all;
-  display: inline-block;
 }
 </style>

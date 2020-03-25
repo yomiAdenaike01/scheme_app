@@ -86,6 +86,9 @@
 
       <!-- Submit button -->
       <div v-if="!disable" class="button_container mt-4">
+        <el-button v-if="displayReset" round :size="size" @click="resetForm"
+          >Clear Form</el-button
+        >
         <el-button
           :size="size"
           type="primary"
@@ -94,7 +97,6 @@
           @click="submitForm"
           >{{ submitText }}</el-button
         >
-        <el-button v-if="displayReset" @click="resetForm">Reset</el-button>
       </div>
     </el-form>
   </div>
@@ -125,7 +127,8 @@ export default {
       default: "Submit"
     },
     config: {
-      type: Array
+      type: Array,
+      required: false
     },
     customMethod: {
       type: Function,
@@ -139,10 +142,6 @@ export default {
     size: {
       type: String,
       default: "mini"
-    },
-    resetOnSubmit: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
@@ -234,31 +233,21 @@ export default {
       });
     },
     completeForm() {
-      return new Promise((resolve, reject) => {
-        try {
-          this.$emit("val", this.formContent);
-
-          if (this.customMethod) {
-            this.customMethod();
-          }
-
-          if (this.nextTab) {
-            this.$emit("changeTab");
-          }
-          resolve();
-        } catch (error) {
-          reject(error);
+      try {
+        this.$emit("val", this.formContent);
+        if (this.customMethod) {
+          this.customMethod();
         }
-      });
+
+        if (this.nextTab) {
+          this.$emit("changeTab");
+        }
+      } catch (error) {}
     },
     submitForm() {
       this.runValidation()
-        .then(response => {
-          this.completeForm().then(response => {
-            if (this.resetOnSubmit) {
-              this.resetForm();
-            }
-          });
+        .then(() => {
+          this.completeForm();
         })
         .catch(error => {
           return error;
@@ -271,7 +260,7 @@ export default {
 <style lang="scss" scoped>
 .button_container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 .button_text {
   text-transform: capitalize;
@@ -280,9 +269,9 @@ export default {
   min-width: 70%;
 }
 .description {
-  display: block;
-  padding: 0;
-  margin: 0;
   color: #999;
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 </style>

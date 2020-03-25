@@ -121,8 +121,8 @@ export default {
   overflow-x: hidden;
 }
 .team_container {
-  flex: 0.1;
   border-left: 1px solid #e6e6e6;
+  flex: 0.1;
   .member {
     border-bottom: solid 1px #e6e6e6;
     cursor: pointer;
@@ -132,8 +132,8 @@ export default {
   }
 }
 .team_center {
-  display: flex;
   align-items: center;
+  display: flex;
   justify-content: center;
 }
 
@@ -146,10 +146,10 @@ export default {
  */
 .mobile {
   .member {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
     align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .team_container {
     border-top: 1px solid #e6e6e6;

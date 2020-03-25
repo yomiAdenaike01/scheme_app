@@ -133,8 +133,8 @@ export default {
 }
 
 .check_container {
-  border-radius: 50%;
   background: $success_colour;
+  border-radius: 50%;
   color: white;
   font-size: 20px;
   padding: 10px 13px;

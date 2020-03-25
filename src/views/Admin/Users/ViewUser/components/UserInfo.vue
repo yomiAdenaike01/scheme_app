@@ -235,12 +235,12 @@ export default {
   line-height: 2em;
 }
 .info_container {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 5px;
   border: 2px solid whitesmoke;
+  border-radius: 5px;
   font-size: 1.2em;
   line-height: 2.2em;
+  margin-top: 20px;
+  padding: 20px;
 }
 .quick_actions_container {
   & /deep/ > * {

@@ -43,7 +43,10 @@
       :class="displayText.class"
       class="headings_wrapper"
     >
-      <slot name="header"></slot>
+      <div class="mb-3">
+        <slot  name="header"></slot>
+      </div>
+      
       <component
         :is="displayText.tag ? displayText.tag : 'h1'"
         class="heading"
@@ -56,7 +59,9 @@
         class="heading_text_content"
         v-html="displayText.content"
       ></div>
+      <div class="mt-4">
       <slot name="body"></slot>
+      </div>
     </div>
   </div>
 </template>
@@ -152,8 +157,8 @@ export default {
   justify-content: space-between;
 }
 .bx {
-  font-size: 2em;
   color: #999;
+  font-size: 2em;
 }
 .headings_wrapper {
   margin: 0;
@@ -165,9 +170,9 @@ export default {
 
 .tutorial_title_bar {
   background: rgb(250, 250, 250);
-  padding: 10px;
   color: #999;
   font-size: 1.2em;
+  padding: 10px;
 }
 .popover_inner_text_container {
   margin: 40px 50px;
@@ -175,19 +180,19 @@ export default {
 
 .indicator_container {
   display: flex;
-  width: 100%;
   justify-content: center;
   margin: 25px 0px;
+  width: 100%;
 }
 .indicator {
-  cursor: pointer;
-  margin-left: 20px;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  border: 10px solid white;
   background: $default_colour;
+  border: 10px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 20px;
+  margin-left: 20px;
   transition: $default_transition all;
+  width: 20px;
   &.active {
     box-shadow: $box_shadow;
   }

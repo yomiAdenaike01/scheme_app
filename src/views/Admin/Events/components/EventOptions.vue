@@ -136,8 +136,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .indicator {
-  will-change: transform;
   transition: $default_transition;
+  will-change: transform;
   &.active {
     transform: rotate(90deg);
   }

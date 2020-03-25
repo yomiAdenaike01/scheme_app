@@ -66,7 +66,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapGetters(["getDeviceInformation"]),
+    ...mapGetters(["getDeviceID"]),
 
     submitText() {
       return this.selectedForm == "login" ? "Login" : "Submit new password";
@@ -179,7 +179,7 @@ export default {
         data: {
           clientID: this.clientInformation._id,
           ...this.credentials,
-          deviceInformation: this.getDeviceInformation
+          deviceInformation: this.getDeviceID
         },
         url: "/users/login"
       })
@@ -215,20 +215,20 @@ export default {
   height: 100%;
 }
 .register_as_new_client_wrapper {
-  display: flex;
-  width: 100%;
   align-items: flex-end;
+  cursor: pointer;
+  display: flex;
   justify-content: flex-end;
   margin: 1em 0;
-  cursor: pointer;
+  width: 100%;
 }
 .flex_container {
-  display: flex;
-  justify-content: center;
   align-items: center;
+  display: flex;
   height: 100%;
-  padding: 0;
+  justify-content: center;
   margin: 0;
+  padding: 0;
 }
 .form_container {
   min-width: 25%;
@@ -237,8 +237,8 @@ export default {
   border: 1px solid $element_colour;
 }
 .new_client_button_container {
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 </style>

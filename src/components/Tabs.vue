@@ -29,6 +29,7 @@
           :config="tab.formContent"
           :submit-text="submitText"
           :emit-on-change="tab.emitOnChange"
+          :display-reset="tab.displayReset"
           @val="$emit('val', $event)"
           @formValChange="$emit('formValChange', $event)"
         />

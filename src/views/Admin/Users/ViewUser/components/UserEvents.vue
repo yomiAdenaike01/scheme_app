@@ -6,14 +6,12 @@
     </div>
     <InformationDisplay
       v-else
-      class="flex_center"
-      :display-text="{ heading: 'No events found for this user', content: '' }"
+      class="no_events_information"
+      :displayText="{heading: 'No events found', content: 'Using the button below you can create an event assigned to this user' }"
     >
-      <div slot="header">
-        <i class="bx bx-calendar-plus"></i>
-      </div>
+   
+<div class="button_container flex_center" slot="body">
       <el-button
-        slot="body"
         @click="
           UPDATE_DIALOG_INDEX({
             dialog: 'eventModule',
@@ -23,6 +21,7 @@
         "
         >Create event for this user</el-button
       >
+      </div>
     </InformationDisplay>
   </div>
 </template>
@@ -55,4 +54,3 @@ export default {
 };
 </script>
 
-<style></style>

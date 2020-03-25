@@ -1,4 +1,6 @@
+
 module.exports = {
+  lintOnSave: process.env.NODE_ENV !== 'production',
   css: {
     loaderOptions: {
       sass: {
@@ -11,7 +13,12 @@ module.exports = {
 
   configureWebpack: {
     devServer: {
-      disableHostCheck: true
-    }
+      disableHostCheck: true,
+      overlay: {
+        warnings: false,
+        errors: false
+      }
+    },
+
   }
 };

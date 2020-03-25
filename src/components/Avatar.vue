@@ -54,11 +54,11 @@ export default {
 
 <style lang="scss" scoped>
 .avatar_container {
-  max-width: 40px;
   max-height: 40px;
+  max-width: 40px;
   &.full {
-    max-width: initial;
     max-height: initial;
+    max-width: initial;
   }
 }
 </style>

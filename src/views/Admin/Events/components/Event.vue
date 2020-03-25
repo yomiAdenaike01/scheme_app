@@ -172,10 +172,10 @@ export default {
 <style lang="scss" scoped>
 .event_container {
   border-radius: 10px;
-  line-height: 2.1em;
-  font-weight: 300;
-  font-size: 0.9em;
   cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 300;
+  line-height: 2.1em;
   opacity: 0.5;
   &.myEvent {
     opacity: 1;
@@ -183,13 +183,13 @@ export default {
 }
 
 .event_times {
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 .event_details_container {
-  min-width: 30%;
   max-width: 40%;
+  min-width: 30%;
   &/deep/ {
     .el-tag {
       min-width: 100px;
@@ -204,8 +204,8 @@ export default {
 }
 
 .approval_wrapper {
-  text-transform: uppercase;
   font-size: 0.8em;
+  text-transform: uppercase;
 }
 .event_controls_wrapper {
   width: 10%;
@@ -226,8 +226,8 @@ export default {
 
 .mobile {
   .event_details_container {
-    min-width: 100%;
     line-height: 2.5em;
+    min-width: 100%;
   }
 }
 </style>

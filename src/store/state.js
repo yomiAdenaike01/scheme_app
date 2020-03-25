@@ -1,5 +1,6 @@
 import vars from "@/assets/Styles/defaults.scss";
 export default {
+  runningIntervals:[],
   requestIntervals: {
     team: 6000,
     events: 6000,

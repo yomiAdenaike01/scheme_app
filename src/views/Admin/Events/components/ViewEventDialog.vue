@@ -235,14 +235,6 @@ export default {
         return tag == this.selectedConfig;
       });
     },
-    noAssignedUsers() {
-      return {
-        text:
-          "You have encountered a critical server error, to proceed please contact support so that this can be fixed",
-        icon: "el-icon-warning-outline",
-        buttonText: "Hello"
-      };
-    },
 
     canAddMoreUsers() {
       return this.event.assignedToIDs.length < this.teamInformation.length;
@@ -258,7 +250,7 @@ export default {
       );
     },
     hasClockedIn() {
-      return this.event.clockedIn.some(assingnee => {
+      return this.event?.clockedIn?.some(assingnee => {
         return assingnee == this.userInformation._id;
       });
     },
@@ -304,7 +296,7 @@ export default {
       };
     },
     isEventMine() {
-      return this.event.assignedTo.some(event => {
+      return this.event.assignedTo.some(() => {
         return this.userInformation._id;
       });
     },
@@ -315,7 +307,7 @@ export default {
       get() {
         return this.getActiveDialog("viewEvent");
       },
-      set(val) {
+      set() {
         this.closeDialog("viewEvent");
       }
     }
@@ -368,7 +360,7 @@ export default {
             userID
           }
         })
-          .then(response => {
+          .then(() => {
             this.getEvents();
             // Notify user they have been dropped
             this.genNotification({
@@ -402,14 +394,9 @@ export default {
           eventID: this.event.id,
           userID
         }
-      })
-        .then(response => {
-          this.getEvents();
-          return response;
-        })
-        .catch(err => {
-          return err;
-        });
+      }).then(() => {
+        this.getEvents();
+      });
     },
     deleteEvent() {
       this.genPromptBox({
@@ -417,27 +404,19 @@ export default {
         title: "Confirm",
         text: "Are you sure you want to delete this event ?",
         confirm: "Yes"
-      })
-        .then(response => {
-          this.request({
-            method: "DELETE",
-            url: "events/delete",
-            data: {
-              _id: this.event.id
-            }
-          })
-            .then(response => {
-              this.getEvents();
-              this.closeDialog("viewEvent");
-              this.notifyAssignees();
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        })
-        .catch(err => {
-          return err;
+      }).then(() => {
+        this.request({
+          method: "DELETE",
+          url: "events/delete",
+          data: {
+            _id: this.event.id
+          }
+        }).then(() => {
+          this.getEvents();
+          this.closeDialog("viewEvent");
+          this.notifyAssignees();
         });
+      });
     },
     notifyAssignees() {
       let assignedToIDs = this.event.assignedToIDs;
@@ -467,7 +446,6 @@ export default {
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
       let assignedTo = [...this.event.assignedToIDs, this.userInformation._id];
-
       this.genEmail({
         subject: "Reminder",
         to: this.getEmail,
@@ -480,13 +458,7 @@ export default {
           for: assignedTo,
           message: contentMessage
         }
-      })
-        .then(response => {
-          return response;
-        })
-        .catch(err => {
-          return err;
-        });
+      });
     },
     clockIn() {
       this.request({
@@ -496,13 +468,9 @@ export default {
           id: this.event._id,
           user: this.userInformation._id
         }
-      })
-        .then(response => {
-          this.getEvents();
-        })
-        .catch(err => {
-          return err;
-        });
+      }).then(() => {
+        this.getEvents();
+      });
     }
   }
 };
@@ -520,11 +488,11 @@ export default {
   padding: 20px;
 }
 .view_event_dialog_item {
-  margin: 1em;
   border: 1.2px solid whitesmoke;
-  padding: 1em;
   border-radius: 5px;
+  margin: 1em;
   max-width: 100%;
+  padding: 1em;
   &.no_border {
     border: none;
   }
@@ -543,9 +511,9 @@ h4 {
       margin: 10px 0;
     }
     .avatar_wrapper {
+      align-items: center;
       display: flex;
       justify-content: center;
-      align-items: center;
     }
   }
 }
@@ -563,7 +531,7 @@ h4 {
   }
 }
 .add_new_user {
-  border-radius: $border_radius;
   border: 2px whitesmoke dashed;
+  border-radius: $border_radius;
 }
 </style>

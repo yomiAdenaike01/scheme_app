@@ -1,12 +1,7 @@
 <template>
   <div class="view_user_container">
     <!-- Display the avatar -->
-    <div class="title_container flex align-center">
-      <h2 :style="{ color: getDefaultColour }">
-        <i :style="{ color: getDefaultColour }" class="bx bx-user mr-2"></i>
-        User management
-      </h2>
-    </div>
+    <InformationDisplay class="m-5" :displayText="{heading:'User management',content:'This contains all the information about the user, including all the events that they have done'}"></InformationDisplay>
     <div class="avatar_info_container flex_center columns">
       <el-badge is-dot :type="badgeType" class="dot_container">
         <Avatar class="sidebar_avatar full" :name="returnUsername" />
@@ -36,7 +31,7 @@
 <script>
 import { mapGetters } from "vuex";
 import Avatar from "@/components/Avatar";
-
+import InformationDisplay from '@/components/InformationDisplay'
 export default {
   name: "ViewUserWrapper",
 
@@ -75,39 +70,39 @@ export default {
     }
   },
   components: {
-    Avatar
+    Avatar,
+    InformationDisplay
   }
 };
 </script>
 <style lang="scss" scoped>
 .title_container {
-  background: $hover_grey;
   margin: 10px 0;
   padding: 20px;
 }
 .avatar_info_container {
-  padding: 20px;
   margin-bottom: 20px;
+  padding: 20px;
 }
 .dot_container {
   &/deep/ {
     .el-badge__content {
-      width: 12px;
       height: 12px;
       margin: 0;
+      width: 12px;
     }
   }
 }
 .sidebar_avatar {
   &/deep/ {
     .el-avatar {
-      width: 60px;
-      height: 60px;
-      font-size: 1.3em;
-      text-align: center;
-      display: flex;
-      justify-content: center;
       align-items: center;
+      display: flex;
+      font-size: 1.3em;
+      height: 60px;
+      justify-content: center;
+      text-align: center;
+      width: 60px;
     }
   }
 }

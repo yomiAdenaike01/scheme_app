@@ -9,7 +9,50 @@ export default {
   ) {
     Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
   },
-
+  CREATE_INTERVAL(
+    state,
+    {
+      duration = 1000,
+      id = Math.random()
+        .toString(16)
+        .slice(2),
+      method,
+      immediate = false
+    }
+  ) {
+    // Check that the ID
+    const runInterval = () => {
+      clearTimeout(id);
+      if (immediate) {
+        method();
+      } else {
+        setTimeout(() => {
+          method().finally(() => {
+            runInterval();
+          });
+        }, duration);
+      }
+    };
+    if (state.runningIntervals.indexOf(id) != -1) {
+      return;
+    } else {
+      state.runningIntervals.push(id);
+      runInterval();
+    }
+  },
+  CLEAR_INTERVAL(state, intervalID) {
+    if (!intervalID) {
+      for (let i = 0, len = state.runningIntervals.length; i < len; i++) {
+        clearTimeout(state.runningIntervals[i]);
+      }
+      Vue.set(state, "runningIntervals", []);
+    }
+    let intervalIndex = state.runningIntervals.findIndex(interval => {
+      return interval == intervalID;
+    });
+    clearTimeout(intervalID);
+    Vue.delete(state.runningIntervals, intervalIndex);
+  },
   UPDATE_INVALID_CLIENT(state, payload) {
     Vue.set(state, "invalidClient", payload);
   },

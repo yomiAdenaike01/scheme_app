@@ -25,7 +25,7 @@ export default {
         .dispatch("request", {
           method: "POST",
           url: "users/devices",
-          data: { device: context.getters.getDeviceInformation }
+          data: { device: context.getters.getDeviceID }
         })
         .then(() => {
           resolve();

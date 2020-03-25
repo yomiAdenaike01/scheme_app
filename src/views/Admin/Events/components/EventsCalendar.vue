@@ -31,7 +31,6 @@ import "vue-cal/dist/vuecal.css";
 import moment from "moment";
 export default {
   name: "EventsCalendar",
-
   data() {
     return {
       view: false,
@@ -63,7 +62,7 @@ export default {
       let userEvents = this.getUsersEvents(this.userInformation._id);
       return userEvents.length;
     },
-
+    
     eventGroup() {
       let eventGroup = [];
       if (this.hasEntries(this.clientInformation)) {
@@ -197,7 +196,7 @@ export default {
       });
     },
 
-    displayCreateNewShift(startTime) {
+    displayCreateNewShift() {
       this.$emit("displayCreateShift", true);
     },
 
@@ -287,25 +286,24 @@ export default {
     }
 
     .vuecal__event {
-      font-size: 0.8em;
-
       background: #ecf5ff;
-      color: $element_colour;
       border-top: 2px solid $element_colour;
+      color: $element_colour;
+      font-size: 0.8em;
+      padding: 1em;
+      text-transform: capitalize;
 
       &.holiday {
         background: #fef0f0;
-        color: #f56c6c;
         border-top: 2px solid #f56c6c;
+        color: #f56c6c;
       }
       &.time_off,
       &.sick_leave {
         background: #fdf6ec;
-        color: #f2c678;
         border-top: 2px solid #f2c678;
+        color: #f2c678;
       }
-      padding: 1em;
-      text-transform: capitalize;
     }
     .el-icon-circle-close {
       color: red;
@@ -314,8 +312,8 @@ export default {
       color: green;
     }
     .vuecal__title-bar {
-      margin: 1em 0;
       background: none;
+      margin: 1em 0;
       .vuecal__title {
         button {
           color: #999;
@@ -325,10 +323,10 @@ export default {
   }
 }
 .bar_incidator {
-  border-radius: 5px;
-  text-align: center;
-  padding: 20px;
-  margin-bottom: 40px;
   border: 1px solid whitesmoke;
+  border-radius: 5px;
+  margin-bottom: 40px;
+  padding: 20px;
+  text-align: center;
 }
 </style>

@@ -141,17 +141,17 @@ export default {
   flex: 1;
 }
 .messages_container {
-  position: relative;
   flex: 1;
+  position: relative;
 }
 .input_container {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  border-top: $border;
   border-bottom: $border;
+  border-top: $border;
+  bottom: 0;
   flex: 1;
+  left: 0;
+  position: absolute;
+  right: 0;
 }
 .chatInformation_input {
   font-size: 15px;
@@ -166,15 +166,15 @@ export default {
 }
 .actions_container {
   border-right: $border;
-  padding: 20px;
   cursor: pointer;
+  padding: 20px;
 }
 .show_actions {
   font-size: 1.5em;
 }
 .no_content_container {
   background: rgb(253, 253, 253);
-  flex: 1;
   color: #ccc;
+  flex: 1;
 }
 </style>

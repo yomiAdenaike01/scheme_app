@@ -75,11 +75,11 @@ export default {
 
 <style lang="scss" scoped>
 .team_member {
-  border-radius: 10px;
   border: 1px solid #ebeef5;
+  border-radius: 10px;
+  cursor: pointer;
   overflow-x: hidden;
   transition: $default_transition background;
-  cursor: pointer;
   &:hover {
     background: $hover_grey;
   }

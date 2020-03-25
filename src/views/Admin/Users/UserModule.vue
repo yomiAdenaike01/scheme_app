@@ -155,9 +155,9 @@ export default {
 
 <style lang="scss" scoped>
 .user_container {
+  font-size: 0.9em;
   height: 90%;
   padding: 20px;
-  font-size: 0.9em;
   & > * {
     flex: 1;
   }
@@ -175,8 +175,8 @@ export default {
   transition: transform 0s;
 }
 .ghost {
-  opacity: 0.5;
   background: #c8ebfb;
+  opacity: 0.5;
 }
 .list-group {
   min-height: 20px;
@@ -192,11 +192,11 @@ export default {
   margin-right: 10px;
 }
 .icon_text_container {
-  border-radius: 10px;
   background: rgb(250, 250, 250);
-  padding: 10px 0px;
+  border-radius: 10px;
   color: #222;
   font-size: 0.9em;
+  padding: 10px 0px;
 }
 
 /*

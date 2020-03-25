@@ -6,14 +6,18 @@
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <DefaultTransition>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </DefaultTransition>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
+
+import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "App",
   data() {
@@ -22,37 +26,6 @@ export default {
       loading: false
     };
   },
-
-  created() {
-    this.setDeviceInformation();
-    if (this.getIsIE) {
-      this.$router.push({
-        name: "intro"
-      });
-      alert(
-        "Your browser is IE11, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
-      );
-    }
-
-    clearInterval(this.clientInterval);
-    this.clientInterval = setInterval(() => {
-      let res = this.getClient()
-        .then(response => {
-          this.loading = false;
-        })
-        .catch(err => {
-          this.$router.push({
-            name: "intro"
-          });
-          this.loading = false;
-          clearInterval(this.clientInterval);
-        });
-    }, this.requestIntervals.client);
-  },
-  destroyed() {
-    clearInterval(this.clientInterval);
-  },
-
   computed: {
     ...mapState([
       "requestIntervals",
@@ -68,10 +41,6 @@ export default {
       return this.hasEntries(this.clientInformation);
     }
   },
-  methods: {
-    ...mapActions(["getClient", "setDeviceInformation"])
-  },
-
   watch: {
     notifications(val) {
       this.$notify(val[0]);
@@ -81,6 +50,40 @@ export default {
         clearInterval(this.clientInterval);
       }
     }
+  },
+
+  created() {
+    this.setDeviceInformation();
+    if (this.getIsIE) {
+      alert(
+        "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
+      );
+    }
+
+    clearInterval(this.clientInterval);
+    this.clientInterval = setInterval(() => {
+      this.getClient()
+        .then(() => {
+          this.loading = false;
+        })
+        .catch(() => {
+          this.$router.push({
+            name: "error"
+          });
+          this.loading = false;
+          clearInterval(this.clientInterval);
+        });
+    }, this.requestIntervals.client);
+  },
+  destroyed() {
+    clearInterval(this.clientInterval);
+  },
+
+  methods: {
+    ...mapActions(["getClient", "setDeviceInformation"])
+  },
+  components: {
+    DefaultTransition
   }
 };
 </script>
@@ -95,9 +98,9 @@ body,
 html,
 #app {
   height: 100%;
-  width: 100%;
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 /*
  
@@ -122,8 +125,8 @@ span {
   padding: 0;
 }
 .desc {
-  font-size: 12px;
   color: #606266;
+  font-size: 12px;
   margin-top: 7px;
 }
 
@@ -160,17 +163,17 @@ span {
 
 .shadow_border {
   border-radius: 50%;
-  padding: 6px;
   box-shadow: $box_shadow;
+  padding: 6px;
 }
 .member_name {
   text-transform: capitalize;
 }
 .client_error_dialog {
+  align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
   .button_container {
     display: flex;
     justify-content: space-between;
@@ -241,9 +244,9 @@ span {
   align-items: flex-start;
 }
 .flex_center {
-  justify-content: center;
-  display: flex;
   align-items: center;
+  display: flex;
+  justify-content: center;
 }
 .posr {
   position: relative;
@@ -285,7 +288,8 @@ span {
 */
 .fade-transform-leave-active,
 .fade-transform-enter-active {
-  transition: all 0.5s;
+  will-change: transform;
+  transition: transform 0.5s;
 }
 
 .fade-transform-enter {
@@ -299,24 +303,24 @@ span {
 }
 
 .disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.5;
   &.line-through {
     text-decoration: line-through;
   }
 }
 
 .logo {
-  padding: 5px 19px;
-  border-radius: 50%;
   background-image: linear-gradient(
     340deg,
     $default_colour 0%,
     $element_colour 100%
   );
+  border-radius: 50%;
 
   color: white;
   font-weight: bold;
+  padding: 5px 19px;
 }
 .overflow {
   overflow: auto;
@@ -371,10 +375,10 @@ span {
 //  |_| \_|\___/ \__|_|_| |_|\___\__,_|\__|_|\___/|_| |_|___/
 
 .custom_notification_icon {
-  color: #909399;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-  padding: 10px;
   border-radius: 50%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  color: #909399;
+  padding: 10px;
 }
 /**
     _   _  _  ___ _  _    ___
