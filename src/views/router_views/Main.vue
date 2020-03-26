@@ -9,9 +9,11 @@
     <InstanceCheck />
     <div class="inner_app_container">
       <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
-      <keep-alive>
-        <router-view />
-      </keep-alive>
+      <RouterAnimation>
+        <keep-alive>
+          <router-view />
+        </keep-alive>
+      </RouterAnimation>
     </div>
   </div>
 </template>
@@ -23,8 +25,8 @@ import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
-import DefaultTransition from "@/components/DefaultTransition";
 import InstanceCheck from "@/components/InstanceCheck";
+import RouterAnimation from "@/components/RouterAnimation";
 
 export default {
   name: "Main",
@@ -32,8 +34,8 @@ export default {
     Navigation,
     AppBar,
     NprogressContainer,
-    DefaultTransition,
-    InstanceCheck
+    InstanceCheck,
+    RouterAnimation
   },
   data() {
     return {

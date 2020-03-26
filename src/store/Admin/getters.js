@@ -103,25 +103,21 @@ export default {
 
   getGroupName: (state, getters, { clientInformation }) => (groupType, id) => {
     let res = {};
-    console.log(clientInformation, groupType, id);
 
-    groupType = "eventGroups";
+    if (groupType == "user") {
+      groupType = "userGroups";
+    } else {
+      groupType = "eventGroups";
+    }
+
     if (Vue.prototype.hasEntries(clientInformation)) {
-      if (groupType == "user") {
-        groupType = "userGroups";
-      }
-
       res = clientInformation[groupType].find(({ value }) => {
         return value == id;
       });
-      console.log(res);
     }
     return res;
   },
-  getUserInformation: ({ teamInformation }, getters, { userInformation }) => (
-    match,
-    params = "_id"
-  ) => {
+  getUserInformation: ({ teamInformation }) => (match, params = "_id") => {
     let teams;
     if (Vue.prototype.hasEntries(teamInformation)) {
       teams = teamInformation.find(member => {

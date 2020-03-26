@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 import Popover from "@/components/Popover";
 export default {

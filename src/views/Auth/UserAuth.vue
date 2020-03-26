@@ -3,7 +3,7 @@
     <el-card class="form_container">
       <el-container class="h-100">
         <el-main class="login_wrapper">
-          <div class="logo_wrapper mb-4">
+          <div class="logo_wrapper">
             <Logo />
           </div>
           <Form
@@ -11,7 +11,7 @@
             :submit-text="submitText"
             @val="submitController"
           >
-            <div slot="footer" class="new_client_button_container mb-4 mt-4">
+            <div slot="footer" class="new_client_button_container">
               <el-button size="small" @click="selectedForm = 'forgotPassword'">
                 Forgot password ?
               </el-button>
@@ -46,6 +46,7 @@ export default {
   },
 
   activated() {
+    this.CLEAR_GLOBAL_INTERVAL();
     if (this.hasEntries(this.$route.params)) {
       this.login(this.$route.params);
     }
@@ -155,7 +156,7 @@ export default {
             email: this.credentials.fp_email,
             password: this.credentials.fp_password
           }
-        }).then(response => {
+        }).then(() => {
           this.selectedForm = "login";
         });
       }

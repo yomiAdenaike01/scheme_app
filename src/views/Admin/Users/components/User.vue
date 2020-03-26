@@ -1,6 +1,6 @@
 <template>
   <div
-    class="team_member flex p-4 mt-1"
+    class="user_container"
     @click="
       UPDATE_DIALOG_INDEX({
         dialog: 'viewUser',
@@ -20,9 +20,9 @@
     <Avatar v-else :name="name" />
 
     <div class="flex columns">
-      <div class="text_content ml-2">
-        <p class="member_name m-0 p-0">{{ name }}</p>
-        <small>{{ group }}</small>
+      <div class="text_content">
+        <p class="member_name">{{ name }}</p>
+        <small>{{ foundGroupName }}</small>
       </div>
     </div>
   </div>
@@ -55,13 +55,11 @@ export default {
       return this.userInformation.name;
     },
     foundGroupName() {
-      return this.getGroupName("user", this.userInformation.groupID).name;
+      return this.getGroupName("user", this.userInformation.groupID)?.label;
     },
     group() {
-      let { groupID } = this.userInformation;
       let name = "Group not found";
       if (this.hasEntries(this.clientInformation)) {
-        let { userGroups } = this.clientInformation;
         name = this.foundGroupName;
       }
       return name;
@@ -74,7 +72,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.team_member {
+.user_container {
+  display: flex;
   border: 1px solid #ebeef5;
   border-radius: 10px;
   cursor: pointer;

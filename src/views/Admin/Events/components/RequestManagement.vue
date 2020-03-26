@@ -1,5 +1,5 @@
 <template>
-  <div class="request_management">
+  <div v-loading="loading" class="request_management">
     <InformationDisplay
       v-if="requestsInformation.length == 0"
       class="l-3"
@@ -21,7 +21,7 @@
           content: 'Feel free to delete or update your requests below'
         }"
       />
-      <div v-for="request in requestXref" :key="request._id" class="request">
+      <div v-for="request in requests" :key="request._id" class="request">
         <div class="details_wrapper">
           <h2 class="mb-4">
             {{ getGroupName("eventGroup", request.type).name }}
@@ -31,7 +31,10 @@
             <span>{{ makePretty(value) }}: {{ request[value] }}</span>
           </p>
         </div>
-        <div class="buttons_container">
+        <div
+          v-if="getIsAdmin || request.requestedBy == userInformation._id"
+          class="buttons_container"
+        >
           <Popover trigger="click">
             <el-button slot="trigger" size="mini" round
               >Update Request</el-button
@@ -59,6 +62,7 @@ import { mapState, mapGetters, mapActions } from "vuex";
 import Popover from "@/components/Popover";
 import InformationDisplay from "@/components/InformationDisplay";
 import Form from "@/components/Form";
+
 export default {
   name: "RequestManagement",
   components: {
@@ -66,20 +70,44 @@ export default {
     Popover,
     Form
   },
+  props: {
+    userID: {
+      type: String,
+      required: false
+    }
+  },
   data() {
     return {
-      displayDetails: false
+      displayDetails: false,
+      localRequests: [],
+      loading: false
     };
   },
+
   activated() {
-    if (this.getIsAdmin) {
-      this.updateAllStatus();
+    if (this.userID) {
+      this.loading = true;
+      this.getRequests(this.userID)
+        .then(response => {
+          this.localRequests = response;
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     }
   },
   computed: {
+    ...mapState(["userInformation"]),
     ...mapState("Admin", ["requestsInformation"]),
     ...mapGetters("Admin", ["getGroupName", "getEnabledEvents"]),
     ...mapGetters(["getIsAdmin"]),
+
+    requests() {
+      return this.localRequests.length > 0
+        ? this.localRequests
+        : this.requestXref;
+    },
 
     // Create the cross referencing
 
@@ -119,10 +147,11 @@ export default {
     requestXref() {
       return [...this.requestsInformation].map(request => {
         return {
-          startDate: this.formatDate(request.startDate),
-          endDate: this.formatDate(request.endDate),
-          dateRequested: this.formatDate(request.dateCreated),
-          type: request.type
+          start_date: this.formatDate(request.startDate),
+          end_date: this.formatDate(request.endDate),
+          date_requested: this.formatDate(request.dateCreated),
+          type: request.type,
+          requested_by: request.requestedBy
         };
       });
     }
@@ -130,7 +159,9 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapActions("Admin", ["getRequests"]),
-    updateRequest(updateInformation, requestID) {},
+    updateRequest(updateInformation, requestID) {
+      console.log(updateInformation, requestID);
+    },
     updateAllStatus() {},
     deleteRequest(requestID) {
       this.request({

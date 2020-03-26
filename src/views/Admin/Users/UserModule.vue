@@ -1,5 +1,5 @@
 <template>
-  <el-row
+  <div
     v-loading="loading"
     type="flex"
     class="user_container"
@@ -12,23 +12,22 @@
     />
 
     <UserGroup>
-      <div class="h-100 overflow">
+      <div class="user_groups_table_container">
         <Title title="User Groups" subtitle="Manage and contact users here" />
 
-        <div v-if="hasEntries(getFilteredTeam)">
-          <el-row
+        <div v-if="hasEntries(getFilteredTeam)" class="row_wrapper">
+          <div
             v-for="(count, i) in filteredGroupsWithUsers"
             :key="`${count}${i}`"
+            class="user_group_row"
           >
-            <el-col
+            <div
               v-for="(group, index) in count"
               :key="index"
-              :span="$mq != 'lg' ? 12 : 8"
+              class="user_group_col"
             >
-              <div class="p-4 m-1 user_group_container">
-                <div
-                  class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
-                >
+              <div class="user_group_container">
+                <div class="icon_text_container">
                   <div class="flex_center">
                     <i class="bx bx-user user_group_icon"></i>
                     <span class="capitalize">{{ group.label }}</span>
@@ -41,8 +40,8 @@
                   @viewUser="viewUser = $event"
                 />
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </div>
         </div>
         <div v-else class="h-100 no_content_container flex_center">
           <InformationDisplay
@@ -71,7 +70,7 @@
       :display="displayDialog"
       @toggle="displayDialog = $event"
     />
-  </el-row>
+  </div>
 </template>
 
 <script>
@@ -155,16 +154,38 @@ export default {
 
 <style lang="scss" scoped>
 .user_container {
+  display: flex;
+  flex: 1;
   font-size: 0.9em;
-  height: 90%;
   padding: 20px;
-  & > * {
-    flex: 1;
-  }
+  max-height: 100%;
 }
-.current_user_column {
-  max-width: 30%;
+.user_groups_table_container {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  overflow-x: hidden;
 }
+.row_wrapper {
+  padding-top: 20px;
+  display: flex;
+  flex: 1;
+}
+.user_group_row {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.user_group_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.user_group_col {
+  display: flex;
+  flex: 1;
+}
+
 .button {
   margin-top: 35px;
 }

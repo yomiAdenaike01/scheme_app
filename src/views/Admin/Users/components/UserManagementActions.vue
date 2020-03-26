@@ -21,8 +21,11 @@
             class="quick_action_icon"
           />
           <InformationDisplay
-            mode="title"
-            :display-text="{ heading: action.heading, content: action.content }"
+            :display-text="{
+              tag: 'h2',
+              heading: action.heading,
+              content: action.content
+            }"
           />
           <div v-if="isSuccess == action.id" class="check_container">
             <i class="bx bx-check"></i>
@@ -34,7 +37,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "vuex";
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserManagementActions",

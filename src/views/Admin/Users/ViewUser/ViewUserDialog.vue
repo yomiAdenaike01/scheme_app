@@ -93,7 +93,7 @@ export default {
       get() {
         return this.getActiveDialog("viewUser");
       },
-      set(val) {
+      set() {
         this.closeDialog("viewUser");
       }
     },
