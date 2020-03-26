@@ -48,9 +48,6 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const authRequired = to.matched.some(route => route.meta.authRequired);
   const isLoggedIn = Vue.prototype.hasEntries(store.state.userInformation);
-  let { hostname } = window.location;
-  hostname = hostname.split(".")[0];
-  document.title = `${hostname} - Powered By Schemeapp.cloud`;
 
   function redirect(name) {
     next({

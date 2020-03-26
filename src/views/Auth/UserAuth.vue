@@ -1,6 +1,5 @@
 <template>
   <div class="login_container">
-    <div class="flex_container">
       <el-card class="form_container">
         <el-container class="h-100">
           <el-main class="login_wrapper">
@@ -24,7 +23,6 @@
           </el-main>
         </el-container>
       </el-card>
-    </div>
   </div>
 </template>
 
@@ -54,16 +52,9 @@ export default {
     if (this.hasEntries(this.$route.params)) {
       this.login(this.$route.params);
     }
-    if (!this.hasEntries(this.clientInformation)) {
-      this.getClient()
-        .then(response => {
-          this.UPDATE_CLIENT(response);
-        })
-        .catch(() => {
-          return;
-        });
-    }
+   
   },
+  
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters(["getDeviceID"]),
@@ -119,7 +110,11 @@ export default {
   },
   methods: {
     ...mapActions(["request", "getClient"]),
-    ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
+    ...mapMutations([
+      "UPDATE_USER",
+      "UPDATE_NOTIFICATIONS",
+      "CLEAR_GLOBAL_INTERVAL"
+    ]),
 
     submitController(formInformation) {
       this.credentials = formInformation;
@@ -202,7 +197,7 @@ export default {
           this.loading = false;
           // this.changeTab("login");
         })
-        .catch(error => {
+        .catch(() => {
           this.loading = false;
         });
     }
@@ -212,6 +207,10 @@ export default {
 
 <style lang="scss" scoped>
 .login_container {
+  display:flex;
+  flex:1;
+  justify-content: center;
+  align-items: center;
   height: 100%;
 }
 .register_as_new_client_wrapper {

@@ -1,8 +1,8 @@
 import Vue from "vue";
 
 export default {
-  getUserGroups(state, getters, { clientInformation: { userGroups } }) {
-    return userGroups.filter(x => {
+  getUserGroups(state, getters, { clientInformation }) {
+    return clientInformation?.userGroups?.filter(x => {
       return x.value != 0;
     });
   },
@@ -103,16 +103,18 @@ export default {
 
   getGroupName: (state, getters, { clientInformation }) => (groupType, id) => {
     let res = {};
+    console.log(clientInformation,groupType,id);
+
+    groupType = 'eventGroups';
     if (Vue.prototype.hasEntries(clientInformation)) {
       if (groupType == "user") {
         groupType = "userGroups";
-      } else {
-        groupType = "eventGroups";
       }
 
       res = clientInformation[groupType].find(({ value }) => {
         return value == id;
       });
+      console.log(res);
     }
     return res;
   },

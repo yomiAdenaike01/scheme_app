@@ -13,7 +13,7 @@
     <VueCal
       ref="eventsCalendar"
       v-loading="loading"
-      :events="allEvents"
+      :events="calEvents"
       :on-event-click="viewEvent"
       events-on-month-view="short"
       :cell-click-hold="false"
@@ -62,7 +62,7 @@ export default {
       let userEvents = this.getUsersEvents(this.userInformation._id);
       return userEvents.length;
     },
-    
+
     eventGroup() {
       let eventGroup = [];
       if (this.hasEntries(this.clientInformation)) {
@@ -91,41 +91,8 @@ export default {
         }
       ];
     },
-    allEvents() {
-      return this.gcalEventsFormatted.concat(this.returnEvents);
-    },
-    gcalEventsFormatted() {
-      if (this.hasEntries(this.gcalEvents)) {
-        let gcalEvents = [...this.gcalEvents];
-        return gcalEvents.map(event => {
-          let {
-            summary,
-            start,
-            end,
-            htmlLink,
-            creator,
-            organizer,
-            status
-          } = event;
-          start = start.date;
-          end = end.date;
-          start = moment(start).format(this.format);
 
-          end = moment(end).format(this.format);
-
-          return {
-            start: start,
-            end: end,
-            content: summary,
-            class: "gcal"
-          };
-        });
-      } else {
-        return [];
-      }
-    },
-    returnEvents() {
-      let { event_group, user_group } = this.eventFilters;
+    calEvents() {
       /**
        * title,
        * name,

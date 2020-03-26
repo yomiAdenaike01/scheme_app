@@ -1,5 +1,5 @@
 <template>
-  <div class="h-100">
+  <div class="admin_container">
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -15,13 +15,9 @@ export default {
   components: {
     ViewUserDialog
   },
-  data() {
-    return {
-      adminInterval: null
-    };
-  },
+
   deactivated() {
-    clearInterval(this.adminInterval);
+    this.CLEAR_GLOBAL_INTERVAL("adminIntervals");
   },
   activated() {
     if (this.hasEventsToday) {
@@ -36,11 +32,27 @@ export default {
       });
     }
 
-    this.adminInterval = setInterval(() => {
-      this.getTeam();
-      this.getNotifications();
-      this.getEvents();
-    }, this.requestIntervals.events);
+    this.CREATE_GLOBAL_INTERVAL({
+      immediate: true,
+      duration: 4000,
+      id: "adminIntervals",
+      method: () => {
+        return new Promise((resolve, reject) => {
+          Promise.all([
+            this.getTeam(),
+            this.getNotifications(),
+            this.getEvents(),
+            this.getRequests()
+          ])
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        });
+      }
+    });
   },
   computed: {
     ...mapState([
@@ -55,7 +67,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["getTeam", "getEvents", "getNotifications"]),
+    ...mapActions("Admin", ["getTeam", "getEvents", "getNotifications",'getRequests']),
+    ...mapMutations(["CREATE_GLOBAL_INTERVAL", "CLEAR_GLOBAL_INTERVAL"]),
     displayNewNotification() {
       let newNotification = this.userNotifications[0];
       this.UPDATE_NOTIFICATIONS({
@@ -64,14 +77,14 @@ export default {
         title: "New Request"
       });
     }
-  },
-
-  watch: {
-    criticalNetworkError() {
-      clearInterval(this.adminInterval);
-    }
   }
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.admin_container {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+</style>

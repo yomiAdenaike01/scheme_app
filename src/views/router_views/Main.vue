@@ -1,21 +1,14 @@
 <template>
-  <div v-loading="loading" class="h-100">
+   
+  <div v-loading="loading"   element-loading-text="Loading events and team members...." class="main_container">
     <NprogressContainer />
     <AppBar />
-    <div class="main_wrapper flex">
-      <div class="inner_wrapper h-100 flex">
-        <div class="nav_wrapper">
-          <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
-        </div>
-        <el-col class="main_col_container">
-          <InstanceCheck />
-          <DefaultTransition>
-            <keep-alive>
-              <router-view />
-            </keep-alive>
-          </DefaultTransition>
-        </el-col>
-      </div>
+    <InstanceCheck />
+    <div class="inner_app_container">
+      <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
+      <keep-alive>
+        <router-view />
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -45,10 +38,24 @@ export default {
     };
   },
   activated() {
-    this.clockInEvent();
     this.checkDevice();
-    Promise.all([this.getEvents(), this.getTeam()]).then(() => {
-      this.loading = false;
+    this.CREATE_GLOBAL_INTERVAL({
+      immediate: true,
+      duration: 3000,
+      id:'eventsAndTeam',
+      method: () => {
+        return new Promise((resolve, reject) => {
+          Promise.all([this.getEvents(), this.getTeam()])
+            .then(() => {
+              this.loading = false;
+              resolve();
+            })
+            .catch(() => {
+              this.loading = false;
+              reject();
+            });
+        });
+      }
     });
 
     let isVerified = this.userInformation.verified;
@@ -101,16 +108,8 @@ export default {
   methods: {
     ...mapActions(["updateDevices"]),
     ...mapActions("Admin", ["getEvents", "getTeam"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
 
-    clockInEvent() {
-      let routeParams = this.$router.params;
-      if (this.hasEntries(routeParams)) {
-        this.UPDATE_DIALOG_INDEX({
-          dialog: ""
-        });
-      }
-    },
 
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
@@ -144,13 +143,7 @@ export default {
           )}`
         });
       } else {
-        Notification.requestPermission()
-          .then(p => {
-            console.log(p);
-          })
-          .catch(err => {
-            console.error(err);
-          });
+        Notification.requestPermission();
       }
     },
 
@@ -226,10 +219,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.main_wrapper {
-  height: calc(100% - #{$app_bar_height});
+.main_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
 }
-.inner_wrapper {
+.inner_app_container {
+  display: flex;
   flex: 1;
 }
 </style>

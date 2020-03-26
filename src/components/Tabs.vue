@@ -37,7 +37,7 @@
           <component
             :is="tab.view.component"
             v-bind="tab.view.props"
-            @conponentChanges="emitComponentData"
+            @componentEmit="emitComponentData"
           />
         </div>
         <!--  Footer -->
@@ -78,7 +78,7 @@ export default {
 
     tabType: {
       type: String,
-      default: "card"
+      default: "border-card"
     },
     tabs: {
       type: Array,

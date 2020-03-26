@@ -1,6 +1,6 @@
 import vars from "@/assets/Styles/defaults.scss";
 export default {
-  runningIntervals: [],
+  runningIntervals: {},
   requestIntervals: {
     team: 6000,
     events: 6000,
@@ -23,7 +23,7 @@ export default {
   globalLoader: false,
   errorInformation: {},
   localNotifications: [],
-  criticalNetworkError: false,
+  networkError: false,
   weeklyTimesheetUploaded: false,
   hasSeenNotifications: false,
   userNotifications: [],

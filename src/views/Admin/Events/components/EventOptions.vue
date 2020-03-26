@@ -40,6 +40,7 @@
         mode="both"
         class="flex_center columns"
         :display-text="{
+          tag:'h2',
           class: 'extra_line_height',
           heading: 'Create a template',
           content:

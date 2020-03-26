@@ -49,7 +49,6 @@ export default {
 
     if (!name) {
       for (let property in dialogIndex) {
-        console.log(dialogIndex[property]);
         if (dialogIndex[property].view == true) {
           commit("UPDATE_DIALOG_INDEX", {
             view: false,
@@ -211,6 +210,9 @@ export default {
             type: "error"
           });
         }
+        context.commit("CLEAR_GLOBAL_INTERVAL");
+        context.dispatch('closeDialog');
+        context.commit("UPDATE_NETWORK_ERROR", true);
         return Promise.reject(error);
       });
   }

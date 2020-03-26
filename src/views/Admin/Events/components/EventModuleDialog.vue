@@ -10,7 +10,6 @@
       @val="eventsCtrl"
       @formValChange="eventInformation = $event"
     >
-      <!-- Confirmation unit for a template or csv content -->
       <div slot="header">
         <InformationDisplay class="mb-5" :display-text="informationDisplay" />
       </div>
@@ -34,6 +33,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 
 import EventTemplate from "./EventTemplate";
 import EventOptions from "./EventOptions";
+import RequestManagement from "./RequestManagement";
 
 import InformationDisplay from "@/components/InformationDisplay";
 import Tabs from "@/components/Tabs";
@@ -44,7 +44,8 @@ export default {
   components: {
     InformationDisplay,
     Tabs,
-    ColourUnit
+    ColourUnit,
+    RequestManagement
   },
   data() {
     return {
@@ -117,14 +118,17 @@ export default {
     },
 
     informationDisplay() {
+      
       let content =
-        "You can create a request here that will be sent to an admin for approval";
+        "You can create a request here that will be sent to an admin for approval",
+        heading  = 'Request Management'
       if (this.getIsAdmin) {
+        heading = 'Event Management'
         content =
           "As an admin you can create templates to batch create events. You can also create event groups and singular events.";
       }
       return {
-        heading: "Event Management",
+        heading,
         content
       };
     },
@@ -160,6 +164,13 @@ export default {
           label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm,
           displayReset: true
+        },
+        {
+          label:'Manage Requests',
+          view:{
+            component:RequestManagement,
+          }
+
         }
       ];
 
@@ -275,6 +286,7 @@ export default {
   },
   methods: {
     ...mapActions(["request", "closeDialog", "genPromptBox"]),
+    ...mapActions('Admin',['getRequests']),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
     ...mapActions("Admin", ["createEvent", "createEventTemplate"]),
 
@@ -299,15 +311,24 @@ export default {
       }
     },
     genRequest() {
+      this.loading = true;
+      let eventInfo = this.eventContent.eventsInformation;
       let requestInformation = {
-        type: 1,
-        content: this.eventContent.eventsInformation.startDate
-      };
+        type: this.eventContent.eventsInformation.type,
+        endDate:eventInfo.endDate,
+        startDate:eventInfo.startDate,
+        }
+      
       this.request({
         method: "POST",
-        url: "event/request/create",
+        url: "events/requests/create",
         data: requestInformation
-      });
+      }).then(()=>{
+        this.loading = false;
+        this.getRequests();
+      }).catch(()=>{
+        this.loading = false;
+      })
     },
     // Submit one event
     genEvent() {
@@ -377,10 +398,7 @@ export default {
 .no_team {
   line-height: 2.5em;
 }
-.shift_templates_container {
-  height: 40%;
-  overflow: auto;
-}
+
 .custom_form_item {
   background: rgb(253, 253, 253);
   border-radius: 10px;

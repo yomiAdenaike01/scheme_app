@@ -29,14 +29,12 @@
 <script>
 import { mapGetters, mapState, mapActions } from "vuex";
 
-import InformationDisplay from "@/components/InformationDisplay";
 import Form from "@/components/Form";
 
 export default {
   name: "CreateTemplate",
   components: {
     Form,
-    InformationDisplay
   },
   data() {
     return {

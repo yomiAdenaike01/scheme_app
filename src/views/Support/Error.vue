@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 export default {
   name: "Error",
 
@@ -52,6 +52,7 @@ export default {
     if (!this.hasEntries(this.errorInformation)) {
       this.$router.push({ name: "events" });
     }
+    this.CLEAR_GLOBAL_INTERVAL();
   },
 
   computed: {
@@ -66,6 +67,7 @@ export default {
   },
   methods: {
     ...mapActions(["request", "genEmail"]),
+    ...mapMutations(['CLEAR_GLOBAL_INTERVAL']),
 
     sendErrorReport() {
       this.genEmail({
@@ -88,7 +90,9 @@ export default {
 
 <style lang="scss" scoped>
 .critical_error_wrapper {
-  height: calc(100% - 100px);
+  display:flex;
+  flex:1;
+  flex-direction: column;
   overflow-x: hidden;
 }
 .error_content {

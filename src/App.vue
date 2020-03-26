@@ -6,24 +6,21 @@
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-    <DefaultTransition>
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
-    </DefaultTransition>
+  <keep-alive>
+      <router-view></router-view>
+  </keep-alive>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 
-import DefaultTransition from "@/components/DefaultTransition";
 export default {
   name: "App",
   data() {
     return {
       clientInterval: null,
-      loading: false
+      loading: true
     };
   },
   computed: {
@@ -43,11 +40,8 @@ export default {
   },
   watch: {
     notifications(val) {
+      if(val?.length > 0){
       this.$notify(val[0]);
-    },
-    criticalNetworkError(val) {
-      if (val) {
-        clearInterval(this.clientInterval);
       }
     }
   },
@@ -62,14 +56,20 @@ export default {
     let currentHostname = window.location.hostname.toString().split(".");
     let subdomain = currentHostname[0];
 
-    this.CREATE_INTERVAL({
+    this.CREATE_GLOBAL_INTERVAL({
+      immediate: true,
       method: () => {
         return new Promise((resolve, reject) => {
           this.request({
             method: "GET",
             url: "clients/get",
             params: { subdomain }
+          }).then(response=>{
+            this.UPDATE_CLIENT_INFORMATION(response);
+            this.loading = false;
+            resolve();
           }).catch(() => {
+            this.loading = false;
             reject();
           });
         });
@@ -78,17 +78,22 @@ export default {
     });
   },
 
-  destroyed() {
-    this.CLEAR_INTERVAL("getClient");
+  beforeDestroy() {
+    this.CLEAR_GLOBAL_INTERVAL();
+    this.REMOVE_USER();
   },
 
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["CREATE_INTERVAL", "CLEAR_INTERVAL"])
+    ...mapMutations([
+      "REMOVE_USER",
+      "CREATE_GLOBAL_INTERVAL",
+      "CLEAR_GLOBAL_INTERVAL",
+      'UPDATE_CLIENT_INFORMATION'
+      ,'CLEAR_NOTIFICATIONS'
+    ])
   },
-  components: {
-    DefaultTransition
-  }
+
 };
 </script>
 <style lang="scss">
@@ -101,10 +106,15 @@ export default {
 body,
 html,
 #app {
-  height: 100%;
   margin: 0;
   padding: 0;
   width: 100%;
+  height: 100%;
+}
+#app {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 /*
  
@@ -369,6 +379,17 @@ span {
 .el-card__body {
   height: 100%;
   overflow-x: scroll;
+}
+.el-tabs--border-card {
+    background: #FFFFFF;
+    border-top: 1px solid #DCDFE6;
+    border-bottom:none !important;
+    border-left: none !important;
+    border-right:none !important;
+    box-shadow: none !important;
+}
+.el-dialog__wrapper{
+  background: rgba(42, 54, 59,.01);
 }
 
 //   _   _       _   _  __ _           _   _

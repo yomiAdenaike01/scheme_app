@@ -1,6 +1,6 @@
 <template>
   <el-menu
-    id="main_nav"
+    class="main_nav"
     :default-active="$route.path"
     :router="true"
     mode="vertical"
@@ -80,8 +80,8 @@ export default {
   color: darken($color: white, $amount: 30);
 }
 
-#main_nav {
-  flex: 1;
+.main_nav {
+  flex: 0.026;
   height: 100%;
 }
 </style>

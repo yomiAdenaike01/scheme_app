@@ -1,4 +1,21 @@
 export default {
+  getRequests(context) {
+    return new Promise((resolve, reject) => {
+      const payload = {
+        method: "GET",
+        url: "events/requests/all",
+      };
+      context
+        .dispatch("request", payload, { root: true })
+        .then(response => {
+          context.commit("UPDATE_REQUESTS", response);
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
   getEvents(context, params = {}) {
     return new Promise((resolve, reject) => {
       const payload = {

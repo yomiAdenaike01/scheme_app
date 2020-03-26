@@ -21,6 +21,10 @@ Vue.use(NProgress, {
   latencyThreshold: 0
 });
 
+let { hostname } = window.location;
+hostname = hostname.split(".")[0];
+document.title = `${hostname} - Powered By Schemeapp.cloud`;
+
 new Vue({
   router,
   store,

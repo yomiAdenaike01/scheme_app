@@ -1,11 +1,8 @@
 <template>
-  <div v-loading="loading" class="eventModule_container h-100">
-    <div class="eventModule_inner_container h-100 overflow">
+  <div class="events_container">
+    <div class="events_inner_container">
       <Toolbar class="m-3" />
-      <EventsCalendar
-        @refreshShift="getEvents"
-        @displayCreateEvent="modals.createEvent = $event"
-      />
+      <EventsCalendar />
       <EventModuleDialog />
       <ViewEventDialog />
     </div>
@@ -14,8 +11,6 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
-
 import EventModuleDialog from "./components/EventModuleDialog";
 import Toolbar from "./components/Toolbar";
 import EventsCalendar from "./components/EventsCalendar";
@@ -33,41 +28,22 @@ export default {
   },
   data() {
     return {
-      loading: true,
       getTemplatesInterval: null
     };
-  },
-  activated() {
-    this.getTemplates()
-      .then(response => {
-        this.loading = false;
-      })
-      .catch(() => {
-        this.loading = false;
-      });
-    clearInterval(this.getTemplatesInterval);
-    this.getTemplatesInterval = setInterval(() => {
-      this.getTemplates();
-    }, this.requestIntervals.templates);
-  },
-  deactivated() {
-    clearInterval(this.getTemplatesInterval);
-  },
-  methods: {
-    ...mapActions("Admin", ["getEvents", "getTeam", "getTemplates"])
-  },
-  computed: {
-    ...mapState(["requestIntervals"])
   }
 };
 </script>
 <style lang="scss" scoped>
-.eventModule_container {
+.events_container {
   display: flex;
   flex: 1;
   overflow: auto;
+  height: 100%;
 }
-.eventModule_inner_container {
+.events_inner_container {
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  height: 100%;
 }
 </style>

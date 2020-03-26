@@ -1,5 +1,5 @@
 <template>
-  <div class="support_container h-100">
+  <div class="support_container">
     <header>
       <div
         class="go_back_container p-3 grey flex align-center"
@@ -9,29 +9,27 @@
         <p class="trigger">Go back</p>
       </div>
     </header>
-    <div class="support_body_container h-100">
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
-    </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 
 export default {
   name: "SupportCentre",
-  activated() {
-    this.closeDialog();
-  },
-  methods: {
-    ...mapActions(["closeDialog"])
-  }
+
 };
 </script>
 
 <style lang="scss" scoped>
+.support_container{
+  display:flex;
+  flex:1;
+  flex-direction: column;
+}
 header {
   box-shadow: $box_shadow;
 }

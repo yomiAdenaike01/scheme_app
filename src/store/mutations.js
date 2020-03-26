@@ -2,49 +2,56 @@
 import Vue from "vue";
 import VueRouter from "../router";
 
-function clearStateInterval(state, intervalID) {
+const clearStateInterval = (state, intervalID) => {
   if (!intervalID) {
-    for (let i = 0, len = state.runningIntervals.length; i < len; i++) {
-      clearTimeout(state.runningIntervals[i]);
+      for(let property in state.runningIntervals){
+        clearTimeout(state.runningIntervals[property])
+        Vue.set(state.runningIntervals,property,null);
     }
-    Vue.set(state, "runningIntervals", []);
   } else {
-    let intervalIndex = state.runningIntervals.findIndex(interval => {
-      return interval == intervalID;
-    });
-    clearInterval(intervalID);
-    Vue.delete(state.runningIntervals, intervalIndex);
+   clearTimeout(state.runningIntervals[intervalID]);
+   Vue.set(state.runningIntervals,intervalID,null);
+
   }
+
 }
 
 export default {
+
   UPDATE_DIALOG_INDEX(
     { dialogIndex },
     { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
   ) {
     Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
   },
-  CREATE_INTERVAL(state, { duration, method, id, immediate }) {
+  CREATE_GLOBAL_INTERVAL(state, { duration = 3000, method, id, immediate }) {
     if (immediate) {
       method();
     }
-    clearInterval(id);
-    id = setInterval(() => {
-      method().catch(() => {
-        clearStateInterval(state, id);
-      });
-    }, duration);
+    let timeout
+    const runInterval = () => {
+      timeout = setTimeout(() => {
+        method()
+          .finally(() => {
+            runInterval();
+          })
+          .catch(() => {
+            clearStateInterval(state, id);
+          });
+      }, duration);
+    };
 
-    if (state.runningIntervals.indexOf(id) == -1) {
-      state.runningIntervals.push(id);
+    if (!state.runningIntervals[id]) {
+      runInterval();
+      state.runningIntervals[id] = timeout
     }
   },
 
-  CLEAR_INTERVAL(state, intervalID) {
+  CLEAR_GLOBAL_INTERVAL(state, intervalID) {
     clearStateInterval(state, intervalID);
   },
 
-  UPDATE_CLIENT(state, payload) {
+  UPDATE_CLIENT_INFORMATION(state, payload) {
     Vue.set(state, "clientInformation", payload);
     localStorage.setItem("clientInformation", JSON.stringify(payload));
   },
@@ -56,13 +63,14 @@ export default {
     Vue.set(state, "userNotifications", payload);
   },
 
-  UPDATE_GLOBAL_LOADER(state, payload) {
-    Vue.set(state, "globalLoader", payload);
+  UPDATE_NETWORK_ERROR(state, payload) {
+    state.networkError = payload;
   },
-  REMOVE_USER() {
+  REMOVE_USER(state) {
+    state.userNotifications = [];
+    state.localNotifications = []
     VueRouter.push({ name: "login" });
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInformation");
+    localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {
     Vue.set(state, "token", token);
@@ -115,8 +123,8 @@ export default {
         state.criticalNetworkError = true;
         state.errorInformation = notification.message;
 
-        if (router.currentRoute.name != "error") {
-          router.push({ name: "error" });
+        if (VueRouter.currentRoute.name != "error") {
+          VueRouter.push({ name: "error" });
         }
       }
     }
@@ -133,9 +141,17 @@ export default {
         };
       }
     }
-    Vue.set(state, "notifications", [
-      notification,
-      ...state.localNotifications
-    ]);
+
+    let notificationIndex = state.localNotifications.findIndex(({message})=>{
+      return message == notification.message
+    });
+    if(notificationIndex == -1){
+      Vue.set(state, "notifications", [
+        notification,
+        ...state.localNotifications
+      ]);
+    }
+
+
   }
 };
