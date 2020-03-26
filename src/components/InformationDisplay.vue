@@ -59,7 +59,7 @@
         class="heading_text_content"
         v-html="displayText.content"
       ></div>
-      <div class="mt-4">
+      <div class="slot_body_container">
         <slot name="body"></slot>
       </div>
     </div>
@@ -198,5 +198,10 @@ export default {
 }
 .heading_text_content {
   font-size: 0.9em;
+}
+.slot_body_container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 </style>

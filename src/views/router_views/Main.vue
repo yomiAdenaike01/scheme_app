@@ -232,5 +232,6 @@ export default {
 .inner_app_container {
   display: flex;
   flex: 1;
+  height: 100%;
 }
 </style>

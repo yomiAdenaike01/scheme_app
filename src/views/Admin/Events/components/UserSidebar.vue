@@ -122,6 +122,9 @@ export default {
 .team_container {
   border-left: 1px solid #e6e6e6;
   flex: 0.1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   .member_wrapper {
     border-bottom: solid 1px #e6e6e6;
     cursor: pointer;

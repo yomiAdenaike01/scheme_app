@@ -42,7 +42,7 @@
             </div>
           </div>
         </div>
-        <div v-else class="h-100 no_content_container flex_center">
+        <div v-else class="no_content_container flex_center">
           <InformationDisplay
             :display-text="{
               heading: '',

@@ -247,6 +247,11 @@ export default {
 
 <style lang="scss" scoped>
 .cal_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  overflow-x: hidden;
   &/deep/ {
     .vuecal__now-line {
       color: $element_colour;
@@ -289,6 +294,7 @@ export default {
     }
   }
 }
+
 .bar_incidator {
   border: 1px solid whitesmoke;
   border-radius: 5px;

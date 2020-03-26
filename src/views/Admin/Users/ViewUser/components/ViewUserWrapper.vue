@@ -13,7 +13,7 @@
         <el-badge is-dot :type="badgeType" class="dot_container">
           <Avatar class="sidebar_avatar full" :name="returnUsername" />
         </el-badge>
-        <h3 class="mt-4 mb-2 capitalize">{{ returnUsername }}</h3>
+        <h3 class="capitalize">{{ returnUsername }}</h3>
         <h4 class="grey">{{ returnGroupName }}</h4>
       </div>
     </div>
@@ -27,10 +27,11 @@
       <el-tab-pane
         v-for="(tab, index) in tabItems"
         :key="index"
-        class="h-100"
         :label="tab.label"
       >
-        <slot class="p-4"></slot>
+        <div class="slot_container">
+          <slot></slot>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>

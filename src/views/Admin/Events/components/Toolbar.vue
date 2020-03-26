@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar_container" :gutter="10" align="middle">
+  <div class="toolbar_container">
     <!-- Button collection -->
     <el-button
       v-for="(button, key) in buttons"
@@ -124,5 +124,7 @@ export default {
   display: flex;
   flex: 1;
   padding: 10px;
+  max-height: 30px;
+  min-height: 30px;
 }
 </style>
