@@ -44,9 +44,9 @@
       class="headings_wrapper"
     >
       <div class="mb-3">
-        <slot  name="header"></slot>
+        <slot name="header"></slot>
       </div>
-      
+
       <component
         :is="displayText.tag ? displayText.tag : 'h1'"
         class="heading"
@@ -60,7 +60,7 @@
         v-html="displayText.content"
       ></div>
       <div class="mt-4">
-      <slot name="body"></slot>
+        <slot name="body"></slot>
       </div>
     </div>
   </div>

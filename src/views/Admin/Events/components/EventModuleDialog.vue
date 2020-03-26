@@ -118,12 +118,11 @@ export default {
     },
 
     informationDisplay() {
-      
       let content =
-        "You can create a request here that will be sent to an admin for approval",
-        heading  = 'Request Management'
+          "You can create a request here that will be sent to an admin for approval",
+        heading = "Request Management";
       if (this.getIsAdmin) {
-        heading = 'Event Management'
+        heading = "Event Management";
         content =
           "As an admin you can create templates to batch create events. You can also create event groups and singular events.";
       }
@@ -166,11 +165,10 @@ export default {
           displayReset: true
         },
         {
-          label:'Manage Requests',
-          view:{
-            component:RequestManagement,
+          label: "Manage Requests",
+          view: {
+            component: RequestManagement
           }
-
         }
       ];
 
@@ -286,7 +284,7 @@ export default {
   },
   methods: {
     ...mapActions(["request", "closeDialog", "genPromptBox"]),
-    ...mapActions('Admin',['getRequests']),
+    ...mapActions("Admin", ["getRequests"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
     ...mapActions("Admin", ["createEvent", "createEventTemplate"]),
 
@@ -315,20 +313,22 @@ export default {
       let eventInfo = this.eventContent.eventsInformation;
       let requestInformation = {
         type: this.eventContent.eventsInformation.type,
-        endDate:eventInfo.endDate,
-        startDate:eventInfo.startDate,
-        }
-      
+        endDate: eventInfo.endDate,
+        startDate: eventInfo.startDate
+      };
+
       this.request({
         method: "POST",
         url: "events/requests/create",
         data: requestInformation
-      }).then(()=>{
-        this.loading = false;
-        this.getRequests();
-      }).catch(()=>{
-        this.loading = false;
       })
+        .then(() => {
+          this.loading = false;
+          this.getRequests();
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
     // Submit one event
     genEvent() {

@@ -4,20 +4,17 @@ import VueRouter from "../router";
 
 const clearStateInterval = (state, intervalID) => {
   if (!intervalID) {
-      for(let property in state.runningIntervals){
-        clearTimeout(state.runningIntervals[property])
-        Vue.set(state.runningIntervals,property,null);
+    for (let property in state.runningIntervals) {
+      clearTimeout(state.runningIntervals[property]);
+      Vue.set(state.runningIntervals, property, null);
     }
   } else {
-   clearTimeout(state.runningIntervals[intervalID]);
-   Vue.set(state.runningIntervals,intervalID,null);
-
+    clearTimeout(state.runningIntervals[intervalID]);
+    Vue.set(state.runningIntervals, intervalID, null);
   }
-
-}
+};
 
 export default {
-
   UPDATE_DIALOG_INDEX(
     { dialogIndex },
     { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
@@ -28,7 +25,7 @@ export default {
     if (immediate) {
       method();
     }
-    let timeout
+    let timeout;
     const runInterval = () => {
       timeout = setTimeout(() => {
         method()
@@ -43,7 +40,7 @@ export default {
 
     if (!state.runningIntervals[id]) {
       runInterval();
-      state.runningIntervals[id] = timeout
+      state.runningIntervals[id] = timeout;
     }
   },
 
@@ -68,7 +65,7 @@ export default {
   },
   REMOVE_USER(state) {
     state.userNotifications = [];
-    state.localNotifications = []
+    state.localNotifications = [];
     VueRouter.push({ name: "login" });
     localStorage.clear();
   },
@@ -142,16 +139,16 @@ export default {
       }
     }
 
-    let notificationIndex = state.localNotifications.findIndex(({message})=>{
-      return message == notification.message
-    });
-    if(notificationIndex == -1){
+    let notificationIndex = state.localNotifications.findIndex(
+      ({ message }) => {
+        return message == notification.message;
+      }
+    );
+    if (notificationIndex == -1) {
       Vue.set(state, "notifications", [
         notification,
         ...state.localNotifications
       ]);
     }
-
-
   }
 };

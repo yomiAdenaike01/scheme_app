@@ -42,7 +42,7 @@ export default {
     if (Vue.prototype.hasEntries(teamInformation)) {
       assignedTo = assignedTo.map(assignee => {
         teamInformation.map(teamMember => {
-          let { _id, name, groupID } = teamMember;
+          let { _id, name } = teamMember;
 
           if (assignee == _id) {
             formattedAssignedTo.push(name);
@@ -103,9 +103,9 @@ export default {
 
   getGroupName: (state, getters, { clientInformation }) => (groupType, id) => {
     let res = {};
-    console.log(clientInformation,groupType,id);
+    console.log(clientInformation, groupType, id);
 
-    groupType = 'eventGroups';
+    groupType = "eventGroups";
     if (Vue.prototype.hasEntries(clientInformation)) {
       if (groupType == "user") {
         groupType = "userGroups";

@@ -6,9 +6,9 @@
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-  <keep-alive>
+    <keep-alive>
       <router-view></router-view>
-  </keep-alive>
+    </keep-alive>
   </div>
 </template>
 
@@ -40,8 +40,8 @@ export default {
   },
   watch: {
     notifications(val) {
-      if(val?.length > 0){
-      this.$notify(val[0]);
+      if (val?.length > 0) {
+        this.$notify(val[0]);
       }
     }
   },
@@ -64,14 +64,16 @@ export default {
             method: "GET",
             url: "clients/get",
             params: { subdomain }
-          }).then(response=>{
-            this.UPDATE_CLIENT_INFORMATION(response);
-            this.loading = false;
-            resolve();
-          }).catch(() => {
-            this.loading = false;
-            reject();
-          });
+          })
+            .then(response => {
+              this.UPDATE_CLIENT_INFORMATION(response);
+              this.loading = false;
+              resolve();
+            })
+            .catch(() => {
+              this.loading = false;
+              reject();
+            });
         });
       },
       ...this.requestIntervals.client
@@ -89,11 +91,10 @@ export default {
       "REMOVE_USER",
       "CREATE_GLOBAL_INTERVAL",
       "CLEAR_GLOBAL_INTERVAL",
-      'UPDATE_CLIENT_INFORMATION'
-      ,'CLEAR_NOTIFICATIONS'
+      "UPDATE_CLIENT_INFORMATION",
+      "CLEAR_NOTIFICATIONS"
     ])
-  },
-
+  }
 };
 </script>
 <style lang="scss">
@@ -381,15 +382,15 @@ span {
   overflow-x: scroll;
 }
 .el-tabs--border-card {
-    background: #FFFFFF;
-    border-top: 1px solid #DCDFE6;
-    border-bottom:none !important;
-    border-left: none !important;
-    border-right:none !important;
-    box-shadow: none !important;
+  background: #ffffff;
+  border-top: 1px solid #dcdfe6;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
 }
-.el-dialog__wrapper{
-  background: rgba(42, 54, 59,.01);
+.el-dialog__wrapper {
+  background: rgba(42, 54, 59, 0.01);
 }
 
 //   _   _       _   _  __ _           _   _

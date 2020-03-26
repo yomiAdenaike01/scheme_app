@@ -34,7 +34,7 @@ import Form from "@/components/Form";
 export default {
   name: "CreateTemplate",
   components: {
-    Form,
+    Form
   },
   data() {
     return {

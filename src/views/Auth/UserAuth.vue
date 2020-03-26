@@ -1,28 +1,25 @@
 <template>
   <div class="login_container">
-      <el-card class="form_container">
-        <el-container class="h-100">
-          <el-main class="login_wrapper">
-            <div class="logo_wrapper mb-4">
-              <Logo />
+    <el-card class="form_container">
+      <el-container class="h-100">
+        <el-main class="login_wrapper">
+          <div class="logo_wrapper mb-4">
+            <Logo />
+          </div>
+          <Form
+            :config="formConfig"
+            :submit-text="submitText"
+            @val="submitController"
+          >
+            <div slot="footer" class="new_client_button_container mb-4 mt-4">
+              <el-button size="small" @click="selectedForm = 'forgotPassword'">
+                Forgot password ?
+              </el-button>
             </div>
-            <Form
-              :config="formConfig"
-              :submit-text="submitText"
-              @val="submitController"
-            >
-              <div slot="footer" class="new_client_button_container mb-4 mt-4">
-                <el-button
-                  size="small"
-                  @click="selectedForm = 'forgotPassword'"
-                >
-                  Forgot password ?
-                </el-button>
-              </div>
-            </Form>
-          </el-main>
-        </el-container>
-      </el-card>
+          </Form>
+        </el-main>
+      </el-container>
+    </el-card>
   </div>
 </template>
 
@@ -52,9 +49,8 @@ export default {
     if (this.hasEntries(this.$route.params)) {
       this.login(this.$route.params);
     }
-   
   },
-  
+
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters(["getDeviceID"]),
@@ -207,8 +203,8 @@ export default {
 
 <style lang="scss" scoped>
 .login_container {
-  display:flex;
-  flex:1;
+  display: flex;
+  flex: 1;
   justify-content: center;
   align-items: center;
   height: 100%;

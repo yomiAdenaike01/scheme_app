@@ -1,6 +1,9 @@
 <template>
-   
-  <div v-loading="loading"   element-loading-text="Loading events and team members...." class="main_container">
+  <div
+    v-loading="loading"
+    element-loading-text="Loading events and team members...."
+    class="main_container"
+  >
     <NprogressContainer />
     <AppBar />
     <InstanceCheck />
@@ -42,7 +45,7 @@ export default {
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
       duration: 3000,
-      id:'eventsAndTeam',
+      id: "eventsAndTeam",
       method: () => {
         return new Promise((resolve, reject) => {
           Promise.all([this.getEvents(), this.getTeam()])
@@ -109,7 +112,6 @@ export default {
     ...mapActions(["updateDevices"]),
     ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
-
 
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({

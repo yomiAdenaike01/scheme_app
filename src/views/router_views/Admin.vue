@@ -67,7 +67,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["getTeam", "getEvents", "getNotifications",'getRequests']),
+    ...mapActions("Admin", [
+      "getTeam",
+      "getEvents",
+      "getNotifications",
+      "getRequests"
+    ]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL", "CLEAR_GLOBAL_INTERVAL"]),
     displayNewNotification() {
       let newNotification = this.userNotifications[0];

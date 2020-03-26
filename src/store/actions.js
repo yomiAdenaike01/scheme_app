@@ -211,7 +211,7 @@ export default {
           });
         }
         context.commit("CLEAR_GLOBAL_INTERVAL");
-        context.dispatch('closeDialog');
+        context.dispatch("closeDialog");
         context.commit("UPDATE_NETWORK_ERROR", true);
         return Promise.reject(error);
       });

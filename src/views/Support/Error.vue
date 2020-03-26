@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     ...mapActions(["request", "genEmail"]),
-    ...mapMutations(['CLEAR_GLOBAL_INTERVAL']),
+    ...mapMutations(["CLEAR_GLOBAL_INTERVAL"]),
 
     sendErrorReport() {
       this.genEmail({
@@ -90,8 +90,8 @@ export default {
 
 <style lang="scss" scoped>
 .critical_error_wrapper {
-  display:flex;
-  flex:1;
+  display: flex;
+  flex: 1;
   flex-direction: column;
   overflow-x: hidden;
 }

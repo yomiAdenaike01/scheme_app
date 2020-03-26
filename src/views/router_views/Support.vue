@@ -9,9 +9,9 @@
         <p class="trigger">Go back</p>
       </div>
     </header>
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -19,15 +19,14 @@
 import { mapActions, mapMutations } from "vuex";
 
 export default {
-  name: "SupportCentre",
-
+  name: "SupportCentre"
 };
 </script>
 
 <style lang="scss" scoped>
-.support_container{
-  display:flex;
-  flex:1;
+.support_container {
+  display: flex;
+  flex: 1;
   flex-direction: column;
 }
 header {

@@ -1,6 +1,5 @@
-
 module.exports = {
-  lintOnSave: process.env.NODE_ENV !== 'production',
+  lintOnSave: process.env.NODE_ENV !== "production",
   css: {
     loaderOptions: {
       sass: {
@@ -18,7 +17,6 @@ module.exports = {
         warnings: false,
         errors: false
       }
-    },
-
+    }
   }
 };

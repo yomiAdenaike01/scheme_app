@@ -3,7 +3,7 @@ export default {
     return new Promise((resolve, reject) => {
       const payload = {
         method: "GET",
-        url: "events/requests/all",
+        url: "events/requests/all"
       };
       context
         .dispatch("request", payload, { root: true })

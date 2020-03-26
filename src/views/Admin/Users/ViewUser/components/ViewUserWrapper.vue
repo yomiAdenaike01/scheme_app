@@ -1,7 +1,14 @@
 <template>
   <div class="view_user_container">
     <!-- Display the avatar -->
-    <InformationDisplay class="m-5" :displayText="{heading:'User management',content:'This contains all the information about the user, including all the events that they have done'}"></InformationDisplay>
+    <InformationDisplay
+      class="m-5"
+      :display-text="{
+        heading: 'User management',
+        content:
+          'This contains all the information about the user, including all the events that they have done'
+      }"
+    ></InformationDisplay>
     <div class="avatar_info_container flex_center columns">
       <el-badge is-dot :type="badgeType" class="dot_container">
         <Avatar class="sidebar_avatar full" :name="returnUsername" />
@@ -31,7 +38,7 @@
 <script>
 import { mapGetters } from "vuex";
 import Avatar from "@/components/Avatar";
-import InformationDisplay from '@/components/InformationDisplay'
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "ViewUserWrapper",
 

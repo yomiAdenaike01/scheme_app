@@ -7,20 +7,23 @@
     <InformationDisplay
       v-else
       class="no_events_information"
-      :displayText="{heading: 'No events found', content: 'Using the button below you can create an event assigned to this user' }"
+      :display-text="{
+        heading: 'No events found',
+        content:
+          'Using the button below you can create an event assigned to this user'
+      }"
     >
-   
-<div class="button_container flex_center" slot="body">
-      <el-button
-        @click="
-          UPDATE_DIALOG_INDEX({
-            dialog: 'eventModule',
-            view: true,
-            data: { assignedTo: [getActiveDialog().data] }
-          })
-        "
-        >Create event for this user</el-button
-      >
+      <div slot="body" class="button_container flex_center">
+        <el-button
+          @click="
+            UPDATE_DIALOG_INDEX({
+              dialog: 'eventModule',
+              view: true,
+              data: { assignedTo: [getActiveDialog().data] }
+            })
+          "
+          >Create event for this user</el-button
+        >
       </div>
     </InformationDisplay>
   </div>
@@ -53,4 +56,3 @@ export default {
   }
 };
 </script>
-
