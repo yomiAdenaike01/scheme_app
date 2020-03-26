@@ -2,7 +2,7 @@
     <div class="request_management">
         <InformationDisplay class="l-3" v-if="requestsInformation.length == 0" :displayText="{heading:'No requests found', content:'All your requests regardless of their status will appear here, to create a request please to go <strong>Create request</strong>'}"/>
         <div v-else class="request_management_inner_wrapper" @click="displayDetails = !displayDetails">
-            <InformationDisplay :displayText="{heading:'Your Requests',content:'Feel free to delete or update your requests below'}"/>
+            <InformationDisplay :displayText="{tag:'h2',heading:'Your Requests',content:'Feel free to delete or update your requests below'}"/>
             <div class="request" v-for="request in requestXref" :key="request._id">
                 <div class="details_wrapper">
                     <h2 class="mb-4">{{getGroupName('eventGroup',request.type).name}}</h2>
@@ -51,6 +51,8 @@ computed:{
     ...mapState('Admin',['requestsInformation']),
     ...mapGetters('Admin',['getGroupName','getEnabledEvents']),
     ...mapGetters(['getIsAdmin']),
+
+    // Create the cross referencing
 
     requestUpdateConfig(){
         // Change the date 
