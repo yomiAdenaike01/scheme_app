@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs_container pt-4 pb-4">
+  <div class="tabs_container">
     <slot name="header"></slot>
 
     <el-tabs
@@ -15,12 +15,11 @@
       <el-tab-pane
         v-for="(tab, index) in tabs"
         :key="index"
-        class="p-4"
+        class="tabs_body"
         :disabled="tab.disabled"
         :label="tab.label"
       >
         <!-- Form component -->
-
         <Form
           v-if="tab.hasOwnProperty('formContent')"
           :custom-method="customMethod"

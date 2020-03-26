@@ -4,7 +4,7 @@
       class="client_indicator"
       :style="{ borderRight: `1.5px solid #efefef` }"
     >
-      <div v-if="$mq == 'lg'" class="client_image_container p-2">
+      <div v-if="$mq == 'lg'" class="client_image_container">
         <Logo />
       </div>
       <div
@@ -207,6 +207,11 @@ export default {
       padding: 0;
     }
   }
+}
+.client_image_container {
+  display: flex;
+  padding: 5px;
+  justify-content: center;
 }
 /**
  _   _  _  ___ _  _    ___ 
