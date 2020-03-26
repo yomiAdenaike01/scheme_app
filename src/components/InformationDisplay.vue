@@ -5,7 +5,7 @@
       <Popover popperclass="p-0" trigger="click">
         <i slot="trigger" class="bx bx-help-circle tutorial_icon trigger"></i>
 
-        <div slot="content" class="popover_inner_container flex columns">
+        <div slot="content" class="popover_inner_container">
           <div class="tutorial_title_bar flex flex--end">
             <small class="capitalize">{{ makePretty(tutorial.feature) }}</small>
           </div>
@@ -43,7 +43,7 @@
       :class="displayText.class"
       class="headings_wrapper"
     >
-      <div class="mb-3">
+      <div class="slot_container">
         <slot name="header"></slot>
       </div>
 
@@ -161,8 +161,7 @@ export default {
   font-size: 2em;
 }
 .headings_wrapper {
-  margin: 0;
-  padding: 0;
+  padding: 30px;
   &.extra_line_height {
     line-height: 2em;
   }

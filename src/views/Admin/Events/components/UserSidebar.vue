@@ -6,10 +6,10 @@
       <div
         v-for="(member, index) in teamInformation"
         :key="index"
-        class="member flex_center"
+        class="member_wrapper"
       >
         <Dropdown
-          class="p-2"
+          class="dropdown_container"
           :items="items"
           position="left"
           :icon="false"
@@ -26,9 +26,8 @@
         </Dropdown>
       </div>
     </div>
-    <div v-else class="flex_center h-100">
+    <div v-else class="information_container">
       <InformationDisplay
-        class="p-4"
         :display-text="{
           heading: 'No team members found',
           headingAlign: 'center',
@@ -123,7 +122,7 @@ export default {
 .team_container {
   border-left: 1px solid #e6e6e6;
   flex: 0.1;
-  .member {
+  .member_wrapper {
     border-bottom: solid 1px #e6e6e6;
     cursor: pointer;
     &:hover {
@@ -131,10 +130,21 @@ export default {
     }
   }
 }
+.dropdown_container {
+  display: flex;
+  justify-content: center;
+
+  padding: 15px;
+}
 .team_center {
   align-items: center;
   display: flex;
   justify-content: center;
+}
+.information_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 /**

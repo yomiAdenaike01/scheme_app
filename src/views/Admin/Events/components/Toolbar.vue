@@ -1,21 +1,20 @@
 <template>
-  <el-row type="flex" :gutter="10" align="middle">
-    <el-col>
-      <!-- Button collection -->
-      <el-button
-        v-for="(button, key) in buttons"
-        :key="key"
-        :icon="button.icon ? button.icon : null"
-        :round="button.round"
-        :type="button.type ? button.type : 'primary'"
-        size="small"
-        :plain="button.plain"
-        :disabled="button.disabled"
-        @click="button.method"
-      >
-        <span v-html="button.label"></span>
-      </el-button>
-      <!-- <el-button
+  <div class="toolbar_container" :gutter="10" align="middle">
+    <!-- Button collection -->
+    <el-button
+      v-for="(button, key) in buttons"
+      :key="key"
+      :icon="button.icon ? button.icon : null"
+      :round="button.round"
+      :type="button.type ? button.type : 'primary'"
+      size="small"
+      :plain="button.plain"
+      :disabled="button.disabled"
+      @click="button.method"
+    >
+      <span v-html="button.label"></span>
+    </el-button>
+    <!-- <el-button
         :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
         :disabled="hasGcal"
         round
@@ -29,8 +28,7 @@
             : "Integrated with google calendar"
         }}
       </el-button>-->
-    </el-col>
-  </el-row>
+  </div>
 </template>
 
 <script>
@@ -121,4 +119,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.toolbar_container {
+  display: flex;
+  flex: 1;
+  padding: 10px;
+}
+</style>

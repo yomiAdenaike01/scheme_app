@@ -1,7 +1,7 @@
 <template>
   <div class="events_container">
     <div class="events_inner_container">
-      <Toolbar class="m-3" />
+      <Toolbar />
       <EventsCalendar />
       <EventModuleDialog />
       <ViewEventDialog />

@@ -2,7 +2,7 @@
   <transition name="el-fade-in">
     <div
       v-loading="loading"
-      class="p-2 server_health_container flex_center"
+      class="server_health_container flex_center"
       :class="[
         { healthy: serverInformation.healthy },
         { unhealthy: !serverInformation.healthy }
@@ -58,6 +58,8 @@ export default {
 <style lang="scss" scoped>
 .server_health_container {
   background: whitesmoke;
+  padding: 15px;
+  text-align: center;
   color: white;
   width: 100%;
   &.healthy {
