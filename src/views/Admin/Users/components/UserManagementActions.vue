@@ -1,6 +1,6 @@
 <template>
   <!-- Quick actions -->
-  <el-card class="m-3 quick_actions_wrapper">
+  <div class="quick_actions_wrapper">
     <div class="title_container flex_center columns">
       <h3>Quick Actions</h3>
       <small class="grey">Select a tab below to initiate a quick action</small>
@@ -33,7 +33,7 @@
         </div>
       </div>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -112,9 +112,13 @@ export default {
 
 <style lang="scss" scoped>
 .quick_actions_wrapper {
+  display: flex;
+  flex-direction: column;
+  box-shadow: $box_shadow;
+  margin: 10px;
   flex: 0.5;
   /deep/ {
-    .el-card__body {
+    .div__body {
       padding: 0;
     }
   }

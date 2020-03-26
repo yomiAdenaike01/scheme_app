@@ -1,8 +1,7 @@
 <template>
   <div
     v-loading="loading"
-    type="flex"
-    class="user_container"
+    class="user_module_container"
     element-loading-text="Getting team please wait...."
   >
     <UserGroup
@@ -153,7 +152,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user_container {
+.user_module_container {
   display: flex;
   flex: 1;
   font-size: 0.9em;

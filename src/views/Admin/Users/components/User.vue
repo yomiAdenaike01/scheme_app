@@ -19,11 +19,9 @@
     </el-badge>
     <Avatar v-else :name="name" />
 
-    <div class="flex columns">
-      <div class="text_content">
-        <p class="member_name">{{ name }}</p>
-        <small>{{ foundGroupName }}</small>
-      </div>
+    <div class="text_content">
+      <p class="member_name">{{ name }}</p>
+      <small class="grey">{{ foundGroupName }}</small>
     </div>
   </div>
 </template>
@@ -74,13 +72,23 @@ export default {
 <style lang="scss" scoped>
 .user_container {
   display: flex;
+  flex: 1;
+  min-height: 50px;
+  max-height: 50px;
   border: 1px solid #ebeef5;
+  padding: 20px;
+  margin: 10px;
   border-radius: 10px;
   cursor: pointer;
-  overflow-x: hidden;
   transition: $default_transition background;
   &:hover {
     background: $hover_grey;
   }
+  & > * {
+    font-size: 1.25em;
+  }
+}
+.text_content {
+  margin-left: 20px;
 }
 </style>

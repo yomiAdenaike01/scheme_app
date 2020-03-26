@@ -1,5 +1,5 @@
 <template>
-  <div class="group_container overflow m-3" :class="{ new_group: addNew }">
+  <div class="group_container" :class="{ new_group: addNew }">
     <div class="user_group_inner_container">
       <div v-if="!addNew" class="slot_container">
         <slot></slot>
@@ -54,6 +54,7 @@ export default {
   display: flex;
   flex: 1;
   box-shadow: $box_shadow;
+  margin: 10px;
   max-height: 100%;
   &/deep/ {
     .el-card__body {
