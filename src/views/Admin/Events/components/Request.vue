@@ -22,6 +22,29 @@
         icon="el-icon-check"
         circle
       />
+      <el-button
+        v-if="getIsAdmin && !approved"
+        type="primary"
+        @click="
+          $emit('updateRequest', {
+            update: { status: 'approved' },
+            _id: request._id
+          })
+        "
+        >Approve Request</el-button
+      >
+      <el-button
+        v-if="getIsAdmin && !approved"
+        type="danger"
+        plain
+        @click="
+          $emit('updateRequest', {
+            update: { status: 'declined' },
+            _id: request._id
+          })
+        "
+        >Decline Request</el-button
+      >
       <Popover v-if="!approved" trigger="click">
         <el-button slot="trigger" size="mini" round>Update Request</el-button>
         <Form
