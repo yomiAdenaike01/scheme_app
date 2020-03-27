@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading" class="user_info_container">
     <h2 class="mb-3">Personal Information</h2>
-    <el-collapse>
+    <el-collapse v-if="getIsAdmin">
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container flex  align-center">
           <el-button
