@@ -85,7 +85,7 @@
       <slot name="footer"></slot>
 
       <!-- Submit button -->
-      <div v-if="!disable" class="button_container mt-4">
+      <div v-if="!disable" class="button_container">
         <el-button v-if="displayReset" round :size="size" @click="resetForm"
           >Clear Form</el-button
         >
@@ -261,6 +261,7 @@ export default {
 .button_container {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 }
 .button_text {
   text-transform: capitalize;

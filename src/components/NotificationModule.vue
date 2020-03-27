@@ -1,6 +1,6 @@
 <template>
-  <div v-loading="loading" class="notifications_container overflow">
-    <div class="title_switch_container p-3 flex align-center">
+  <div v-loading="loading" class="notifications_container ">
+    <div class="title_switch_container ">
       <h3 class="bold">Notifications</h3>
     </div>
     <div v-if="hasEntries(userNotifications)">
@@ -49,10 +49,10 @@ export default {
   },
   activated() {
     this.getNotifications()
-      .then(response => {
+      .then(() => {
         this.loading = false;
       })
-      .catch(err => {
+      .catch(() => {
         this.loading = false;
       });
   },
@@ -96,6 +96,8 @@ export default {
   border-bottom: $border;
   display: flex;
   justify-content: space-between;
+  flex: 1;
+  padding: 10px;
 }
 .block_button {
   width: 100%;

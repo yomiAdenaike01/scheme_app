@@ -1,25 +1,20 @@
 <template>
   <div class="login_container">
-    <el-card class="form_container">
-      <el-container class="h-100">
-        <el-main class="login_wrapper">
-          <div class="logo_wrapper">
-            <Logo />
-          </div>
-          <Form
-            :config="formConfig"
-            :submit-text="submitText"
-            @val="submitController"
-          >
-            <div slot="footer" class="new_client_button_container">
-              <el-button size="small" @click="selectedForm = 'forgotPassword'">
-                Forgot password ?
-              </el-button>
-            </div>
-          </Form>
-        </el-main>
-      </el-container>
-    </el-card>
+    <Form
+      class="form_container"
+      :config="formConfig"
+      :submit-text="submitText"
+      @val="submitController"
+    >
+      <div slot="header" class="logo_wrapper">
+        <Logo />
+      </div>
+      <div slot="footer" class="new_client_button_container">
+        <el-button size="small" @click="selectedForm = 'forgotPassword'">
+          Forgot password ?
+        </el-button>
+      </div>
+    </Form>
   </div>
 </template>
 
@@ -206,35 +201,20 @@ export default {
 .login_container {
   display: flex;
   flex: 1;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
 }
-.register_as_new_client_wrapper {
-  align-items: flex-end;
-  cursor: pointer;
+.logo_wrapper {
   display: flex;
-  justify-content: flex-end;
-  margin: 1em 0;
-  width: 100%;
-}
-.flex_container {
-  align-items: center;
-  display: flex;
-  height: 100%;
   justify-content: center;
-  margin: 0;
-  padding: 0;
+  margin-bottom: 20px;
 }
 .form_container {
-  min-width: 25%;
-}
-.switch_button {
-  border: 1px solid $element_colour;
-}
-.new_client_button_container {
-  align-items: center;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  width: 400px;
+  padding: 40px;
+  box-shadow: $box_shadow;
 }
 </style>
