@@ -139,27 +139,11 @@ span {
   margin: 0;
   padding: 0;
 }
-.desc {
-  color: #606266;
-  font-size: 12px;
-  margin-top: 7px;
-}
 
-.bold {
-  font-weight: bold;
-}
 .grey {
   color: #999;
 }
-.black {
-  color: black;
-}
-.error {
-  color: $error_colour;
-}
-.primary {
-  color: $element_colour;
-}
+
 .columns {
   flex-direction: column;
 }
@@ -169,57 +153,14 @@ span {
 .capitalize {
   text-transform: capitalize;
 }
-.txt-large {
-  font-size: 1.3em;
-}
-.l-height-large {
-  line-height: 1.6em;
-}
-
-.shadow_border {
-  border-radius: 50%;
-  box-shadow: $box_shadow;
-  padding: 6px;
-}
-.member_name {
-  text-transform: capitalize;
-}
-.client_error_dialog {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  .button_container {
-    display: flex;
-    justify-content: space-between;
-  }
-  .client_name {
-    width: 80%;
-  }
-}
-.rounded_image {
-  border-radius: 10px;
-}
 
 .slot_container {
   margin: 10px;
 }
 
-/*
- 
-   ____                _               
-  | __ )  ___  _ __ __| | ___ _ __ ___ 
-  |  _ \ / _ \| '__/ _` |/ _ \ '__/ __|
-  | |_) | (_) | | | (_| |  __/ |  \__ \
-  |____/ \___/|_|  \__,_|\___|_|  |___/
-                                       
- 
-*/
-.bordered {
-  border: 2px solid whitesmoke;
-}
-.borderless {
-  border: none;
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /*

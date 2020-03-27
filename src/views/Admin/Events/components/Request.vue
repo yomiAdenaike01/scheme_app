@@ -1,5 +1,5 @@
 <template>
-  <div class="request_container">
+  <div class="request_container" :class="{ disabled: approved }">
     <div class="request_details_wrapper">
       <div v-for="(value, key) in request" :key="key">
         <p v-if="keyXref[key] && keyXref[key].display(value)">
@@ -7,12 +7,22 @@
           <span v-html="keyXref[key].value(value)"></span>
         </p>
       </div>
+      <el-tag v-if="!approved" class="request_status_tag" size="mini">{{
+        makePretty(request.status)
+      }}</el-tag>
     </div>
     <div
       v-if="request.requestedBy == userInformation._id || getIsAdmin"
       class="buttons_container"
     >
-      <Popover trigger="click">
+      <el-button
+        v-if="approved"
+        class="disabled"
+        type="success"
+        icon="el-icon-check"
+        circle
+      />
+      <Popover v-if="!approved" trigger="click">
         <el-button slot="trigger" size="mini" round>Update Request</el-button>
         <Form
           slot="content"
@@ -60,6 +70,9 @@ export default {
       "getEnabledEvents",
       "getUserInformation"
     ]),
+    approved() {
+      return this.request.status == "approved";
+    },
     requestUpdateConfig() {
       // Change the date
       // Add notes
@@ -155,6 +168,9 @@ export default {
   & > * {
     margin-bottom: 10px;
   }
+}
+.request_status_tag {
+  margin: 10px 0;
 }
 .buttons_container {
   display: flex;
