@@ -43,7 +43,7 @@
       :class="displayText.class"
       class="headings_wrapper"
     >
-      <div class="slot_container">
+      <div :class="{ center_icon: displayText.hasIcon }" class="slot_container">
         <slot name="header"></slot>
       </div>
 
@@ -97,7 +97,8 @@ export default {
           heading: "",
           content: "",
           tag: "h2",
-          headingAlign: "center"
+          headingAlign: "center",
+          hasIcon: false
         };
       }
     }
@@ -157,13 +158,16 @@ export default {
   justify-content: space-between;
 }
 .bx {
-  color: #999;
-  font-size: 2em;
+  font-size: 2.3em;
 }
 .headings_wrapper {
   padding: 30px;
-  &.extra_line_height {
-    line-height: 2em;
+  line-height: 2em;
+  .slot_container {
+    &.center_icon {
+      display: flex;
+      justify-content: center;
+    }
   }
 }
 

@@ -2,7 +2,7 @@
   <div
     ref="notification"
     v-loading="loading"
-    class="notification_container pl-2 pr-2"
+    class="notification_container"
     :class="{
       is_read:
         notification.status == 'is_read' || notification.status == 'complete'
@@ -10,10 +10,10 @@
     @click="updateNotification({ status: 'is_read' }), notificationController()"
   >
     <p class="flex" :title="notification.message">
-      <i :class="notificationTypeIcon" class="grey notification_icon mr-2"></i>
+      <i :class="notificationTypeIcon" class="grey notification_icon"></i>
       {{ notification.message }}
     </p>
-    <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
+    <small class="grey">{{ notificationSendDate }}</small>
 
     <br />
   </div>
@@ -24,12 +24,14 @@ import { mapActions, mapMutations } from "vuex";
 export default {
   name: "UserNotification",
   props: {
-    notification: Object
+    notification: {
+      type: Object,
+      default: () => {}
+    }
   },
   data() {
     return {
       viewDetails: false,
-      formatString: "DD/MMMM/YYYY HH:mm",
       loading: false
     };
   },
@@ -38,10 +40,10 @@ export default {
       return this.initMoment(this.notification.dateCreated).calendar();
     },
     startDate() {
-      return this.formatDate(this.update.startDate, this.formatString);
+      return this.formatDate(this.update.startDate);
     },
     endDate() {
-      return this.formatDate(this.update.endDate, this.formatString);
+      return this.formatDate(this.update.endDate);
     },
     notificationUpdate() {
       return this.notification.content;
@@ -110,10 +112,10 @@ export default {
           update
         }
       })
-        .then(response => {
+        .then(() => {
           this.loading = false;
         })
-        .catch(error => {
+        .catch(() => {
           this.loading = false;
         });
     }

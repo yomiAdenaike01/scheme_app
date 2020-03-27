@@ -154,11 +154,10 @@ export default {
           url: "users/update",
           data: { update: { ...e }, _id: this.data._id }
         })
-          .then(response => {
+          .then(() => {
             this.reset();
           })
-          .catch(err => {
-            console.log(err);
+          .catch(() => {
             this.reset();
           });
       }

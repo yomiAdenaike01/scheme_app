@@ -4,17 +4,11 @@
       <h5 class="mb-2">All Events</h5>
       <Event v-for="event in data" :key="event._id" :event="event" />
     </div>
-    <InformationDisplay
-      v-else
-      class="no_events_information"
-      :display-text="{
-        heading: 'No events found',
-        content:
-          'Using the button below you can create an event assigned to this user'
-      }"
-    >
+    <InformationDisplay v-else :display-text="infoDisplayText">
+      <i slot="header" class="bx bxs-no-entry"></i>
       <div slot="body" class="button_container flex_center">
         <el-button
+          v-if="getIsAdmin"
           @click="
             UPDATE_DIALOG_INDEX({
               dialog: 'eventModule',
@@ -48,7 +42,23 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Admin", ["eventsInformation", "viewTeamMember"]),
-    ...mapGetters(["getIsAdmin", "getActiveDialog"])
+    ...mapGetters(["getIsAdmin", "getActiveDialog"]),
+    infoDisplayText() {
+      let heading = "No events to display",
+        content =
+          "Using the button below you can create an event for this user.";
+      if (!this.getIsAdmin) {
+        (heading = "Blocked"),
+          (content =
+            "You are blocked from viewing events that involve this user as you are not an admin.");
+      }
+      return {
+        tag: "h2",
+        heading,
+        hasIcon: true,
+        content
+      };
+    }
   },
   methods: {
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
