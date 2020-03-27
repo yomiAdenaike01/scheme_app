@@ -77,14 +77,17 @@ export default {
     },
     tabItems() {
       // Each tab item will return a computed with all the information required
-      return [
+      let tabs = [
         {
           label: "Personal Details"
-        },
-        {
-          label: "Events"
         }
       ];
+      if (this.getIsAdmin) {
+        tabs.push({
+          label: "Events"
+        });
+      }
+      return tabs;
     },
     userID() {
       return this.currentDialog.data;

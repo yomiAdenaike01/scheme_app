@@ -22,6 +22,7 @@
       class="mt-5"
       :display-text="{
         tag: 'h3',
+        hasIcon: true,
         heading: 'No notifications found',
         content: 'Your notifications will appear here once they have come in.'
       }"
