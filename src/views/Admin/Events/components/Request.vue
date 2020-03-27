@@ -142,12 +142,12 @@ export default {
 .request_container {
   display: flex;
   flex: 1;
+  justify-content: space-between;
   margin: 10px;
   padding: 25px;
   border: $border;
   text-transform: capitalize;
   line-height: 1.3em;
-  justify-content: space-between;
 }
 
 .request_details_wrapper {
