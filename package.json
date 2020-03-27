@@ -64,6 +64,8 @@
     "rules": {
       "no-console": "off",
       "no-debugger": "off",
+      "no-vhtml": "off",
+
       "vue/no-side-effects-in-computed-properties": "off",
       "vue/require-prop-type-constructor": "off",
       "vue/no-unused-components": "off",

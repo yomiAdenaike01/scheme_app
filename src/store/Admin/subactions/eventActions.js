@@ -8,7 +8,7 @@ export default {
       const payload = {
         method: "GET",
         url: "events/requests/all",
-        data: { _id }
+        params: { _id }
       };
       dispatch("request", payload, { root: true })
         .then(response => {

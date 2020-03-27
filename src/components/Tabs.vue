@@ -123,3 +123,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.tabs_body {
+  height: 100%;
+}
+</style>
