@@ -111,9 +111,11 @@ export default {
       })
         .then(() => {
           this.getRequests();
+          this.loading = false;
         })
         .catch(() => {
           this.getRequests();
+          this.loading = false;
         });
     }
   }
