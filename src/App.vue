@@ -113,6 +113,7 @@ html,
   width: 100%;
   height: 100%;
 }
+
 #app {
   display: flex;
   flex: 1;
@@ -265,8 +266,16 @@ span {
   border-right: none !important;
   box-shadow: none !important;
 }
+
 .el-dialog__wrapper {
   background: rgba(42, 54, 59, 0.01);
+}
+.el-tabs__item,
+button,
+input,
+select,
+textarea {
+  font-size: 0.8em !important;
 }
 
 //   _   _       _   _  __ _           _   _
