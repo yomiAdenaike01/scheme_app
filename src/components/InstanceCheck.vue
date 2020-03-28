@@ -1,18 +1,19 @@
 <template>
   <div
     v-loading="loading"
-    class="server_health_container flex_center"
+    class="server_health_container"
     :class="[
       { healthy: instanceInformation.healthy },
       { unhealthy: !instanceInformation.healthy }
     ]"
   >
     <el-button
+      v-if="!loading"
       circle
       class="disabled button_display"
       :icon="instanceInformation.healthy ? 'el-icon-check' : 'el-icon-cross'"
     ></el-button>
-    {{ displayText }}
+    <p>{{ displayText }}</p>
   </div>
 </template>
 
@@ -60,9 +61,11 @@ export default {
 
 <style lang="scss" scoped>
 .server_health_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: whitesmoke;
   padding: 15px;
-  text-align: center;
   color: white;
   width: 100%;
 
