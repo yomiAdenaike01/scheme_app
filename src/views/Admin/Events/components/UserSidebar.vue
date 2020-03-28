@@ -31,6 +31,7 @@
           heading: 'No team members found',
           headingAlign: 'center',
           textAlign: 'center',
+          tag: 'h4',
           content:
             'To create a team member please navigate to user management and manage users to create team members'
         }"
@@ -127,7 +128,7 @@ export default {
   flex: 1;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
   cursor: pointer;
   &:hover {
     background-color: darken($color: #ffff, $amount: 2);

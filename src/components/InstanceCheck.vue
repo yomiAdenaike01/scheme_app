@@ -65,7 +65,7 @@ export default {
   justify-content: center;
   align-items: center;
   background: whitesmoke;
-  padding: 15px;
+  padding: 5px;
   color: white;
   width: 100%;
 
