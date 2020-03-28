@@ -1,7 +1,9 @@
 <template>
   <div v-loading="loading" class="user_info_container">
     <h2 class="mb-3">Personal Information</h2>
-    <el-collapse v-if="getIsAdmin">
+    <el-collapse
+      v-if="getIsAdmin || localUserInformation._id == userInformation._id"
+    >
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container flex  align-center">
           <el-button
@@ -21,7 +23,9 @@
               round
               size="mini"
               >{{
-                data.groupID == 0 ? "Assign to group" : "Reassign to group"
+                localUserInformation.groupID == 0
+                  ? "Assign to group"
+                  : "Reassign to group"
               }}</el-button
             >
             <el-select
@@ -64,25 +68,20 @@
     </el-collapse>
     <div class="info_container">
       <p>{{ date }}</p>
-      <p>{{ data.name }}</p>
-      <p>{{ data.email }}</p>
+      <p>{{ localUserInformation.name }}</p>
+      <p>{{ localUserInformation.email }}</p>
       <p class="member_name">{{ group }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import Popover from "@/components/Popover";
 import Form from "@/components/Form";
 export default {
   name: "UserInfo",
-  props: {
-    data: {
-      type: Object,
-      default: () => {}
-    }
-  },
+
   data() {
     return {
       selectedGroup: "",
@@ -90,8 +89,16 @@ export default {
     };
   },
   computed: {
+    ...mapState(["userInformation"]),
     ...mapGetters("Admin", ["getGroupName", "getUserGroups"]),
-    ...mapGetters(["getIsAdmin", "getPreviousDeviceInformation"]),
+    ...mapGetters([
+      "getIsAdmin",
+      "getPreviousDeviceInformation",
+      "getActiveDialog"
+    ]),
+    localUserInformation() {
+      return this.getActiveDialog()?.data;
+    },
     updateUserForm() {
       return [
         {
@@ -124,15 +131,16 @@ export default {
       ];
     },
     date() {
-      return this.formatDate(this.data.dateCreated);
+      return this.formatDate(this.localUserInformation.dateCreated);
     },
     group() {
-      return this.getGroupName("user", this.data.groupID)?.label;
+      return this.getGroupName("user", this.localUserInformation.groupID)
+        ?.label;
     },
     removeUnwantedProperties() {
       let cleanedProperties = {};
-      for (let property in this.data) {
-        cleanedProperties[property] = this.data[property];
+      for (let property in this.localUserInformation) {
+        cleanedProperties[property] = this.localUserInformation[property];
       }
       return cleanedProperties;
     }
@@ -152,7 +160,7 @@ export default {
         this.request({
           method: "PUT",
           url: "users/update",
-          data: { update: { ...e }, _id: this.data._id }
+          data: { update: { ...e }, _id: this.localUserInformation._id }
         })
           .then(() => {
             this.reset();
@@ -167,7 +175,10 @@ export default {
       this.request({
         method: "PUT",
         url: "users/update",
-        data: { _id: this.data._id, update: { groupID: this.selectedGroup } }
+        data: {
+          _id: this.localUserInformation._id,
+          update: { groupID: this.selectedGroup }
+        }
       })
         .then(() => {
           this.loading = false;
@@ -189,7 +200,7 @@ export default {
         this.request({
           method: "DELETE",
           url: "users/remove",
-          data: { _id: this.data._id }
+          data: { _id: this.localUserInformation._id }
         })
           .then(() => {
             this.loading = false;

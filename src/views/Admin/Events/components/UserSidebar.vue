@@ -13,7 +13,7 @@
           :items="items"
           position="left"
           :icon="false"
-          @click.native="hoveredTeamMember = member._id"
+          @click.native="hoveredTeamMember = member"
           @method="handleEvents"
         >
           <el-badge

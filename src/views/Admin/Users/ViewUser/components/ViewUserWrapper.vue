@@ -7,7 +7,7 @@
         content:
           'This contains all the information about the user, including all the events that they have done'
       }"
-    ></InformationDisplay>
+    />
     <div class="user_info_wrapper">
       <div class="avatar_info_container">
         <el-badge is-dot :type="badgeType" class="dot_container">
@@ -43,11 +43,7 @@ import Avatar from "@/components/Avatar";
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "ViewUserWrapper",
-
   props: {
-    userData: {
-      type: Object | Array
-    },
     tabItems: {
       type: Array,
       default: null
@@ -57,14 +53,18 @@ export default {
       required: true
     }
   },
+
   computed: {
-    ...mapGetters("Admin", ["getGroupName"]),
-    ...mapGetters(["getDefaultColour"]),
+    ...mapGetters("Admin", ["getGroupName", "getUserInformation"]),
+    ...mapGetters(["getDefaultColour", "getActiveDialog"]),
+    userData() {
+      return this.getActiveDialog("viewUser")?.data;
+    },
     badgeType() {
       return this.userData?.isOnline ? "success" : "danger";
     },
     returnUsername() {
-      return this.userData?.name;
+      return this.userData?.name ?? "Username";
     },
     returnGroupName() {
       return this.getGroupName("user", this.userData?.groupID)?.name;

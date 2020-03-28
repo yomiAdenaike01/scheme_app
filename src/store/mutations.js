@@ -20,6 +20,7 @@ export default {
     { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
   ) {
     Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
+    console.log(dialogIndex);
   },
   CREATE_GLOBAL_INTERVAL(state, { duration = 3000, method, id, immediate }) {
     if (immediate) {

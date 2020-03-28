@@ -1,13 +1,13 @@
 <template>
   <el-dialog
-    v-if="getActiveDialog('viewUser')"
+    v-if="activeDialog.view"
     :visible.sync="toggleView"
     class="view_user_container"
   >
     <el-row type="flex">
       <el-col>
         <ViewUserWrapper
-          :user-data="getUserInfo"
+          :user-data="activeDialogData"
           :tab-items="tabItems"
           :current-tab="selectedTab"
           @changedTab="selectedTab = $event"
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import UserInfo from "./components/UserInfo";
 import UserEvents from "./components/UserEvents";
 import ViewUserWrapper from "./components/ViewUserWrapper";
@@ -42,14 +42,14 @@ export default {
   },
 
   computed: {
-    ...mapState(["dialogIndex"]),
-    ...mapState("Admin", [
-      "eventsInformation",
-      "teamInformation",
-      "requestsInformation"
-    ]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
-    ...mapGetters("Admin", ["getUserInformation", "getUsersEvents"]),
+    ...mapGetters("Admin", ["getUsersEvents"]),
+    activeDialogData() {
+      return this.activeDialog.data;
+    },
+    activeDialog() {
+      return this.getActiveDialog("viewUser");
+    },
     returnComponents() {
       let selectedTab = this.selectedTab;
       let component, props;
@@ -57,7 +57,7 @@ export default {
         // Display user personal details
         case "0": {
           component = UserInfo;
-          props = this.getUserInfo;
+          props = this.activeDialogData;
           break;
         }
         // Display user shifts
@@ -89,55 +89,23 @@ export default {
       }
       return tabs;
     },
-    userID() {
-      return this.currentDialog.data;
-    },
+
     toggleView: {
       get() {
-        return this.getActiveDialog("viewUser");
+        return this.activeDialog.view;
       },
       set() {
         this.closeDialog("viewUser");
       }
     },
-    getUserInfo() {
-      let teamInfo = this.getUserInformation(this.userID);
-      return teamInfo;
-    },
 
-    getSimilarTeamMembers() {
-      return this.teamInformation.filter(member => {
-        return member.groupID == this.getUserInfo.groupID;
-      });
-    },
     associatedUserEvents() {
-      return this.getUsersEvents(this.userID);
-    },
-    currentDialog() {
-      return this.dialogIndex.viewUser;
-    },
-    dialogVisible() {
-      let { view, id } = this.currentDialog;
-      return view && id.length > 0 && this.getIsAdmin;
+      return this.getUsersEvents(this.activeDialogData?._id);
     }
   },
   methods: {
     ...mapActions(["request", "closeDialog"]),
-    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
-
-    getDocumentation() {
-      this.request({
-        method: "GET",
-        params: { id: this.teamInformationMember },
-        url: "users/documentation"
-      })
-        .then(response => {
-          this.documentation = response;
-        })
-        .catch(error => {
-          return error;
-        });
-    }
+    ...mapMutations(["UPDATE_DIALOG_INDEX"])
   },
   components: {
     UserInfo,

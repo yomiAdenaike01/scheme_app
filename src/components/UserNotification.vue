@@ -10,7 +10,10 @@
     @click="updateNotification({ status: 'is_read' }), notificationController()"
   >
     <p class="flex" :title="notification.message">
-      <i :class="notificationTypeIcon" class="grey notification_icon"></i>
+      <i
+        :class="`bx ${notificationTypeIcon}`"
+        class="grey notification_icon"
+      ></i>
       {{ notification.message }}
     </p>
     <small class="grey">{{ notificationSendDate }}</small>
@@ -54,18 +57,22 @@ export default {
     notificationTypeIcon() {
       let type = "";
       switch (this.notification.type) {
+        case "request": {
+          type = "bx-question-mark";
+          break;
+        }
         case "message": {
-          type = "bx bx-conversation";
+          type = "bx-conversation";
           break;
         }
 
         case "attention": {
-          type = "bx bx-exclamation";
+          type = "bx-exclamation";
           break;
         }
 
         case "announcement": {
-          type = "bx bx-speaker";
+          type = "bx-speaker";
           break;
         }
 

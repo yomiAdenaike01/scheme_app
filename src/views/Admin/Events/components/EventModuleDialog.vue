@@ -275,7 +275,7 @@ export default {
     //  control the current view
     view: {
       get() {
-        return this.getActiveDialog("eventModule");
+        return this.getActiveDialog("eventModule").view;
       },
       set() {
         this.closeDialog("eventModule");

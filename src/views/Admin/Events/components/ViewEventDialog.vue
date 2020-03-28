@@ -1,5 +1,8 @@
 <template>
-  <el-dialog v-if="getActiveDialog('viewEvent')" :visible.sync="computeDisplay">
+  <el-dialog
+    v-if="getActiveDialog('viewEvent').view"
+    :visible.sync="computeDisplay"
+  >
     <div class="view_event_dialog p-3">
       <Title
         title="View event"

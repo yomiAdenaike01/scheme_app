@@ -36,7 +36,7 @@ export default {
   getActiveDialog: ({ dialogIndex }) => dialogName => {
     let foundDialog = null;
     if (dialogName) {
-      foundDialog = dialogIndex[dialogName].view;
+      foundDialog = dialogIndex[dialogName];
     } else {
       for (let property in dialogIndex) {
         if (dialogIndex[property].view) {

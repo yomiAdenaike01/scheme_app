@@ -108,12 +108,6 @@ export default {
         },
 
         {
-          name: "Help",
-          command: "support",
-          divided: true,
-          icon: "el-icon-bangzhu"
-        },
-        {
           name: "Log Out",
           command: "log_out",
           divided: true
@@ -122,12 +116,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([
-      "REMOVE_USER",
-      "UPDATE_GLOBAL_LOADER",
-      "UPDATE_VIEW_NOTIFICATIONS_CENTER",
-      "UPDATE_TOGGLE_MOBILE_MENU"
-    ]),
+    ...mapMutations(["REMOVE_USER", "UPDATE_TOGGLE_MOBILE_MENU"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     ...mapActions(["request"]),
@@ -146,13 +135,9 @@ export default {
           this.request({
             method: "GET",
             url: "users/logout"
-          })
-            .then(response => {
-              this.REMOVE_USER();
-            })
-            .catch(error => {
-              this.UPDATE_GLOBAL_LOADER(false);
-            });
+          }).then(() => {
+            this.REMOVE_USER();
+          });
           break;
         }
 

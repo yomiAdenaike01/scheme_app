@@ -117,13 +117,20 @@ export default {
     }
     return res;
   },
-  getUserInformation: ({ teamInformation }) => (match, params = "_id") => {
-    let teams;
-    if (Vue.prototype.hasEntries(teamInformation)) {
-      teams = teamInformation.find(member => {
-        return member[params] == match;
-      });
+  getUserInformation: ({ teamInformation }, getters, { userInformation }) => (
+    match,
+    params = "_id"
+  ) => {
+    let userInfo = null;
+    if (params == userInformation[params]) {
+      userInfo = userInformation;
+    } else {
+      if (Vue.prototype.hasEntries(teamInformation)) {
+        userInfo = teamInformation.find(member => {
+          return member[params] == match;
+        });
+      }
     }
-    return teams;
+    return userInfo;
   }
 };
