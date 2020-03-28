@@ -1,10 +1,7 @@
 <template>
   <div class="support_container">
     <header>
-      <div
-        class="go_back_container p-3 grey flex align-center"
-        @click="REMOVE_USER()"
-      >
+      <div class="go_back_container" @click="REMOVE_USER()">
         <i class="el-icon-arrow-left trigger"></i>
         <p class="trigger">Log out</p>
       </div>
@@ -31,6 +28,15 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
+}
+.go_back_container {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  i {
+    margin-right: 5px;
+  }
 }
 header {
   box-shadow: $box_shadow;
