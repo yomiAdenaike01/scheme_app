@@ -136,7 +136,6 @@ export default {
 .users_container {
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
 }
 
 .team_center {

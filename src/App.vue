@@ -143,7 +143,7 @@ span {
 
 p,
 span {
-  font-size: 0.9em;
+  font-size: 0.85em;
 }
 
 .grey {

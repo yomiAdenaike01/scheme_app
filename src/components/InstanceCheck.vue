@@ -13,7 +13,7 @@
       class="disabled button_display"
       :icon="instanceInformation.healthy ? 'el-icon-check' : 'el-icon-cross'"
     ></el-button>
-    <p>{{ displayText }}</p>
+    <h4>{{ displayText }}</h4>
   </div>
 </template>
 
