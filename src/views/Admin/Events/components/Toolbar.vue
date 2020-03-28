@@ -4,64 +4,25 @@
     <el-button
       v-for="(button, key) in buttons"
       :key="key"
-      :icon="button.icon ? button.icon : null"
       :round="button.round"
       :type="button.type ? button.type : 'primary'"
-      size="small"
       :plain="button.plain"
       :disabled="button.disabled"
       @click="button.method"
     >
-      <span v-html="button.label"></span>
+      {{ button.label }}
     </el-button>
-    <!-- <el-button
-        :icon="hasGcal ? 'el-icon-check' : 'el-icon-refresh'"
-        :disabled="hasGcal"
-        round
-        size="small"
-        @click="initGcal"
-        plain
-      >
-        {{
-          !hasGcal
-            ? "Integrate with google calendar"
-            : "Integrated with google calendar"
-        }}
-      </el-button>-->
   </div>
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+import { mapGetters, mapState, mapMutations } from "vuex";
 
 export default {
   name: "Toolbar",
 
   methods: {
-    ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
-
-    initGcal() {
-      this.request(
-        {
-          method: "POST",
-          url: "services/googlecal",
-          disableNotification: true,
-          data: {
-            id: this.userInformation._id,
-            returnPath: window.location.href
-          }
-        },
-        false
-      )
-        .then(response => {
-          window.location.href = response;
-          // console.log(response);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
+    ...mapMutations(["UPDATE_DIALOG_INDEX"])
   },
   computed: {
     ...mapGetters(["getIsAdmin"]),
@@ -72,13 +33,11 @@ export default {
     },
     renderCreateEventButton() {
       let render = {
-        text: "Create request",
-        icon: "el-icon-question"
+        text: "Request Management"
       };
 
       if (this.getIsAdmin) {
         render.text = "Event management";
-        render.icon = "el-icon-date";
       }
 
       return render;
@@ -124,7 +83,7 @@ export default {
   display: flex;
   flex: 1;
   padding: 10px;
-  max-height: 30px;
+  max-height: 38px;
   min-height: 30px;
 }
 </style>
