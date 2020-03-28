@@ -338,6 +338,7 @@ export default {
       }).email;
     },
 
+    // Currently locks database still keeping function for later rework button is hidden
     dropUserFromEvent(userName) {
       // Cannot be the last one
       const newLen = this.event.assignedToIDs.length;
@@ -365,15 +366,14 @@ export default {
             return err;
           });
       } else {
-        this.UPDATE_NOTIFICATIONS({
-          message:
-            "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so.",
-          title: "Removal warning",
-          type: "warning",
-          duration: 6000,
-          onClick: () => {
-            this.deleteEvent();
-          }
+        this.genPromptBox({
+          boxType: "confirm",
+          title: "Confirm",
+          text:
+            "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so",
+          confirm: "Yes"
+        }).then(() => {
+          this.deleteEvent();
         });
       }
     },
@@ -524,17 +524,13 @@ h3 {
   transition: 0.5 ease opacity;
   will-change: opacity;
   opacity: 0;
+  visibility: hidden;
 }
 .assigned_user_container {
   display: flex;
   align-items: center;
   margin: 20px 0;
-  &:hover {
-    .remove_icon {
-      margin: 0 0 0 20px;
-      opacity: 1;
-    }
-  }
+
   &.cloked_in {
     opacity: 0.5;
   }
