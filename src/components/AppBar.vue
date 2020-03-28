@@ -142,6 +142,7 @@ export default {
   display: flex;
   flex: 1;
   padding: 10px;
+  max-height: $app_bar_height;
 }
 .client_indicator {
   display: flex;

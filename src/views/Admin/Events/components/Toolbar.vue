@@ -82,7 +82,7 @@ export default {
 <style lang="scss" scoped>
 .toolbar_container {
   display: flex;
-  flex: 1;
+  height: 30px;
   padding: 10px;
 }
 </style>
