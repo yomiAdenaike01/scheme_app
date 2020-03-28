@@ -1,16 +1,12 @@
 <template>
   <div
-    class="event_template_container p-4"
     v-loading="loading"
+    class="event_template_container p-4"
     @click="displayDetails = !displayDetails"
   >
     <div class="template_title_container flex flex--space-between align-center">
       <h3 class="capitalize mr-3">{{ data.name }}</h3>
       <div class="button_container">
-        <!-- <Popover trigger='click'>
-        <el-button plain type='primary' round size='mini' slot='trigger' @click="$event.stopPropagation()">Update</el-button>
-        <Form submitText='update' slot='content' @val='updateTemplate' :config="updateTemplateConfig"/>
-        </Popover> -->
         <el-button round type="danger" size="mini" @click="deleteTemplate"
           >Delete</el-button
         >
@@ -31,9 +27,9 @@
         <br />
         <el-button
           class="w-100 mt-3"
-          @click="applyTemplate"
           plain
           type="primary"
+          @click="applyTemplate"
           >Apply</el-button
         >
       </div>
@@ -45,17 +41,17 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 export default {
   name: "EventTemplate",
-  data() {
-    return {
-      loading: false,
-      displayDetails: false
-    };
-  },
   props: {
     data: {
       type: Object,
       default: () => {}
     }
+  },
+  data() {
+    return {
+      loading: false,
+      displayDetails: false
+    };
   },
 
   computed: {

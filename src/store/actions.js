@@ -1,5 +1,6 @@
 import axios from "axios";
 import Vue from "vue";
+
 if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:7070/v1/";
 } else {
@@ -24,7 +25,7 @@ export default {
         .dispatch("request", {
           method: "POST",
           url: "users/devices",
-          data: { device: context.getters.getUAInformation }
+          data: { device: context.getters.getDeviceInformation }
         })
         .then(() => {
           resolve();
@@ -34,32 +35,7 @@ export default {
         });
     });
   },
-  getClient(context) {
-    return new Promise((resolve, reject) => {
-      let currentHostname = window.location.hostname.toString().split(".");
-      let subdomain = currentHostname[0];
-      let domain = currentHostname[1];
-      // if (subdomain.length <= 0) {
-      context
-        .dispatch("request", {
-          method: "GET",
-          url: "clients/get",
-          params: { subdomain }
-        })
 
-        .then(response => {
-          context.commit("UPDATE_CLIENT", response);
-          resolve(response);
-        })
-        .catch(error => {
-          context.commit("UPDATE_INVALID_CLIENT", {
-            display: true,
-            error: true
-          });
-          reject(error);
-        });
-    });
-  },
   closeDialog({ commit, state: { dialogIndex } }, name = "") {
     commit(
       "UPDATE_DIALOG_INDEX",
@@ -73,7 +49,6 @@ export default {
 
     if (!name) {
       for (let property in dialogIndex) {
-        console.log(dialogIndex[property]);
         if (dialogIndex[property].view == true) {
           commit("UPDATE_DIALOG_INDEX", {
             view: false,
@@ -193,7 +168,7 @@ export default {
 
     let enableNotifications = true;
 
-    if (payload.hasOwnProperty("disableNotification")) {
+    if (payload?.disableNotification) {
       enableNotifications = false;
     }
 
@@ -235,6 +210,9 @@ export default {
             type: "error"
           });
         }
+        context.commit("CLEAR_GLOBAL_INTERVAL");
+        context.dispatch("closeDialog");
+        context.commit("UPDATE_NETWORK_ERROR", true);
         return Promise.reject(error);
       });
   }

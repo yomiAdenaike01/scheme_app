@@ -1,9 +1,10 @@
 import vars from "@/assets/Styles/defaults.scss";
 export default {
+  runningIntervals: {},
   requestIntervals: {
     team: 6000,
     events: 6000,
-    client: 10000,
+    client: { id: "client", immediate: true, duration: 10000 },
     messages: 3000,
     transcripts: 3000,
     templates: 3000
@@ -22,7 +23,7 @@ export default {
   globalLoader: false,
   errorInformation: {},
   localNotifications: [],
-  criticalNetworkError: false,
+  networkError: false,
   weeklyTimesheetUploaded: false,
   hasSeenNotifications: false,
   userNotifications: [],
@@ -34,11 +35,11 @@ export default {
   },
 
   dialogIndex: {
-    viewUser: { view: null, data: null, tabIndex: 0 },
-    viewEvent: { view: null, data: null, tabIndex: 0 },
-    eventModule: { view: null, data: null, tabIndex: 0 },
-    tutorial: { view: null, data: null, tabIndex: 0 },
-    prevEvents: { view: null, data: null, tabIndex: 0 }
+    profile: { view: false, data: null, tabIndex: 0 },
+    viewEvent: { view: false, data: null, tabIndex: 0 },
+    eventModule: { view: false, data: null, tabIndex: 0 },
+    tutorial: { view: false, data: null, tabIndex: 0 },
+    prevEvents: { view: false, data: null, tabIndex: 0 }
   },
 
   defaultCustomColours: [

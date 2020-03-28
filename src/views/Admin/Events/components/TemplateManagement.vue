@@ -1,9 +1,9 @@
 <template>
   <div class="p-4">
     <div
-      class="flex columns"
       v-if="eventTemplates.length > 0"
       v-loading="loading"
+      class="flex columns"
     >
       <div class="flex_center input_container p-4">
         <el-input
@@ -26,19 +26,33 @@
       </div>
       <transition-group name="el-fade-in">
         <EventTemplate
-          @toggle="displayCreateTemplate = false"
           v-for="template in filteredTemplates"
           :key="template._id"
           :data="template"
+          @toggle="displayCreateTemplate = false"
         />
       </transition-group>
     </div>
 
     <!-- No templates -->
-    <div class="flex flex_center" v-else>
-        <InformationDisplay mode='both' class="flex_center columns" :displayText="{heading:'Create a template',content:'You currently have no templates, you can hover over the help button above for more information on how to create templates and how they work.'}" :tutorial="{module:'admin', feature:'template_management',displayType:'hover'}">
-          <el-button slot="information" size='mini' @click="displayCreateTemplate = !displayCreateTemplate">Create Template</el-button>
-        </InformationDisplay>
+    <div v-else class="flex flex_center">
+      <InformationDisplay
+        :display-text="{
+          tag: 'h2',
+          class: 'extra_line_height',
+          heading: 'Manage templates',
+          content: 'Click the button below to get started creating templates'
+        }"
+      >
+        <div slot="body">
+          <el-button
+            size="mini"
+            type="text"
+            @click="displayCreateTemplate = !displayCreateTemplate"
+            >Toggle template form</el-button
+          >
+        </div>
+      </InformationDisplay>
     </div>
 
     <!-- Create template -->
@@ -56,17 +70,14 @@ import { mapState, mapActions, mapGetters } from "vuex";
 
 import EventTemplate from "./EventTemplate";
 import CreateTemplate from "./CreateTemplate";
-import EventModuleBus from "./EventsModuleBus";
 
-import InformationDisplay from '@/components/InformationDisplay'
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
-  name: "EventOptions",
-  data() {
-    return {
-      templateNamesSearch: "",
-      loading: false,
-      displayCreateTemplate: false
-    };
+  name: "TemplateManagement",
+  components: {
+    EventTemplate,
+    CreateTemplate,
+    InformationDisplay
   },
   props: {
     templates: {
@@ -76,10 +87,12 @@ export default {
       }
     }
   },
-  components: {
-    EventTemplate,
-    CreateTemplate,
-    InformationDisplay
+  data() {
+    return {
+      templateNamesSearch: "",
+      loading: false,
+      displayCreateTemplate: false
+    };
   },
   computed: {
     ...mapState(["userInformation", "requestIntervals"]),
@@ -116,8 +129,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .indicator {
-  will-change: transform;
   transition: $default_transition;
+  will-change: transform;
   &.active {
     transform: rotate(90deg);
   }

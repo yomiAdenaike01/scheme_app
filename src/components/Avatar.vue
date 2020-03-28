@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow_border flex_center avatar_container">
+  <div class="avatar_container">
     <el-avatar :style="{ background: randColour() }">{{
       !isNameTheSame ? initials : "ME"
     }}</el-avatar>
@@ -19,8 +19,8 @@ export default {
 
     isNameTheSame() {
       return (
-        this.userInformation.name.trim().toLowerCase() ==
-        this.name.trim().toLowerCase()
+        this.userInformation?.name.trim().toLowerCase() ==
+        this?.name?.trim().toLowerCase()
       );
     },
 
@@ -54,11 +54,14 @@ export default {
 
 <style lang="scss" scoped>
 .avatar_container {
-  max-width: 40px;
   max-height: 40px;
+  max-width: 40px;
+  padding: 5px;
+  box-shadow: $box_shadow;
+  border-radius: 50%;
   &.full {
-    max-width: initial;
     max-height: initial;
+    max-width: initial;
   }
 }
 </style>

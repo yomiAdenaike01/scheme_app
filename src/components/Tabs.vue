@@ -1,45 +1,50 @@
 <template>
-  <div class="tabs_container pt-4 pb-4">
-    <slot name="header_content"></slot>
+  <div class="tabs_container">
+    <slot name="header"></slot>
+
     <el-tabs
+      v-model="tabChange"
+      v-loading="loading"
       :closable="false"
       stretch
       :type="tabType"
       :addable="false"
-      v-model="tabChange"
       :tab-position="position"
-      v-loading="loading"
-      type="card"
     >
-      <slot name="body_content"></slot>
+      <div v-if="$slots.body" class="tabs_body">
+        <slot name="body"></slot>
+      </div>
       <el-tab-pane
-        class="p-4"
         v-for="(tab, index) in tabs"
+        :key="index"
         :disabled="tab.disabled"
         :label="tab.label"
-        :key="index"
+        class="tabs_body"
       >
         <!-- Form component -->
-
         <Form
-          @val="$emit('val', $event)"
-          :customMethod="customMethod"
-          :disable="disable"
-          :disableForm="disableForm"
           v-if="tab.hasOwnProperty('formContent')"
+          :custom-method="customMethod"
+          :disable="disable"
+          :disable-form="disableForm"
           :config="tab.formContent"
-          :submitText="submitText"
+          :submit-text="submitText"
+          :emit-on-change="tab.emitOnChange"
+          :display-reset="tab.displayReset"
+          @val="$emit('val', $event)"
+          @formValChange="$emit('formValChange', $event)"
         />
         <div v-else>
           <component
             :is="tab.view.component"
             v-bind="tab.view.props"
-            @conponentChanges="emitComponentData"
+            @componentEmit="emitComponentData"
           />
         </div>
-
         <!--  Footer -->
-        <slot name="footer_content"></slot>
+        <div v-if="$slots.footer" class="tabs_body">
+          <slot name="footer"></slot>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -108,17 +113,23 @@ export default {
       }
     }
   },
-  methods: {
-    emitComponentData(e) {
-      this.$emit(e.eventname, e.eventdata);
-    }
-  },
   watch: {
     formContent(val) {
       if (this.liveChange) {
         this.$emit("val", val);
       }
     }
+  },
+  methods: {
+    emitComponentData(e) {
+      this.$emit(e.eventname, e.eventdata);
+    }
   }
 };
 </script>
+<style lang="scss" scoped>
+.tabs_body {
+  height: 100%;
+  padding: 10px 20px;
+}
+</style>

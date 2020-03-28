@@ -11,15 +11,15 @@
       </span>
     </div>
     <VueCal
+      ref="eventsCalendar"
       v-loading="loading"
-      :events="allEvents"
+      :events="calEvents"
       :on-event-click="viewEvent"
       events-on-month-view="short"
       :cell-click-hold="false"
       :time-from="getCalTimings.from"
       :time-to="getCalTimings.to"
       editable-events
-      ref="eventsCalendar"
     />
   </div>
 </template>
@@ -31,14 +31,12 @@ import "vue-cal/dist/vuecal.css";
 import moment from "moment";
 export default {
   name: "EventsCalendar",
-
   data() {
     return {
       view: false,
       loading: false,
       event: {},
-      format: "YYYY-MM-DD HH:mm",
-      gcalEvents: []
+      format: "YYYY-MM-DD HH:mm"
     };
   },
 
@@ -92,41 +90,8 @@ export default {
         }
       ];
     },
-    allEvents() {
-      return this.gcalEventsFormatted.concat(this.returnEvents);
-    },
-    gcalEventsFormatted() {
-      if (this.hasEntries(this.gcalEvents)) {
-        let gcalEvents = [...this.gcalEvents];
-        return gcalEvents.map(event => {
-          let {
-            summary,
-            start,
-            end,
-            htmlLink,
-            creator,
-            organizer,
-            status
-          } = event;
-          start = start.date;
-          end = end.date;
-          start = moment(start).format(this.format);
 
-          end = moment(end).format(this.format);
-
-          return {
-            start: start,
-            end: end,
-            content: summary,
-            class: "gcal"
-          };
-        });
-      } else {
-        return [];
-      }
-    },
-    returnEvents() {
-      let { event_group, user_group } = this.eventFilters;
+    calEvents() {
       /**
        * title,
        * name,
@@ -197,7 +162,7 @@ export default {
       });
     },
 
-    displayCreateNewShift(startTime) {
+    displayCreateNewShift() {
       this.$emit("displayCreateShift", true);
     },
 
@@ -281,31 +246,33 @@ export default {
 
 <style lang="scss" scoped>
 .cal_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   &/deep/ {
     .vuecal__now-line {
       color: $element_colour;
     }
 
     .vuecal__event {
-      font-size: 0.8em;
-
       background: #ecf5ff;
-      color: $element_colour;
       border-top: 2px solid $element_colour;
+      color: $element_colour;
+      font-size: 0.8em;
+      padding: 1em;
+      text-transform: capitalize;
 
       &.holiday {
         background: #fef0f0;
-        color: #f56c6c;
         border-top: 2px solid #f56c6c;
+        color: #f56c6c;
       }
       &.time_off,
       &.sick_leave {
         background: #fdf6ec;
-        color: #f2c678;
         border-top: 2px solid #f2c678;
+        color: #f2c678;
       }
-      padding: 1em;
-      text-transform: capitalize;
     }
     .el-icon-circle-close {
       color: red;
@@ -314,8 +281,8 @@ export default {
       color: green;
     }
     .vuecal__title-bar {
-      margin: 1em 0;
       background: none;
+      margin: 1em 0;
       .vuecal__title {
         button {
           color: #999;
@@ -324,11 +291,12 @@ export default {
     }
   }
 }
+
 .bar_incidator {
-  border-radius: 5px;
-  text-align: center;
-  padding: 20px;
-  margin-bottom: 40px;
   border: 1px solid whitesmoke;
+  border-radius: 5px;
+  margin-bottom: 40px;
+  padding: 20px;
+  text-align: center;
 }
 </style>

@@ -1,49 +1,61 @@
 <template>
-  <div v-loading="loading" class="notifications_container overflow">
-    <div class="title_switch_container p-3 flex align-center">
+  <div v-loading="loading" class="notifications_container ">
+    <div class="title_switch_container ">
       <h3 class="bold">Notifications</h3>
-      <el-switch v-model="dnd" active-text="Do not disturb"></el-switch>
     </div>
-    <div v-if="userNotifications">
+    <div v-if="hasEntries(userNotifications)">
       <UserNotification
         v-for="notification in userNotifications"
         :key="notification._id"
         :notification="notification"
       />
       <el-button
-        class="block_button m-0"
-        @click="readAll"
-        size="small"
         v-if="getUserNotificationsLength > 0"
+        class="block_button m-0"
+        size="small"
+        @click="readAll"
         >Mark all as read</el-button
       >
     </div>
+    <InformationDisplay
+      v-else
+      class="mt-5"
+      :display-text="{
+        tag: 'h3',
+        hasIcon: true,
+        heading: 'No notifications found',
+        content: 'Your notifications will appear here once they have come in.'
+      }"
+    >
+      <i slot="header" class="bx bx-bell flex_center mt-4 mb-4"></i>
+    </InformationDisplay>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
-import UserNotification from "./UserNotification";
+import { mapState, mapActions, mapGetters } from "vuex";
 
+import UserNotification from "./UserNotification";
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "NotificationModule",
+  components: {
+    UserNotification,
+    InformationDisplay
+  },
   data() {
     return {
-      loading: false,
-      dnd: false
+      loading: false
     };
   },
   activated() {
     this.getNotifications()
-      .then(response => {
+      .then(() => {
         this.loading = false;
       })
-      .catch(err => {
+      .catch(() => {
         this.loading = false;
       });
-  },
-  components: {
-    UserNotification
   },
   computed: {
     ...mapState(["userNotifications", "userInformation"]),
@@ -78,13 +90,15 @@ export default {
 
 <style lang="scss" scoped>
 .notifications_container {
-  position: relative;
   height: 400px;
+  position: relative;
 }
 .title_switch_container {
+  border-bottom: $border;
   display: flex;
   justify-content: space-between;
-  border-bottom: $border;
+  flex: 1;
+  padding: 10px;
 }
 .block_button {
   width: 100%;

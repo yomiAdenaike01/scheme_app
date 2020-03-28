@@ -32,16 +32,15 @@
 <script>
 import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
 
-import CommsEventBus from './CommsEventBus';
+import CommsEventBus from "./CommsEventBus";
 
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
 export default {
   name: "CommsTranscript",
-  data() {
-    return {
-      loading: false
-    };
+  components: {
+    Avatar,
+    Popover
   },
   props: {
     data: {
@@ -51,9 +50,10 @@ export default {
       }
     }
   },
-  components: {
-    Avatar,
-    Popover
+  data() {
+    return {
+      loading: false
+    };
   },
   computed: {
     ...mapState(["userInformation"]),
@@ -67,9 +67,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT",'UPDATE_TRANSCRIPT_LOADING']),
+    ...mapMutations("Comms", [
+      "UPDATE_ACTIVE_TRANSCRIPT",
+      "UPDATE_TRANSCRIPT_LOADING"
+    ]),
     ...mapActions(["request"]),
-    ...mapActions('Comms',['getMessages']),
+    ...mapActions("Comms", ["getMessages"]),
     muteController() {
       let mutedNotifications = [...this.activetTranscript.mutedNotifications];
       let data;
@@ -114,26 +117,28 @@ export default {
           this.loading = false;
         });
     },
-    updateTranscript(){
-      return new Promise((resolve,reject)=>{
-      try {
-        this.UPDATE_ACTIVE_TRANSCRIPT({
-        ...this.data,
-        userInfo: { ...this.user }});
-        resolve()
-      } catch (error) {
-        reject(error)
-      }
+    updateTranscript() {
+      return new Promise((resolve, reject) => {
+        try {
+          this.UPDATE_ACTIVE_TRANSCRIPT({
+            ...this.data,
+            userInfo: { ...this.user }
+          });
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
       });
-
     },
-    updateComms(){
-        this.UPDATE_TRANSCRIPT_LOADING(true)
-      Promise.all([this.getMessages(),this.updateTranscript()]).then(()=>{
-        this.UPDATE_TRANSCRIPT_LOADING(false)
-      }).catch(err=>{
-        this.UPDATE_TRANSCRIPT_LOADING(false);
-      })
+    updateComms() {
+      this.UPDATE_TRANSCRIPT_LOADING(true);
+      Promise.all([this.getMessages(), this.updateTranscript()])
+        .then(() => {
+          this.UPDATE_TRANSCRIPT_LOADING(false);
+        })
+        .catch(err => {
+          this.UPDATE_TRANSCRIPT_LOADING(false);
+        });
     }
   }
 };
@@ -141,11 +146,11 @@ export default {
 
 <style lang="scss" scoped>
 .transcript_container {
-  flex: 1;
-  border-top: $border;
   border-bottom: $border;
-  transition: 0.5s ease background;
+  border-top: $border;
   cursor: pointer;
+  flex: 1;
+  transition: 0.5s ease background;
   &:hover {
     background: rgb(252, 252, 252);
   }

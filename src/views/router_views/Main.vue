@@ -1,21 +1,19 @@
 <template>
-  <div class="h-100" v-loading='loading'>
+  <div
+    v-loading="loading"
+    element-loading-text="Loading events and team members...."
+    class="main_container"
+  >
     <NprogressContainer />
     <AppBar />
-    <div class="main_wrapper flex">
-      <div class="inner_wrapper h-100 flex">
-        <div class="nav_wrapper">
-          <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
-        </div>
-        <el-col class="main_col_container">
-          <InstanceCheck />
-          <DefaultTransition>
-            <keep-alive>
-              <router-view />
-            </keep-alive>
-          </DefaultTransition>
-        </el-col>
-      </div>
+    <InstanceCheck />
+    <div class="inner_app_container">
+      <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
+      <RouterAnimation>
+        <keep-alive>
+          <router-view />
+        </keep-alive>
+      </RouterAnimation>
     </div>
   </div>
 </template>
@@ -27,22 +25,43 @@ import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
 import AppBar from "@/components/AppBar";
 import Navigation from "@/components/Navigation";
-import DefaultTransition from "@/components/DefaultTransition";
 import InstanceCheck from "@/components/InstanceCheck";
+import RouterAnimation from "@/components/RouterAnimation";
+
 export default {
   name: "Main",
-  data(){
-    return{
-      loading:true
-    }
+  components: {
+    Navigation,
+    AppBar,
+    NprogressContainer,
+    InstanceCheck,
+    RouterAnimation
+  },
+  data() {
+    return {
+      loading: true
+    };
   },
   activated() {
     this.checkDevice();
-      Promise.all([this.getEvents(), this.getTeam()]).then(
-      response => {
-        this.loading = false;
+    this.CREATE_GLOBAL_INTERVAL({
+      immediate: true,
+      duration: 3000,
+      id: "eventsAndTeam",
+      method: () => {
+        return new Promise((resolve, reject) => {
+          Promise.all([this.getEvents(), this.getTeam()])
+            .then(() => {
+              this.loading = false;
+              resolve();
+            })
+            .catch(() => {
+              this.loading = false;
+              reject();
+            });
+        });
       }
-    );
+    });
 
     let isVerified = this.userInformation.verified;
     if (!isVerified) {
@@ -53,19 +72,11 @@ export default {
       });
     }
 
-    let { general } = this.userInformation.settings;
     if (Notification.permission != "granted") {
       this.requestNotificationPermission();
     }
 
     this.displayWeeklyNotification();
-  },
-    components: {
-    Navigation,
-    AppBar,
-    NprogressContainer,
-    DefaultTransition,
-    InstanceCheck
   },
   computed: {
     ...mapState([
@@ -74,8 +85,9 @@ export default {
       "viewMobileMenu",
       "weeklyTimesheetUploaded"
     ]),
-    ...mapGetters(["getUAInformation"]),
     ...mapState("Admin", ["teamInformation"]),
+    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
+
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
     },
@@ -100,8 +112,9 @@ export default {
 
   methods: {
     ...mapActions(["updateDevices"]),
-    ...mapActions('Admin',['getEvents','getTeam']),
-    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapActions("Admin", ["getEvents", "getTeam"]),
+    ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
+
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
         title: "Register new device detected",
@@ -113,29 +126,20 @@ export default {
         type: "info"
       });
     },
+
     checkDevice() {
       if (this.userInformation?.devicesInformation?.length === 0) {
         this.triggerDeviceNotification();
       } else {
         // Find in array
-        let deviceIndex = this.userInformation?.devicesInformation?.findIndex(
-          ({ os: { name, version } }) => {
-            return (
-              name === this.getUAInformation.os.name &&
-              version === this.getUAInformation.os.version
-            );
-          }
-        );
-        if (deviceIndex == -1) {
-          this.triggerDeviceNotification();
-        }
+        console.log("Find device in array or add a new one");
       }
     },
     requestNotificationPermission() {
       if (!window.Notification) {
         let {
           browser: { name, version }
-        } = this.getUAInformation;
+        } = this.getDeviceInformation;
         this.UPDATE_NOTIFICATIONS({
           title: "Browser version error",
           message: `The current browser doesn't support notifications ${name} ${Math.round(
@@ -143,18 +147,16 @@ export default {
           )}`
         });
       } else {
-        Notification.requestPermission()
-          .then(p => {
-            console.log(p);
-          })
-          .catch(err => {
-            console.error(err);
-          });
+        Notification.requestPermission();
       }
     },
 
     displayWeeklyNotification() {
-      if (!this.weeklyTimesheetUploaded && this.returnIsStartOfWeek)
+      if (
+        !this.weeklyTimesheetUploaded &&
+        this.returnIsStartOfWeek &&
+        this.getIsAdmin
+      )
         this.UPDATE_NOTIFICATIONS({
           type: "info",
           message: "Start the new week off by uploading a new weekly timesheet",
@@ -221,10 +223,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.main_wrapper {
-  height: calc(100% - #{$app_bar_height});
-}
-.inner_wrapper {
+.main_container {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  height: 100%;
+}
+.inner_app_container {
+  display: flex;
+  flex: 1;
+  height: 100%;
 }
 </style>

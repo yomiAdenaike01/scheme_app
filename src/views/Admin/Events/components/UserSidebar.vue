@@ -2,19 +2,18 @@
   <div class="team_container">
     <!-- Display if in mobile view -->
 
-    <div v-if="getFilteredTeam.length > 0">
+    <div v-if="getFilteredTeam.length > 0" class="users_container">
       <div
         v-for="(member, index) in teamInformation"
         :key="index"
-        class="member flex_center"
+        class="team_member_container"
       >
         <Dropdown
-          class="p-2"
-          @click.native="hoveredTeamMember = member._id"
           :items="items"
-          @method="handleEvents"
           position="left"
           :icon="false"
+          @click.native="hoveredTeamMember = member"
+          @method="handleEvents"
         >
           <el-badge
             is-dot
@@ -26,22 +25,39 @@
         </Dropdown>
       </div>
     </div>
-    <div class="flex_center h-100" v-else>
-    <InformationDisplay class="p-4" :displayText="{heading:'No team members found', headingAlign:'center', textAlign:'center', content:'To create a team member please navigate to user management and manage users to create team members'}" mode='title'>
-      <i class="bx bx-user flex_center" slot="above_header"></i>
-      <el-button round slot="information" @click="$router.push({name:'user'})">Go to user management</el-button>
-    </InformationDisplay>
+    <div v-else class="information_container">
+      <InformationDisplay
+        :display-text="{
+          heading: 'No team members found',
+          headingAlign: 'center',
+          textAlign: 'center',
+          tag: 'h4',
+          content:
+            'To create a team member please navigate to user management and manage users to create team members'
+        }"
+        mode="title"
+      >
+        <i slot="header" class="bx bx-user flex_center"></i>
+        <el-button slot="body" round @click="$router.push({ name: 'user' })"
+          >Go to user management</el-button
+        >
+      </InformationDisplay>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import InformationDisplay from '@/components/InformationDisplay'
+import InformationDisplay from "@/components/InformationDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 export default {
   name: "UserSidebar",
+  components: {
+    Dropdown,
+    Avatar,
+    InformationDisplay
+  },
 
   data() {
     return {
@@ -49,11 +65,6 @@ export default {
       loaderTimeout: null,
       loadingTeam: true
     };
-  },
-  components: {
-    Dropdown,
-    Avatar,
-    InformationDisplay
   },
   computed: {
     ...mapState("Admin", ["teamInformation"]),
@@ -71,7 +82,6 @@ export default {
         }
       ];
 
-   
       return items;
     }
   },
@@ -89,7 +99,7 @@ export default {
         }
         case "view_team_member": {
           this.UPDATE_DIALOG_INDEX({
-            dialog: "viewUser",
+            dialog: "profile",
             view: true,
             data: this.hoveredTeamMember
           });
@@ -105,25 +115,39 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.team_wrapper {
-  border-left: solid 1px #e6e6e6;
-  overflow-x: hidden;
-}
 .team_container {
-  flex: 0.1;
   border-left: 1px solid #e6e6e6;
-  .member {
-    border-bottom: solid 1px #e6e6e6;
-    cursor: pointer;
-    &:hover {
-      background-color: darken($color: #ffff, $amount: 2);
-    }
+  flex: 0.1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.team_member_container {
+  border-bottom: solid 1px #e6e6e6;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: darken($color: #ffff, $amount: 2);
   }
 }
-.team_center {
+.users_container {
   display: flex;
+  flex-direction: column;
+}
+
+.team_center {
   align-items: center;
+  display: flex;
   justify-content: center;
+}
+.information_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 /**
@@ -135,10 +159,10 @@ export default {
  */
 .mobile {
   .member {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
     align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .team_container {
     border-top: 1px solid #e6e6e6;

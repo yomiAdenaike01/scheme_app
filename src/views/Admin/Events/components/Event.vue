@@ -8,7 +8,7 @@
       <el-col class="event_details_container details_unit p-2">
         <h4 class="member_name">{{ getEventType }}</h4>
         <Popover>
-          <div class="content" slot="content">
+          <div slot="content" class="content">
             {{ assignedUsers.arr.join(", ") }}
           </div>
           <p slot="trigger" class="member_name black">
@@ -17,8 +17,8 @@
         </Popover>
         <div class="tag_container">
           <el-tag
-            class="mr-1"
             v-if="approval.boolean"
+            class="mr-1"
             :value="approval.text"
             type="success"
             >{{ approval.text }}</el-tag
@@ -54,7 +54,7 @@
       </el-col>
     </el-row>
     <el-collapse-transition>
-      <div class="p-2" v-if="displayMoreDetails">
+      <div v-if="displayMoreDetails" class="p-2">
         <el-button
           type="danger"
           plain
@@ -74,6 +74,12 @@ import Popover from "@/components/Popover";
 import moment from "moment";
 export default {
   name: "Event",
+  components: {
+    Popover
+  },
+  props: {
+    event: Object
+  },
 
   data() {
     return {
@@ -82,12 +88,6 @@ export default {
       displayViewEvent: false,
       displayMoreDetails: false
     };
-  },
-  props: {
-    event: Object
-  },
-  components: {
-    Popover
   },
   computed: {
     ...mapState(["userInformation"]),
@@ -172,10 +172,10 @@ export default {
 <style lang="scss" scoped>
 .event_container {
   border-radius: 10px;
-  line-height: 2.1em;
-  font-weight: 300;
-  font-size: 0.9em;
   cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 300;
+  line-height: 2.1em;
   opacity: 0.5;
   &.myEvent {
     opacity: 1;
@@ -183,13 +183,13 @@ export default {
 }
 
 .event_times {
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 .event_details_container {
-  min-width: 30%;
   max-width: 40%;
+  min-width: 30%;
   &/deep/ {
     .el-tag {
       min-width: 100px;
@@ -204,8 +204,8 @@ export default {
 }
 
 .approval_wrapper {
-  text-transform: uppercase;
   font-size: 0.8em;
+  text-transform: uppercase;
 }
 .event_controls_wrapper {
   width: 10%;
@@ -226,8 +226,8 @@ export default {
 
 .mobile {
   .event_details_container {
-    min-width: 100%;
     line-height: 2.5em;
+    min-width: 100%;
   }
 }
 </style>

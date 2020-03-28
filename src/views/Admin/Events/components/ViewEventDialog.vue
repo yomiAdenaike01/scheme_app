@@ -1,11 +1,16 @@
 <template>
-  <el-dialog :visible.sync="computeDisplay" v-if="getActiveDialog('viewEvent')">
-    <div class="view_event_dialog p-3">
-      <Title
-        title="View event"
-        subtitle="Click on more information to display details"
-      ></Title>
-      <div class="info_button_container flex flex--end">
+  <el-dialog
+    v-if="getActiveDialog('viewEvent').view"
+    :visible.sync="computeDisplay"
+  >
+    <div class="view_event_dialog ">
+      <InformationDisplay
+        :display-text="{
+          heading: 'View event',
+          content: 'Click on more information to display details'
+        }"
+      ></InformationDisplay>
+      <div class="info_button_container">
         <el-button
           :circle="$mq != 'lg'"
           :round="$mq == 'lg'"
@@ -22,11 +27,11 @@
           }}</el-button
         >
         <el-button
+          v-if="isEventMine && isEventToday"
           round
           plain
           size="small"
           @click="clockIn"
-          v-if="isEventMine && isEventToday && !hasClockedIn"
           >Clock in</el-button
         >
 
@@ -34,8 +39,8 @@
           v-if="hasPermissions"
           size="small"
           plain
-          @click="sendReminderToUser"
           round
+          @click="sendReminderToUser"
         >
           {{
             event.assignedTo.length > 0
@@ -44,41 +49,30 @@
           }}
         </el-button>
         <el-button
+          v-if="hasPermissions"
           type="danger"
           size="small"
-          v-if="hasPermissions"
-          @click="deleteEvent"
           round
           plain
+          @click="deleteEvent"
           >Delete Event</el-button
         >
       </div>
-      <div class="info_container p-3">
+      <div class="view_dialog_information_container">
         <!-- Assigned users -->
 
-        <h3 class="mb-3">Assigned users</h3>
+        <h3>Assigned users</h3>
 
         <div
-          class="info_unit avatar_wrapper"
           v-if="hasEntries(event.assignedTo)"
+          class="info_unit avatar_wrapper"
         >
           <div
-            ref="user"
             v-for="(member, index) in event.assignedTo"
+            ref="user"
             :key="index"
-            :class="[
-              'assigned_user_container mb-2 flex align-center',
-              { clocked_in: hasClockedIn }
-            ]"
+            class="assigned_user_container"
           >
-            <el-button
-              v-if="hasClockedIn"
-              circle
-              icon="el-icon-check"
-              type="success"
-              class="no_events mr-2"
-              size="mini"
-            ></el-button>
             <Avatar class="mr-3" :name="member" />
             <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
             <el-button
@@ -90,17 +84,17 @@
             >
           </div>
 
-          <div class="add_new_user p-4 trigger" v-if="canAddMoreUsers">
+          <div v-if="canAddMoreUsers" class="add_new_user p-4 trigger">
             <Popover>
               <div
-                class="p-3 popover_item trigger"
-                :class="{
-                  no_events: event.assignedToIDs.indexOf(option._id) > -1
-                }"
                 v-for="option in getFilteredTeam"
-                @click="assignNewUser(option._id)"
                 :key="option._id"
                 slot="content"
+                class="users_container trigger"
+                :class="{
+                  disabled: event.assignedToIDs.indexOf(option._id) > -1
+                }"
+                @click="assignNewUser(option._id)"
               >
                 <span>{{ option.name }}</span>
               </div>
@@ -110,55 +104,56 @@
             </Popover>
           </div>
         </div>
+        <div class="view_dialog_information_container">
+          <h3>Event date information</h3>
+          <Popover trigger="click">
+            <Form
+              slot="content"
+              :config="configXref"
+              submit-text="Update"
+              @val="updateEvent"
+            />
+            <el-button
+              slot="trigger"
+              size="mini"
+              @click="selectedConfig = 'date'"
+              >Update date information</el-button
+            >
+          </Popover>
 
-        <h3 class="mb-3 mt-3">Event date information</h3>
-        <Popover trigger="click">
-          <Form
-            slot="content"
-            @val="updateEvent"
-            :config="configXref"
-            submitText="Update"
-          />
-          <el-button
-            slot="trigger"
-            @click="selectedConfig = 'date'"
-            size="mini"
-            class="mb-2"
-            >Update date information</el-button
-          >
-        </Popover>
+          <div class="info_unit">
+            <span class="info_label">Event start:</span>
+            <span>{{ dates.start }}</span>
+            <br />
+            <span class="info_label">Event end:</span>
 
-        <div class="info_unit">
-          <span class="info_label">Event start:</span>
-          <span>{{ dates.start }}</span>
-          <br />
-          <span class="info_label">Event end:</span>
-
-          <span>{{ dates.end }}</span>
+            <span>{{ dates.end }}</span>
+          </div>
         </div>
-        <h3 class="mt-4 mb-2">Event type & duration</h3>
-        <Popover trigger="click">
-          <Form
-            slot="content"
-            @val="updateEvent"
-            :config="configXref"
-            submitText="Update"
-          />
-          <el-button
-            slot="trigger"
-            @click="selectedConfig = 'type'"
-            size="mini"
-            class="mb-2"
-            >Update event type information</el-button
-          >
-        </Popover>
+        <div class="view_dialog_information_container">
+          <h3>Event type & duration</h3>
+          <Popover trigger="click">
+            <Form
+              slot="content"
+              :config="configXref"
+              submit-text="Update"
+              @val="updateEvent"
+            />
+            <el-button
+              slot="trigger"
+              size="mini"
+              @click="selectedConfig = 'type'"
+              >Update event type information</el-button
+            >
+          </Popover>
 
-        <div class="info_unit">
-          <span class="info_label">Event duration:</span>
-          <span>{{ duration }} hours</span>
-          <br />
-          <span class="info_label">Event type:</span>
-          <span class="member_name">{{ eventType }}</span>
+          <div class="info_unit">
+            <span class="info_label">Event duration:</span>
+            <span>{{ duration }} hours</span>
+            <br />
+            <span class="info_label">Event type:</span>
+            <span class="member_name">{{ eventType }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -168,25 +163,25 @@
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 
-import Title from "@/components/Title";
+import InformationDisplay from "@/components/InformationDisplay";
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
 import Form from "@/components/Form";
 
 export default {
   name: "ViewEventDialog",
+  components: {
+    InformationDisplay,
+    Avatar,
+    Popover,
+    Form
+  },
   data() {
     return {
       loading: false,
       selectedConfig: "date",
       updates: {}
     };
-  },
-  components: {
-    Title,
-    Avatar,
-    Popover,
-    Form
   },
   computed: {
     ...mapState("Admin", ["teamInformation", "eventsInformation"]),
@@ -235,14 +230,6 @@ export default {
         return tag == this.selectedConfig;
       });
     },
-    noAssignedUsers() {
-      return {
-        text:
-          "You have encountered a critical server error, to proceed please contact support so that this can be fixed",
-        icon: "el-icon-warning-outline",
-        buttonText: "Hello"
-      };
-    },
 
     canAddMoreUsers() {
       return this.event.assignedToIDs.length < this.teamInformation.length;
@@ -257,11 +244,7 @@ export default {
         24
       );
     },
-    hasClockedIn() {
-      return this.event.clockedIn.some(assingnee => {
-        return assingnee == this.userInformation._id;
-      });
-    },
+
     eventType() {
       return this.event.type;
     },
@@ -304,7 +287,7 @@ export default {
       };
     },
     isEventMine() {
-      return this.event.assignedTo.some(event => {
+      return this.event?.assignedTo?.some(() => {
         return this.userInformation._id;
       });
     },
@@ -313,9 +296,9 @@ export default {
     },
     computeDisplay: {
       get() {
-        return this.getActiveDialog("viewEvent");
+        return this.getActiveDialog("viewEvent").view;
       },
-      set(val) {
+      set() {
         this.closeDialog("viewEvent");
       }
     }
@@ -355,6 +338,7 @@ export default {
       }).email;
     },
 
+    // Currently locks database still keeping function for later rework button is hidden
     dropUserFromEvent(userName) {
       // Cannot be the last one
       const newLen = this.event.assignedToIDs.length;
@@ -368,7 +352,7 @@ export default {
             userID
           }
         })
-          .then(response => {
+          .then(() => {
             this.getEvents();
             // Notify user they have been dropped
             this.genNotification({
@@ -382,15 +366,14 @@ export default {
             return err;
           });
       } else {
-        this.UPDATE_NOTIFICATIONS({
-          message:
-            "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so.",
-          title: "Removal warning",
-          type: "warning",
-          duration: 6000,
-          onClick: () => {
-            this.deleteEvent();
-          }
+        this.genPromptBox({
+          boxType: "confirm",
+          title: "Confirm",
+          text:
+            "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so",
+          confirm: "Yes"
+        }).then(() => {
+          this.deleteEvent();
         });
       }
     },
@@ -402,14 +385,9 @@ export default {
           eventID: this.event.id,
           userID
         }
-      })
-        .then(response => {
-          this.getEvents();
-          return response;
-        })
-        .catch(err => {
-          return err;
-        });
+      }).then(() => {
+        this.getEvents();
+      });
     },
     deleteEvent() {
       this.genPromptBox({
@@ -417,27 +395,19 @@ export default {
         title: "Confirm",
         text: "Are you sure you want to delete this event ?",
         confirm: "Yes"
-      })
-        .then(response => {
-          this.request({
-            method: "DELETE",
-            url: "events/delete",
-            data: {
-              _id: this.event.id
-            }
-          })
-            .then(response => {
-              this.getEvents();
-              this.closeDialog("viewEvent");
-              this.notifyAssignees();
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        })
-        .catch(err => {
-          return err;
+      }).then(() => {
+        this.request({
+          method: "DELETE",
+          url: "events/delete",
+          data: {
+            _id: this.event.id
+          }
+        }).then(() => {
+          this.getEvents();
+          this.closeDialog("viewEvent");
+          this.notifyAssignees();
         });
+      });
     },
     notifyAssignees() {
       let assignedToIDs = this.event.assignedToIDs;
@@ -467,7 +437,6 @@ export default {
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
       let assignedTo = [...this.event.assignedToIDs, this.userInformation._id];
-
       this.genEmail({
         subject: "Reminder",
         to: this.getEmail,
@@ -480,13 +449,7 @@ export default {
           for: assignedTo,
           message: contentMessage
         }
-      })
-        .then(response => {
-          return response;
-        })
-        .catch(err => {
-          return err;
-        });
+      });
     },
     clockIn() {
       this.request({
@@ -496,13 +459,9 @@ export default {
           id: this.event._id,
           user: this.userInformation._id
         }
-      })
-        .then(response => {
-          this.getEvents();
-        })
-        .catch(err => {
-          return err;
-        });
+      }).then(() => {
+        this.getEvents();
+      });
     }
   }
 };
@@ -510,6 +469,11 @@ export default {
 <style lang="scss" scoped>
 .title_button_container {
   text-align: left;
+}
+.info_button_container {
+  display: flex;
+  justify-content: center;
+  margin: -10px 0 10px 0;
 }
 .info_label {
   margin-right: 10px;
@@ -520,17 +484,24 @@ export default {
   padding: 20px;
 }
 .view_event_dialog_item {
-  margin: 1em;
   border: 1.2px solid whitesmoke;
-  padding: 1em;
   border-radius: 5px;
+  margin: 1em;
   max-width: 100%;
+  padding: 1em;
   &.no_border {
     border: none;
   }
 }
-h4 {
-  margin-bottom: 10px;
+.view_dialog_information_container {
+  padding: 20px;
+  .el-button {
+    margin-bottom: 20px;
+  }
+}
+h4,
+h3 {
+  margin: 10px 0;
 }
 .view_event_col {
   margin: 1em;
@@ -543,27 +514,39 @@ h4 {
       margin: 10px 0;
     }
     .avatar_wrapper {
+      align-items: center;
       display: flex;
       justify-content: center;
-      align-items: center;
     }
   }
 }
 .remove_icon {
+  transition: 0.5 ease opacity;
+  will-change: opacity;
   opacity: 0;
+  visibility: hidden;
 }
 .assigned_user_container {
-  &:hover {
-    .remove_icon {
-      opacity: 1;
-    }
-  }
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+
   &.cloked_in {
     opacity: 0.5;
   }
 }
+.users_container {
+  padding: 10px;
+  &:hover {
+    background: whitesmoke;
+  }
+}
 .add_new_user {
-  border-radius: $border_radius;
   border: 2px whitesmoke dashed;
+  border-radius: $border_radius;
+  padding: 10px;
+  &:hover {
+    border-color: darken($color: whitesmoke, $amount: 10);
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="comms_container" v-loading="loading">
+  <div v-loading="loading" class="comms_container">
     <CommsList />
     <CommsWindow />
   </div>
@@ -14,6 +14,11 @@ import CommsEventBus from "./components/CommsEventBus";
 
 export default {
   name: "CommsModule",
+  components: {
+    CommsList,
+    CommsWindow,
+    CommsEventBus
+  },
   data() {
     return {
       loading: false,
@@ -22,13 +27,13 @@ export default {
   },
   activated() {
     this.loading = true;
-       this.getTranscripts()
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
+    this.getTranscripts()
+      .then(() => {
+        this.loading = false;
+      })
+      .catch(() => {
+        this.loading = false;
+      });
 
     clearInterval(this.commsInterval);
     this.commsInterval = setInterval(() => {
@@ -59,13 +64,8 @@ export default {
     // Setting transcript to the one found in the router
     this.setTranscriptFromRoute();
   },
-  deactivated(){
-    clearInterval(this.commsInterval)
-  },
-  components: {
-    CommsList,
-    CommsWindow,
-    CommsEventBus
+  deactivated() {
+    clearInterval(this.commsInterval);
   },
   computed: {
     ...mapState("Comms", ["activeTranscript", "transcripts"]),

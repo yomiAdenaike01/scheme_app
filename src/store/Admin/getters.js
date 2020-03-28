@@ -1,8 +1,8 @@
 import Vue from "vue";
 
 export default {
-  getUserGroups(state, getters, { clientInformation: { userGroups } }) {
-    return userGroups.filter(x => {
+  getUserGroups(state, getters, { clientInformation }) {
+    return clientInformation?.userGroups?.filter(x => {
       return x.value != 0;
     });
   },
@@ -42,7 +42,7 @@ export default {
     if (Vue.prototype.hasEntries(teamInformation)) {
       assignedTo = assignedTo.map(assignee => {
         teamInformation.map(teamMember => {
-          let { _id, name, groupID } = teamMember;
+          let { _id, name } = teamMember;
 
           if (assignee == _id) {
             formattedAssignedTo.push(name);
@@ -84,7 +84,7 @@ export default {
       return eventGroups.filter(group => {
         // enabled for equal to user group
         let index = group.enabledFor.findIndex(enbled => {
-          return enbled == groupID;
+          return enbled == groupID || enbled == 0;
         });
         return index > -1;
       });
@@ -103,13 +103,14 @@ export default {
 
   getGroupName: (state, getters, { clientInformation }) => (groupType, id) => {
     let res = {};
-    if (Vue.prototype.hasEntries(clientInformation)) {
-      if (groupType == "user") {
-        groupType = "userGroups";
-      } else {
-        groupType = "eventGroups";
-      }
 
+    if (groupType == "user") {
+      groupType = "userGroups";
+    } else {
+      groupType = "eventGroups";
+    }
+
+    if (Vue.prototype.hasEntries(clientInformation)) {
       res = clientInformation[groupType].find(({ value }) => {
         return value == id;
       });
@@ -120,12 +121,16 @@ export default {
     match,
     params = "_id"
   ) => {
-    let teams;
-    if (Vue.prototype.hasEntries(teamInformation)) {
-      teams = teamInformation.find(member => {
-        return member[params] == match;
-      });
+    let userInfo = null;
+    if (params == userInformation[params]) {
+      userInfo = userInformation;
+    } else {
+      if (Vue.prototype.hasEntries(teamInformation)) {
+        userInfo = teamInformation.find(member => {
+          return member[params] == match;
+        });
+      }
     }
-    return teams;
+    return userInfo;
   }
 };

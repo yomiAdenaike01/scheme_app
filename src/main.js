@@ -9,7 +9,6 @@ import "./plugins/mobile";
 import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
-import "./plugins/clickOutside";
 import "boxicons";
 // Prototypes
 import "./plugins/prototypes";
@@ -21,6 +20,10 @@ const nprogress = new NProgress({
 Vue.use(NProgress, {
   latencyThreshold: 0
 });
+
+let { hostname } = window.location;
+hostname = hostname.split(".")[0];
+document.title = `${hostname} - Powered By Schemeapp.cloud`;
 
 new Vue({
   router,

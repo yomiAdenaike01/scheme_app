@@ -1,7 +1,9 @@
 <template>
-  <div class="user_info_container" v-loading="loading">
-    <h2 class="mb-3">Personal Information</h2>
-    <el-collapse>
+  <div v-loading="loading" class="user_info_container">
+    <el-collapse
+      v-if="getIsAdmin || localUserInformation._id == userInformation._id"
+      class="collapse_container"
+    >
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container flex  align-center">
           <el-button
@@ -14,48 +16,50 @@
           >
           <Popover trigger="click">
             <el-button
+              v-if="getIsAdmin"
               slot="trigger"
               type="primary"
               plain
               round
               size="mini"
-              v-if="getIsAdmin"
               >{{
-                data.groupID == 0 ? "Assign to group" : "Reassign to group"
+                localUserInformation.groupID == 0
+                  ? "Assign to group"
+                  : "Reassign to group"
               }}</el-button
             >
             <el-select
               slot="content"
-              @change="assignUserToGroup"
               v-model="selectedGroup"
+              @change="assignUserToGroup"
             >
               <el-option
-                v-for="group in getUserGroups"
-                :label="group.label"
-                :value="group.value"
-                :key="group.value"
+                v-for="{ label, value } in getUserGroups"
+                :key="value"
+                :label="label"
+                :value="value"
               >
               </el-option>
             </el-select>
           </Popover>
 
           <Popover trigger="click">
-            <el-button type="primary" plain round size="mini" slot="trigger"
+            <el-button slot="trigger" type="primary" plain round size="mini"
               >Update Personal Information</el-button
             >
             <Form
-              submitText="Update user"
               slot="content"
+              submit-text="Update user"
               :config="updateUserForm"
               @val="updateUser"
             />
           </Popover>
           <el-button
+            v-if="getIsAdmin"
             type="danger"
             plain
             round
             size="mini"
-            v-if="getIsAdmin"
             @click="removeUser"
             >Delete Account</el-button
           >
@@ -64,34 +68,40 @@
     </el-collapse>
     <div class="info_container">
       <p>{{ date }}</p>
-      <p>{{ data.name }}</p>
-      <p>{{ data.email }}</p>
+      <p>{{ localUserInformation.name }}</p>
+      <p>{{ localUserInformation.email }}</p>
       <p class="member_name">{{ group }}</p>
+      <p v-if="localUserInformation._id == userInformation._id">
+        {{ localUserInformation.devicesInformation }}
+      </p>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import Popover from "@/components/Popover";
 import Form from "@/components/Form";
 export default {
   name: "UserInfo",
+
   data() {
     return {
       selectedGroup: "",
       loading: false
     };
   },
-  props: {
-    data: {
-      type: Object,
-      default: () => {}
-    }
-  },
   computed: {
+    ...mapState(["userInformation"]),
     ...mapGetters("Admin", ["getGroupName", "getUserGroups"]),
-    ...mapGetters(["getIsAdmin", "getUserDevices"]),
+    ...mapGetters([
+      "getIsAdmin",
+      "getPreviousDeviceInformation",
+      "getActiveDialog"
+    ]),
+    localUserInformation() {
+      return this.getActiveDialog()?.data;
+    },
     updateUserForm() {
       return [
         {
@@ -124,15 +134,16 @@ export default {
       ];
     },
     date() {
-      return this.formatDate(this.data.dateCreated);
+      return this.formatDate(this.localUserInformation.dateCreated);
     },
     group() {
-      return this.getGroupName("event", this.data.groupID)?.name;
+      return this.getGroupName("user", this.localUserInformation.groupID)
+        ?.label;
     },
     removeUnwantedProperties() {
       let cleanedProperties = {};
-      for (let property in this.data) {
-        cleanedProperties[property] = this.data[property];
+      for (let property in this.localUserInformation) {
+        cleanedProperties[property] = this.localUserInformation[property];
       }
       return cleanedProperties;
     }
@@ -152,13 +163,12 @@ export default {
         this.request({
           method: "PUT",
           url: "users/update",
-          data: { update: { ...e }, _id: this.data._id }
+          data: { update: { ...e }, _id: this.localUserInformation._id }
         })
-          .then(response => {
+          .then(() => {
             this.reset();
           })
-          .catch(err => {
-            console.log(err);
+          .catch(() => {
             this.reset();
           });
       }
@@ -168,7 +178,10 @@ export default {
       this.request({
         method: "PUT",
         url: "users/update",
-        data: { update: { _id: this.data._id, groupID: this.selectedGroup } }
+        data: {
+          _id: this.localUserInformation._id,
+          update: { groupID: this.selectedGroup }
+        }
       })
         .then(() => {
           this.loading = false;
@@ -190,7 +203,7 @@ export default {
         this.request({
           method: "DELETE",
           url: "users/remove",
-          data: { _id: this.data._id }
+          data: { _id: this.localUserInformation._id }
         })
           .then(() => {
             this.loading = false;
@@ -235,16 +248,20 @@ export default {
   line-height: 2em;
 }
 .info_container {
+  border: 2px solid whitesmoke;
+  border-radius: 5px;
+  line-height: 2.2em;
   margin-top: 20px;
   padding: 20px;
-  border-radius: 5px;
-  border: 2px solid whitesmoke;
-  font-size: 1.2em;
-  line-height: 2.2em;
 }
 .quick_actions_container {
   & /deep/ > * {
     margin-right: 10px;
   }
+}
+.collapse_container {
+  border: none;
+  border-bottom: none;
+  padding: 20px;
 }
 </style>

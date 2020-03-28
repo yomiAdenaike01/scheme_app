@@ -2,8 +2,8 @@
   <el-dropdown
     trigger="click"
     class="dropdown_container"
-    @command="emitCommand"
     :placement="position"
+    @command="emitCommand"
   >
     <span class="el-dropdown-link dropdown_wrapper">
       <slot></slot>
@@ -12,11 +12,11 @@
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item
         v-for="(item, index) in items"
+        :key="index"
         :disabled="item.disabled"
         :divided="item.divided"
         :command="item.command"
         :icon="item.icon"
-        :key="index"
       >
         <span v-html="item.name"></span>
       </el-dropdown-item>
@@ -62,7 +62,7 @@ export default {
   cursor: pointer;
 }
 .dropdown_wrapper {
-  display: flex;
   align-items: center;
+  display: flex;
 }
 </style>

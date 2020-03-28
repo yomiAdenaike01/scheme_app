@@ -1,34 +1,38 @@
 <template>
-  <el-row
-    type="flex"
-    class="user_container"
+  <div
     v-loading="loading"
+    class="user_module_container"
     element-loading-text="Getting team please wait...."
   >
     <UserGroup
       v-if="getIsAdmin"
-      addNew
+      add-new
       @createUserGroup="displayDialog = $event"
     />
 
     <UserGroup>
-      <div class="h-100 overflow">
-        <Title title="User Groups" subtitle="Manage and contact users here" />
+      <div class="user_groups_table_container">
+        <InformationDisplay
+          :display-text="{
+            heading: 'All Users',
+            content:
+              'Here is a list of all users, select one to view their information'
+          }"
+        />
 
-        <div v-if="hasEntries(getFilteredTeam)">
-          <el-row
+        <div v-if="hasEntries(getFilteredTeam)" class="row_wrapper">
+          <div
             v-for="(count, i) in filteredGroupsWithUsers"
             :key="`${count}${i}`"
+            class="user_group_row"
           >
-            <el-col
-              :span="$mq != 'lg' ? 12 : 8"
+            <div
               v-for="(group, index) in count"
               :key="index"
+              class="user_group_col"
             >
-              <div class="p-4 m-1 user_group_container">
-                <div
-                  class="icon_text_container flex flex--space-between align-center mb-3 pl-3 pr-3"
-                >
+              <div class="user_group_container">
+                <div class="icon_text_container">
                   <div class="flex_center">
                     <i class="bx bx-user user_group_icon"></i>
                     <span class="capitalize">{{ group.label }}</span>
@@ -36,18 +40,29 @@
                 </div>
                 <User
                   v-for="member in group.teamMembers"
-                  :userInformation="{ ...member, groupID: group.value }"
                   :key="member._id"
+                  :user-information="{ ...member, groupID: group.value }"
                   @viewUser="viewUser = $event"
                 />
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </div>
         </div>
-        <div v-else class="h-100 no_content_container flex_center">
-          <InformationDisplay :displayText="{heading:'',content:'',textAlign:'center',headingAlign:'center'}">
-            <i class="bx bx-user" slot="above_header"></i>
-            <el-button slot='information' @click="displayDialog = !displayDialog">Open user management dialog</el-button>
+        <div v-else>
+          <InformationDisplay
+            :display-text="{
+              heading: '',
+              content: '',
+              textAlign: 'center',
+              headingAlign: 'center'
+            }"
+          >
+            <i slot="header" class="bx bx-user"></i>
+            <el-button
+              slot="information"
+              @click="displayDialog = !displayDialog"
+              >Open user management dialog</el-button
+            >
           </InformationDisplay>
         </div>
       </div>
@@ -60,7 +75,7 @@
       :display="displayDialog"
       @toggle="displayDialog = $event"
     />
-  </el-row>
+  </div>
 </template>
 
 <script>
@@ -72,9 +87,18 @@ import UserGroup from "./components/UserGroup";
 import UserManagementActions from "./components/UserManagementActions";
 
 import Title from "@/components/Title";
-import InformationDisplay from "@/components/InformationDisplay"
+import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserModule",
+
+  components: {
+    Title,
+    User,
+    UserGroup,
+    UserModuleDialog,
+    UserManagementActions,
+    InformationDisplay
+  },
 
   data() {
     return {
@@ -86,21 +110,12 @@ export default {
 
   activated() {
     Promise.all([this.getEvents(), this.getTeam()])
-      .then(response => {
+      .then(() => {
         this.loading = false;
       })
-      .catch(err => {
+      .catch(() => {
         this.loading = false;
       });
-  },
-
-  components: {
-    Title,
-    User,
-    UserGroup,
-    UserModuleDialog,
-    UserManagementActions,
-    InformationDisplay
   },
 
   computed: {
@@ -143,17 +158,41 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user_container {
-  height: 90%;
-  padding: 20px;
+.user_module_container {
+  display: flex;
+  flex: 1;
   font-size: 0.9em;
-  & > * {
-    flex: 1;
-  }
+  padding: 20px;
+  max-height: 100%;
 }
-.current_user_column {
-  max-width: 30%;
+.user_groups_table_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: calc(100% - 100px);
+  overflow-x: hidden;
 }
+.row_wrapper {
+  padding-top: 20px;
+  display: flex;
+  flex: 1;
+}
+.user_group_row {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.user_group_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.user_group_col {
+  display: flex;
+  flex: 1;
+  margin-top: 20px;
+}
+
 .button {
   margin-top: 35px;
 }
@@ -164,8 +203,8 @@ export default {
   transition: transform 0s;
 }
 .ghost {
-  opacity: 0.5;
   background: #c8ebfb;
+  opacity: 0.5;
 }
 .list-group {
   min-height: 20px;
@@ -181,22 +220,22 @@ export default {
   margin-right: 10px;
 }
 .icon_text_container {
-  border-radius: 10px;
   background: rgb(250, 250, 250);
-  padding: 10px 0px;
+  border-radius: 10px;
   color: #222;
   font-size: 0.9em;
+  padding: 10px 0px;
 }
 
 /*
- 
-   __  __       _     _ _      
-  |  \/  | ___ | |__ (_) | ___ 
+
+   __  __       _     _ _
+  |  \/  | ___ | |__ (_) | ___
   | |\/| |/ _ \| '_ \| | |/ _ \
   | |  | | (_) | |_) | | |  __/
   |_|  |_|\___/|_.__/|_|_|\___|
-                               
- 
+
+
 */
 .mobile {
   .user_container {

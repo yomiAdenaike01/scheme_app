@@ -6,8 +6,6 @@ import AdminRoutes from "./AdminRoutes";
 import AuthRoutes from "./AuthRoutes";
 import SupportRoutes from "./SupportRoutes";
 
-const ClientIntro = () => import("@/components/ClientIntro");
-
 // Router views
 const MainApp = () => import("@/views/router_views/Main");
 const Admin = () => import("@/views/router_views/Admin");
@@ -19,11 +17,6 @@ const routes = [
   {
     path: "/",
     redirect: { name: "events" }
-  },
-  {
-    path: "/intro",
-    name: "intro",
-    component: ClientIntro
   },
 
   {
@@ -55,9 +48,6 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const authRequired = to.matched.some(route => route.meta.authRequired);
   const isLoggedIn = Vue.prototype.hasEntries(store.state.userInformation);
-  let { hostname } = window.location;
-  hostname = hostname.split(".")[0];
-  document.title = `${hostname} - Powered By Schemeapp.cloud`;
 
   function redirect(name) {
     next({

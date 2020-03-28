@@ -1,19 +1,22 @@
 <template>
   <div
     ref="notification"
-    class="notification_container pl-2 pr-2"
+    v-loading="loading"
+    class="notification_container"
     :class="{
       is_read:
         notification.status == 'is_read' || notification.status == 'complete'
     }"
-    v-loading="loading"
     @click="updateNotification({ status: 'is_read' }), notificationController()"
   >
     <p class="flex" :title="notification.message">
-      <i :class="notificationTypeIcon" class="grey notification_icon mr-2"></i>
+      <i
+        :class="`bx ${notificationTypeIcon}`"
+        class="grey notification_icon"
+      ></i>
       {{ notification.message }}
     </p>
-    <small class="grey mt-3 mb-3">{{ notificationSendDate }}</small>
+    <small class="grey">{{ notificationSendDate }}</small>
 
     <br />
   </div>
@@ -23,25 +26,27 @@
 import { mapActions, mapMutations } from "vuex";
 export default {
   name: "UserNotification",
+  props: {
+    notification: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data() {
     return {
       viewDetails: false,
-      formatString: "DD/MMMM/YYYY HH:mm",
       loading: false
     };
-  },
-  props: {
-    notification: Object
   },
   computed: {
     notificationSendDate() {
       return this.initMoment(this.notification.dateCreated).calendar();
     },
     startDate() {
-      return this.formatDate(this.update.startDate, this.formatString);
+      return this.formatDate(this.update.startDate);
     },
     endDate() {
-      return this.formatDate(this.update.endDate, this.formatString);
+      return this.formatDate(this.update.endDate);
     },
     notificationUpdate() {
       return this.notification.content;
@@ -52,18 +57,22 @@ export default {
     notificationTypeIcon() {
       let type = "";
       switch (this.notification.type) {
+        case "request": {
+          type = "bx-question-mark";
+          break;
+        }
         case "message": {
-          type = "bx bx-conversation";
+          type = "bx-conversation";
           break;
         }
 
         case "attention": {
-          type = "bx bx-exclamation";
+          type = "bx-exclamation";
           break;
         }
 
         case "announcement": {
-          type = "bx bx-speaker";
+          type = "bx-speaker";
           break;
         }
 
@@ -101,7 +110,7 @@ export default {
     },
     updateNotification(update) {
       this.loading = true;
-      this.UPDATE_USER_NOTIFICATIONS({_id:this.notification._id,update})
+      this.UPDATE_USER_NOTIFICATIONS({ _id: this.notification._id, update });
       this.request({
         method: "POST",
         url: "notifications/update",
@@ -110,11 +119,10 @@ export default {
           update
         }
       })
-        .then(response => {
+        .then(() => {
           this.loading = false;
-
         })
-        .catch(error => {
+        .catch(() => {
           this.loading = false;
         });
     }
@@ -123,11 +131,11 @@ export default {
 </script>
 <style lang="scss">
 .update_content {
-  display: flex;
-  justify-content: center;
   align-items: center;
+  display: flex;
   flex-direction: column;
   font-size: 0.8em;
+  justify-content: center;
 }
 .check_button {
   border: 1px solid $element_colour;
@@ -136,8 +144,8 @@ export default {
   }
 }
 .notification_container {
-  cursor: pointer;
   border-bottom: $border;
+  cursor: pointer;
   &.is_read {
     opacity: 0.5;
     pointer-events: none;
@@ -157,11 +165,11 @@ export default {
 .notification_type_indicator {
   border-radius: 20px;
   color: white;
-  text-transform: capitalize;
-  max-width: 80px;
-  text-align: center;
-  padding: 3px 10px;
   margin-top: 5px;
+  max-width: 80px;
+  padding: 3px 10px;
+  text-align: center;
+  text-transform: capitalize;
   &.reminder {
     background: rgb(94, 114, 228);
   }

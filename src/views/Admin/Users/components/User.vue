@@ -1,11 +1,11 @@
 <template>
   <div
-    class="team_member flex p-4 mt-1"
+    class="user_container"
     @click="
       UPDATE_DIALOG_INDEX({
-        dialog: 'viewUser',
+        dialog: 'profile',
         view: true,
-        data: userInformation._id
+        data: userInformation
       })
     "
   >
@@ -19,11 +19,9 @@
     </el-badge>
     <Avatar v-else :name="name" />
 
-    <div class="flex columns">
-      <div class="text_content ml-2">
-        <p class="member_name m-0 p-0">{{ name }}</p>
-        <small>{{ group }}</small>
-      </div>
+    <div class="text_content">
+      <p class="member_name">{{ name }}</p>
+      <small class="grey">{{ foundGroupName }}</small>
     </div>
   </div>
 </template>
@@ -34,6 +32,9 @@ import { mapState, mapMutations, mapGetters } from "vuex";
 import Avatar from "@/components/Avatar";
 export default {
   name: "User",
+  components: {
+    Avatar
+  },
   props: {
     displayPrescence: {
       type: Boolean,
@@ -45,9 +46,6 @@ export default {
       required: true
     }
   },
-  components: {
-    Avatar
-  },
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters("Admin", ["getGroupName"]),
@@ -55,13 +53,11 @@ export default {
       return this.userInformation.name;
     },
     foundGroupName() {
-      return this.getGroupName("user", this.userInformation.groupID).name;
+      return this.getGroupName("user", this.userInformation.groupID)?.label;
     },
     group() {
-      let { groupID } = this.userInformation;
       let name = "Group not found";
       if (this.hasEntries(this.clientInformation)) {
-        let { userGroups } = this.clientInformation;
         name = this.foundGroupName;
       }
       return name;
@@ -74,14 +70,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.team_member {
-  border-radius: 10px;
+.user_container {
+  display: flex;
+  flex: 1;
+  min-height: 50px;
+  max-height: 50px;
   border: 1px solid #ebeef5;
-  overflow-x: hidden;
-  transition: $default_transition background;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: $default_transition background;
   &:hover {
     background: $hover_grey;
   }
+}
+.text_content {
+  margin-left: 20px;
 }
 </style>

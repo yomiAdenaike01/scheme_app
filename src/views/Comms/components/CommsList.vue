@@ -1,33 +1,33 @@
 <template>
-  <div class="comms_list_container" v-loading=''>
+  <div v-loading="" class="comms_list_container">
     <div class="comms_list_toolbar flex_center p-3">
       <el-input
+        v-model="transcriptSearch"
         placeholder="Seach chats"
         class="mr-3"
         size="small"
-        v-model="transcriptSearch"
       ></el-input>
       <Popover width="200" trigger="click">
         <Form
           slot="content"
           v-loading="loading"
           :config="createChatForm"
+          submit-text="Initate Chat"
           @val="initChat"
-          submitText="Initate Chat"
         />
         <el-button
+          slot="trigger"
           icon="el-icon-plus"
           round
           size="small"
           circle
-          slot="trigger"
         ></el-button>
       </Popover>
     </div>
     <div class="comms_list">
       <div
-        class="no_content_wrapper flex_center"
         v-if="transcripts.length == 0"
+        class="no_content_wrapper flex_center"
       ></div>
       <!-- Transcripts -->
       <div v-else>
@@ -52,6 +52,12 @@ import Form from "@/components/Form";
 
 export default {
   name: "CommsList",
+  components: {
+    Popover,
+    CommsTranscript,
+    CommsEventBus,
+    Form
+  },
   data() {
     return {
       transcriptSearch: "",
@@ -72,12 +78,6 @@ export default {
         type: "info"
       });
     });
-  },
-  components: {
-    Popover,
-    CommsTranscript,
-    CommsEventBus,
-    Form
   },
   computed: {
     ...mapState(["userInformation"]),
@@ -141,9 +141,9 @@ export default {
 
 <style lang="scss" scoped>
 .comms_list_container {
+  border-right: $border;
   flex: 0.5;
   height: 100%;
-  border-right: $border;
 }
 .comms_list_toolbar {
   flex: 1;

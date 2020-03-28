@@ -1,19 +1,17 @@
 <template>
   <!-- Slide download -->
-  <el-card
-    class="create_template_container p-2 mt-4"
-    shadow="none"
-    v-loading="loading"
-  >
-    <Title title="Create Template" class="m-0 p-0" />
-
+  <div v-loading="loading" class="create_template_container ">
     <!-- Predefined configs -->
-    <el-checkbox-group v-model="configDisplay" size="mini" class="m-3">
+    <el-checkbox-group
+      v-model="configDisplay"
+      size="mini"
+      class="switch_containers"
+    >
       <el-checkbox-button
         v-for="({ text, model, disable }, index) in switches"
+        :key="index"
         :label="model"
         :disabled="disable ? disable : false"
-        :key="index"
         >{{ text }}</el-checkbox-button
       >
     </el-checkbox-group>
@@ -21,30 +19,28 @@
     <!-- Form -->
     <Form
       :config="templateForm"
-      submitText="Submit Template"
-      @val="createTemplate"
+      submit-text="Submit Template"
       size="small"
+      @val="createTemplate"
     />
-  </el-card>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapState, mapActions } from "vuex";
 
-import Title from "@/components/Title";
 import Form from "@/components/Form";
 
 export default {
   name: "CreateTemplate",
+  components: {
+    Form
+  },
   data() {
     return {
       configDisplay: ["disableRepeatFor", "individualUserGroups"],
       loading: false
     };
-  },
-  components: {
-    Form,
-    Title
   },
   computed: {
     ...mapGetters(["getIsAdmin"]),
@@ -91,8 +87,7 @@ export default {
           model: "name",
           "component-type": "text",
           placeholder: "Template name",
-          optional: true,
-          hint: `Optional: Default name will be <strong>template_${this.defaultName}</strong>`
+          optional: true
         },
         {
           model: "type",
@@ -208,11 +203,18 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.create_template_container {
+  border: $border;
+  padding: 10px;
+}
 .create_template_switch {
   &/deep/ {
     .el-switch__label span {
       font-size: 0.8em;
     }
   }
+}
+.switch_containers {
+  margin: 20px 0;
 }
 </style>

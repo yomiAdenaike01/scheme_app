@@ -1,5 +1,4 @@
 export default {
-  
   deleteChat(context, payload) {
     return new Promise((resolve, reject) => {
       context
@@ -127,7 +126,7 @@ export default {
           .catch(error => {
             reject(error);
           });
-      } 
+      }
     });
   }
 };

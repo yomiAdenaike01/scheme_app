@@ -1,10 +1,11 @@
 <template>
   <div @keyup.enter="submitForm">
+    <slot name="header"></slot>
     <el-form
+      ref="form"
       class="p-1"
       :inline="inline"
       :disabled="disableForm"
-      ref="form"
       :rules="form.validate"
       :model="formContent"
     >
@@ -15,7 +16,6 @@
         :label="input.label || ''"
       >
         <component
-          class="dialog_item"
           :is="
             input['component-type'] == 'text' ||
             input['component-type'] == 'password'
@@ -28,13 +28,18 @@
               ? 'el-input-number'
               : input['component-type'] == 'time-picker'
               ? 'el-time-picker'
+              : input['component-type'] == 'cascader'
+              ? 'el-cascader'
               : null
           "
           v-model="formContent[input.model]"
+          class="dialog_item"
           :value-key="input.text || input.name"
           :show-password="input['component-type'] == 'password'"
           :min="input.min"
           :max="input.max"
+          :option="input.options"
+          :props="input.cascaderProps"
           :picker-options="input.pickerOptions"
           :is-range="input.isRange"
           :type="
@@ -64,21 +69,26 @@
         >
           <el-option
             v-for="option in input.options"
-            :label="option.text || option.name || option.label"
             :key="option.value"
+            :label="option.text || option.name || option.label"
             :value="option.value ? option.value : option.text"
           />
         </component>
         <!-- Hint -->
         <small
-          class="description"
           v-if="input.hint"
+          class="description"
           v-html="input.hint"
         ></small>
       </el-form-item>
 
+      <slot name="footer"></slot>
+
       <!-- Submit button -->
-      <div class="button_container mt-4" v-if="!disable">
+      <div v-if="!disable" class="button_container">
+        <el-button v-if="displayReset" round :size="size" @click="resetForm"
+          >Clear Form</el-button
+        >
         <el-button
           :size="size"
           type="primary"
@@ -87,7 +97,6 @@
           @click="submitForm"
           >{{ submitText }}</el-button
         >
-        <el-button v-if="displayReset" @click="resetForm">Reset</el-button>
       </div>
     </el-form>
   </div>
@@ -96,13 +105,6 @@
 <script>
 export default {
   name: "Form",
-
-
-  data() {
-    return {
-      formContent: {}
-    };
-  },
   props: {
     displayReset: {
       type: Boolean,
@@ -125,26 +127,27 @@ export default {
       default: "Submit"
     },
     config: {
-      type: Array
+      type: Array,
+      required: false
     },
     customMethod: {
       type: Function,
       default: null
     },
 
-    liveUpdate: {
+    emitOnChange: {
       type: Boolean,
       default: false
     },
     size: {
       type: String,
       default: "mini"
-    },
-    resetOnSubmit: {
-      type: Boolean,
-      default: false
-    },
-    
+    }
+  },
+  data() {
+    return {
+      formContent: {}
+    };
   },
   computed: {
     form() {
@@ -156,7 +159,7 @@ export default {
           ? formItem.name
           : formItem.model;
 
-        if (!formItem?.optional) {
+        if (!formItem?.optional && !formItem?.disabled) {
           let validArr = [];
           let compType = formItem["component-type"];
           let inputType = formItem["input-type"];
@@ -204,6 +207,16 @@ export default {
       };
     }
   },
+  watch: {
+    formContent: {
+      deep: true,
+      handler(val) {
+        if (this.emitOnChange) {
+          this.$emit("formValChange", val);
+        }
+      }
+    }
+  },
   methods: {
     resetForm() {
       this.$refs.form.resetFields();
@@ -220,55 +233,47 @@ export default {
       });
     },
     completeForm() {
-      return new Promise((resolve, reject) => {
-        try {
-          this.$emit("val", this.formContent);
-
-          if (this.customMethod) {
-            this.customMethod();
-          }
-
-          if (this.nextTab) {
-            this.$emit("changeTab");
-          }
-          resolve();
-        } catch (error) {
-          reject(error);
+      try {
+        this.$emit("val", this.formContent);
+        if (this.customMethod) {
+          this.customMethod();
         }
-      });
+
+        if (this.nextTab) {
+          this.$emit("changeTab");
+        }
+      } catch (error) {}
     },
     submitForm() {
       this.runValidation()
-        .then(response => {
-          this.completeForm().then(response => {
-            if (this.resetOnSubmit) {
-              this.resetForm();
-            }
-          });
+        .then(() => {
+          this.completeForm();
         })
         .catch(error => {
           return error;
         });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .button_container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 .button_text {
   text-transform: capitalize;
 }
 .dialog_item {
   min-width: 70%;
+  max-width: 70%;
 }
 .description {
-  display: block;
-  padding: 0;
-  margin: 0;
   color: #999;
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 </style>

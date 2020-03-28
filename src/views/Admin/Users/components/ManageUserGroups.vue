@@ -2,56 +2,52 @@
   <div class="manage_user_groups_container">
     <h3 class="txt_center">What would you like to do ?</h3>
     <div class="content_container">
-      <div class="button_container flex_center w">
-        <el-row type="flex" class="mt-4 mb-4">
-          <el-col v-for="(management, index) in managementConfig" :key="index">
-            <el-button
-              plain
-              class="m-3 user_group_btn grey"
-              @click="currentDisplay = makeUgly(management.name)"
-              >{{ management.name }}</el-button
-            >
-          </el-col>
-        </el-row>
+      <div class="button_container">
+        <div v-for="(management, index) in managementConfig" :key="index">
+          <el-button
+            plain
+            class="user_group_btn grey"
+            @click="currentDisplay = makeUgly(management.name)"
+            >{{ management.name }}</el-button
+          >
+        </div>
       </div>
       <el-collapse-transition>
-        <Form
-          v-if="currentDisplay == 'create_group'"
-          :config="userGroupForm"
-          @val="groupController"
-        />
+        <div v-if="currentDisplay.length > 0" class="group_mutation_container">
+          <Form
+            v-if="currentDisplay == 'create_group'"
+            submit-text="Create Group"
+            :config="userGroupForm"
+            @val="groupController"
+          />
 
-        <div v-if="currentDisplay == 'delete_group'">
-          <div class="txt_center">
-            <small>
-              <span class="el-icon-warning-outline"></span> Warning: Deleting a
-              user group may cause unforseen errors
-            </small>
-          </div>
-          <el-row type="flex">
-            <div
-              class="group_container p-4 m-3 flex_center columns flex-1"
-              v-for="(group, index) in getUserGroups"
-              :key="index"
-              @click="toggleDelete(group.value)"
-              :class="[
-                {
-                  active: inArray(group.value),
-                  no_events: runningDelete == group.value
-                }
-              ]"
-            >
-              <p class="mb-3" v-loading="inArray(group.value)">
-                {{ group.label }}
-              </p>
+          <div
+            v-else-if="currentDisplay == 'delete_group'"
+            class="delete_group_container"
+          >
+            <div class="delete_groups">
+              <div
+                v-for="(group, index) in getUserGroups"
+                :key="index"
+                class="group"
+                :class="[
+                  {
+                    active: inArray(group.value),
+                    no_events: runningDelete == group.value
+                  }
+                ]"
+                @click="toggleDelete(group.value)"
+              >
+                <p v-loading="runningDelete.indexOf(group.value) > -1">
+                  {{ group.label }}
+                </p>
+              </div>
             </div>
-          </el-row>
-          <div class="flex flex--end align_end">
             <el-button
+              v-if="toDelete.length > 0"
               plain
               round
               type="danger"
-              v-if="toDelete.length > 0"
               @click="deleteGroup"
               >Confirm</el-button
             >
@@ -71,7 +67,7 @@ export default {
     return {
       currentDisplay: "",
       toDelete: [],
-      runningDelete: ""
+      runningDelete: []
     };
   },
   computed: {
@@ -137,21 +133,28 @@ export default {
 
     deleteGroup() {
       // Are users assigned to this group
-      this.runningDelete = this.toDelete;
-      this.request({
-        method: "DELETE",
-        url: "clients/group",
-        data: { groupType: "userGroups", value: this.toDelete }
-      })
-        .then(response => {
-          this.closeDialog();
+      this.genPromptBox({
+        boxType: "confirm",
+        title: "Confirm",
+        text:
+          "Users that are assigned to this group will be moved to an unassigned category",
+        confirm: "Yes"
+      }).then(() => {
+        this.runningDelete = this.toDelete;
+        this.request({
+          method: "DELETE",
+          url: "clients/group",
+          data: { groupType: "userGroups", value: this.toDelete }
         })
-        .catch(err => {
-          this.closeDialog();
-        });
+          .then(() => {
+            this.closeDialog();
+          })
+          .catch(() => {
+            this.closeDialog();
+          });
+      });
     },
 
-    updateGroup(content) {},
     createUserGroup(content) {
       content.groupType = "userGroups";
       content.value = this.clientInformation.userGroups.length + 1;
@@ -184,23 +187,47 @@ export default {
     }
   }
 }
-.group_container {
-  border: 1.3px solid #ebeef5;
-  transition: 0.56s ease all;
-  border-radius: 5px;
-  color: #999;
-  cursor: pointer;
-  min-height: 150px;
-  max-height: 200px;
-  &.active {
-    font-weight: bold;
-    border-color: $error_colour;
-    color: $error_colour;
+
+.button_container {
+  display: flex;
+  justify-content: center;
+  & > * {
+    margin: 20px;
   }
-  &/deep/ {
-    .el-loading-spinner .path {
-      stroke: $error_colour;
+}
+.group_mutation_container {
+  padding: 20px;
+}
+.delete_group_container {
+  display: block;
+  .group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    margin: 10px;
+    border: 1.3px solid #ebeef5;
+    border-radius: 5px;
+    color: #999;
+    cursor: pointer;
+    max-height: 200px;
+    min-height: 150px;
+    transition: 0.56s ease all;
+    &.active {
+      border-color: $error_colour;
+      color: $error_colour;
+      font-weight: bold;
+    }
+    &/deep/ {
+      .el-loading-spinner .path {
+        stroke: $error_colour;
+      }
     }
   }
+}
+.delete_groups {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
 }
 </style>

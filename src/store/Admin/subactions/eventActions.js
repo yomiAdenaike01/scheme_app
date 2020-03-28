@@ -1,15 +1,39 @@
 export default {
-  getEvents(context, params = {}) {
+  getRequests({ dispatch, rootState, commit }, userID) {
+    let _id = rootState.userInformation._id;
+    if (userID) {
+      _id = userID;
+    }
+    return new Promise((resolve, reject) => {
+      const payload = {
+        method: "GET",
+        url: "events/requests/all",
+        params: { _id }
+      };
+      dispatch("request", payload, { root: true })
+        .then(response => {
+          if (!userID) {
+            commit("UPDATE_REQUESTS", response);
+            resolve();
+          } else {
+            resolve(response);
+          }
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
+  getEvents({ dispatch, commit }, params = {}) {
     return new Promise((resolve, reject) => {
       const payload = {
         method: "GET",
         url: "events/all",
         params
       };
-      context
-        .dispatch("request", payload, { root: true })
+      dispatch("request", payload, { root: true })
         .then(response => {
-          context.commit("UPDATE_EVENTS", response);
+          commit("UPDATE_EVENTS", response);
           resolve();
         })
         .catch(err => {
@@ -37,7 +61,7 @@ export default {
         });
     });
   },
-  updateEvents({ dispatch, commit }, { update, id }) {
+  updateEvents({ dispatch }, { update, id }) {
     return new Promise((resolve, reject) => {
       dispatch(
         "request",

@@ -4,9 +4,9 @@
     :style="{ backgroundColor: colour }"
   >
     <el-color-picker
+      v-model="colour"
       :predefine="defaultCustomColours"
       class="inner_picker"
-      v-model="colour"
     ></el-color-picker>
   </div>
 </template>
@@ -33,8 +33,8 @@ export default {
 <style lang="scss" scoped>
 .colour_unit {
   border-radius: 50%;
-  width: 60px;
   height: 60px;
+  width: 60px;
 }
 .inner_picker {
   opacity: 0;

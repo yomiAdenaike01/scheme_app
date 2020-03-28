@@ -1,29 +1,20 @@
 <template>
   <div class="login_container">
-    <div class="flex_container">
-      <el-card class="form_container">
-        <el-container class="h-100">
-          <el-main class="login_wrapper">
-            <Logo class="mb-4" />
-            <Form :config="formConfig" submitText="Login" @val="login" />
-            <!-- New client registration -->
-            <div
-              class="new_client_button_container mb-4 mt-4"
-              slot="header_content"
-            >
-              <el-button
-                v-if="!isValidClient"
-                @click="$router.push({ name: 'register' })"
-                round
-                size="small"
-                type="primary"
-                >Registering a new company ? Click here to register.</el-button
-              >
-            </div>
-          </el-main>
-        </el-container>
-      </el-card>
-    </div>
+    <Form
+      class="form_container"
+      :config="formConfig"
+      :submit-text="submitText"
+      @val="submitController"
+    >
+      <div slot="header" class="logo_wrapper">
+        <Logo />
+      </div>
+      <div slot="footer" class="new_client_button_container">
+        <el-button size="small" @click="selectedForm = 'forgotPassword'">
+          Forgot password ?
+        </el-button>
+      </div>
+    </Form>
   </div>
 </template>
 
@@ -31,82 +22,151 @@
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
 import Logo from "@/components/Logo";
+
+import validateInput from "@/mixins/validateInput";
 export default {
   name: "UserAuth",
-  data() {
-    return {
-      newUser: false,
-      loading: false
-    };
-  },
-
-  activated() {
-    if (this.hasEntries(this.$route.params)) {
-      this.login(this.$route.params);
-    }
-    if (!this.hasEntries(this.clientInformation)) {
-      this.getClient()
-        .then(response => {
-          this.UPDATE_CLIENT(response);
-        })
-        .catch(() => {
-          return;
-        });
-    }
-  },
   components: {
     Form,
     Logo
   },
-  computed: {
-    isValidClient() {
-      return this.hasEntries(this.clientInformation);
-    },
-    ...mapState(["clientInformation"]),
+  mixins: [validateInput],
+  data() {
+    return {
+      newUser: false,
+      loading: false,
+      credentials: {},
+      selectedForm: "login"
+    };
+  },
 
-    returnPayload() {
-      return {};
+  activated() {
+    this.CLEAR_GLOBAL_INTERVAL();
+    if (this.hasEntries(this.$route.params)) {
+      this.login(this.$route.params);
+    }
+  },
+
+  computed: {
+    ...mapState(["clientInformation"]),
+    ...mapGetters(["getDeviceInformation"]),
+
+    submitText() {
+      return this.selectedForm == "login" ? "Login" : "Submit new password";
     },
 
     returnForm() {
       return this.formConfig[this.selectedForm];
     },
     formConfig() {
-      return [
-        {
-          name: "email",
-          "component-type": "text",
-          placeholder: "Email",
-          model: "email"
-        },
-        {
-          name: "password",
-          "component-type": "password",
-          placeholder: "Password",
-          model: "password"
-        }
-      ];
+      return this.forms[this.selectedForm];
+    },
+    forms() {
+      return {
+        forgotPassword: [
+          {
+            name: "email",
+            "component-type": "text",
+            placeholder: "Email",
+            model: "fp_email"
+          },
+          {
+            name: "password",
+            "component-type": "password",
+            placeholder: "Password",
+            model: "fp_password"
+          },
+          {
+            name: "password",
+            "component-type": "password",
+            placeholder: "Retype-Password",
+            model: "fp_reentered_password"
+          }
+        ],
+        login: [
+          {
+            name: "email",
+            "component-type": "text",
+            placeholder: "Email",
+            model: "email"
+          },
+          {
+            name: "password",
+            "component-type": "password",
+            placeholder: "Password",
+            model: "password"
+          }
+        ]
+      };
     }
   },
   methods: {
     ...mapActions(["request", "getClient"]),
-    ...mapMutations(["UPDATE_USER", "UPDATE_NOTIFICATIONS"]),
+    ...mapMutations([
+      "UPDATE_USER",
+      "UPDATE_NOTIFICATIONS",
+      "CLEAR_GLOBAL_INTERVAL"
+    ]),
 
-    setFormAndProcessUser(e) {
-      try {
-        this.$set(this.formModel, this.selectedForm, e);
-        this.processUser();
-      } catch (error) {
-        console.log(error);
+    submitController(formInformation) {
+      this.credentials = formInformation;
+      switch (this.selectedForm) {
+        case "login": {
+          this.login();
+          break;
+        }
+
+        case "forgotPassword": {
+          this.resetPassword();
+          break;
+        }
+        default: {
+          break;
+        }
       }
     },
-    login(credentials) {
+
+    resetPassword() {
+      // Validate the input;
+      let isValid = this.validateInput(this.formConfig, [
+        "fp_email",
+        "fp_password",
+        "fp_reentered_password"
+      ]);
+      let equalPasswords =
+        this.credentials?.fp_password?.toLowerCase()?.trim() ===
+        this.credentials?.fp_reentered_password?.toLowerCase()?.trim();
+      if (!isValid && !equalPasswords) {
+        this.UPDATE_NOTIFICATIONS({
+          type: "error",
+          message:
+            "Error processing reset password, please enter your desired password again"
+        });
+      } else {
+        this.request({
+          method: "POST",
+          url: "users/password",
+          data: {
+            clientID: this.clientInformation._id,
+            email: this.credentials.fp_email,
+            password: this.credentials.fp_password
+          }
+        }).then(() => {
+          this.selectedForm = "login";
+        });
+      }
+    },
+    /**
+     *
+     */
+    login() {
       this.loading = true;
       this.request({
         method: "POST",
         data: {
           clientID: this.clientInformation._id,
-          ...credentials
+          ...this.credentials,
+          deviceInformation: this.getDeviceInformation
         },
         url: "/users/login"
       })
@@ -129,7 +189,7 @@ export default {
           this.loading = false;
           // this.changeTab("login");
         })
-        .catch(error => {
+        .catch(() => {
           this.loading = false;
         });
     }
@@ -139,33 +199,22 @@ export default {
 
 <style lang="scss" scoped>
 .login_container {
-  height: 100%;
-}
-.register_as_new_client_wrapper {
   display: flex;
-  width: 100%;
-  align-items: flex-end;
-  justify-content: flex-end;
-  margin: 1em 0;
-  cursor: pointer;
-}
-.flex_container {
-  display: flex;
+  flex: 1;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  padding: 0;
-  margin: 0;
+}
+.logo_wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 .form_container {
-  min-width: 25%;
-}
-.switch_button {
-  border: 1px solid $element_colour;
-}
-.new_client_button_container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  width: 400px;
+  padding: 40px;
+  box-shadow: $box_shadow;
 }
 </style>

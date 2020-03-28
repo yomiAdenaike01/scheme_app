@@ -4,6 +4,7 @@ import eventActions from "./subactions/eventActions";
 export default {
   ...templateActions,
   ...eventActions,
+
   getNotes(context, id) {
     return new Promise((resolve, reject) => {
       context

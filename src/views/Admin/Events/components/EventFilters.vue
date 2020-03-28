@@ -7,9 +7,9 @@
           >Select from dropdowns to filter the schedule.</small
         >
         <el-select
-          v-model="localFilters[key]"
           v-for="(group, key) in groups"
           :key="key"
+          v-model="localFilters[key]"
           :placeholder="`Select ${placeholders[key].name}`"
           class="mt-3"
           size="small"
@@ -92,10 +92,10 @@ export default {
 
 <style lang="scss" scoped>
 .filters_container {
-  flex: 0.15;
   background: rgb(252, 252, 252);
   border-right: 1px solid #efefef;
   border-top: 1px solid #efefef;
+  flex: 0.15;
 
   position: relative;
 }

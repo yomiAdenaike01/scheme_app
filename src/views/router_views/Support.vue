@@ -1,37 +1,43 @@
 <template>
-  <div class="support_container h-100">
+  <div class="support_container">
     <header>
-      <div
-        class="go_back_container p-3 grey flex align-center"
-        @click="$router.go(-1)"
-      >
+      <div class="go_back_container" @click="REMOVE_USER()">
         <i class="el-icon-arrow-left trigger"></i>
-        <p class="trigger">Go back</p>
+        <p class="trigger">Log out</p>
       </div>
     </header>
-    <div class="support_body_container h-100">
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
-    </div>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapMutations } from "vuex";
 
 export default {
   name: "SupportCentre",
-  activated() {
-    this.closeDialog();
-  },
   methods: {
-    ...mapActions(["closeDialog"])
+    ...mapMutations(["REMOVE_USER"])
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.support_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.go_back_container {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  i {
+    margin-right: 5px;
+  }
+}
 header {
   box-shadow: $box_shadow;
 }
