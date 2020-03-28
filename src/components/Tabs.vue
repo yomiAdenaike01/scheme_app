@@ -77,7 +77,7 @@ export default {
 
     tabType: {
       type: String,
-      default: "border-card"
+      default: "card"
     },
     tabs: {
       type: Array,

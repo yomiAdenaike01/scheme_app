@@ -99,10 +99,9 @@ export default {
 };
 </script>
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css?family=Sen|Source+Sans+Pro&display=swap");
-
+@import url("https://fonts.googleapis.com/css?family=Nunito:300,400,600&display=swap");
 * {
-  font-family: "Sen", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
 }
 
 body,

@@ -56,7 +56,7 @@
       </div>
 
       <component
-        :is="displayText.tag ? displayText.tag : 'h3'"
+        :is="displayText.tag ? displayText.tag : 'h2'"
         class="heading"
         :class="{ txt_center: displayCenter.heading }"
         v-html="displayText.heading"
@@ -172,7 +172,7 @@ export default {
   padding: 30px;
   line-height: 2em;
   .heading {
-    font-weight: bold;
+    font-weight: 500;
   }
   .slot_container {
     &.center_icon {

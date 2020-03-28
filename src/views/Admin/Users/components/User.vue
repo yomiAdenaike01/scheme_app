@@ -84,9 +84,6 @@ export default {
   &:hover {
     background: $hover_grey;
   }
-  & > * {
-    font-size: 1.25em;
-  }
 }
 .text_content {
   margin-left: 20px;
