@@ -59,19 +59,19 @@ export default {
           icon: this.renderCreateEventButton.icon
         }
       ];
-      if (this.eventsInformation.previous.length > 0) {
-        buttons.push({
-          label: "<i class='bx bx-timer'></i> View previous events",
-          round: true,
-          plain: true,
-          method: () => {
-            this.UPDATE_DIALOG_INDEX({
-              dialog: "prevEvents",
-              view: true
-            });
-          }
-        });
-      }
+      // if (this.eventsInformation.previous.length > 0) {
+      //   buttons.push({
+      //     label: "View previous events",
+      //     round: true,
+      //     plain: true,
+      //     method: () => {
+      //       this.UPDATE_DIALOG_INDEX({
+      //         dialog: "prevEvents",
+      //         view: true
+      //       });
+      //     }
+      //   });
+      // }
       return buttons;
     }
   }

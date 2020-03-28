@@ -102,7 +102,7 @@ export default {
         }
       };
 
-      if (eventsInformation?.userGroups) {
+      if (eventsInformation?.userGroups?.length > 0) {
         // Changed the assigned to to all of the user groups
         let uGroups = eventsInformation.userGroups;
         eventsInformation.assignedTo = [];

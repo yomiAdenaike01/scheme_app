@@ -3,12 +3,14 @@
     v-if="getActiveDialog('viewEvent').view"
     :visible.sync="computeDisplay"
   >
-    <div class="view_event_dialog p-3">
-      <Title
-        title="View event"
-        subtitle="Click on more information to display details"
-      ></Title>
-      <div class="info_button_container flex flex--end">
+    <div class="view_event_dialog ">
+      <InformationDisplay
+        :display-text="{
+          heading: 'View event',
+          content: 'Click on more information to display details'
+        }"
+      ></InformationDisplay>
+      <div class="info_button_container">
         <el-button
           :circle="$mq != 'lg'"
           :round="$mq == 'lg'"
@@ -25,7 +27,7 @@
           }}</el-button
         >
         <el-button
-          v-if="isEventMine && isEventToday && !hasClockedIn"
+          v-if="isEventMine && isEventToday"
           round
           plain
           size="small"
@@ -56,10 +58,10 @@
           >Delete Event</el-button
         >
       </div>
-      <div class="info_container p-3">
+      <div class="view_dialog_information_container">
         <!-- Assigned users -->
 
-        <h3 class="mb-3">Assigned users</h3>
+        <h3>Assigned users</h3>
 
         <div
           v-if="hasEntries(event.assignedTo)"
@@ -69,19 +71,8 @@
             v-for="(member, index) in event.assignedTo"
             ref="user"
             :key="index"
-            :class="[
-              'assigned_user_container mb-2 flex align-center',
-              { clocked_in: hasClockedIn }
-            ]"
+            class="assigned_user_container"
           >
-            <el-button
-              v-if="hasClockedIn"
-              circle
-              icon="el-icon-check"
-              type="success"
-              class="no_events mr-2"
-              size="mini"
-            ></el-button>
             <Avatar class="mr-3" :name="member" />
             <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
             <el-button
@@ -99,9 +90,9 @@
                 v-for="option in getFilteredTeam"
                 :key="option._id"
                 slot="content"
-                class="p-3 popover_item trigger"
+                class="users_container trigger"
                 :class="{
-                  no_events: event.assignedToIDs.indexOf(option._id) > -1
+                  disabled: event.assignedToIDs.indexOf(option._id) > -1
                 }"
                 @click="assignNewUser(option._id)"
               >
@@ -113,55 +104,56 @@
             </Popover>
           </div>
         </div>
+        <div class="view_dialog_information_container">
+          <h3>Event date information</h3>
+          <Popover trigger="click">
+            <Form
+              slot="content"
+              :config="configXref"
+              submit-text="Update"
+              @val="updateEvent"
+            />
+            <el-button
+              slot="trigger"
+              size="mini"
+              @click="selectedConfig = 'date'"
+              >Update date information</el-button
+            >
+          </Popover>
 
-        <h3 class="mb-3 mt-3">Event date information</h3>
-        <Popover trigger="click">
-          <Form
-            slot="content"
-            :config="configXref"
-            submit-text="Update"
-            @val="updateEvent"
-          />
-          <el-button
-            slot="trigger"
-            size="mini"
-            class="mb-2"
-            @click="selectedConfig = 'date'"
-            >Update date information</el-button
-          >
-        </Popover>
+          <div class="info_unit">
+            <span class="info_label">Event start:</span>
+            <span>{{ dates.start }}</span>
+            <br />
+            <span class="info_label">Event end:</span>
 
-        <div class="info_unit">
-          <span class="info_label">Event start:</span>
-          <span>{{ dates.start }}</span>
-          <br />
-          <span class="info_label">Event end:</span>
-
-          <span>{{ dates.end }}</span>
+            <span>{{ dates.end }}</span>
+          </div>
         </div>
-        <h3 class="mt-4 mb-2">Event type & duration</h3>
-        <Popover trigger="click">
-          <Form
-            slot="content"
-            :config="configXref"
-            submit-text="Update"
-            @val="updateEvent"
-          />
-          <el-button
-            slot="trigger"
-            size="mini"
-            class="mb-2"
-            @click="selectedConfig = 'type'"
-            >Update event type information</el-button
-          >
-        </Popover>
+        <div class="view_dialog_information_container">
+          <h3>Event type & duration</h3>
+          <Popover trigger="click">
+            <Form
+              slot="content"
+              :config="configXref"
+              submit-text="Update"
+              @val="updateEvent"
+            />
+            <el-button
+              slot="trigger"
+              size="mini"
+              @click="selectedConfig = 'type'"
+              >Update event type information</el-button
+            >
+          </Popover>
 
-        <div class="info_unit">
-          <span class="info_label">Event duration:</span>
-          <span>{{ duration }} hours</span>
-          <br />
-          <span class="info_label">Event type:</span>
-          <span class="member_name">{{ eventType }}</span>
+          <div class="info_unit">
+            <span class="info_label">Event duration:</span>
+            <span>{{ duration }} hours</span>
+            <br />
+            <span class="info_label">Event type:</span>
+            <span class="member_name">{{ eventType }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -171,7 +163,7 @@
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 
-import Title from "@/components/Title";
+import InformationDisplay from "@/components/InformationDisplay";
 import Avatar from "@/components/Avatar";
 import Popover from "@/components/Popover";
 import Form from "@/components/Form";
@@ -179,7 +171,7 @@ import Form from "@/components/Form";
 export default {
   name: "ViewEventDialog",
   components: {
-    Title,
+    InformationDisplay,
     Avatar,
     Popover,
     Form
@@ -252,11 +244,7 @@ export default {
         24
       );
     },
-    hasClockedIn() {
-      return this.event?.clockedIn?.some(assingnee => {
-        return assingnee == this.userInformation._id;
-      });
-    },
+
     eventType() {
       return this.event.type;
     },
@@ -299,7 +287,7 @@ export default {
       };
     },
     isEventMine() {
-      return this.event.assignedTo.some(() => {
+      return this.event?.assignedTo?.some(() => {
         return this.userInformation._id;
       });
     },
@@ -308,7 +296,7 @@ export default {
     },
     computeDisplay: {
       get() {
-        return this.getActiveDialog("viewEvent");
+        return this.getActiveDialog("viewEvent").view;
       },
       set() {
         this.closeDialog("viewEvent");
@@ -482,6 +470,11 @@ export default {
 .title_button_container {
   text-align: left;
 }
+.info_button_container {
+  display: flex;
+  justify-content: center;
+  margin: -10px 0 10px 0;
+}
 .info_label {
   margin-right: 10px;
 }
@@ -500,8 +493,15 @@ export default {
     border: none;
   }
 }
-h4 {
-  margin-bottom: 10px;
+.view_dialog_information_container {
+  padding: 20px;
+  .el-button {
+    margin-bottom: 20px;
+  }
+}
+h4,
+h3 {
+  margin: 10px 0;
 }
 .view_event_col {
   margin: 1em;
@@ -521,11 +521,17 @@ h4 {
   }
 }
 .remove_icon {
+  transition: 0.5 ease opacity;
+  will-change: opacity;
   opacity: 0;
 }
 .assigned_user_container {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
   &:hover {
     .remove_icon {
+      margin: 0 0 0 20px;
       opacity: 1;
     }
   }
@@ -533,8 +539,18 @@ h4 {
     opacity: 0.5;
   }
 }
+.users_container {
+  padding: 10px;
+  &:hover {
+    background: whitesmoke;
+  }
+}
 .add_new_user {
   border: 2px whitesmoke dashed;
   border-radius: $border_radius;
+  padding: 10px;
+  &:hover {
+    border-color: darken($color: whitesmoke, $amount: 10);
+  }
 }
 </style>

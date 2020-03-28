@@ -36,8 +36,7 @@ export default {
       view: false,
       loading: false,
       event: {},
-      format: "YYYY-MM-DD HH:mm",
-      gcalEvents: []
+      format: "YYYY-MM-DD HH:mm"
     };
   },
 

@@ -141,11 +141,6 @@ span {
   padding: 0;
 }
 
-p,
-span {
-  font-size: 0.85em;
-}
-
 .grey {
   color: #999;
 }
@@ -251,7 +246,7 @@ span {
 .el-dialog {
   border-radius: 10px !important;
   padding: 10px 0 !important;
-  width: 35% !important;
+  width: 50% !important;
   &/deep/ {
     .el-dialog__body {
       padding: 0 !important;
