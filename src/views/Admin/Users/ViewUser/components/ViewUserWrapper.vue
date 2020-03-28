@@ -13,8 +13,10 @@
         <el-badge is-dot :type="badgeType" class="dot_container">
           <Avatar class="sidebar_avatar full" :name="returnUsername" />
         </el-badge>
-        <h3 class="capitalize">{{ returnUsername }}</h3>
-        <h4 class="grey">{{ returnGroupName }}</h4>
+        <div class="user_info_text_content">
+          <h3 class="capitalize">{{ returnUsername }}</h3>
+          <h4 class="grey">{{ returnGroupName }}</h4>
+        </div>
       </div>
     </div>
     <el-tabs
@@ -67,7 +69,7 @@ export default {
       return this.userData?.name ?? "Username";
     },
     returnGroupName() {
-      return this.getGroupName("user", this.userData?.groupID)?.name;
+      return this.getGroupName("user", this.userData.groupID)?.name;
     },
     selectedTab: {
       get() {
@@ -93,6 +95,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.user_info_text_content {
+  margin-top: 20px;
 }
 .avatar_info_container {
   display: flex;

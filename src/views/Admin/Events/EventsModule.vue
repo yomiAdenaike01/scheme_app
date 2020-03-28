@@ -25,11 +25,6 @@ export default {
     Toolbar,
     UserSidebar,
     ViewEventDialog
-  },
-  data() {
-    return {
-      getTemplatesInterval: null
-    };
   }
 };
 </script>
@@ -37,13 +32,10 @@ export default {
 .events_container {
   display: flex;
   flex: 1;
-  overflow: auto;
-  height: 100%;
 }
 .events_inner_container {
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: 100%;
 }
 </style>

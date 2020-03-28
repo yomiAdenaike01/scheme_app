@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow_border flex_center avatar_container">
+  <div class="avatar_container">
     <el-avatar :style="{ background: randColour() }">{{
       !isNameTheSame ? initials : "ME"
     }}</el-avatar>
@@ -56,6 +56,9 @@ export default {
 .avatar_container {
   max-height: 40px;
   max-width: 40px;
+  padding: 5px;
+  box-shadow: $box_shadow;
+  border-radius: 50%;
   &.full {
     max-height: initial;
     max-width: initial;

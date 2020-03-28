@@ -16,10 +16,10 @@
       <div slot="body">
         <div
           v-if="tabXref.name == 'create_event_group' && getIsAdmin"
-          class="ml-4 mt-4 flex align-center"
+          class="create_event_group_container"
         >
           <ColourUnit v-model="eventsInformation.colour" />
-          <p class="mb-3 ml-4 desc grey">
+          <p class="colour_unit_label">
             Press to select an event colour (optional):
           </p>
         </div>
@@ -31,7 +31,6 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 
-import EventTemplate from "./EventTemplate";
 import EventOptions from "./EventOptions";
 import RequestManagement from "./RequestManagement";
 
@@ -395,17 +394,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.no_team {
-  line-height: 2.5em;
+.create_event_group_container {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
 }
-
-.custom_form_item {
-  background: rgb(253, 253, 253);
-  border-radius: 10px;
-  cursor: pointer;
-  padding: 1em;
-}
-.form_item {
-  width: 100%;
+.colour_unit_label {
+  margin-left: 10px;
 }
 </style>

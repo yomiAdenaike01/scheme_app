@@ -1,48 +1,37 @@
 <template>
-  <el-row type="flex" :gutter="10" class="infobar_wrapper" align="middle">
-    <el-col
-      class="client_indicator"
-      :style="{ borderRight: `1.5px solid #efefef` }"
+  <div class="appbar_container">
+    <div v-if="$mq == 'lg'" class="scheme_logo_container">
+      <Logo />
+    </div>
+    <div
+      v-else
+      class="nav_toggle"
+      @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
     >
-      <div v-if="$mq == 'lg'" class="client_image_container">
-        <Logo />
-      </div>
-      <div
-        v-else
-        class="nav_toggle"
-        @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
+      <i class="el-icon el-icon-menu"></i>
+    </div>
+    <div class="profile_container">
+      <Dropdown :items="items" :icon="false" @method="handleCommands">
+        <Avatar class="profile_avatar" :name="userInformation.name" />
+      </Dropdown>
+      <el-badge
+        :value="getUserNotificationsLength"
+        class="item ml-2 mt-1 primary"
       >
-        <i class="el-icon el-icon-menu"></i>
-      </div>
-    </el-col>
-    <el-col>
-      <div class="profile_container">
-        <Dropdown :items="items" :icon="false" @method="handleCommands">
-          <Avatar :name="userInformation.name" />
-        </Dropdown>
-        <el-badge
-          :value="getUserNotificationsLength"
-          class="item ml-2 mt-1 primary"
-        >
-          <Popover
-            width="350"
-            trigger="click"
-            traisition="el-collapse-transition"
-          >
-            <div slot="content" class="notifications_center">
-              <NotificationModule />
-            </div>
-            <el-button
-              slot="trigger"
-              size="small"
-              circle
-              icon="el-icon-bell trigger"
-            ></el-button>
-          </Popover>
-        </el-badge>
-      </div>
-    </el-col>
-  </el-row>
+        <Popover width="350" trigger="click">
+          <div slot="content" class="notifications_center">
+            <NotificationModule />
+          </div>
+          <el-button
+            slot="trigger"
+            size="small"
+            circle
+            icon="el-icon-bell trigger"
+          ></el-button>
+        </Popover>
+      </el-badge>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -149,42 +138,34 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.appbar_container {
+  display: flex;
+  flex: 1;
+  padding: 10px;
+}
 .client_indicator {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
   color: white;
-  height: 100%;
-  max-width: 7.4%;
   text-transform: capitalize;
 }
-.infobar_wrapper {
-  border-bottom: solid 1px #e6e6e6;
-  box-shadow: $box_shadow;
-  max-height: $app_bar_height;
-}
+
 .nav_toggle {
   background: transparent;
   cursor: pointer;
 }
-.el-col {
-  height: 100%;
-}
-.client_container {
-  background: $element_colour;
-  color: white;
-}
-.username {
-  text-transform: capitalize;
-}
-.border {
-  border-left: 1px solid #e6e6e6;
-}
+
 .profile_container {
-  align-items: center;
   display: flex;
+  align-items: center;
+  flex: 1;
   justify-content: flex-end;
-  width: 95%;
+  margin-right: 30px;
 }
-.text_wrapper {
-  font-size: 0.9em;
+.profile_avatar {
+  margin-right: 10px;
 }
 .popover_container {
   &/deep/ {
@@ -193,10 +174,13 @@ export default {
     }
   }
 }
-.client_image_container {
+.scheme_logo_container {
   display: flex;
   padding: 5px;
   justify-content: center;
+  border-radius: 50%;
+  padding: 5px;
+  box-shadow: $box_shadow;
 }
 /**
  _   _  _  ___ _  _    ___ 
@@ -206,7 +190,7 @@ export default {
                                                                                     
  */
 .mobile {
-  .infobar_wrapper {
+  .appbar_container {
     padding: 0.6rem;
   }
   .client_indicator {

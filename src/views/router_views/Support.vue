@@ -3,10 +3,10 @@
     <header>
       <div
         class="go_back_container p-3 grey flex align-center"
-        @click="$router.go(-1)"
+        @click="REMOVE_USER()"
       >
         <i class="el-icon-arrow-left trigger"></i>
-        <p class="trigger">Go back</p>
+        <p class="trigger">Log out</p>
       </div>
     </header>
     <keep-alive>
@@ -16,10 +16,13 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapMutations } from "vuex";
 
 export default {
-  name: "SupportCentre"
+  name: "SupportCentre",
+  methods: {
+    ...mapMutations(["REMOVE_USER"])
+  }
 };
 </script>
 

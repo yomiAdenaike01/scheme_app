@@ -1,41 +1,45 @@
 <template>
   <div class="information_display_container">
-    <!-- Tutorial -->
-    <div v-if="mode == 'tutorial' || mode == 'both'" class="tutorial_container">
-      <Popover popperclass="p-0" trigger="click">
-        <i slot="trigger" class="bx bx-help-circle tutorial_icon trigger"></i>
+    <div v-if="mode == 'tutorial' || mode == 'both'">
+      <!-- Tutorial -->
+      <div class="tutorial_wrapper">
+        <Popover popperclass="no_padding" trigger="click">
+          <i slot="trigger" class="bx bx-help-circle tutorial_icon trigger"></i>
 
-        <div slot="content" class="popover_inner_container">
-          <div class="tutorial_title_bar flex flex--end">
-            <small class="capitalize">{{ makePretty(tutorial.feature) }}</small>
-          </div>
-          <div class="information_container flex_center ">
-            <i
-              class="bx bx-chevron-left trigger"
-              @click="slideController('decrease')"
-            ></i>
-            <div class="popover_inner_text_container flex_center columns">
-              <h2 v-html="guideXref[slideIndex].heading"></h2>
-              <p v-html="guideXref[slideIndex].content"></p>
+          <div slot="content" class="tutorial_container">
+            <div class="tutorial_title_bar">
+              <small class="capitalize">{{
+                makePretty(tutorial.feature)
+              }}</small>
             </div>
+            <div class="tutorial_content_container">
+              <i
+                class="bx bx-chevron-left trigger"
+                @click="slideController('decrease')"
+              ></i>
+              <div class="tutorial_text_container">
+                <h2 v-html="guideXref[slideIndex].heading"></h2>
+                <p v-html="guideXref[slideIndex].content"></p>
+              </div>
 
-            <i
-              class="bx bx-chevron-right trigger"
-              @click="slideController('increase')"
-            ></i>
+              <i
+                class="bx bx-chevron-right trigger"
+                @click="slideController('increase')"
+              ></i>
+            </div>
+            <!-- Indicators -->
+            <div class="indicator_container">
+              <div
+                v-for="(len, index) in guideXref.length"
+                :key="index"
+                class="indicator"
+                :class="{ active: index == slideIndex }"
+                @click="slideIndex = index"
+              ></div>
+            </div>
           </div>
-          <!-- Indicators -->
-          <div class="indicator_container">
-            <div
-              v-for="(len, index) in guideXref.length"
-              :key="index"
-              class="indicator"
-              :class="{ active: index == slideIndex }"
-              @click="slideIndex = index"
-            ></div>
-          </div>
-        </div>
-      </Popover>
+        </Popover>
+      </div>
     </div>
     <!-- Title display -->
     <div
@@ -43,7 +47,11 @@
       :class="displayText.class"
       class="headings_wrapper"
     >
-      <div :class="{ center_icon: displayText.hasIcon }" class="slot_container">
+      <div
+        v-if="$slots.header"
+        :class="{ center_icon: displayText.hasIcon }"
+        class="slot_container"
+      >
         <slot name="header"></slot>
       </div>
 
@@ -59,7 +67,7 @@
         class="heading_text_content"
         v-html="displayText.content"
       ></div>
-      <div class="slot_body_container">
+      <div v-if="$slots.body" class="slot_body_container">
         <slot name="body"></slot>
       </div>
     </div>
@@ -170,15 +178,28 @@ export default {
     }
   }
 }
-
+.tutorial_wrapper {
+  display: flex;
+  justify-content: center;
+}
 .tutorial_title_bar {
   background: rgb(250, 250, 250);
   color: #999;
   font-size: 1.2em;
   padding: 10px;
 }
-.popover_inner_text_container {
-  margin: 40px 50px;
+.tutorial_container {
+  display: block;
+}
+.tutorial_content_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0;
+}
+.tutorial_text_container {
+  text-align: center;
+  padding: 0 30px;
 }
 
 .indicator_container {

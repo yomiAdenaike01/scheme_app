@@ -77,7 +77,6 @@ import { mapState, mapActions, mapGetters } from "vuex";
 
 import EventTemplate from "./EventTemplate";
 import CreateTemplate from "./CreateTemplate";
-import EventModuleBus from "./EventsModuleBus";
 
 import InformationDisplay from "@/components/InformationDisplay";
 export default {

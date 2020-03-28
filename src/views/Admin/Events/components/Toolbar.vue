@@ -83,7 +83,5 @@ export default {
   display: flex;
   flex: 1;
   padding: 10px;
-  max-height: 38px;
-  min-height: 30px;
 }
 </style>

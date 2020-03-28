@@ -47,6 +47,7 @@ export default {
   },
 
   created() {
+    window.console.warn = function() {};
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -115,7 +116,7 @@ html,
 #app {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 /*
  
@@ -140,6 +141,11 @@ span {
   padding: 0;
 }
 
+p,
+span {
+  font-size: 0.9em;
+}
+
 .grey {
   color: #999;
 }
@@ -161,6 +167,9 @@ span {
 .disabled {
   pointer-events: none;
   opacity: 0.5;
+}
+.no_padding {
+  padding: 0 !important;
 }
 
 /*

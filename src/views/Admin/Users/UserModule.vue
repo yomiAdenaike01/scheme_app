@@ -12,7 +12,13 @@
 
     <UserGroup>
       <div class="user_groups_table_container">
-        <Title title="User Groups" subtitle="Manage and contact users here" />
+        <InformationDisplay
+          :display-text="{
+            heading: 'All Users',
+            content:
+              'Here is a list of all users, select one to view their information'
+          }"
+        />
 
         <div v-if="hasEntries(getFilteredTeam)" class="row_wrapper">
           <div
@@ -104,10 +110,10 @@ export default {
 
   activated() {
     Promise.all([this.getEvents(), this.getTeam()])
-      .then(response => {
+      .then(() => {
         this.loading = false;
       })
-      .catch(err => {
+      .catch(() => {
         this.loading = false;
       });
   },
@@ -162,7 +168,8 @@ export default {
 .user_groups_table_container {
   display: flex;
   flex: 1;
-  height: 100%;
+  flex-direction: column;
+  height: calc(100% - 100px);
   overflow-x: hidden;
 }
 .row_wrapper {
@@ -172,8 +179,8 @@ export default {
 }
 .user_group_row {
   display: flex;
+  flex-direction: column;
   flex: 1;
-  flex-wrap: wrap;
 }
 .user_group_container {
   display: flex;
@@ -183,6 +190,7 @@ export default {
 .user_group_col {
   display: flex;
   flex: 1;
+  margin-top: 20px;
 }
 
 .button {
@@ -220,14 +228,14 @@ export default {
 }
 
 /*
- 
-   __  __       _     _ _      
-  |  \/  | ___ | |__ (_) | ___ 
+
+   __  __       _     _ _
+  |  \/  | ___ | |__ (_) | ___
   | |\/| |/ _ \| '_ \| | |/ _ \
   | |  | | (_) | |_) | | |  __/
   |_|  |_|\___/|_.__/|_|_|\___|
-                               
- 
+
+
 */
 .mobile {
   .user_container {

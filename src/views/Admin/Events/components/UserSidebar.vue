@@ -2,14 +2,13 @@
   <div class="team_container">
     <!-- Display if in mobile view -->
 
-    <div v-if="getFilteredTeam.length > 0">
+    <div v-if="getFilteredTeam.length > 0" class="users_container">
       <div
         v-for="(member, index) in teamInformation"
         :key="index"
-        class="member_wrapper"
+        class="team_member_container"
       >
         <Dropdown
-          class="dropdown_container"
           :items="items"
           position="left"
           :icon="false"
@@ -115,30 +114,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.team_wrapper {
-  border-left: solid 1px #e6e6e6;
-  overflow-x: hidden;
-}
 .team_container {
   border-left: 1px solid #e6e6e6;
   flex: 0.1;
   height: 100%;
   display: flex;
   flex-direction: column;
-  .member_wrapper {
-    border-bottom: solid 1px #e6e6e6;
-    cursor: pointer;
-    &:hover {
-      background-color: darken($color: #ffff, $amount: 2);
-    }
+}
+.team_member_container {
+  border-bottom: solid 1px #e6e6e6;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  &:hover {
+    background-color: darken($color: #ffff, $amount: 2);
   }
 }
-.dropdown_container {
+.users_container {
   display: flex;
-  justify-content: center;
-
-  padding: 15px;
+  flex-direction: column;
+  overflow-x: hidden;
 }
+
 .team_center {
   align-items: center;
   display: flex;

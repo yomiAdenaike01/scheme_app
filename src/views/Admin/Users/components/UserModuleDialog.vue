@@ -12,7 +12,7 @@
       <div slot="header">
         <InformationDisplay
           :display-text="{
-            heading: 'Module users',
+            heading: 'Manage Users',
             content: 'Manage all users and groups here.'
           }"
           mode="title"

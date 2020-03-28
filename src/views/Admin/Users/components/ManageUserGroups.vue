@@ -2,19 +2,19 @@
   <div class="manage_user_groups_container">
     <h3 class="txt_center">What would you like to do ?</h3>
     <div class="content_container">
-      <div class="button_container flex_center w">
-        <el-row type="flex" class="mt-4 mb-4">
-          <el-col v-for="(management, index) in managementConfig" :key="index">
+      <div class="button_container">
+        <div class="">
+          <div v-for="(management, index) in managementConfig" :key="index">
             <el-button
               plain
-              class="m-3 user_group_btn grey"
+              class="user_group_btn grey"
               @click="currentDisplay = makeUgly(management.name)"
               >{{ management.name }}</el-button
             >
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </div>
-      <el-collapse-transition>
+      <divlapse-transition>
         <Form
           v-if="currentDisplay == 'create_group'"
           :config="userGroupForm"
@@ -28,11 +28,11 @@
               user group may cause unforseen errors
             </small>
           </div>
-          <el-row type="flex">
+          <div>
             <div
               v-for="(group, index) in getUserGroups"
               :key="index"
-              class="group_container p-4 m-3 flex_center columns flex-1"
+              class="group_container"
               :class="[
                 {
                   active: inArray(group.value),
@@ -41,12 +41,12 @@
               ]"
               @click="toggleDelete(group.value)"
             >
-              <p v-loading="inArray(group.value)" class="mb-3">
+              <p v-loading="inArray(group.value)" class="">
                 {{ group.label }}
               </p>
             </div>
-          </el-row>
-          <div class="flex flex--end align_end">
+          </div>
+          <div class="">
             <el-button
               v-if="toDelete.length > 0"
               plain
@@ -57,7 +57,7 @@
             >
           </div>
         </div>
-      </el-collapse-transition>
+      </divlapse-transition>
     </div>
   </div>
 </template>
@@ -143,15 +143,14 @@ export default {
         url: "clients/group",
         data: { groupType: "userGroups", value: this.toDelete }
       })
-        .then(response => {
+        .then(() => {
           this.closeDialog();
         })
-        .catch(err => {
+        .catch(() => {
           this.closeDialog();
         });
     },
 
-    updateGroup(content) {},
     createUserGroup(content) {
       content.groupType = "userGroups";
       content.value = this.clientInformation.userGroups.length + 1;

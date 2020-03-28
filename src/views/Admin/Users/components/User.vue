@@ -5,7 +5,7 @@
       UPDATE_DIALOG_INDEX({
         dialog: 'viewUser',
         view: true,
-        data: userInformation._id
+        data: userInformation
       })
     "
   >

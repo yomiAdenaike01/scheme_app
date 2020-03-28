@@ -268,6 +268,7 @@ export default {
 }
 .dialog_item {
   min-width: 70%;
+  max-width: 70%;
 }
 .description {
   color: #999;

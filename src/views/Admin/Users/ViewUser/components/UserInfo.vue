@@ -34,10 +34,10 @@
               @change="assignUserToGroup"
             >
               <el-option
-                v-for="group in getUserGroups"
-                :key="group.value"
-                :label="group.label"
-                :value="group.value"
+                v-for="{ label, value } in getUserGroups"
+                :key="value"
+                :label="label"
+                :value="value"
               >
               </el-option>
             </el-select>
@@ -71,6 +71,9 @@
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
       <p class="member_name">{{ group }}</p>
+      <p v-if="localUserInformation._id == userInformation._id">
+        {{ localUserInformation.devicesInformation }}
+      </p>
     </div>
   </div>
 </template>

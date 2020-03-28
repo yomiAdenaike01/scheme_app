@@ -49,7 +49,7 @@ export default {
 
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapGetters(["getDeviceID"]),
+    ...mapGetters(["getDeviceInformation"]),
 
     submitText() {
       return this.selectedForm == "login" ? "Login" : "Submit new password";
@@ -166,7 +166,7 @@ export default {
         data: {
           clientID: this.clientInformation._id,
           ...this.credentials,
-          deviceInformation: this.getDeviceID
+          deviceInformation: this.getDeviceInformation
         },
         url: "/users/login"
       })

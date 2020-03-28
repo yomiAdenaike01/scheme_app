@@ -13,9 +13,6 @@ export default {
       display: tabLabel
     };
   },
-  getPreviousDeviceInformation({ userInformation: { devicesInformation } }) {
-    return devicesInformation;
-  },
 
   getCurrentVersion() {
     return require("../../package.json").version;
@@ -23,16 +20,7 @@ export default {
   getIsIE(state, { getUA }) {
     return getUA.getBrowser().name == "IE";
   },
-  getIsSignedUser: (
-    { userInformation: { groupID, _id }, clientInformation: { signedUser } },
-    { getIsAdmin }
-  ) => id => {
-    let isSignedUser = false;
 
-    isSignedUser = signedUser.indexOf(id) != -1;
-
-    return isSignedUser;
-  },
   getActiveDialog: ({ dialogIndex }) => dialogName => {
     let foundDialog = null;
     if (dialogName) {
@@ -53,12 +41,13 @@ export default {
       );
     }).length;
   },
-  getDeviceID() {
-    return genUUID(window.navigator.userAgent.toString().trim());
+  getDeviceInformation(state, { getUA }) {
+    return {
+      system: getUA.getOS(),
+      id: genUUID(window.navigator.userAgent.toString().trim())
+    };
   },
-  getUserSettings(state) {
-    return state.userInformation.settings;
-  },
+
   getClient({ clientInformation }, { isValidClient }) {
     if (isValidClient) {
       return clientInformation;
@@ -66,14 +55,9 @@ export default {
       return {};
     }
   },
-  getPreferences({ userInformation: { preferences } }) {
-    return preferences;
-  },
+
   getIsAdmin({ userInformation: { groupID } }) {
     return groupID == 1;
-  },
-  getClientColours({ clientInformation: { colours } }) {
-    return colours;
   },
 
   getGuide() {
@@ -81,10 +65,5 @@ export default {
   },
   getDefaultColour({ defaultCustomColours }) {
     return defaultCustomColours[0];
-  },
-  getRandomColour({ defaultCustomColours }) {
-    return defaultCustomColours[
-      Math.round(Math.random() * defaultCustomColours.length)
-    ];
   }
 };

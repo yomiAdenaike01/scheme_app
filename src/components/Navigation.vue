@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation", "localSettings"]),
-    ...mapGetters(["getDefaultColour", "getIsSignedUser", "getIsAdmin"]),
+    ...mapGetters(["getDefaultColour", "getIsAdmin"]),
 
     routes() {
       let allowedRoutes = [
@@ -81,7 +81,6 @@ export default {
 }
 
 .main_nav {
-  flex: 0.026;
   height: 100%;
 }
 </style>

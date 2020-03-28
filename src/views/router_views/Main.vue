@@ -86,7 +86,7 @@ export default {
       "weeklyTimesheetUploaded"
     ]),
     ...mapState("Admin", ["teamInformation"]),
-    ...mapGetters(["getDeviceID", "getIsAdmin"]),
+    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
 
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
@@ -139,7 +139,7 @@ export default {
       if (!window.Notification) {
         let {
           browser: { name, version }
-        } = this.getDeviceID;
+        } = this.getDeviceInformation;
         this.UPDATE_NOTIFICATIONS({
           title: "Browser version error",
           message: `The current browser doesn't support notifications ${name} ${Math.round(
