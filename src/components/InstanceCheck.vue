@@ -1,16 +1,19 @@
 <template>
-  <transition name="el-fade-in">
-    <div
-      v-loading="loading"
-      class="server_health_container flex_center"
-      :class="[
-        { healthy: serverInformation.healthy },
-        { unhealthy: !serverInformation.healthy }
-      ]"
-    >
-      {{ displayText }}
-    </div>
-  </transition>
+  <div
+    v-loading="loading"
+    class="server_health_container flex_center"
+    :class="[
+      { healthy: instanceInformation.healthy },
+      { unhealthy: !instanceInformation.healthy }
+    ]"
+  >
+    <el-button
+      circle
+      class="disabled button_display"
+      :icon="instanceInformation.healthy ? 'el-icon-check' : 'el-icon-cross'"
+    ></el-button>
+    {{ displayText }}
+  </div>
 </template>
 
 <script>
@@ -20,12 +23,12 @@ export default {
   data() {
     return {
       loading: true,
-      serverInformation: {}
+      instanceInformation: {}
     };
   },
   computed: {
     displayText() {
-      let healthy = this.serverInformation?.healthy;
+      let healthy = this.instanceInformation?.healthy;
       if (healthy) {
         return "Your cloud instance is healthy";
       } else {
@@ -45,9 +48,9 @@ export default {
       })
         .then(response => {
           this.loading = false;
-          this.serverInformation = response;
+          this.instanceInformation = response;
         })
-        .catch(error => {
+        .catch(() => {
           this.loading = false;
         });
     }
@@ -62,17 +65,22 @@ export default {
   text-align: center;
   color: white;
   width: 100%;
+
   &.healthy {
     background: #99b898;
-    // background-image: linear-gradient(
-    //   150deg,
-    //   $element_colour 10%,
-    //   #80d0c7 200%
-    // );
     box-shadow: inset 5px 0px 10px rgba(0, 0, 0, 0.1);
+    .button_display {
+      background: darken($color: #99b898, $amount: 18);
+    }
   }
   &.unhealthy {
     background: $error_colour;
+    background: darken($color: $error_colour, $amount: 18);
   }
+}
+.button_display {
+  margin-right: 10px;
+  border: none;
+  color: white;
 }
 </style>
