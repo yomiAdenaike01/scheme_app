@@ -1,5 +1,5 @@
 <template>
-  <el-dialog width="40%" :visible.sync="view">
+  <el-dialog :visible.sync="view">
     <Tabs
       v-model.number="currentTab"
       v-loading="loading"

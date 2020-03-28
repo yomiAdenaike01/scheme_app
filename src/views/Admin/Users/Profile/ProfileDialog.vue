@@ -28,11 +28,14 @@ import ProfileEvents from "./components/ProfileEvents";
 import ProfileContainer from "./components/ProfileContainer";
 
 export default {
-  name: "Profile",
+  name: "ProfileDialog",
+  components: {
+    ProfileInfo,
+    ProfileContainer,
+    ProfileEvents
+  },
   data() {
     return {
-      documentation: [],
-      self: this,
       selectedTab: "0"
     };
   },
@@ -102,11 +105,6 @@ export default {
   methods: {
     ...mapActions(["request", "closeDialog"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"])
-  },
-  components: {
-    ProfileInfo,
-    ProfileContainer,
-    ProfileEvents
   }
 };
 </script>

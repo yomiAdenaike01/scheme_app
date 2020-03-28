@@ -99,7 +99,7 @@ export default {
         }
         case "view_team_member": {
           this.UPDATE_DIALOG_INDEX({
-            dialog: "viewUser",
+            dialog: "profile",
             view: true,
             data: this.hoveredTeamMember
           });
