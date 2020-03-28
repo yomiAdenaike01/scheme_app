@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     ...mapState("Admin", ["teamInformation"]),
-    ...mapGetters(["getIsAdmin", "getOnlineTeam"]),
+    ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {
       let items = [
