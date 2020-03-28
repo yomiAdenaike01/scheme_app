@@ -1,10 +1,6 @@
 <template>
   <!-- Quick actions -->
   <div class="quick_actions_wrapper">
-    <div class="title_container flex_center columns">
-      <h3>Quick Actions</h3>
-      <small class="grey">Select a tab below to initiate a quick action</small>
-    </div>
     <div
       v-for="(action, index) in quickActions"
       :key="index"
@@ -13,24 +9,23 @@
       class="quick_action_container"
       @click="action.click"
     >
-      <div class="flex_center columns txt_center p-4">
-        <div class="icons mb-3">
-          <i
-            v-if="isSuccess.length == 0"
-            :class="action.icon"
-            class="quick_action_icon"
-          />
-          <InformationDisplay
-            :display-text="{
-              tag: 'h2',
-              heading: action.heading,
-              content: action.content
-            }"
-          />
-          <div v-if="isSuccess == action.id" class="check_container">
-            <i class="bx bx-check"></i>
-          </div>
-        </div>
+      <InformationDisplay
+        :display-text="{
+          hasIcon: action.hasOwnProperty('icon'),
+          tag: 'h3',
+          heading: action.heading,
+          content: action.content
+        }"
+      >
+        <i
+          v-if="isSuccess.length == 0"
+          slot="header"
+          :class="action.icon"
+          class="quick_action_icon"
+        />
+      </InformationDisplay>
+      <div v-if="isSuccess == action.id" class="check_container">
+        <i class="bx bx-check"></i>
       </div>
     </div>
   </div>
@@ -123,6 +118,7 @@ export default {
     }
   }
 }
+
 .quick_action_container {
   border-bottom: $border;
   cursor: pointer;

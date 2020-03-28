@@ -1,19 +1,19 @@
 <template>
-  <div class="view_user_container">
+  <div class="ProfileContainer">
     <!-- Display the avatar -->
     <InformationDisplay
       :display-text="{
-        heading: 'User management',
+        heading: 'Profile Management',
         content:
           'This contains all the information about the user, including all the events that they have done'
       }"
     />
-    <div class="user_info_wrapper">
+    <div class="profile_info_wrapper">
       <div class="avatar_info_container">
         <el-badge is-dot :type="badgeType" class="dot_container">
           <Avatar class="sidebar_avatar full" :name="returnUsername" />
         </el-badge>
-        <div class="user_info_text_content">
+        <div class="profile_info_text">
           <h3 class="capitalize">{{ returnUsername }}</h3>
           <h4 class="grey">{{ returnGroupName }}</h4>
         </div>
@@ -44,7 +44,7 @@ import { mapGetters } from "vuex";
 import Avatar from "@/components/Avatar";
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
-  name: "ViewUserWrapper",
+  name: "ProfileContainer",
   props: {
     tabItems: {
       type: Array,
@@ -69,7 +69,7 @@ export default {
       return this.userData?.name ?? "Username";
     },
     returnGroupName() {
-      return this.getGroupName("user", this.userData.groupID)?.name;
+      return this.getGroupName("user", this.userData?.groupID)?.name;
     },
     selectedTab: {
       get() {
@@ -91,12 +91,12 @@ export default {
   margin: 10px 0;
   padding: 20px;
 }
-.user_info_wrapper {
+.profile_info_wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.user_info_text_content {
+.profile_info_text {
   margin-top: 20px;
 }
 .avatar_info_container {

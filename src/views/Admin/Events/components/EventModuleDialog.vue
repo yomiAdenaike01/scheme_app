@@ -31,7 +31,7 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 
-import EventOptions from "./EventOptions";
+import TemplateManagement from "./TemplateManagement";
 import RequestManagement from "./RequestManagement";
 
 import InformationDisplay from "@/components/InformationDisplay";
@@ -161,7 +161,8 @@ export default {
         {
           label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm,
-          displayReset: true
+          displayReset: true,
+          emitOnChange: true
         },
         {
           label: "Manage Requests",
@@ -180,7 +181,7 @@ export default {
         tabs.push({
           label: "Manage event templates",
           view: {
-            component: EventOptions
+            component: TemplateManagement
           }
         });
       }

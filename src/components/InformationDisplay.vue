@@ -171,6 +171,12 @@ export default {
 .headings_wrapper {
   padding: 30px;
   line-height: 2em;
+  &.align_left {
+    text-align: left;
+  }
+  &.align_right {
+    text-align: right;
+  }
   .heading {
     font-weight: 500;
   }

@@ -2,37 +2,33 @@
   <el-dialog
     v-if="activeDialog.view"
     :visible.sync="toggleView"
-    class="view_user_container"
+    class="profile_container"
   >
-    <el-row type="flex">
-      <el-col>
-        <ViewUserWrapper
-          :user-data="activeDialogData"
-          :tab-items="tabItems"
-          :current-tab="selectedTab"
-          @changedTab="selectedTab = $event"
-        >
-          <div class="p-4">
-            <component
-              :is="returnComponents.component"
-              :data="returnComponents.props"
-              @toggle="closeDialog('viewUser')"
-            />
-          </div>
-        </ViewUserWrapper>
-      </el-col>
-    </el-row>
+    <div class="profile_inner_container" type="flex">
+      <ProfileContainer
+        :user-data="activeDialogData"
+        :tab-items="tabItems"
+        :current-tab="selectedTab"
+        @changedTab="selectedTab = $event"
+      >
+        <component
+          :is="returnComponents.component"
+          :data="returnComponents.props"
+          @toggle="closeDialog('profile')"
+        />
+      </ProfileContainer>
+    </div>
   </el-dialog>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import UserInfo from "./components/UserInfo";
-import UserEvents from "./components/UserEvents";
-import ViewUserWrapper from "./components/ViewUserWrapper";
+import ProfileInfo from "./components/ProfileInfo";
+import ProfileEvents from "./components/ProfileEvents";
+import ProfileContainer from "./components/ProfileContainer";
 
 export default {
-  name: "ViewUserDialog",
+  name: "Profile",
   data() {
     return {
       documentation: [],
@@ -48,7 +44,7 @@ export default {
       return this.activeDialog.data;
     },
     activeDialog() {
-      return this.getActiveDialog("viewUser");
+      return this.getActiveDialog("profile");
     },
     returnComponents() {
       let selectedTab = this.selectedTab;
@@ -56,14 +52,14 @@ export default {
       switch (selectedTab) {
         // Display user personal details
         case "0": {
-          component = UserInfo;
+          component = ProfileInfo;
           props = this.activeDialogData;
           break;
         }
         // Display user shifts
         case "1": {
-          component = UserEvents;
-          props = this.associatedUserEvents;
+          component = ProfileEvents;
+          props = this.associatedProfileEvents;
           break;
         }
 
@@ -95,11 +91,11 @@ export default {
         return this.activeDialog.view;
       },
       set() {
-        this.closeDialog("viewUser");
+        this.closeDialog("profile");
       }
     },
 
-    associatedUserEvents() {
+    associatedProfileEvents() {
       return this.getUsersEvents(this.activeDialogData?._id);
     }
   },
@@ -108,15 +104,15 @@ export default {
     ...mapMutations(["UPDATE_DIALOG_INDEX"])
   },
   components: {
-    UserInfo,
-    ViewUserWrapper,
-    UserEvents
+    ProfileInfo,
+    ProfileContainer,
+    ProfileEvents
   }
 };
 </script>
 
 <style lang="scss">
-.view_user_container {
+.profile_container {
   &/deep/ {
     .el-dialog__body {
       margin: 0;

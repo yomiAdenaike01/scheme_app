@@ -3,17 +3,17 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
-    <ViewUserDialog />
+    <Profile />
   </div>
 </template>
 
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
-import ViewUserDialog from "@/views/Admin/Users/ViewUser/ViewUserDialog";
+import Profile from "@/views/Admin/Users/Profile/Profile";
 export default {
   name: "Admin",
   components: {
-    ViewUserDialog
+    Profile
   },
 
   deactivated() {

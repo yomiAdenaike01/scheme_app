@@ -1,8 +1,8 @@
 <template>
   <div v-loading="loading" class="user_info_container">
-    <h2 class="mb-3">Personal Information</h2>
     <el-collapse
       v-if="getIsAdmin || localUserInformation._id == userInformation._id"
+      class="collapse_container"
     >
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container flex  align-center">
@@ -250,7 +250,6 @@ export default {
 .info_container {
   border: 2px solid whitesmoke;
   border-radius: 5px;
-  font-size: 1.2em;
   line-height: 2.2em;
   margin-top: 20px;
   padding: 20px;
@@ -259,5 +258,10 @@ export default {
   & /deep/ > * {
     margin-right: 10px;
   }
+}
+.collapse_container {
+  border: none;
+  border-bottom: none;
+  padding: 20px;
 }
 </style>

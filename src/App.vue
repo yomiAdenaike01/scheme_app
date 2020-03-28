@@ -99,9 +99,22 @@ export default {
 };
 </script>
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css?family=Nunito:300,400,600&display=swap");
+/*
+
+ Fonts
+
+
+*/
+@import url("https://fonts.googleapis.com/css?family=Sen&display=swap");
+
+/*
+
+ Default
+
+
+*/
 * {
-  font-family: "Nunito", sans-serif !important;
+  font-family: "Sen", sans-serif;
 }
 
 body,
@@ -118,16 +131,7 @@ html,
   flex: 1;
   overflow-x: hidden;
 }
-/*
- 
-   _____         _         _         _           
-  |_   _|____  _| |_   ___| |_ _   _| | ___  ___ 
-    | |/ _ \ \/ / __| / __| __| | | | |/ _ \/ __|
-    | |  __/>  <| |_  \__ \ |_| |_| | |  __/\__ \
-    |_|\___/_/\_\\__| |___/\__|\__, |_|\___||___/
-                               |___/             
- 
-*/
+
 h1,
 h2,
 h3,
@@ -168,14 +172,10 @@ span {
 }
 
 /*
- 
-   _____                    _ _   _                 
-  |_   _| __ __ _ _ __  ___(_) |_(_) ___  _ __  ___ 
-    | || '__/ _` | '_ \/ __| | __| |/ _ \| '_ \/ __|
-    | || | | (_| | | | \__ \ | |_| | (_) | | | \__ \
-    |_||_|  \__,_|_| |_|___/_|\__|_|\___/|_| |_|___/
-                                                    
- 
+
+ Transitions
+
+
 */
 .fade-transform-leave-active,
 .fade-transform-enter-active {
@@ -230,7 +230,16 @@ span {
 .no_events {
   pointer-events: none;
 }
+/*
 
+ Element UI Configuration
+
+
+*/
+.el-collapse-item__header,
+.el-collapse-item__wrap {
+  border: none !important;
+}
 .popover_container {
   padding: 0;
 }
@@ -274,29 +283,27 @@ button,
 input,
 select,
 textarea {
-  font-size: 0.8em !important;
+  font-size: 0.9em !important;
 }
 
-//   _   _       _   _  __ _           _   _
-//  | \ | |     | | (_)/ _(_)         | | (_)
-//  |  \| | ___ | |_ _| |_ _  ___ __ _| |_ _  ___  _ __  ___
-//  | . ` |/ _ \| __| |  _| |/ __/ _` | __| |/ _ \| '_ \/ __|
-//  | |\  | (_) | |_| | | | | (_| (_| | |_| | (_) | | | \__ \
-//  |_| \_|\___/ \__|_|_| |_|\___\__,_|\__|_|\___/|_| |_|___/
+/*
 
+ Notifications
+
+
+*/
 .custom_notification_icon {
   border-radius: 50%;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
   color: #909399;
   padding: 10px;
 }
-/**
-    _   _  _  ___ _  _    ___
-    | \_/ |/ \| o ) || |  | __|
-    | \_/ ( o ) o \ || |_ | _|
-    |_| |_|\_/|___/_||___||___|
-  
-  */
+/*
+
+ Mobile
+
+
+*/
 .mobile {
   overflow: scroll;
   .el-dialog {

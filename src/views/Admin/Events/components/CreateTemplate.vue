@@ -1,12 +1,12 @@
 <template>
   <!-- Slide download -->
-  <el-card
-    v-loading="loading"
-    class="create_template_container p-2 mt-4"
-    shadow="none"
-  >
+  <div v-loading="loading" class="create_template_container ">
     <!-- Predefined configs -->
-    <el-checkbox-group v-model="configDisplay" size="mini" class="m-3">
+    <el-checkbox-group
+      v-model="configDisplay"
+      size="mini"
+      class="switch_containers"
+    >
       <el-checkbox-button
         v-for="({ text, model, disable }, index) in switches"
         :key="index"
@@ -23,7 +23,7 @@
       size="small"
       @val="createTemplate"
     />
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -87,8 +87,7 @@ export default {
           model: "name",
           "component-type": "text",
           placeholder: "Template name",
-          optional: true,
-          hint: `Optional: Default name will be <strong>template_${this.defaultName}</strong>`
+          optional: true
         },
         {
           model: "type",
@@ -204,11 +203,18 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.create_template_container {
+  border: $border;
+  padding: 10px;
+}
 .create_template_switch {
   &/deep/ {
     .el-switch__label span {
       font-size: 0.8em;
     }
   }
+}
+.switch_containers {
+  margin: 20px 0;
 }
 </style>

@@ -11,13 +11,15 @@
       :addable="false"
       :tab-position="position"
     >
-      <slot name="body"></slot>
+      <div v-if="$slots.body" class="tabs_body">
+        <slot name="body"></slot>
+      </div>
       <el-tab-pane
         v-for="(tab, index) in tabs"
         :key="index"
-        class="tabs_body"
         :disabled="tab.disabled"
         :label="tab.label"
+        class="tabs_body"
       >
         <!-- Form component -->
         <Form
@@ -40,7 +42,9 @@
           />
         </div>
         <!--  Footer -->
-        <slot name="footer"></slot>
+        <div v-if="$slots.footer" class="tabs_body">
+          <slot name="footer"></slot>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -126,5 +130,6 @@ export default {
 <style lang="scss" scoped>
 .tabs_body {
   height: 100%;
+  padding: 10px 20px;
 }
 </style>

@@ -35,7 +35,7 @@ export default {
   },
 
   dialogIndex: {
-    viewUser: { view: false, data: null, tabIndex: 0 },
+    profile: { view: false, data: null, tabIndex: 0 },
     viewEvent: { view: false, data: null, tabIndex: 0 },
     eventModule: { view: false, data: null, tabIndex: 0 },
     tutorial: { view: false, data: null, tabIndex: 0 },

@@ -113,7 +113,7 @@ export default {
       switch (command) {
         case "view_profile": {
           this.UPDATE_DIALOG_INDEX({
-            dialog: "viewUser",
+            dialog: "profile",
             view: true,
             data: this.userInformation
           });

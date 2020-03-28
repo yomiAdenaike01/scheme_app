@@ -3,7 +3,7 @@
     class="user_container"
     @click="
       UPDATE_DIALOG_INDEX({
-        dialog: 'viewUser',
+        dialog: 'profile',
         view: true,
         data: userInformation
       })

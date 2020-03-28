@@ -37,26 +37,19 @@
     <!-- No templates -->
     <div v-else class="flex flex_center">
       <InformationDisplay
-        mode="both"
-        class="flex_center columns"
         :display-text="{
           tag: 'h2',
           class: 'extra_line_height',
-          heading: 'Create a template',
-          content:
-            'You currently have no templates, you can hover over the help button above for more information on how to create templates and how they work.'
-        }"
-        :tutorial="{
-          module: 'admin',
-          feature: 'template_management',
-          displayType: 'hover'
+          heading: 'Manage templates',
+          content: 'Click the button below to get started creating templates'
         }"
       >
-        <div slot="body" class="flex_center">
+        <div slot="body">
           <el-button
             size="mini"
+            type="text"
             @click="displayCreateTemplate = !displayCreateTemplate"
-            >Create Template</el-button
+            >Toggle template form</el-button
           >
         </div>
       </InformationDisplay>
@@ -80,7 +73,7 @@ import CreateTemplate from "./CreateTemplate";
 
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
-  name: "EventOptions",
+  name: "TemplateManagement",
   components: {
     EventTemplate,
     CreateTemplate,
