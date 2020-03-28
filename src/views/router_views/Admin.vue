@@ -55,12 +55,7 @@ export default {
     });
   },
   computed: {
-    ...mapState([
-      "localSettings",
-      "userInformation",
-      "criticalNetworkError",
-      "requestIntervals"
-    ]),
+    ...mapState(["userInformation", "requestIntervals"]),
     ...mapState("Admin", ["eventsInformation"]),
     hasEventsToday() {
       return this.eventsInformation.today.length > 0;

@@ -20,12 +20,10 @@ export default {
   userInformation: localStorage.getItem("userInformation")
     ? JSON.parse(localStorage.getItem("userInformation"))
     : {},
-  globalLoader: false,
   errorInformation: {},
   localNotifications: [],
   networkError: false,
   weeklyTimesheetUploaded: false,
-  hasSeenNotifications: false,
   userNotifications: [],
   viewMobileMenu: false,
 
