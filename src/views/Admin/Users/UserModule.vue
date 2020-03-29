@@ -4,13 +4,9 @@
     class="user_module_container"
     element-loading-text="Getting team please wait...."
   >
-    <UserGroup
-      v-if="getIsAdmin"
-      add-new
-      @createUserGroup="displayDialog = $event"
-    />
+    <UserGroup add-new @createUserGroup="displayDialog = $event" />
 
-    <UserGroup>
+    <UserGroup v-if="hasEntries(teamInformation)">
       <div class="user_groups_table_container">
         <InformationDisplay
           :display-text="{
@@ -20,7 +16,7 @@
           }"
         />
 
-        <div v-if="hasEntries(getFilteredTeam)" class="row_wrapper">
+        <div class="row_wrapper">
           <div
             v-for="(count, i) in filteredGroupsWithUsers"
             :key="`${count}${i}`"
@@ -48,28 +44,11 @@
             </div>
           </div>
         </div>
-        <div v-else>
-          <InformationDisplay
-            :display-text="{
-              heading: '',
-              content: '',
-              textAlign: 'center',
-              headingAlign: 'center'
-            }"
-          >
-            <i slot="header" class="bx bx-user"></i>
-            <el-button
-              slot="information"
-              @click="displayDialog = !displayDialog"
-              >Open user management dialog</el-button
-            >
-          </InformationDisplay>
-        </div>
       </div>
     </UserGroup>
 
     <!-- Quick actions -->
-    <UserManagementActions v-if="getIsAdmin && teamInformation.length > 0" />
+    <UserManagementActions v-if="teamInformation.length > 0" />
     <!-- User Module dialog -->
     <UserModuleDialog
       :display="displayDialog"
@@ -121,7 +100,6 @@ export default {
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState("Admin", ["teamInformation", "groupIDs"]),
-    ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
 
     filteredGroupsWithUsers() {

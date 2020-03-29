@@ -62,7 +62,7 @@ export default {
     }
   }
   &.new_group {
-    flex: 0.4;
+    flex: 1;
   }
 }
 .user_group_inner_container {

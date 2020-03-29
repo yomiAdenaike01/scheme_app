@@ -142,8 +142,7 @@ h6,
 p,
 span {
   font-weight: 300;
-  margin: 0;
-  padding: 0;
+
 }
 
 .grey {

@@ -170,7 +170,6 @@ export default {
 }
 .headings_wrapper {
   padding: 30px;
-  line-height: 2em;
   &.align_left {
     text-align: left;
   }

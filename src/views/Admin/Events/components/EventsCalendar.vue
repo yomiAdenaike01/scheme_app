@@ -58,8 +58,7 @@ export default {
     ]),
 
     upcomingEventCount() {
-      let userEvents = this.getUsersEvents(this.userInformation._id);
-      return userEvents.length;
+      return this.eventsInformation.upcoming.length;
     },
 
     eventGroup() {
