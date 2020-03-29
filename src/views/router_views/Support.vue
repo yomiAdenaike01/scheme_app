@@ -1,9 +1,9 @@
 <template>
   <div class="support_container">
     <header>
-      <div class="go_back_container" @click="REMOVE_USER()">
+      <div class="go_back_container" @click="goBackLogic.method()">
         <i class="el-icon-arrow-left trigger"></i>
-        <p class="trigger">Log out</p>
+        <p class="trigger">{{ goBackLogic.text }}</p>
       </div>
     </header>
     <keep-alive>
@@ -13,10 +13,19 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "SupportCentre",
+  computed: {
+    ...mapState(["networkError"]),
+    goBackLogic() {
+      return {
+        text: this.networkError ? "Log out" : "Go back",
+        method: this.networkError ? this.REMOVE_USER : this.$router.back
+      };
+    }
+  },
   methods: {
     ...mapMutations(["REMOVE_USER"])
   }

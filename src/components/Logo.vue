@@ -19,5 +19,6 @@ export default {
 <style lang="scss" scoped>
 .logo {
   max-width: 20px;
+  margin: 0;
 }
 </style>

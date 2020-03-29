@@ -31,7 +31,8 @@
           heading: 'No team members found',
           headingAlign: 'center',
           textAlign: 'center',
-          tag: 'h4',
+          tag: 'h3',
+          hasIcon: true,
           content:
             'To create a team member please navigate to user management and manage users to create team members'
         }"
@@ -147,6 +148,8 @@ export default {
 .information_container {
   display: flex;
   flex: 1;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
 }
 
