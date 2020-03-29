@@ -23,6 +23,7 @@
     "uuid-by-string": "^3.0.2",
     "vue": "^2.6.10",
     "vue-cal": "^2.24.7",
+    "vue-markdown": "^2.2.4",
     "vue-mq": "^1.0.1",
     "vue-nprogress": "^0.1.5",
     "vue-resize-text": "^0.1.1",
@@ -65,7 +66,6 @@
       "no-console": "off",
       "no-debugger": "off",
       "no-vhtml": "off",
-
       "vue/no-side-effects-in-computed-properties": "off",
       "vue/require-prop-type-constructor": "off",
       "vue/no-unused-components": "off",
