@@ -47,7 +47,6 @@ export default {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin", "getDefaultColour"]),
     ...mapGetters("Admin", [
-      "getTeamMember",
       "getAllEvents",
       "getGroupName",
       "getEventAssignedTo",
@@ -99,6 +98,7 @@ export default {
        */
       let events = this.eventsInformation.all;
       let filteredEvents = [];
+      let format = "YYYY-MM-DD HH:mm";
       // Check that the assigned to is a string or array
 
       for (let i = 0, len = events.length; i < len; i++) {
@@ -118,9 +118,11 @@ export default {
         } else {
           assignedTo = [];
         }
-        type = this.getGroupName("event", type)?.name ?? "Unknown";
-        startDate = this.formatDate(startDate);
-        endDate = this.formatDate(endDate);
+
+        type = this.getGroupName("event", type)?.label ?? "Unknown";
+
+        startDate = this.formatDate(startDate, format);
+        endDate = this.formatDate(endDate, format);
 
         let eventClass = this.makeUgly(type)?.toLowerCase();
 
