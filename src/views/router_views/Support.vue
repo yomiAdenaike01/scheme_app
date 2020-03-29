@@ -22,15 +22,12 @@ export default {
     goBackLogic() {
       return {
         text: this.networkError ? "Log out" : "Go back",
-        method: this.networkError ? this.REMOVE_USER : this.goBack
+        method: this.networkError ? this.REMOVE_USER : this.$router.back
       };
     }
   },
   methods: {
-    ...mapMutations(["REMOVE_USER"]),
-    goBack() {
-      this.$router.back();
-    }
+    ...mapMutations(["REMOVE_USER"])
   }
 };
 </script>
