@@ -28,15 +28,13 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import moment from "moment";
 export default {
   name: "EventsCalendar",
   data() {
     return {
       view: false,
       loading: false,
-      event: {},
-      format: "YYYY-MM-DD HH:mm"
+      event: {}
     };
   },
 
@@ -49,7 +47,6 @@ export default {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin", "getDefaultColour"]),
     ...mapGetters("Admin", [
-      "getTeamMember",
       "getAllEvents",
       "getGroupName",
       "getEventAssignedTo",
@@ -101,6 +98,7 @@ export default {
        */
       let events = this.eventsInformation.all;
       let filteredEvents = [];
+      let format = "YYYY-MM-DD HH:mm";
       // Check that the assigned to is a string or array
 
       for (let i = 0, len = events.length; i < len; i++) {
@@ -120,11 +118,13 @@ export default {
         } else {
           assignedTo = [];
         }
-        type = this.getGroupName("event", type).name;
-        startDate = moment(startDate).format(this.format);
-        endDate = moment(endDate).format(this.format);
 
-        let eventClass = type.replace(/\s/g, "_").toLowerCase();
+        type = this.getGroupName("event", type)?.label ?? "Unknown";
+
+        startDate = this.formatDate(startDate, format);
+        endDate = this.formatDate(endDate, format);
+
+        let eventClass = this.makeUgly(type)?.toLowerCase();
 
         filteredEvents.push({
           id: _id,
