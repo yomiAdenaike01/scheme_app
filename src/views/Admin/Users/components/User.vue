@@ -73,6 +73,7 @@ export default {
 .user_container {
   display: flex;
   flex: 1;
+  align-items: center;
   min-height: 50px;
   max-height: 50px;
   border: 1px solid #ebeef5;
@@ -87,5 +88,9 @@ export default {
 }
 .text_content {
   margin-left: 20px;
+}
+p {
+  padding: 0;
+  margin: 0;
 }
 </style>

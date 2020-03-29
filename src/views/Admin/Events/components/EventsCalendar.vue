@@ -28,15 +28,13 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import moment from "moment";
 export default {
   name: "EventsCalendar",
   data() {
     return {
       view: false,
       loading: false,
-      event: {},
-      format: "YYYY-MM-DD HH:mm"
+      event: {}
     };
   },
 
@@ -120,11 +118,11 @@ export default {
         } else {
           assignedTo = [];
         }
-        type = this.getGroupName("event", type).name;
-        startDate = moment(startDate).format(this.format);
-        endDate = moment(endDate).format(this.format);
+        type = this.getGroupName("event", type)?.name ?? "Unknown";
+        startDate = this.formatDate(startDate);
+        endDate = this.formatDate(endDate);
 
-        let eventClass = type.replace(/\s/g, "_").toLowerCase();
+        let eventClass = this.makeUgly(type)?.toLowerCase();
 
         filteredEvents.push({
           id: _id,
