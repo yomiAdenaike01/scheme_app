@@ -71,9 +71,6 @@
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
       <p class="member_name">{{ group }}</p>
-      <p v-if="localUserInformation._id == userInformation._id">
-        {{ localUserInformation.devicesInformation }}
-      </p>
     </div>
   </div>
 </template>
@@ -83,7 +80,7 @@ import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import Popover from "@/components/Popover";
 import Form from "@/components/Form";
 export default {
-  name: "UserInfo",
+  name: "ProfileInformation",
 
   data() {
     return {
@@ -102,6 +99,7 @@ export default {
     localUserInformation() {
       return this.getActiveDialog()?.data;
     },
+
     updateUserForm() {
       return [
         {

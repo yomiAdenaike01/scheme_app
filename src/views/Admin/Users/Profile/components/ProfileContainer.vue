@@ -1,5 +1,5 @@
 <template>
-  <div class="ProfileContainer">
+  <div class="profile_container">
     <!-- Display the avatar -->
     <InformationDisplay
       :display-text="{
@@ -45,6 +45,10 @@ import Avatar from "@/components/Avatar";
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "ProfileContainer",
+  components: {
+    Avatar,
+    InformationDisplay
+  },
   props: {
     tabItems: {
       type: Array,
@@ -60,7 +64,7 @@ export default {
     ...mapGetters("Admin", ["getGroupName", "getUserInformation"]),
     ...mapGetters(["getDefaultColour", "getActiveDialog"]),
     userData() {
-      return this.getActiveDialog("viewUser")?.data;
+      return this.getActiveDialog("profile")?.data;
     },
     badgeType() {
       return this.userData?.isOnline ? "success" : "danger";
@@ -79,10 +83,6 @@ export default {
         this.$emit("changedTab", tab);
       }
     }
-  },
-  components: {
-    Avatar,
-    InformationDisplay
   }
 };
 </script>

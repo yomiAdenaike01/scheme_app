@@ -23,14 +23,14 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import ProfileInfo from "./components/ProfileInfo";
+import ProfileInformation from "./components/ProfileInformation";
 import ProfileEvents from "./components/ProfileEvents";
 import ProfileContainer from "./components/ProfileContainer";
 
 export default {
   name: "ProfileDialog",
   components: {
-    ProfileInfo,
+    ProfileInformation,
     ProfileContainer,
     ProfileEvents
   },
@@ -55,7 +55,7 @@ export default {
       switch (selectedTab) {
         // Display user personal details
         case "0": {
-          component = ProfileInfo;
+          component = ProfileInformation;
           props = this.activeDialogData;
           break;
         }
