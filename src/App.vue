@@ -48,6 +48,7 @@ export default {
 
   created() {
     window.console.warn = function() {};
+
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
