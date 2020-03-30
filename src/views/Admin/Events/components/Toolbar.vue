@@ -5,7 +5,6 @@
       v-for="(button, key) in buttons"
       :key="key"
       size="mini"
-      :round="button.round"
       :type="button.type ? button.type : 'primary'"
       :plain="button.plain"
       :disabled="button.disabled"

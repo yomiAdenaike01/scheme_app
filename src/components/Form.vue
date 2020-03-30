@@ -57,7 +57,7 @@
           "
           v-bind="input"
           :placeholder="
-            input.optional
+            input.optional || allOptional
               ? `(Optional) ${input.placeholder}`
               : input.placeholder
           "
@@ -86,14 +86,13 @@
 
       <!-- Submit button -->
       <div v-if="!disable" class="button_container">
-        <el-button v-if="displayReset" round :size="size" @click="resetForm"
+        <el-button v-if="displayReset" :size="size" @click="resetForm"
           >Clear Form</el-button
         >
         <el-button
           :size="size"
           type="primary"
           class="button_text"
-          round
           @click="submitForm"
           >{{ submitText }}</el-button
         >
@@ -105,6 +104,7 @@
 <script>
 export default {
   name: "Form",
+
   props: {
     displayReset: {
       type: Boolean,
@@ -130,6 +130,10 @@ export default {
       type: Array,
       required: false
     },
+    allOptional: {
+      type: Boolean,
+      default: false
+    },
     customMethod: {
       type: Function,
       default: null
@@ -142,6 +146,10 @@ export default {
     size: {
       type: String,
       default: "mini"
+    },
+    predefinedData: {
+      type: Object,
+      required: false
     }
   },
   data() {
@@ -159,7 +167,7 @@ export default {
           ? formItem.name
           : formItem.model;
 
-        if (!formItem?.optional && !formItem?.disabled) {
+        if (!formItem?.optional && !this.allOptional && !formItem?.disabled) {
           let validArr = [];
           let compType = formItem["component-type"];
           let inputType = formItem["input-type"];
@@ -212,10 +220,13 @@ export default {
       deep: true,
       handler(val) {
         if (this.emitOnChange) {
-          this.$emit("formValChange", val);
+          this.$emit("change", val);
         }
       }
     }
+  },
+  created() {
+    console.log(this.predefinedData);
   },
   methods: {
     resetForm() {

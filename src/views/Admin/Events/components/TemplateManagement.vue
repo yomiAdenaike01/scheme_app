@@ -12,9 +12,7 @@
         ></el-input>
         <el-button
           size="small"
-          class="ml-4"
-          plain
-          round
+          :type="displayCreateTemplate ? 'primary' : 'plain'"
           @click="displayCreateTemplate = !displayCreateTemplate"
         >
           Create new template
@@ -47,7 +45,7 @@
         <div slot="body">
           <el-button
             size="mini"
-            type="text"
+            :type="displayCreateTemplate ? 'primary' : 'plain'"
             @click="displayCreateTemplate = !displayCreateTemplate"
             >Toggle template form</el-button
           >

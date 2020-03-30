@@ -8,21 +8,10 @@
       :selected-tab="currentTab"
       :submit-text="tabXref.display"
       @val="eventsCtrl"
-      @formValChange="eventInformation = $event"
+      @change="eventInformation = $event"
     >
       <div slot="header">
-        <InformationDisplay class="mb-5" :display-text="informationDisplay" />
-      </div>
-      <div slot="body">
-        <div
-          v-if="tabXref.name == 'create_event_group' && getIsAdmin"
-          class="create_event_group_container"
-        >
-          <ColourUnit v-model="eventsInformation.colour" />
-          <p class="colour_unit_label">
-            Press to select an event colour (optional):
-          </p>
-        </div>
+        <InformationDisplay :display-text="informationDisplay" />
       </div>
     </Tabs>
   </el-dialog>
@@ -33,6 +22,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 
 import TemplateManagement from "./TemplateManagement";
 import RequestManagement from "./RequestManagement";
+import EventGroupManagement from "./EventGroupManagement";
 
 import InformationDisplay from "@/components/InformationDisplay";
 import Tabs from "@/components/Tabs";
@@ -174,8 +164,10 @@ export default {
 
       if (this.getIsAdmin) {
         tabs.unshift({
-          label: "Create event group",
-          formContent: this.createEventGroupForm
+          label: "Manage event groups",
+          view: {
+            component: EventGroupManagement
+          }
         });
 
         tabs.push({
@@ -188,24 +180,7 @@ export default {
 
       return tabs;
     },
-    createEventGroupForm() {
-      return [
-        {
-          "component-type": "text",
-          placeholder: "Event group name",
-          required: true,
-          model: "name"
-        },
-        {
-          "component-type": "select",
-          options: this.getUserGroups,
-          placeholder: "Enable for user group",
-          model: "enabledFor",
-          multiple: true,
-          optional: true
-        }
-      ];
-    },
+
     createEventForm() {
       let createEventConfig = [
         {

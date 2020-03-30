@@ -26,17 +26,19 @@ export default {
       method();
     }
     let timeout;
-    const runInterval = () => {
-      timeout = setTimeout(() => {
-        method()
-          .finally(() => {
-            runInterval();
-          })
-          .catch(() => {
-            clearStateInterval(state, id);
-          });
-      }, duration);
-    };
+    if (!state.runningIntervals?.id) {
+      var runInterval = () => {
+        timeout = setTimeout(() => {
+          method()
+            .finally(() => {
+              runInterval();
+            })
+            .catch(() => {
+              clearStateInterval(state, id);
+            });
+        }, duration);
+      };
+    }
 
     if (!state.runningIntervals[id]) {
       runInterval();

@@ -17,8 +17,6 @@
       :on-event-click="viewEvent"
       events-on-month-view="short"
       :cell-click-hold="false"
-      :time-from="getCalTimings.from"
-      :time-to="getCalTimings.to"
       editable-events
     />
   </div>

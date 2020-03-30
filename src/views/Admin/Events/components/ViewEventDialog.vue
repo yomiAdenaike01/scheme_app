@@ -26,14 +26,6 @@
               : null
           }}</el-button
         >
-        <el-button
-          v-if="isEventMine && isEventToday"
-          round
-          plain
-          size="small"
-          @click="clockIn"
-          >Clock in</el-button
-        >
 
         <el-button
           v-if="hasPermissions"
@@ -75,13 +67,6 @@
           >
             <Avatar class="mr-3" :name="member" />
             <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
-            <el-button
-              class="remove_icon ml-4"
-              size="mini"
-              round
-              @click="dropUserFromEvent(member)"
-              >Drop user</el-button
-            >
           </div>
 
           <div v-if="canAddMoreUsers" class="add_new_user p-4 trigger">
