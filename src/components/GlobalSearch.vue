@@ -1,43 +1,41 @@
 <template>
-  <transition name="el-fade-in">
+  <el-dialog :visible.sync="view">
+    <!-- Dropdown for filters goes here -->
     <div class="global_search_container">
-      <!-- Dropdown for filters goes here -->
-      <div
-        v-click-outside="closeSearchBox"
-        class="global_search_inner_container"
-      >
-        <el-input
-          v-model="searchTerm"
-          placeholder="Search what you want, we will take care of the rest..."
-        ></el-input>
-        <div v-if="searchTerm > 0" class="search_results_container"></div>
-        <div class="predicitive_container">
-          <InformationDisplay
-            v-if="!hasEntries(cachedSearches)"
-            :display-text="{
-              heading: 'No previous searches',
-              content: 'All previous searches will appear here'
-            }"
-          />
-          <!-- cache searches and their results here -->
-          <div></div>
-        </div>
+      <el-input
+        v-model="searchTerm"
+        placeholder="Search what you want, we will take care of the rest..."
+      ></el-input>
+      <div v-if="searchTerm > 0" class="search_results_container"></div>
+      <div class="predicitive_container">
+        <InformationDisplay
+          v-if="!hasEntries(cachedSearches)"
+          :display-text="{
+            heading: 'No previous searches',
+            content: 'All previous searches will appear here'
+          }"
+        />
+        <!-- cache searches and their results here -->
+        <div></div>
       </div>
     </div>
-  </transition>
+  </el-dialog>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import ClickOutside from "vue-click-outside";
 
 export default {
   name: "GlobalSearch",
-  directives: {
-    ClickOutside
-  },
+
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay")
+  },
+  props: {
+    display: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -48,6 +46,14 @@ export default {
 
   computed: {
     ...mapState(["clientInformation", "userInformation"]),
+    view: {
+      get() {
+        return this.display;
+      },
+      set() {
+        this.$emit("closeSearch");
+      }
+    },
     currentResults() {
       return "hello";
     },
@@ -82,41 +88,13 @@ export default {
     },
     closeSearchBox() {
       //   this.$emit("closeSearch");
+      console.log("closing");
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.global_search_container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(10, 10, 10, 0.6);
-  display: flex;
-  z-index: 99999;
-  padding: 40px;
-}
-.global_search_inner_container {
-  display: flex;
-  border-radius: 20px;
-  background: white;
-  max-height: 500px;
-  flex-direction: column;
-  flex: 1;
-  .el-input {
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    border-bottom: initial;
-  }
-  &/deep/ .el-input__inner {
-    padding: 40px;
-    font-size: 1.2em !important;
-  }
-}
 .predicitive_container {
   display: flex;
   justify-content: center;

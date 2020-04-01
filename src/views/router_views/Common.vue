@@ -5,18 +5,18 @@
     class="common_container"
   >
     <NprogressContainer />
+
     <AppBar @runSearch="displaySearch = $event" />
     <InstanceCheck />
     <GlobalSearch
-      v-if="displaySearch"
-      v-shortkey="['ctrl', 'alt', 'o']"
-      @shortKey.native="toggleDisplaySearch"
+      v-hotkey="keymap"
+      :display="displaySearch"
       @closeSearch="displaySearch = false"
     />
     <div class="inner_app_container">
       <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       <keep-alive>
-        <router-view />
+        <router-view></router-view>
       </keep-alive>
     </div>
   </div>
@@ -89,7 +89,11 @@ export default {
     ]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
-
+    keymap() {
+      return {
+        "ctrl+shift+f": this.toggleDisplaySearch
+      };
+    },
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
     },
@@ -117,7 +121,6 @@ export default {
     ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
     toggleDisplaySearch() {
-      console.log("Display");
       this.displaySearch = !this.displaySearch;
     },
     triggerDeviceNotification() {

@@ -1,2 +1,4 @@
 import Vue from "vue";
-Vue.use(require("vue-shortkey"));
+import VueHotkey from "v-hotkey";
+
+Vue.use(VueHotkey);

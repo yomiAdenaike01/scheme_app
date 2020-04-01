@@ -6,9 +6,11 @@
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <transition name="el-fade-in" mode="out-in">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 
@@ -28,8 +30,7 @@ export default {
       "requestIntervals",
       "notifications",
       "defaultSize",
-      "clientInformation",
-      "criticalNetworkError"
+      "clientInformation"
     ]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsIE"]),
@@ -142,7 +143,6 @@ h6,
 p,
 span {
   font-weight: 300;
-
 }
 
 .grey {
@@ -169,28 +169,6 @@ span {
 }
 .no_padding {
   padding: 0 !important;
-}
-
-/*
-
- Transitions
-
-
-*/
-.fade-transform-leave-active,
-.fade-transform-enter-active {
-  will-change: transform;
-  transition: transform 0.5s;
-}
-
-.fade-transform-enter {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-.fade-transform-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
 }
 
 .disabled {
