@@ -1,5 +1,6 @@
 <template>
   <div class="task_boards_container">
+    <CreateTask :display="display" @toggleDisplay="display = $event" />
     <div class="boards_wrapper">
       <TaskBoard v-for="board in boards" :key="board._id" :board-data="board" />
       <TaskBoard
@@ -17,7 +18,13 @@ import { mapState } from "vuex";
 export default {
   name: "Tasks",
   components: {
-    TaskBoard: () => import("./components/TaskBoard")
+    TaskBoard: () => import("./components/TaskBoard"),
+    CreateTask: () => import("./components/CreateTask")
+  },
+  data() {
+    return {
+      display: false
+    };
   },
   computed: {
     ...mapState("Admin", ["boardsInformation"]),

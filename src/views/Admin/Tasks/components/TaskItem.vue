@@ -1,6 +1,13 @@
 <template>
   <div class="task_container" :class="{ disabled: !isAssignedTo }">
-    <p>Task</p>
+    <div class="task_inner_container" :class="{ is_new: isNew }">
+      <div v-if="isNew" class="new_task_container" @click="createTask">
+        <span> <i class="bx bx-plus"></i> Create new task</span>
+      </div>
+      <div v-else class="populated_task_container">
+        <p>{{ taskInformation }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -8,18 +15,21 @@
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
-  name: "Task",
+  name: "TaskItem",
   components: {
     Form: () => import("@/components/Form")
   },
   props: {
     taskInformation: {
-      type: Object,
-      required: true
+      type: Object
     },
     taskIndex: {
       type: Number,
       default: 0
+    },
+    isNew: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -32,7 +42,7 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     isAssignedTo() {
       return (
-        this.taskInformation.assignedTo.indexOf(this.userInformation._id) >
+        this.taskInformation?.assignedTo?.indexOf(this.userInformation._id) >
           -1 || this.getIsAdmin
       );
     }
@@ -89,9 +99,38 @@ export default {
 .task_container {
   display: flex;
   flex: 1;
-  max-width: 80%;
-  max-height: 150px;
+  margin: 20px 0;
+  max-height: 300px;
   text-overflow: ellipsis;
-  box-shadow: $box_shadow;
+}
+.task_inner_container {
+  flex: 1;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 1px 1px 1px rgb(250, 250, 250);
+  &.is_new {
+    font-size: 1.1em;
+    color: #ccc;
+    cursor: pointer;
+    max-height: 20px;
+    transition: $default_transition;
+    &:hover {
+      color: #999;
+      border-color: #999;
+    }
+  }
+}
+.new_task_container {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: rgb(250, 250, 250);
+  border-top: 2px solid whitesmoke;
+  color: #999;
+  transition: $default_transition;
 }
 </style>

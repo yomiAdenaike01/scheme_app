@@ -4,6 +4,7 @@
       <div class="board_header">
         <h2>{{ boardData.name }}</h2>
         <span>{{ boardData.description }}</span>
+        <i class="bx bx-more"></i>
       </div>
       <InformationDisplay
         v-if="!hasTasks"
@@ -23,6 +24,7 @@
         :task-data="task"
         :task-index="index"
       />
+      <TaskItem is-new />
     </div>
     <div
       v-else
@@ -36,7 +38,12 @@
           ...computeText
         }"
       >
-        <Popover v-if="boardIndex == 0" slot="header" trigger="click">
+        <Popover
+          v-if="boardIndex == 0"
+          slot="header"
+          position="top"
+          trigger="click"
+        >
           <el-button slot="trigger" type="text" icon="el-icon-plus"></el-button>
           <Form
             slot="content"
@@ -86,6 +93,9 @@ export default {
     };
   },
   computed: {
+    calcBlankTasks() {
+      return this.boards.tasks.length + 1 < 10;
+    },
     hasTasks() {
       return !this.boardData?.tasks;
     },
@@ -167,19 +177,21 @@ export default {
   flex-direction: column;
   margin: 10px;
   border-radius: 12px;
-  padding: 10px;
   border: 2px solid whitesmoke;
+  background: rgb(253, 253, 253);
+  overflow-x: hidden;
 }
 .inner_board_container {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  position: relative;
 }
 .board_header {
   display: flex;
   flex-direction: column;
   padding-left: 20px;
   text-transform: capitalize;
-  background: white;
   h1,
   h2,
   h3 {
@@ -196,7 +208,6 @@ export default {
   justify-content: center;
   align-items: center;
   flex: 1;
-  background: white;
 }
 .info_display {
   &/deep/ .heading {

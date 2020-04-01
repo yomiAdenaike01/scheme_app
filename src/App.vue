@@ -103,12 +103,11 @@ export default {
 <style lang="scss">
 /*
 
- Fonts
+Fonts
 
 
 */
 @import url("https://fonts.googleapis.com/css?family=Sen&display=swap");
-
 /*
 
  Default
