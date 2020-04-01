@@ -14,10 +14,7 @@
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-badge
-        :value="getUserNotificationsLength"
-        class="item ml-2 mt-1 primary"
-      >
+      <el-badge :value="getUserNotificationsLength" class="item primary">
         <Popover width="350" trigger="click">
           <div slot="content" class="notifications_center">
             <NotificationModule />
@@ -30,6 +27,11 @@
           ></el-button>
         </Popover>
       </el-badge>
+      <el-button
+        type="text"
+        icon="el-icon-search"
+        @click="$emit('runSearch')"
+      />
     </div>
   </div>
 </template>

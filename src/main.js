@@ -9,7 +9,9 @@ import "./plugins/mobile";
 import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
+import "./plugins/shortKeys";
 import "boxicons";
+
 // Prototypes
 import "./plugins/prototypes";
 

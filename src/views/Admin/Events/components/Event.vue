@@ -41,7 +41,7 @@
           </div>
           <span class="date">{{ formattedDates.end }}</span>
         </div>
-      </el-col>
+      </div>
 
       <div v-if="$mq == 'lg'" class="event_controls_wrapper">
         <i

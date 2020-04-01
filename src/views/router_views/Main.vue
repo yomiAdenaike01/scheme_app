@@ -5,8 +5,12 @@
     class="main_container"
   >
     <NprogressContainer />
-    <AppBar />
+    <AppBar @runSearch="displaySeach = true" />
     <InstanceCheck />
+    <GlobalSearch
+      v-shortkey="['ctrl', 'alt', 'o']"
+      @shortKey="toggleDisplaySearch"
+    />
     <div class="inner_app_container">
       <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
       <RouterAnimation>
@@ -23,23 +27,25 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
-import AppBar from "@/components/AppBar";
-import Navigation from "@/components/Navigation";
-import InstanceCheck from "@/components/InstanceCheck";
 import RouterAnimation from "@/components/RouterAnimation";
+import GlobalSearch from "@/components/GlobalSearch";
 
 export default {
   name: "Main",
   components: {
-    Navigation,
-    AppBar,
+    Navigation: () => import("@/components/Navigation"),
+
+    AppBar: () => import("@/components/AppBar"),
+
     NprogressContainer,
-    InstanceCheck,
-    RouterAnimation
+    InstanceCheck: () => import("@/components/InstanceCheck"),
+    RouterAnimation,
+    GlobalSearch
   },
   data() {
     return {
-      loading: true
+      loading: true,
+      displaySearch: false
     };
   },
   activated() {
@@ -114,7 +120,10 @@ export default {
     ...mapActions(["updateDevices"]),
     ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
-
+    toggleDisplaySearch() {
+      console.log("Display");
+      this.displaySearch = !this.displaySearch;
+    },
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
         title: "Register new device detected",
