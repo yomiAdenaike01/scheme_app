@@ -7,7 +7,7 @@ import AuthRoutes from "./AuthRoutes";
 import SupportRoutes from "./SupportRoutes";
 
 // Router views
-const MainApp = () => import("@/views/router_views/Main");
+const Common = () => import("@/views/router_views/Common");
 const Admin = () => import("@/views/router_views/Admin");
 const Support = () => import("@/views/router_views/Support");
 
@@ -28,7 +28,7 @@ const routes = [
   {
     path: "/main",
     name: "main",
-    component: MainApp,
+    component: Common,
     children: [
       {
         path: "/admin",

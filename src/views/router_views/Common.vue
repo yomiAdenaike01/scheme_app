@@ -2,22 +2,22 @@
   <div
     v-loading="loading"
     element-loading-text="Loading events and team members...."
-    class="main_container"
+    class="common_container"
   >
     <NprogressContainer />
-    <AppBar @runSearch="displaySeach = true" />
+    <AppBar @runSearch="displaySearch = $event" />
     <InstanceCheck />
     <GlobalSearch
+      v-if="displaySearch"
       v-shortkey="['ctrl', 'alt', 'o']"
-      @shortKey="toggleDisplaySearch"
+      @shortKey.native="toggleDisplaySearch"
+      @closeSearch="displaySearch = false"
     />
     <div class="inner_app_container">
       <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
-      <RouterAnimation>
-        <keep-alive>
-          <router-view />
-        </keep-alive>
-      </RouterAnimation>
+      <keep-alive>
+        <router-view />
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -27,19 +27,15 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
-import RouterAnimation from "@/components/RouterAnimation";
 import GlobalSearch from "@/components/GlobalSearch";
 
 export default {
-  name: "Main",
+  name: "Common",
   components: {
     Navigation: () => import("@/components/Navigation"),
-
     AppBar: () => import("@/components/AppBar"),
-
-    NprogressContainer,
     InstanceCheck: () => import("@/components/InstanceCheck"),
-    RouterAnimation,
+    NprogressContainer,
     GlobalSearch
   },
   data() {
@@ -52,11 +48,11 @@ export default {
     this.checkDevice();
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
-      duration: 3000,
-      id: "eventsAndTeam",
+      duration: 10000,
+      id: "team",
       method: () => {
         return new Promise((resolve, reject) => {
-          Promise.all([this.getEvents(), this.getTeam()])
+          this.getTeam()
             .then(() => {
               this.loading = false;
               resolve();
@@ -232,7 +228,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.main_container {
+.common_container {
   display: flex;
   flex: 1;
   flex-direction: column;

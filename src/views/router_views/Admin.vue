@@ -39,7 +39,6 @@ export default {
       method: () => {
         return new Promise((resolve, reject) => {
           Promise.all([
-            this.getTeam(),
             this.getNotifications(),
             this.getEvents(),
             this.getRequests(),

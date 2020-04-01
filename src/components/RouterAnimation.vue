@@ -1,10 +1,5 @@
 <template>
-  <transition
-    class="animation_wrapper"
-    name="fade-transform"
-    mode="out-in"
-    tag="div"
-  >
+  <transition name="fadeLeft" mode="out-in">
     <slot></slot>
   </transition>
 </template>

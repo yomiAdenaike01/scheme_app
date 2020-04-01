@@ -1,28 +1,30 @@
 <template>
-  <div class="global_search_container">
-    <!-- Dropdown for filters goes here -->
-    <div
-      v-click-outside="$emit('closeSearch')"
-      class="global_search_inner_container"
-    >
-      <el-input
-        v-model="searchTerm"
-        placeholder="Search what you want, we will take care of the rest..."
-      ></el-input>
-      <div v-if="searchTerm > 0" class="search_results_container"></div>
-      <div class="predicitive_container">
-        <InformationDisplay
-          v-if="!hasEntries(cachedSearches)"
-          :display-text="{
-            heading: 'No previous searches',
-            content: 'All previous searches will appear here'
-          }"
-        />
-        <!-- cache searches and their results here -->
-        <div></div>
+  <transition name="el-fade-in">
+    <div class="global_search_container">
+      <!-- Dropdown for filters goes here -->
+      <div
+        v-click-outside="closeSearchBox"
+        class="global_search_inner_container"
+      >
+        <el-input
+          v-model="searchTerm"
+          placeholder="Search what you want, we will take care of the rest..."
+        ></el-input>
+        <div v-if="searchTerm > 0" class="search_results_container"></div>
+        <div class="predicitive_container">
+          <InformationDisplay
+            v-if="!hasEntries(cachedSearches)"
+            :display-text="{
+              heading: 'No previous searches',
+              content: 'All previous searches will appear here'
+            }"
+          />
+          <!-- cache searches and their results here -->
+          <div></div>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -77,6 +79,9 @@ export default {
   methods: {
     completeSearch() {
       // if there is no previous results then append to cache
+    },
+    closeSearchBox() {
+      //   this.$emit("closeSearch");
     }
   }
 };

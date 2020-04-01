@@ -30,7 +30,7 @@
       <el-button
         type="text"
         icon="el-icon-search"
-        @click="$emit('runSearch')"
+        @click="$emit('runSearch', true)"
       />
     </div>
   </div>
@@ -39,19 +39,16 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
-import Avatar from "./Avatar.vue";
-
 import Dropdown from "@/components/Dropdown";
-import Logo from "@/components/Logo";
 import Popover from "@/components/Popover";
 import NotificationModule from "@/components/NotificationModule";
 
 export default {
   name: "AppBar",
   components: {
+    Avatar: () => import("@/components/Avatar"),
+    Logo: () => import("@/components/Logo"),
     Dropdown,
-    Avatar,
-    Logo,
     Popover,
     NotificationModule
   },
