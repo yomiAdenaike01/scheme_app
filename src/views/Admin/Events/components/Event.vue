@@ -1,13 +1,13 @@
 <template>
   <div
-    class="mb-3 event_container rounded shadow"
+    class="event_container shadow"
     :class="{ myEvent: isEventMine }"
     @click="displayMoreDetails = !displayMoreDetails"
   >
-    <el-row type="flex">
-      <el-col class="event_details_container details_unit p-2">
+    <div class="flex">
+      <div class="event_details_container details_unit">
         <h4 class="member_name">{{ getEventType }}</h4>
-        <Popover>
+        <Popover v-if="assignUsers.arr.length > 1">
           <div slot="content" class="content">
             {{ assignedUsers.arr.join(", ") }}
           </div>
@@ -26,18 +26,15 @@
           <el-tag v-else effect="dark" type="danger">Not approved</el-tag>
           <el-tag class="capitalize" type="primary">{{ event.timeTag }}</el-tag>
         </div>
-      </el-col>
-      <el-col
+      </div>
+      <div
         v-if="$mq == 'lg'"
         :class="['event_times flex details_unit', event.class]"
       >
         <div class="flex_center">
           <span class="date">{{ formattedDates.start }}</span>
           <div class="flex_center columns">
-            <i
-              style="font-size:1.3em"
-              class="el-icon el-icon-right p-0 m-0 grey"
-            ></i>
+            <i class="el-icon el-icon-right  grey"></i>
             <span class="time_diff grey"
               >{{ startAndEndTimeDiff }} {{ startEndTimeDiffType }}</span
             >
@@ -46,21 +43,16 @@
         </div>
       </el-col>
 
-      <el-col v-if="$mq == 'lg'" class="flex_center event_controls_wrapper">
+      <div v-if="$mq == 'lg'" class="event_controls_wrapper">
         <i
           class="el-icon-arrow-right more_details_indicator"
           :class="{ displayMore: displayMoreDetails }"
         ></i>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
     <el-collapse-transition>
-      <div v-if="displayMoreDetails" class="p-2">
-        <el-button
-          type="danger"
-          plain
-          size="small"
-          class="w-100"
-          @click="deleteEvent"
+      <div v-if="displayMoreDetails">
+        <el-button type="danger" plain size="small" @click="deleteEvent"
           >Delete event</el-button
         >
       </div>

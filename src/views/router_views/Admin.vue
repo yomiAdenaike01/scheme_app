@@ -42,7 +42,8 @@ export default {
             this.getTeam(),
             this.getNotifications(),
             this.getEvents(),
-            this.getRequests()
+            this.getRequests(),
+            this.getTaskBoards()
           ])
             .then(() => {
               resolve();
@@ -66,7 +67,8 @@ export default {
       "getTeam",
       "getEvents",
       "getNotifications",
-      "getRequests"
+      "getRequests",
+      "getTaskBoards"
     ]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL", "CLEAR_GLOBAL_INTERVAL"]),
     displayNewNotification() {

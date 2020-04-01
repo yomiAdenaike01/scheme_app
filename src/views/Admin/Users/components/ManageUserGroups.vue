@@ -69,8 +69,12 @@ export default {
     return {
       currentDisplay: "",
       toDelete: [],
-      runningDelete: []
+      runningDelete: [],
+      localUserGroupLength: 0
     };
+  },
+  activated() {
+    this.localUserGroupLength = this.clientInformation.userGroups.length;
   },
   computed: {
     ...mapState(["clientInformation"]),
@@ -151,7 +155,7 @@ export default {
 
     createUserGroup(content) {
       content.groupType = "userGroups";
-      content.value = this.clientInformation.userGroups.length + 1;
+      content.value = this.localUserGroupLength + 1;
       this.currentDisplay = "";
       this.request({
         method: "POST",

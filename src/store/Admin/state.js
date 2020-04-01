@@ -1,5 +1,6 @@
 export default {
   eventFilters: {},
+  boardsInformation: [],
   viewNote: {
     display: false
   },

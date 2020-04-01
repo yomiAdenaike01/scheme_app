@@ -37,7 +37,8 @@ export default {
     viewEvent: { view: false, data: null, tabIndex: 0 },
     eventModule: { view: false, data: null, tabIndex: 0 },
     tutorial: { view: false, data: null, tabIndex: 0 },
-    prevEvents: { view: false, data: null, tabIndex: 0 }
+    prevEvents: { view: false, data: null, tabIndex: 0 },
+    task: { view: false, data: null, tabIndex: 0 }
   },
 
   defaultCustomColours: [

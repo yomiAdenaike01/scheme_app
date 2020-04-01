@@ -1,10 +1,10 @@
-import templateActions from "./subactions/templateActions";
-import eventActions from "./subactions/eventActions";
-
+import templateActions from "./subactions/templates";
+import eventActions from "./subactions/events";
+import taskActions from "./subactions/tasks";
 export default {
   ...templateActions,
   ...eventActions,
-
+  ...taskActions,
   getNotes(context, id) {
     return new Promise((resolve, reject) => {
       context
@@ -39,7 +39,7 @@ export default {
         )
         .then(response => {
           console.warn(response);
-          context.commit("UPDATE_TASKS", response);
+          context.commit("UPDATE_TASK_BOARDS", response);
           resolve();
         })
         .catch(error => {

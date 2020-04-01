@@ -34,12 +34,12 @@ export default {
           name: "Events management",
           path: "/admin/events",
           icon: "el-icon-date"
+        },
+        {
+          name: "Task management",
+          path: "/admin/tasks",
+          icon: "bx bx-task"
         }
-        // {
-        //   name: "Messenger",
-        //   path: "/admin/messenger",
-        //   icon: "bx bx-conversation"
-        // },
       ];
       if (this.getIsAdmin) {
         allowedRoutes.push({

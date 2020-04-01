@@ -163,7 +163,11 @@ export default {
       return this.configPayloadXref.form;
     },
     config() {
-      return ["Create", "Edit", "Delete"];
+      let arr = ["Create"];
+      if (this.clientInformation.eventGroups.length > 0) {
+        arr.push("Delete", "Edit");
+      }
+      return arr;
     }
   },
   methods: {

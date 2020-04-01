@@ -30,15 +30,16 @@ export default {
     }
     state.notes.push(payload);
   },
-  UPDATE_TASKS(state, payload) {
+  UPDATE_TASK_BOARDS(state, payload) {
     if (Array.isArray(payload)) {
-      Vue.set(state, "tasks", payload);
-    }
-    let index = state.tasks.findIndex(todo => {
-      return (todo.title = payload.title);
-    });
-    if (index == -1) {
-      state.tasks.push(payload);
+      state.boardsInformation = payload;
+    } else {
+      let taskIndex = state.boardsInformation.findIndex(task => {
+        return task._id == payload._id;
+      });
+      if (taskIndex == -1) {
+        state.boardsInformation.push(payload);
+      }
     }
   }
 };

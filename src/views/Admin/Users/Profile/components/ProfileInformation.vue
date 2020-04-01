@@ -5,29 +5,13 @@
       class="collapse_container"
     >
       <el-collapse-item title="Quick Actions" name="1">
-        <div class="quick_actions_container flex  align-center">
-          <el-button
-            type="primary"
-            plain
-            round
-            size="mini"
-            @click="requestgenEmail"
-            >Contact</el-button
-          >
+        <div class="quick_actions_container">
           <Popover trigger="click">
-            <el-button
-              v-if="getIsAdmin"
-              slot="trigger"
-              type="primary"
-              plain
-              round
-              size="mini"
-              >{{
-                localUserInformation.groupID == 0
-                  ? "Assign to group"
-                  : "Reassign to group"
-              }}</el-button
-            >
+            <el-button v-if="getIsAdmin" slot="trigger" type="primary">{{
+              localUserInformation.groupID == 0
+                ? "Assign to group"
+                : "Reassign to group"
+            }}</el-button>
             <el-select
               slot="content"
               v-model="selectedGroup"
@@ -44,7 +28,7 @@
           </Popover>
 
           <Popover trigger="click">
-            <el-button slot="trigger" type="primary" plain round size="mini"
+            <el-button slot="trigger" type="primary"
               >Update Personal Information</el-button
             >
             <Form
@@ -54,13 +38,7 @@
               @val="updateUser"
             />
           </Popover>
-          <el-button
-            v-if="getIsAdmin"
-            type="danger"
-            plain
-            round
-            size="mini"
-            @click="removeUser"
+          <el-button v-if="getIsAdmin" type="danger" @click="removeUser"
             >Delete Account</el-button
           >
         </div>
@@ -70,6 +48,7 @@
       <p>{{ date }}</p>
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
+
       <p class="member_name">{{ group }}</p>
     </div>
   </div>
