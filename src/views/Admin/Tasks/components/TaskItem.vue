@@ -1,5 +1,13 @@
 <template>
-  <div v-loading="loading" class="task_container" :class="{ disabled: !isAssignedTo, populated:!isNew, completed:hasEntries(taskInformation) && currState == 'complete' }">
+  <div
+    v-loading="loading"
+    class="task_container"
+    :class="{
+      disabled: !isAssignedTo,
+      populated: !isNew,
+      completed: hasEntries(taskInformation) && currState == 'complete'
+    }"
+  >
     <div class="task_inner_container" :class="{ is_new: isNew }">
       <div v-if="isNew" class="new_task_container" @click="$emit('createTask')">
         <span> <i class="bx bx-plus"></i> Create new task</span>
@@ -7,16 +15,17 @@
 
       <!-- Populated task -->
       <div v-else class="populated_task_container">
-        <p>
+        <div>
           <div class="header">
-        <h3>{{ taskInformation.title }}</h3>
-        <!-- Popover for transfer to board -->
-<i class='bx bx-dots-horizontal-rounded grey'></i>        </div>
-        <small class="grey">{{ taskInformation.description }}</small>
-        <el-tag v-if="taskInformation.dueDate">{{
-          formatDate(taskInformation.dueDate)
-        }}</el-tag>
-        </p>
+            <h3>{{ taskInformation.title }}</h3>
+            <!-- Popover for transfer to board -->
+            <i class="bx bx-dots-horizontal-rounded grey"></i>
+          </div>
+          <small class="grey">{{ taskInformation.description }}</small>
+          <el-tag v-if="taskInformation.dueDate">{{
+            formatDate(taskInformation.dueDate)
+          }}</el-tag>
+        </div>
         <div
           v-if="taskInformation.assignedTo.indexOf(userInformation._id) == -1"
         >
@@ -26,31 +35,40 @@
             >{{ getUserInformation(teamMember) }}</el-tag
           >
         </div>
-        <Popover trigger='click'>
-        <el-button
-        v-if="currState != 'complete'"
-        slot="trigger"
-          class="complete_indication"
-          round
-          size="mini"
-          v-bind="buttonConfig"
-          >{{
-            buttonConfig.text
-          }}</el-button
-        >
-        <Form slot="content" disable emit-on-change class="full_width" :config="updateTaskStateConfig" @change="updateTask"/>
+        <Popover trigger="click">
+          <el-button
+            v-if="currState != 'complete'"
+            slot="trigger"
+            class="complete_indication"
+            round
+            size="mini"
+            v-bind="buttonConfig"
+            >{{ buttonConfig.text }}</el-button
+          >
+          <Form
+            slot="content"
+            disable
+            emit-on-change
+            class="full_width"
+            :config="updateTaskStateConfig"
+            @change="updateTask"
+          />
         </Popover>
-<transition name="el-fade-in">
-        <div v-if="currState == 'complete'" class="completed_overlay">
-          <el-button class="complete_button" circle icon="el-icon-check" type="success"/>
-          <el-button size="mini" type='text' @click="updateTask({state:0})">Undo complete</el-button>
-        </div>
-</transition>
-<!-- Tag container (date,assigned to, duedate) -->
-<div class="tag_container">
-
-</div>
-
+        <transition name="el-fade-in">
+          <div v-if="currState == 'complete'" class="completed_overlay">
+            <el-button
+              class="complete_button"
+              circle
+              icon="el-icon-check"
+              type="success"
+            />
+            <el-button size="mini" type="text" @click="updateTask({ state: 0 })"
+              >Undo complete</el-button
+            >
+          </div>
+        </transition>
+        <!-- Tag container (date,assigned to, duedate) -->
+        <div class="tag_container"></div>
       </div>
     </div>
   </div>
@@ -63,12 +81,12 @@ export default {
   name: "TaskItem",
   components: {
     Form: () => import("@/components/Form"),
-    Popover: ()=>import("@/components/Popover")
+    Popover: () => import("@/components/Popover")
   },
   props: {
     taskInformation: {
       type: Object,
-      default:()=>{}
+      default: () => {}
     },
     taskIndex: {
       type: Number,
@@ -88,62 +106,56 @@ export default {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation"]),
-    currState(){
+    currState() {
       return this.stateOptionsXref[this.taskInformation?.state]?.toLowerCase();
     },
     /**
      * Refactor (inefficient)
      */
-    stateOptions(){
-      let options = this.stateOptionsXref.map((option,index)=>{
+    stateOptions() {
+      let options = this.stateOptionsXref.map((option, index) => {
         return {
-          label:option,
-          value:index
-        }
+          label: option,
+          value: index
+        };
       });
-      
-      return options.filter(option=>{
-        return option.value != this.taskInformation?.state
+
+      return options.filter(option => {
+        return option.value != this.taskInformation?.state;
       });
     },
-    stateOptionsXref(){
-      return [
-        'Incomplete',
-        'Complete',
-        'Deferred'
-      ]
+    stateOptionsXref() {
+      return ["Incomplete", "Complete", "Deferred"];
     },
-    updateTaskStateConfig(){
+    updateTaskStateConfig() {
       return [
         {
-          'component-type':'select',
-          options:this.stateOptions,
-          placeholder:'Change task state',
-          model:'state'
+          "component-type": "select",
+          options: this.stateOptions,
+          placeholder: "Change task state",
+          model: "state"
         }
-      ]
+      ];
     },
-    buttonConfig(){
+    buttonConfig() {
       let buttonConfig = {
-        text:this.stateOptionsXref[this.taskInformation?.state]
+        text: this.stateOptionsXref[this.taskInformation?.state]
       };
 
       switch (this.taskInformation?.state) {
-
-        case 0:{
-          buttonConfig.round = true,
-          buttonConfig.type = 'info'
+        case 0: {
+          (buttonConfig.round = true), (buttonConfig.type = "info");
           break;
         }
 
-        case 2:{
+        case 2: {
           buttonConfig.round = true;
           buttonConfig.circle = false;
-          buttonConfig.type = 'warning';
+          buttonConfig.type = "warning";
           break;
         }
-      
-        default:{
+
+        default: {
           break;
         }
       }
@@ -199,22 +211,19 @@ export default {
   text-overflow: ellipsis;
   position: relative;
 
-  &.populated{
-    background:white;
-    box-shadow: 1px 2px 6px rgb(230,230,230);
-  margin: 30px 0;
-  border-radius: 10px;
-  max-height: 200px;
-
+  &.populated {
+    background: white;
+    box-shadow: 1px 2px 6px rgb(230, 230, 230);
+    margin: 30px 0;
+    border-radius: 10px;
+    max-height: 200px;
   }
-  &.completed{
-    border-left:2px solid $success_colour;
-
-}
-
+  &.completed {
+    border-left: 2px solid $success_colour;
+  }
 }
 .task_inner_container {
-  display:flex;
+  display: flex;
   flex-direction: column;
   flex: 1;
   border-radius: 10px;
@@ -245,14 +254,14 @@ export default {
   color: #999;
   transition: $default_transition;
 }
-.header{
-  display:flex;
+.header {
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .populated_task_container {
-  padding:20px;
-  flex:1;
+  padding: 20px;
+  flex: 1;
   position: relative;
   h3 {
     text-transform: capitalize;
@@ -260,19 +269,19 @@ export default {
     margin: 0;
   }
 }
-.completed_overlay{
+.completed_overlay {
   position: absolute;
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  background:rgba(250, 250, 250,0.9);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(250, 250, 250, 0.9);
 }
-.complete_button{
+.complete_button {
   margin-bottom: 20px;
   pointer-events: none;
 }

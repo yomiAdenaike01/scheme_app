@@ -59,7 +59,6 @@
         plain
         type="danger"
         size="mini"
-        
         @click="$emit('deleteRequest', request._id)"
         >Delete Request</el-button
       >
