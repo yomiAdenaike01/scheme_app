@@ -327,13 +327,9 @@ export default {
         text:
           "Would you like to save this event as a template to use for later.",
         type: "info"
-      })
-        .then(({ value }) => {
-          this.resolveSaveTemplate(value);
-        })
-        .catch(err => {
-          return err;
-        });
+      }).then(({ value }) => {
+        this.resolveSaveTemplate(value);
+      });
     },
 
     resolveSaveTemplate(value) {

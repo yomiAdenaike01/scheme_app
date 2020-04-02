@@ -20,7 +20,10 @@
             <h3>{{ taskInformation.title }}</h3>
             <!-- Popover for transfer to board -->
             <Popover trigger="click">
-              <i slot="trigger" class="bx bx-dots-horizontal-rounded grey"></i>
+              <i
+                slot="trigger"
+                class=" trigger bx bx-dots-horizontal-rounded grey"
+              ></i>
             </Popover>
           </div>
           <small class="grey">{{ taskInformation.description }}</small>
@@ -208,7 +211,6 @@ export default {
 <style lang="scss" scoped>
 .task_container {
   display: flex;
-  flex: 1;
   text-overflow: ellipsis;
   position: relative;
 
@@ -249,11 +251,14 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px;
-  background: rgb(250, 250, 250);
-  border-top: 2px solid whitesmoke;
+  border-radius: 30px;
+  font-size: 0.9em;
   color: #999;
+  padding: 10px;
   transition: $default_transition;
+  &:hover {
+    transform: translateY(-10px);
+  }
 }
 .header {
   display: flex;
@@ -291,5 +296,6 @@ export default {
 }
 .complete_indication {
   text-transform: capitalize;
+  margin: 20px 0px;
 }
 </style>

@@ -89,11 +89,12 @@
           >Clear Form</el-button
         >
         <el-button
-          :size="size"
-          type="primary"
+          :size="submitButton.size"
+          :plain="submitButton.plain"
+          :type="submitButton.type"
           class="button_text"
           @click="submitForm"
-          >{{ submitText }}</el-button
+          >{{ submitButton.text }}</el-button
         >
       </div>
     </el-form>
@@ -121,12 +122,20 @@ export default {
       type: Boolean,
       default: false
     },
-    submitText: {
-      type: String,
-      default: "Submit"
+    submitButton: {
+      type: Object,
+      default: () => {
+        return {
+          text: "Submit",
+          plain: false,
+          type: "primary",
+          size: "mini"
+        };
+      }
     },
     config: {
       type: Array,
+      default: () => [],
       required: false
     },
     allOptional: {
@@ -271,6 +280,9 @@ export default {
     width: 100%;
     .dialog_item {
       max-width: 100%;
+    }
+    .el-button {
+      width: 100%;
     }
   }
   .dialog_item {

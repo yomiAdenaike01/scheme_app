@@ -79,7 +79,8 @@ export default {
               this.genPromptBox({
                 boxType: "prompt",
                 title: "No client found",
-                text: "Please enter your client subdomain",
+                text:
+                  "Please enter your client subdomain to go to your scheme cloud instance",
                 type: "info"
               }).then(({ value }) => {
                 this.refactorWindowLocation(value);
@@ -222,13 +223,14 @@ span {
 
 
 */
+.long {
+  width: 100%;
+}
 .el-collapse-item__header,
 .el-collapse-item__wrap {
   border: none !important;
 }
-.popover_container {
-  padding: 0;
-}
+
 .popover_item {
   &.no_events {
     opacity: 0.4;

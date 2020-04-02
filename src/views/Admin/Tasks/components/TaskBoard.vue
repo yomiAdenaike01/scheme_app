@@ -2,29 +2,55 @@
   <div v-loading="loading" class="board_container">
     <div v-if="!newBoard && boardData" class="inner_board_container">
       <div class="board_header">
-        <h2>{{ boardData.name }}</h2>
-        <span>{{ boardData.description }}</span>
+        <div class="update_board_container">
+          <div class="text_container">
+            <h2>{{ boardData.name }}</h2>
+            <span>{{ boardData.description }}</span>
+          </div>
+
+          <Popover trigger="click" position="right">
+            <i
+              slot="trigger"
+              class="trigger bx bx-dots-horizontal-rounded grey"
+            ></i>
+            <div slot="content" class="content">
+              <Form
+                class="full_width"
+                :config="formConfig"
+                :submit-button="{ text: 'Update board' }"
+                @val="updateBoard"
+              />
+              <el-divider></el-divider>
+              <el-button
+                type="danger"
+                class="long"
+                size="mini"
+                plain
+                @click="deleteBoard"
+                >Delete Board</el-button
+              >
+            </div>
+          </Popover>
+        </div>
         <el-progress
           v-if="boardData.tasks.length > 0"
           :status="progressCount.status"
           :percentage="progressCount.percentage"
         ></el-progress>
-        <small v-else class="progress_alt grey"
-          >The total progress of tasks for this board will appear here</small
-        >
       </div>
-      <InformationDisplay
-        v-if="!hasTasks"
-        :display-text="{
-          hasIcon: true,
-          heading: 'No tasks found',
-          content:
-            'Press the button below to create a task assigned to this board'
-        }"
-      >
-        <i slot="heading" class="bx bx-task"></i>
-        <el-button circle icon="el-icon-plus" @click="createTask" />
-      </InformationDisplay>
+      <div v-if="!hasTasks" class="no_tasks_container">
+        <InformationDisplay
+          :display-text="{
+            hasIcon: true,
+            heading: 'No tasks found',
+            content:
+              'Press the button below to create a task assigned to this board'
+          }"
+        >
+          <i slot="heading" class="bx bx-task"></i>
+          <el-button circle icon="el-icon-plus" @click="createTask" />
+        </InformationDisplay>
+      </div>
       <TaskItem
         v-for="(task, index) in boardData.tasks"
         :key="task._id"
@@ -153,16 +179,27 @@ export default {
   },
   methods: {
     ...mapActions("Admin", ["getBoards"]),
-    ...mapActions(["request"]),
+    ...mapActions(["request", "genPromptBox"]),
     deleteBoard() {
       this.loading = true;
-      this.request({
-        method: "DELETE",
-        url: "tasks/boards/delete",
-        data: { _id: this.boardID }
+      this.genPromptBox({
+        boxType: "confirm",
+        text: "Are you sure you want to delete this board ?",
+        title: "Delete Board"
       })
         .then(() => {
-          this.loading = false;
+          return console.log("Hello");
+          this.request({
+            method: "DELETE",
+            url: "tasks/boards/delete",
+            data: { _id: this.boardID }
+          })
+            .then(() => {
+              this.loading = false;
+            })
+            .catch(() => {
+              this.loading = false;
+            });
         })
         .catch(() => {
           this.loading = false;
@@ -177,6 +214,19 @@ export default {
       })
         .then(() => {
           this.getBoards();
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    },
+    updateBoard({ name, description }) {
+      this.request({
+        method: "PUT",
+        url: "tasks/boards/update",
+        data: { name, description }
+      })
+        .then(() => {
           this.loading = false;
         })
         .catch(() => {
@@ -209,6 +259,7 @@ export default {
   flex-direction: column;
   flex: 1;
   position: relative;
+  padding: 0 20px;
 }
 .board_header {
   display: flex;
@@ -223,6 +274,15 @@ export default {
   }
   span {
     color: #999;
+  }
+  .text_container {
+    display: flex;
+    flex-direction: column;
+  }
+  .update_board_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 .new_board_container {
@@ -246,5 +306,11 @@ export default {
 .progress_alt {
   margin: 10px 0;
   text-transform: initial;
+}
+.no_tasks_container {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
 }
 </style>

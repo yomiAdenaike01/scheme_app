@@ -91,7 +91,7 @@ export default {
     ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
     keymap() {
       return {
-        "ctrl+shift+f": this.toggleDisplaySearch
+        "ctrl+shift+space": this.toggleDisplaySearch
       };
     },
     returnIsStartOfWeek() {

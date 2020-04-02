@@ -34,9 +34,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.popover_slot_content {
-  &/deep/ > * {
-    width: 100%;
-  }
+.popover_trigger {
+  background: red;
 }
 </style>
