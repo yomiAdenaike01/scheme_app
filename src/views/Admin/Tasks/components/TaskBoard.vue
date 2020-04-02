@@ -21,6 +21,7 @@
                 @val="updateBoard"
               />
               <el-divider></el-divider>
+
               <el-button
                 type="danger"
                 class="long"
@@ -56,6 +57,7 @@
         :key="task._id"
         :task-information="task"
         :task-index="index"
+        @viewTask="$emit('viewTask', $event)"
       />
       <TaskItem
         is-new

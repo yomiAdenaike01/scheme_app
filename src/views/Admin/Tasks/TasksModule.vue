@@ -11,6 +11,7 @@
         :key="board._id"
         :board-data="board"
         @createTask="toggleCreateTask"
+        @viewTask="viewTask"
       />
       <TaskBoard
         v-for="(board, index) in calcBoardsLeft"
@@ -19,6 +20,11 @@
         new-board
       />
     </div>
+    <TaskDrawer
+      :display="displayTask"
+      :task-information="viewTaskInformation"
+      @toggle="displayTask = $event"
+    />
   </div>
 </template>
 
@@ -28,12 +34,15 @@ export default {
   name: "Tasks",
   components: {
     TaskBoard: () => import("./components/TaskBoard"),
-    CreateTask: () => import("./components/CreateTask")
+    CreateTask: () => import("./components/CreateTask"),
+    TaskDrawer: () => import("./components/TaskDrawer")
   },
   data() {
     return {
       display: false,
-      createTaskInformation: {}
+      createTaskInformation: {},
+      displayTask: false,
+      viewTaskInformation: {}
     };
   },
   computed: {
@@ -49,6 +58,10 @@ export default {
     toggleCreateTask(e) {
       this.display = e.display;
       this.createTaskInformation = e.boardData;
+    },
+    viewTask(task) {
+      this.displayTask = true;
+      this.viewTaskInformation = task;
     }
   }
 };

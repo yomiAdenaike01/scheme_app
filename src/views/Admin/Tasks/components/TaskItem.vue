@@ -7,6 +7,7 @@
       populated: !isNew,
       completed: hasEntries(taskInformation) && currState == 'complete'
     }"
+    @click="viewTaskController"
   >
     <div class="task_inner_container" :class="{ is_new: isNew }">
       <div v-if="isNew" class="new_task_container" @click="$emit('createTask')">
@@ -174,7 +175,11 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-
+    viewTaskController() {
+      if (this.currState != "complete") {
+        this.$emit("viewTask", this.taskInformation);
+      }
+    },
     updateTask(update) {
       return console.log(update);
       this.loading = true;
@@ -268,6 +273,7 @@ export default {
 .populated_task_container {
   padding: 20px;
   flex: 1;
+  cursor: pointer;
   position: relative;
   h3 {
     text-transform: capitalize;
