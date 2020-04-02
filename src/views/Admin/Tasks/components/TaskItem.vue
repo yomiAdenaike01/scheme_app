@@ -1,5 +1,5 @@
 <template>
-  <div class="task_container" :class="{ disabled: !isAssignedTo, populated:!isNew }">
+  <div v-loading="loading" class="task_container" :class="{ disabled: !isAssignedTo, populated:!isNew, completed:hasEntries(taskInformation) && currState == 'complete' }">
     <div class="task_inner_container" :class="{ is_new: isNew }">
       <div v-if="isNew" class="new_task_container" @click="$emit('createTask')">
         <span> <i class="bx bx-plus"></i> Create new task</span>
@@ -25,6 +25,7 @@
         </div>
         <Popover trigger='click'>
         <el-button
+        v-if="currState != 'complete'"
         slot="trigger"
           class="complete_indication"
           round
@@ -37,9 +38,9 @@
         <Form slot="content" disable emit-on-change class="full_width" :config="updateTaskStateConfig" @change="updateTask"/>
         </Popover>
 <transition name="el-fade-in">
-        <div v-if="currState != 'complete'" class="completed_overlay">
+        <div v-if="currState == 'complete'" class="completed_overlay">
           <el-button class="complete_button" circle icon="el-icon-check" type="success"/>
-          <el-button size="mini" type='text'>Undo complete</el-button>
+          <el-button size="mini" type='text' @click="updateTask({state:0})">Undo complete</el-button>
         </div>
 </transition>
       </div>
@@ -58,7 +59,8 @@ export default {
   },
   props: {
     taskInformation: {
-      type: Object
+      type: Object,
+      default:()=>{}
     },
     taskIndex: {
       type: Number,
@@ -79,12 +81,21 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation"]),
     currState(){
-      return this.stateOptionsXref[this.taskInformation.state].toLowerCase();
+      return this.stateOptionsXref[this.taskInformation?.state]?.toLowerCase();
     },
+    /**
+     * Refactor (inefficient)
+     */
     stateOptions(){
-      let options = [{label:'Complete',value:1},{label:'Incomplete',value:0},{label:'Deferred',value:2}];
+      let options = this.stateOptionsXref.map((option,index)=>{
+        return {
+          label:option,
+          value:index
+        }
+      });
+      
       return options.filter(option=>{
-        return option.value != this.taskInformation.state
+        return option.value != this.taskInformation?.state
       });
     },
     stateOptionsXref(){
@@ -106,22 +117,14 @@ export default {
     },
     buttonConfig(){
       let buttonConfig = {
-        text:this.stateOptionsXref[this.taskInformation.state]
+        text:this.stateOptionsXref[this.taskInformation?.state]
       };
 
-      switch (this.taskInformation.state) {
+      switch (this.taskInformation?.state) {
 
         case 0:{
           buttonConfig.round = true,
           buttonConfig.type = 'info'
-          break;
-        }
-
-        case 1:{
-          buttonConfig.circle = true;
-          buttonConfig.round = false;
-          buttonConfig.icon='el-icon-check';
-          buttonConfig.type = 'success';
           break;
         }
 
@@ -193,8 +196,13 @@ export default {
     box-shadow: 1px 2px 6px rgb(230,230,230);
   margin: 30px 0;
   border-radius: 10px;
+  max-height: 200px;
 
   }
+  &.completed{
+    border-left:2px solid $success_colour;
+
+}
 
 }
 .task_inner_container {
@@ -249,7 +257,7 @@ export default {
   left:0;
   right:0;
   bottom:0;
-  background:rgba(250, 250, 250,0.9)
+  background:rgba(250, 250, 250,0.9);
 }
 .complete_button{
   margin-bottom: 20px;

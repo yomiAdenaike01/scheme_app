@@ -4,7 +4,10 @@
       <div class="board_header">
         <h2>{{ boardData.name }}</h2>
         <span>{{ boardData.description }}</span>
-        <i class="bx bx-more"></i>
+        <el-progress
+          :status="progressCount.status"
+          :percentage="progressCount.percentage"
+        ></el-progress>
       </div>
       <InformationDisplay
         v-if="!hasTasks"
@@ -18,14 +21,12 @@
         <i slot="heading" class="bx bx-task"></i>
         <el-button circle icon="el-icon-plus" @click="createTask" />
       </InformationDisplay>
-      <transition-group class="el-fade-in" tag="div">
-        <TaskItem
-          v-for="(task, index) in boardData.tasks"
-          :key="task._id"
-          :task-information="task"
-          :task-index="index"
-        />
-      </transition-group>
+      <TaskItem
+        v-for="(task, index) in boardData.tasks"
+        :key="task._id"
+        :task-information="task"
+        :task-index="index"
+      />
       <TaskItem
         is-new
         @createTask="$emit('createTask', { boardData, display: true })"
@@ -94,8 +95,26 @@ export default {
     };
   },
   computed: {
+    progressCount() {
+      let tasksTotal = this.boardData?.tasks?.length ?? 0,
+        completedCount = this.boardData.tasks.filter(task => {
+          return task.state == 1;
+        }).length,
+        percentage = Math.round((completedCount / tasksTotal) * 100),
+        status = "";
+
+      if (percentage > 50) {
+        status = "success";
+      } else if (percentage < 50) {
+        status = "warning";
+      }
+      return {
+        percentage,
+        status
+      };
+    },
     calcBlankTasks() {
-      return this.boards?.tasks.length + 1 < 10;
+      return this.boardData?.tasks.length + 1 < 10;
     },
     hasTasks() {
       return this.boardData.tasks.length > 0;
@@ -179,7 +198,6 @@ export default {
   margin: 10px;
   border-radius: 12px;
   border: 2px solid whitesmoke;
-  background: rgb(253, 253, 253);
   overflow-x: hidden;
 }
 .inner_board_container {
