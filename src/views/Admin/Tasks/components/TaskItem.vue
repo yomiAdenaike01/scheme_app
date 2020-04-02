@@ -46,6 +46,11 @@
           <el-button size="mini" type='text' @click="updateTask({state:0})">Undo complete</el-button>
         </div>
 </transition>
+<!-- Tag container (date,assigned to, duedate) -->
+<div class="tag_container">
+
+</div>
+
       </div>
     </div>
   </div>
