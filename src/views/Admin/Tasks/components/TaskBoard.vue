@@ -5,9 +5,13 @@
         <h2>{{ boardData.name }}</h2>
         <span>{{ boardData.description }}</span>
         <el-progress
+          v-if="boardData.tasks.length > 0"
           :status="progressCount.status"
           :percentage="progressCount.percentage"
         ></el-progress>
+        <small v-else class="progress_alt grey"
+          >The total progress of tasks for this board will appear here</small
+        >
       </div>
       <InformationDisplay
         v-if="!hasTasks"
@@ -172,8 +176,8 @@ export default {
         data: { name, description }
       })
         .then(() => {
-          this.loading = false;
           this.getBoards();
+          this.loading = false;
         })
         .catch(() => {
           this.loading = false;
@@ -238,5 +242,9 @@ export default {
   .dialog_item {
     width: 100%;
   }
+}
+.progress_alt {
+  margin: 10px 0;
+  text-transform: initial;
 }
 </style>

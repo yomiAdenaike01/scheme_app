@@ -8,7 +8,10 @@
       <!-- Populated task -->
       <div v-else class="populated_task_container">
         <p>
+          <div class="header">
         <h3>{{ taskInformation.title }}</h3>
+        <!-- Popover for transfer to board -->
+<i class='bx bx-dots-horizontal-rounded grey'></i>        </div>
         <small class="grey">{{ taskInformation.description }}</small>
         <el-tag v-if="taskInformation.dueDate">{{
           formatDate(taskInformation.dueDate)
@@ -236,6 +239,11 @@ export default {
   border-top: 2px solid whitesmoke;
   color: #999;
   transition: $default_transition;
+}
+.header{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .populated_task_container {
   padding:20px;
