@@ -19,7 +19,9 @@
           <div class="header">
             <h3>{{ taskInformation.title }}</h3>
             <!-- Popover for transfer to board -->
-            <i class="bx bx-dots-horizontal-rounded grey"></i>
+            <Popover trigger="click">
+              <i slot="trigger" class="bx bx-dots-horizontal-rounded grey"></i>
+            </Popover>
           </div>
           <small class="grey">{{ taskInformation.description }}</small>
           <el-tag v-if="taskInformation.dueDate">{{
@@ -109,20 +111,19 @@ export default {
     currState() {
       return this.stateOptionsXref[this.taskInformation?.state]?.toLowerCase();
     },
-    /**
-     * Refactor (inefficient)
-     */
-    stateOptions() {
-      let options = this.stateOptionsXref.map((option, index) => {
-        return {
-          label: option,
-          value: index
-        };
-      });
 
-      return options.filter(option => {
-        return option.value != this.taskInformation?.state;
-      });
+    stateOptions() {
+      let options = [];
+      for (let i = 0, len = this.stateOptionsXref.length; i < len; i++) {
+        let stateOption = this.stateOptionsXref[i];
+        if (i != this.taskInformation.state) {
+          options.push({
+            value: i,
+            label: stateOption
+          });
+        }
+      }
+      return options;
     },
     stateOptionsXref() {
       return ["Incomplete", "Complete", "Deferred"];

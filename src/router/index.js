@@ -58,7 +58,7 @@ router.beforeEach((to, from, next) => {
 
   if (authRequired) {
     if (!isLoggedIn) {
-      redirect("login");
+      redirect("signIn");
     } else {
       next();
     }

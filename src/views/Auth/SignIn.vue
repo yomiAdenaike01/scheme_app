@@ -25,7 +25,7 @@ import Logo from "@/components/Logo";
 
 import validateInput from "@/mixins/validateInput";
 export default {
-  name: "UserAuth",
+  name: "SignIn",
   components: {
     Form,
     Logo

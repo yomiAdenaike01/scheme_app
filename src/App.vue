@@ -16,9 +16,10 @@
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
-
+import refactorLocation from "@/mixins/refactorLocation";
 export default {
   name: "App",
+  mixins: [refactorLocation],
   data() {
     return {
       clientInterval: null,
@@ -75,6 +76,14 @@ export default {
             })
             .catch(() => {
               this.loading = false;
+              this.genPromptBox({
+                boxType: "prompt",
+                title: "No client found",
+                text: "Please enter your client subdomain",
+                type: "info"
+              }).then(({ value }) => {
+                this.refactorWindowLocation(value);
+              });
               reject();
             });
         });
@@ -89,7 +98,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "genPromptBox"]),
     ...mapMutations([
       "REMOVE_USER",
       "CREATE_GLOBAL_INTERVAL",
