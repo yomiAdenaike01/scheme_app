@@ -18,13 +18,18 @@
         <i slot="heading" class="bx bx-task"></i>
         <el-button circle icon="el-icon-plus" @click="createTask" />
       </InformationDisplay>
+      <transition-group class="el-fade-in" tag="div">
+        <TaskItem
+          v-for="(task, index) in boardData.tasks"
+          :key="task._id"
+          :task-information="task"
+          :task-index="index"
+        />
+      </transition-group>
       <TaskItem
-        v-for="(task, index) in boardData.tasks"
-        :key="task._id"
-        :task-data="task"
-        :task-index="index"
+        is-new
+        @createTask="$emit('createTask', { boardData, display: true })"
       />
-      <TaskItem is-new />
     </div>
     <div
       v-else
@@ -47,7 +52,7 @@
           <el-button slot="trigger" type="text" icon="el-icon-plus"></el-button>
           <Form
             slot="content"
-            class="popover_form"
+            class="full_width"
             :config="formConfig"
             @val="createBoard"
           />
@@ -69,10 +74,6 @@ export default {
     Popover
   },
   props: {
-    boardID: {
-      type: String,
-      default: null
-    },
     newBoard: {
       type: Boolean,
       default: false
@@ -94,10 +95,10 @@ export default {
   },
   computed: {
     calcBlankTasks() {
-      return this.boards.tasks.length + 1 < 10;
+      return this.boards?.tasks.length + 1 < 10;
     },
     hasTasks() {
-      return !this.boardData?.tasks;
+      return this.boardData.tasks.length > 0;
     },
     computeText() {
       let index = this.boardIndex;

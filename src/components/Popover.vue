@@ -6,7 +6,7 @@
     :title="title"
     :width="width"
   >
-    <slot name="content"></slot>
+    <slot class="popover_slot_content" name="content"></slot>
     <slot slot="reference" name="trigger"></slot>
   </el-popover>
 </template>
@@ -32,3 +32,11 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.popover_slot_content {
+  &/deep/ > * {
+    width: 100%;
+  }
+}
+</style>

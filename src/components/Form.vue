@@ -1,9 +1,8 @@
 <template>
-  <div @keyup.enter="submitForm">
+  <div class="form_wrapper" @keyup.enter="submitForm">
     <slot name="header"></slot>
     <el-form
       ref="form"
-      class="p-1"
       :inline="inline"
       :disabled="disableForm"
       :rules="form.validate"
@@ -163,9 +162,7 @@ export default {
       let form = [...this.config];
       for (let i = 0, len = form.length; i < len; i++) {
         let formItem = form[i];
-        let formItemName = formItem.hasOwnProperty("name")
-          ? formItem.name
-          : formItem.model;
+        let formItemName = formItem?.name ?? formItem.model;
 
         if (!formItem?.optional && !this.allOptional && !formItem?.disabled) {
           let validArr = [];
@@ -269,6 +266,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.form_wrapper {
+  &.full_width {
+    width: 100%;
+    .dialog_item {
+      max-width: 100%;
+    }
+  }
+  .dialog_item {
+    min-width: 70%;
+    max-width: 70%;
+  }
+}
 .button_container {
   display: flex;
   justify-content: space-between;
@@ -277,10 +286,7 @@ export default {
 .button_text {
   text-transform: capitalize;
 }
-.dialog_item {
-  min-width: 70%;
-  max-width: 70%;
-}
+
 .description {
   color: #999;
   display: block;

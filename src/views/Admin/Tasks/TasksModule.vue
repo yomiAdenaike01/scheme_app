@@ -1,8 +1,17 @@
 <template>
   <div class="task_boards_container">
-    <CreateTask :display="display" @toggleDisplay="display = $event" />
+    <CreateTask
+      :create-task-information="createTaskInformation"
+      :display="display"
+      @toggleDisplay="display = $event"
+    />
     <div class="boards_wrapper">
-      <TaskBoard v-for="board in boards" :key="board._id" :board-data="board" />
+      <TaskBoard
+        v-for="board in boards"
+        :key="board._id"
+        :board-data="board"
+        @createTask="toggleCreateTask"
+      />
       <TaskBoard
         v-for="(board, index) in calcBoardsLeft"
         :key="index"
@@ -23,7 +32,8 @@ export default {
   },
   data() {
     return {
-      display: false
+      display: false,
+      createTaskInformation: {}
     };
   },
   computed: {
@@ -33,6 +43,12 @@ export default {
     },
     calcBoardsLeft() {
       return this.clientInformation?.boardQuota ?? 5 - this.boards.length;
+    }
+  },
+  methods: {
+    toggleCreateTask(e) {
+      this.display = e.display;
+      this.createTaskInformation = e.boardData;
     }
   }
 };
