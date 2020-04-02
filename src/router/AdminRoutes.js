@@ -2,6 +2,7 @@ const EventsModule = () => import("@/views/Admin/Events/EventsModule");
 const UserModule = () => import("@/views/Admin/Users/UserModule");
 const CommsModule = () => import("@/views/Comms/CommsModule");
 const TasksModule = () => import("@/views/Admin/Tasks/TasksModule");
+
 export default [
   {
     path: "events",

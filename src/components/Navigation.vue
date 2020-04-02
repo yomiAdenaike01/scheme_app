@@ -40,6 +40,11 @@ export default {
           name: "Task management",
           path: "/admin/tasks",
           icon: "bx bx-task"
+        },
+        {
+          name: "Messenger",
+          path: "/admin/messenger",
+          icon: "bx bx-message"
         }
       ];
       if (this.getIsAdmin) {

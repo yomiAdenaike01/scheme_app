@@ -68,7 +68,7 @@ export default {
   REMOVE_USER(state) {
     state.userNotifications = [];
     state.localNotifications = [];
-    VueRouter.push({name:'signIn' });
+    VueRouter.push({ name: "signIn" });
     localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {

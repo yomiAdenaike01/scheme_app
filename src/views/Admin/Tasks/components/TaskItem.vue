@@ -4,28 +4,21 @@
     class="task_container"
     :class="{
       disabled: !isAssignedTo,
-      populated: !isNew,
       completed: hasEntries(taskInformation) && currState == 'complete'
     }"
-    @click="viewTaskController"
   >
-    <div class="task_inner_container" :class="{ is_new: isNew }">
-      <div v-if="isNew" class="new_task_container" @click="$emit('createTask')">
-        <span> <i class="bx bx-plus"></i> Create new task</span>
-      </div>
-
+    <div class="task_inner_container">
       <!-- Populated task -->
-      <div v-else class="populated_task_container">
+      <div class="populated_task_container">
         <div>
           <div class="header">
             <h3>{{ taskInformation.title }}</h3>
             <!-- Popover for transfer to board -->
-            <Popover trigger="click">
-              <i
-                slot="trigger"
-                class=" trigger bx bx-dots-horizontal-rounded grey"
-              ></i>
-            </Popover>
+            <i
+              slot="trigger"
+              class=" trigger bx bx-dots-horizontal-rounded grey"
+              @click="viewTaskController"
+            ></i>
           </div>
           <small class="grey">{{ taskInformation.description }}</small>
           <el-tag v-if="taskInformation.dueDate">{{
@@ -97,10 +90,6 @@ export default {
     taskIndex: {
       type: Number,
       default: 0
-    },
-    isNew: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
@@ -219,13 +208,12 @@ export default {
   text-overflow: ellipsis;
   position: relative;
 
-  &.populated {
-    background: white;
-    box-shadow: 1px 2px 6px rgb(230, 230, 230);
-    margin: 30px 0;
-    border-radius: 10px;
-    max-height: 200px;
-  }
+  background: white;
+  box-shadow: 1px 2px 6px rgb(230, 230, 230);
+  margin: 30px 0;
+  border-radius: 10px;
+  max-height: 200px;
+
   &.completed {
     border-left: 2px solid $success_colour;
   }
@@ -236,35 +224,8 @@ export default {
   flex: 1;
   border-radius: 10px;
   max-height: 300px;
-  &.is_new {
-    font-size: 1.1em;
-    color: #ccc;
-    cursor: pointer;
-    max-height: 20px;
-    padding: 0;
-    transition: $default_transition;
-    &:hover {
-      color: #999;
-      border-color: #999;
-    }
-  }
 }
-.new_task_container {
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-radius: 30px;
-  font-size: 0.9em;
-  color: #999;
-  padding: 10px;
-  transition: $default_transition;
-  &:hover {
-    transform: translateY(-10px);
-  }
-}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -273,7 +234,6 @@ export default {
 .populated_task_container {
   padding: 20px;
   flex: 1;
-  cursor: pointer;
   position: relative;
   h3 {
     text-transform: capitalize;

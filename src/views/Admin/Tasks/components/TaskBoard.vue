@@ -5,7 +5,7 @@
         <div class="update_board_container">
           <div class="text_container">
             <h2>{{ boardData.name }}</h2>
-            <span>{{ boardData.description }}</span>
+            <span>{{ truncate(boardData.description) }}</span>
           </div>
 
           <Popover trigger="click" position="right">
@@ -59,10 +59,12 @@
         :task-index="index"
         @viewTask="$emit('viewTask', $event)"
       />
-      <TaskItem
-        is-new
-        @createTask="$emit('createTask', { boardData, display: true })"
-      />
+      <div
+        class="create_new_task_wrapper grey"
+        @click="$emit('createTask', { boardData, display: true })"
+      >
+        <span> <i class="bx bx-plus"></i> Create new task</span>
+      </div>
     </div>
     <div
       v-else
@@ -251,10 +253,10 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin: 10px;
+  margin: 0 10px;
   border-radius: 12px;
   border: 2px solid whitesmoke;
-  overflow-x: hidden;
+  height: 100%;
 }
 .inner_board_container {
   display: flex;
@@ -262,6 +264,8 @@ export default {
   flex: 1;
   position: relative;
   padding: 0 20px;
+  height: 90%;
+  overflow-x: hidden;
 }
 .board_header {
   display: flex;
@@ -314,5 +318,24 @@ export default {
   flex: 1;
   justify-content: center;
   align-items: center;
+}
+.create_new_task_wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+
+  cursor: pointer;
+  background: rgb(252, 252, 252);
+  span {
+    transition: $default_transition;
+  }
+  &:hover span {
+    transform: translateY(-10px);
+  }
 }
 </style>

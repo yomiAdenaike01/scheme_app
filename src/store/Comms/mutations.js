@@ -10,11 +10,24 @@ export default {
     state.messages = payload;
   },
 
-  UPDATE_TRANSCRIPTS(state, { type, data }) {
-    if (type == "all") {
-      state.transcripts = data;
-    } else {
-      state.transcripts = [...state.transcripts, ...{ type, data }];
+  UPDATE_TRANSCRIPTS(state, payload, makeActive = false) {
+    if (Array.isArray(payload) && state.transcripts.length > 0) {
+      for (let i = 0, len = payload.length; i < len; i++) {
+        let doesTranscriptExist =
+          state.transcripts.findIndex(transcript => {
+            return transcript == payload._id;
+          }) > -1;
+        if (!doesTranscriptExist) {
+          state.transcripts.push(payload[i]);
+        }
+      }
+    } else if (Array.isArray(payload) && state.transcripts.length == 0) {
+      state.transcripts = payload;
+    } else if (typeof payload == "object") {
+      state.transcripts.push(payload);
+    }
+    if (makeActive) {
+      state.activeTranscript = payload;
     }
   },
   UPDATE_ACTIVE_TRANSCRIPT(state, payload) {

@@ -117,10 +117,9 @@ export default {
         };
         dispatch("request", payload, { root: true })
           .then(response => {
-            commit("UPDATE_TRANSCRIPTS", {
-              data: response,
-              type: "all"
-            });
+            if (response.length > 0) {
+              commit("UPDATE_TRANSCRIPTS", payload);
+            }
             resolve(response);
           })
           .catch(error => {
