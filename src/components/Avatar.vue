@@ -11,7 +11,8 @@ import { mapState } from "vuex";
 export default {
   name: "Avatar",
   props: {
-    name: String
+    name: String,
+    default: null
   },
   computed: {
     ...mapState(["defaultCustomColours", "userInformation"]),
@@ -25,20 +26,17 @@ export default {
     },
 
     initials() {
-      let initials, username;
-      username = "John Doe";
-      if (this.name) {
-        username = this.name;
-        let parts = username.split(/[ -]/);
-        initials = "";
-        for (var i = 0; i < parts.length; i++) {
-          initials += parts[i].charAt(0);
-        }
-        if (initials.length > 3 && initials.search(/[A-Z]/) !== -1) {
-          initials = initials.replace(/[a-z]+/g, "");
-        }
-        initials = initials.substr(0, 3).toUpperCase();
+      let initials,
+        username = this.name ? this.name : "User";
+      let parts = username.split(/[ -]/);
+      initials = "";
+      for (var i = 0; i < parts.length; i++) {
+        initials += parts[i].charAt(0);
       }
+      if (initials.length > 3 && initials.search(/[A-Z]/) !== -1) {
+        initials = initials.replace(/[a-z]+/g, "");
+      }
+      initials = initials.substr(0, 3).toUpperCase();
       return initials;
     }
   },

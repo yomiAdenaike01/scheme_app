@@ -1,6 +1,6 @@
 <template>
   <div
-    class="transcript_container"
+    class="transcripts_container"
     :class="{ no_content: transcripts.length == 0 }"
   >
     <!-- Search for transcripts -->
@@ -54,6 +54,7 @@ export default {
   methods: {
     ...mapMutations("Comms", ["UPDATE_TRANSCRIPTS"]),
     startNewChat() {
+      let isoDate = new Date().toISOString();
       // Create a fake chat
       this.UPDATE_TRANSCRIPTS(
         {
@@ -61,7 +62,12 @@ export default {
           userTwo: Math.random()
             .toString(16)
             .slice(2),
-          dateCreated: new Date().toISOString()
+          dateCreated: isoDate,
+          dateUpdated: isoDate,
+          initChat: true,
+          _id: Math.random()
+            .toString(16)
+            .slice(2)
         },
         true
       );
@@ -71,11 +77,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.transcript_container {
+.transcripts_container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: rgb(252, 252, 252);
   flex: 0.2;
   border-right: 2px solid whitesmoke;
   position: relative;

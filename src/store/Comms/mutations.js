@@ -27,7 +27,7 @@ export default {
       state.transcripts.push(payload);
     }
     if (makeActive) {
-      state.activeTranscript = payload;
+      state.activeTranscript = payload?._id;
     }
   },
   UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
