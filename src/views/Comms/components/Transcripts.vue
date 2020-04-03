@@ -56,21 +56,18 @@ export default {
     startNewChat() {
       let isoDate = new Date().toISOString();
       // Create a fake chat
-      this.UPDATE_TRANSCRIPTS(
-        {
-          userOne: this.userInformation._id,
-          userTwo: Math.random()
-            .toString(16)
-            .slice(2),
-          dateCreated: isoDate,
-          dateUpdated: isoDate,
-          initChat: true,
-          _id: Math.random()
-            .toString(16)
-            .slice(2)
-        },
-        true
-      );
+      this.UPDATE_TRANSCRIPTS({
+        userOne: this.userInformation._id,
+        userTwo: Math.random()
+          .toString(16)
+          .slice(2),
+        dateCreated: isoDate,
+        dateUpdated: isoDate,
+        initChat: true,
+        _id: Math.random()
+          .toString(16)
+          .slice(2)
+      });
     }
   }
 };

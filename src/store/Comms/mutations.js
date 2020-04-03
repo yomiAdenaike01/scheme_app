@@ -10,7 +10,7 @@ export default {
     state.messages = payload;
   },
 
-  UPDATE_TRANSCRIPTS(state, payload, makeActive = false) {
+  UPDATE_TRANSCRIPTS(state, payload) {
     if (Array.isArray(payload) && state.transcripts.length > 0) {
       for (let i = 0, len = payload.length; i < len; i++) {
         let doesTranscriptExist =
@@ -26,8 +26,12 @@ export default {
     } else if (typeof payload == "object") {
       state.transcripts.push(payload);
     }
-    if (makeActive) {
-      state.activeTranscript = payload?._id;
+    if (payload?.initChat) {
+      if (typeof payload == "object") {
+        Vue.set(state, "activeTranscript", payload);
+      } else {
+        Vue.set(state, "activeTranscript", payload[0]);
+      }
     }
   },
   UPDATE_ACTIVE_TRANSCRIPT(state, payload) {

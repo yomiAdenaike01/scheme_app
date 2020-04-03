@@ -3,7 +3,7 @@
     <div v-if="hasEntries(activeTranscript)" class="active_chat_container">
       <div class="current_chat_header">
         <!-- Summary information about that user and their current position -->
-        <p>Header</p>
+        <el-input v-if="isNewChat"></el-input>
       </div>
 
       <div class="messages_container">
@@ -20,7 +20,7 @@
           <el-input
             v-model="chat.message"
             placeholder="Send a message..."
-            @keyup.enter="sendMessage"
+            @keydown.enter="sendMessage"
           />
           <!-- Send message input -->
         </div>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   name: "CurrentChat",
   components: {
@@ -39,6 +39,8 @@ export default {
   },
   data() {
     return {
+      intervalID: null,
+      loading: false,
       chat: {
         message: ""
       }
@@ -46,10 +48,53 @@ export default {
   },
   computed: {
     ...mapState("Comms", ["activeTranscript"]),
-    ...mapGetters()
+    isNewChat() {
+      return this.activeTranscript?.initChat;
+    }
+  },
+  activated() {
+    if (!this.activeTranscript?.initChat) {
+      this.intervalID = "getMessages";
+      this.loading = true;
+      this.CREATE_GLOBAL_INTERVAL({
+        immediate: true,
+        id: this.intervalID,
+        method: () => {
+          return new Promise((resolve, reject) => {
+            this.getMessages()
+              .then(() => {
+                resolve();
+                this.loading = false;
+              })
+              .catch(() => {
+                reject();
+                this.loading = false;
+              });
+          });
+        }
+      });
+    }
+  },
+  deactivated() {
+    if (this.intervalID) {
+      this.CLEAR_GLOBAL_INTERVAL(this.intervalID);
+    }
   },
   methods: {
-    sendMessage() {}
+    ...mapMutations([
+      "UPDATE_NOTIFICATIONS",
+      "CREATE_GLOBAL_INTERVAL",
+      "CLEAR_GLOBAL_INTERVAL"
+    ]),
+    ...mapActions("Comms", ["getMessages"]),
+    sendMessage() {
+      if (!this.chat.message) {
+        this.UPDATE_NOTIFICATIONS({
+          title: "Failed to send message",
+          message: "No content found in message"
+        });
+      }
+    }
   }
 };
 </script>

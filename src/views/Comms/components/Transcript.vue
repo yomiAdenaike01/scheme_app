@@ -7,10 +7,12 @@
     <Avatar :name="usersInformation.userTwo" />
     <div class="text_container">
       <p v-if="!transcriptInformation.hasOwnProperty('initChat')">
-        {{ transcriptInformation.lastMessage.content }}
+        {{ truncate(transcriptInformation.lastMessage.content) }}
       </p>
-      <p v-else><strong>New Message</strong></p>
-      <p>{{ initMoment(transcriptInformation.dateUpdated).calendar() }}</p>
+      <p v-else>New Message</p>
+      <small class="grey">{{
+        initMoment(transcriptInformation.dateUpdated).calendar()
+      }}</small>
     </div>
   </div>
 </template>
