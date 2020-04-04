@@ -78,7 +78,7 @@ export default {
        * {
        * term:yomi adenaikek:results:{
        * events:[],
-       * messages:[],
+       * chatMessages:[],
        * tasks:[],
        * notes:[],
        * view_profile:[],

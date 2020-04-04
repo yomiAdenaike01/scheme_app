@@ -1,44 +1,41 @@
 import Vue from "vue";
 export default {
-  UPDATE_TRANSCRIPT_LOADING(state, payload = false) {
-    state.transcriptLoading = payload;
-  },
   UPDATE_START_NEW_CHAT(state, payload) {
     state.startNewChat = payload;
   },
   UPDATE_MESSAGES(state, payload) {
-    state.messages = payload;
+    state.chatMessages = payload;
   },
 
-  UPDATE_TRANSCRIPTS(state, payload) {
-    if (Array.isArray(payload) && state.transcripts.length > 0) {
+  UPDATE_CHATS(state, payload) {
+    if (Array.isArray(payload) && state.chats.length > 0) {
       for (let i = 0, len = payload.length; i < len; i++) {
-        let doesTranscriptExist =
-          state.transcripts.findIndex(transcript => {
-            return transcript == payload._id;
+        let doesChatExist =
+          state.chats.findIndex(chat => {
+            return chat == payload._id;
           }) > -1;
-        if (!doesTranscriptExist) {
-          state.transcripts.push(payload[i]);
+        if (!doesChatExist) {
+          state.chats.push(payload[i]);
         }
       }
-    } else if (Array.isArray(payload) && state.transcripts.length == 0) {
-      state.transcripts = payload;
+    } else if (Array.isArray(payload) && state.chats.length == 0) {
+      state.chats = payload;
     } else if (typeof payload == "object") {
-      state.transcripts.push(payload);
+      state.chats.push(payload);
     }
     if (payload?.initChat) {
       if (typeof payload == "object") {
-        Vue.set(state, "activeTranscript", payload);
+        Vue.set(state, "activeChat", payload);
       } else {
-        Vue.set(state, "activeTranscript", payload[0]);
+        Vue.set(state, "activeChat", payload[0]);
       }
     }
   },
-  UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
+  UPDATE_ACTIVE_CHAT(state, payload) {
     if (!payload) {
-      Vue.set(state, "activeTranscript", state.transcripts[0]);
+      Vue.set(state, "activeChat", state.chats[0]);
     } else {
-      Vue.set(state, "activeTranscript", payload);
+      Vue.set(state, "activeChat", payload);
     }
   }
 };

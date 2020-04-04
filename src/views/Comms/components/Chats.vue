@@ -1,23 +1,16 @@
 <template>
-  <div
-    class="transcripts_container"
-    :class="{ no_content: transcripts.length == 0 }"
-  >
-    <!-- Search for transcripts -->
-    <div v-if="hasEntries(transcripts)">
-      <el-input v-model="transcriptSearch" placeholder="Search chats" />
-      <PreviousChat
-        v-for="transcript in transcripts"
-        :key="transcript._id"
-        :transcript-information="transcript"
-      />
+  <div class="chats_container" :class="{ no_content: chats.length == 0 }">
+    <!-- Search for previousChats -->
+    <div v-if="hasEntries(chats)">
+      <el-input v-model="chatSearch" placeholder="Search chats" />
+      <Chat v-for="chat in chats" :key="chat._id" :chat-information="chat" />
     </div>
 
     <InformationDisplay
       v-else
       class="no_content"
       :display-text="{
-        heading: 'No previous messages',
+        heading: 'No previous chats',
         content: 'Press the button below to start a new chat',
         icon: 'bx bx-message-group',
         hasIcon: true
@@ -37,26 +30,26 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 export default {
-  name: "PreviousChats",
+  name: "Chats",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
-    PreviousChat: () => import("./PreviousChat")
+    Chat: () => import("./Chat")
   },
   data() {
     return {
-      transcriptSearch: ""
+      chatSearch: ""
     };
   },
   computed: {
-    ...mapState("Comms", ["transcripts"]),
+    ...mapState("Comms", ["chats"]),
     ...mapState(["userInformation"])
   },
   methods: {
-    ...mapMutations("Comms", ["UPDATE_TRANSCRIPTS"]),
+    ...mapMutations("Comms", ["UPDATE_CHATS"]),
     startNewChat() {
       let isoDate = new Date().toISOString();
       // Create a fake chat
-      this.UPDATE_TRANSCRIPTS({
+      this.UPDATE_CHATS({
         userOne: this.userInformation._id,
         userTwo: Math.random()
           .toString(16)
@@ -74,7 +67,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.transcripts_container {
+.chats_container {
   display: flex;
   flex-direction: column;
   height: 100%;

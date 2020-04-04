@@ -1,7 +1,7 @@
 <template>
   <div class="comms_container">
-    <PreviousChats />
-    <CurrentChat />
+    <Chats />
+    <ActiveChat />
   </div>
 </template>
 
@@ -10,8 +10,8 @@ import { mapActions, mapMutations } from "vuex";
 export default {
   name: "CommsModule",
   components: {
-    PreviousChats: () => import("./components/PreviousChats"),
-    CurrentChat: () => import("./components/CurrentChat")
+    Chats: () => import("./components/Chats"),
+    ActiveChat: () => import("./components/ActiveChat")
   },
   created() {
     this.CREATE_GLOBAL_INTERVAL({
@@ -19,7 +19,7 @@ export default {
       immediate: true,
       method: () => {
         return new Promise((resolve, reject) => {
-          this.getTranscripts()
+          this.getChats()
             .then(() => {
               resolve();
             })
@@ -32,7 +32,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions("Comms", ["getTranscripts"]),
+    ...mapActions("Comms", ["getChats"]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL"])
   }
 };
