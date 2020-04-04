@@ -6,7 +6,7 @@
     <!-- Search for transcripts -->
     <div v-if="hasEntries(transcripts)">
       <el-input v-model="transcriptSearch" placeholder="Search chats" />
-      <Transcript
+      <PreviousChat
         v-for="transcript in transcripts"
         :key="transcript._id"
         :transcript-information="transcript"
@@ -37,10 +37,10 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 export default {
-  name: "Transcripts",
+  name: "PreviousChats",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
-    Transcript: () => import("./Transcript")
+    PreviousChat: () => import("./PreviousChat")
   },
   data() {
     return {

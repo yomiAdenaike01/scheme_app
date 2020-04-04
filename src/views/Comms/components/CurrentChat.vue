@@ -3,7 +3,13 @@
     <div v-if="hasEntries(activeTranscript)" class="active_chat_container">
       <div class="current_chat_header">
         <!-- Summary information about that user and their current position -->
-        <el-input v-if="isNewChat"></el-input>
+        <el-autocomplete
+          v-if="isNewChat"
+          v-model="recieverName"
+          :fetch-suggestions="teamSearch"
+          placeholder="To: Enter name of person you want to message"
+          @select="setReciever"
+        ></el-autocomplete>
       </div>
 
       <div class="messages_container">
@@ -41,13 +47,16 @@ export default {
     return {
       intervalID: null,
       loading: false,
+      recieverName: "",
       chat: {
-        message: ""
+        message: "",
+        recieverID: ""
       }
     };
   },
   computed: {
     ...mapState("Comms", ["activeTranscript"]),
+    ...mapState("Admin", ["teamInformation"]),
     isNewChat() {
       return this.activeTranscript?.initChat;
     }
@@ -87,6 +96,15 @@ export default {
       "CLEAR_GLOBAL_INTERVAL"
     ]),
     ...mapActions("Comms", ["getMessages"]),
+    setReciever(e) {
+      this.chat.recieverID = e;
+    },
+    teamSearch(name) {
+      name = name.toLowerCase();
+      return this.teamInfomration.filter(x => {
+        x.name.toLowerCase() == name;
+      });
+    },
     sendMessage() {
       if (!this.chat.message) {
         this.UPDATE_NOTIFICATIONS({
@@ -107,8 +125,16 @@ export default {
   height: 100%;
 }
 .current_chat_header {
-  padding: 20px;
   border-bottom: 2px solid whitesmoke;
+  .el-autocomplete {
+    position: relative;
+    flex: 1;
+    display: flex;
+  }
+  .el-autocomplete /deep/ .el-input__inner {
+    border: none;
+    flex: 1;
+  }
 }
 .messages_container {
   display: flex;

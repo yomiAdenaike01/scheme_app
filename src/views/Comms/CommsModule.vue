@@ -1,6 +1,6 @@
 <template>
   <div class="comms_container">
-    <Transcripts />
+    <PreviousChats />
     <CurrentChat />
   </div>
 </template>
@@ -10,7 +10,7 @@ import { mapActions, mapMutations } from "vuex";
 export default {
   name: "CommsModule",
   components: {
-    Transcripts: () => import("./components/Transcripts"),
+    PreviousChats: () => import("./components/PreviousChats"),
     CurrentChat: () => import("./components/CurrentChat")
   },
   created() {
