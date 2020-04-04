@@ -13,8 +13,8 @@
       </div>
 
       <div class="messages_container">
-        <!-- Messages go here -->
-        <p>Messages</p>
+        <!-- ChatMessages go here -->
+        <p>ChatMessages</p>
       </div>
 
       <div class="current_chat_interaction">
@@ -26,7 +26,7 @@
           <el-input
             v-model="chat.message"
             placeholder="Send a message..."
-            @keydown.enter="sendMessage"
+            @keydown.enter="sendChatMessage"
           />
           <!-- Send message input -->
         </div>
@@ -40,7 +40,7 @@ import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   name: "CurrentChat",
   components: {
-    Message: () => import("./Message"),
+    ChatMessage: () => import("./ChatMessage"),
     InformationDisplay: () => import("@/components/InformationDisplay")
   },
   data() {
@@ -63,14 +63,14 @@ export default {
   },
   activated() {
     if (!this.activeTranscript?.initChat) {
-      this.intervalID = "getMessages";
+      this.intervalID = "getChatMessages";
       this.loading = true;
       this.CREATE_GLOBAL_INTERVAL({
         immediate: true,
         id: this.intervalID,
         method: () => {
           return new Promise((resolve, reject) => {
-            this.getMessages()
+            this.getChatMessages()
               .then(() => {
                 resolve();
                 this.loading = false;
@@ -95,7 +95,7 @@ export default {
       "CREATE_GLOBAL_INTERVAL",
       "CLEAR_GLOBAL_INTERVAL"
     ]),
-    ...mapActions("Comms", ["getMessages"]),
+    ...mapActions("Comms", ["getChatMessages"]),
     setReciever(e) {
       this.chat.recieverID = e;
     },
@@ -105,7 +105,7 @@ export default {
         x.name.toLowerCase() == name;
       });
     },
-    sendMessage() {
+    sendChatMessage() {
       if (!this.chat.message) {
         this.UPDATE_NOTIFICATIONS({
           title: "Failed to send message",
@@ -130,6 +130,11 @@ export default {
     position: relative;
     flex: 1;
     display: flex;
+    font-size: 1.3em;
+  }
+  .el-input {
+    font-size: 1.2em;
+    padding: 20px;
   }
   .el-autocomplete /deep/ .el-input__inner {
     border: none;

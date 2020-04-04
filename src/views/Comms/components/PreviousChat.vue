@@ -1,7 +1,7 @@
 <template>
   <div
     class="transcript_container"
-    :class="{ active: activeTranscript._id == transcriptInformation._id }"
+    :class="{ active: activeChat }"
     @click="UPDATE_ACTIVE_TRANSCRIPT(transcriptInformation._id)"
   >
     <Avatar :name="usersInformation.userTwo" />
@@ -14,11 +14,21 @@
         initMoment(transcriptInformation.dateUpdated).calendar()
       }}</small>
     </div>
+    <div class="chat_extension_container">
+      <div v-if="activeChat" class="delete_chat_container">
+        <el-button
+          type="text"
+          icon="el-icon-delete"
+          circle
+          @click="deleteChat"
+        ></el-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 export default {
   name: "Transcript",
   components: {
@@ -27,6 +37,9 @@ export default {
   computed: {
     ...mapState("Comms", ["activeTranscript"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    activeChat() {
+      return this.activeTranscript._id == this.transcriptInformation._id;
+    },
     usersInformation() {
       let { userOne, userTwo } = this.activeTranscript;
       return {
@@ -42,7 +55,22 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"])
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"]),
+    ...mapActions("Comms", ["getTranscripts"]),
+    deleteChat() {
+      this.request({
+        method: "DELETE",
+        url: "messenger/transcripts",
+        data: { _id: this.transcriptInformation._id }
+      })
+        .then(() => {
+          this.loading = false;
+          this.getTranscripts();
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    }
   }
 };
 </script>
@@ -57,6 +85,9 @@ export default {
   &.active {
     background: rgb(252, 252, 252);
   }
+  &:hover .chat_extension_container {
+    opacity: 1;
+  }
 }
 .text_container {
   display: flex;
@@ -66,5 +97,10 @@ export default {
     padding: 0;
     margin: 0;
   }
+}
+.chat_extension_container {
+  transition: $default_transition opacity;
+  opacity: 0;
+  margin-left: auto;
 }
 </style>
