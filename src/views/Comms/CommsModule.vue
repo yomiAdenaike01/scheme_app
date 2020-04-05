@@ -1,17 +1,20 @@
 <template>
   <div class="comms_container">
     <Chats />
-    <ActiveChat />
+    <ActiveChat v-if="hasEntries(activeChat)" />
   </div>
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   name: "CommsModule",
   components: {
     Chats: () => import("./components/Chats"),
     ActiveChat: () => import("./components/ActiveChat")
+  },
+  computed: {
+    ...mapState("Comms", ["activeChat"])
   },
   created() {
     this.CREATE_GLOBAL_INTERVAL({

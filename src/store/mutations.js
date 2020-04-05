@@ -46,8 +46,9 @@ export default {
     }
   },
 
-  CLEAR_GLOBAL_INTERVAL(state, intervalID) {
+  CLEAR_GLOBAL_INTERVAL(state, intervalID = null) {
     clearStateInterval(state, intervalID);
+    console.log(state.runningIntervals);
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
@@ -68,7 +69,9 @@ export default {
   REMOVE_USER(state) {
     state.userNotifications = [];
     state.localNotifications = [];
-    VueRouter.push({ name: "signIn" });
+    if (VueRouter.currentRoute.name != "signIn") {
+      VueRouter.push({ name: "signIn" });
+    }
     localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {

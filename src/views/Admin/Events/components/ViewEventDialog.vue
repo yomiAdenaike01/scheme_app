@@ -294,7 +294,7 @@ export default {
       "genEmail",
       "genPromptBox",
       "closeDialog",
-      "genNotification"
+      "getApiNotification"
     ]),
     ...mapActions("Admin", ["getEvents", "updateEvents"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
@@ -340,7 +340,7 @@ export default {
           .then(() => {
             this.getEvents();
             // Notify user they have been dropped
-            this.genNotification({
+            this.getApiNotification({
               type: "attention",
               title: "Event Update",
               message: "You have been removed from an event",
@@ -411,7 +411,7 @@ export default {
         index++
       ) {
         let assignee = assignedToIDs[i];
-        this.genNotification({
+        this.getApiNotification({
           type: "attention",
           title: "Event removal",
           for: assignee,

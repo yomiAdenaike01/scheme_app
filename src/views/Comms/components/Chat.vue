@@ -5,7 +5,7 @@
     :class="{ active: isActive }"
     @click="updateActiveChat"
   >
-    <Avatar name="Avatar Name" />
+    <Avatar :name="usersInformation.userTwo" />
     <div class="text_container">
       <p v-if="!isNewChat">
         {{ chatInformation.message.content }}
@@ -51,7 +51,7 @@ export default {
       return this.activeChat._id == this.chatInformation._id;
     },
     usersInformation() {
-      let { userOne, userTwo } = this.activeChat;
+      let { userOne, userTwo } = this.chatInformation;
       return {
         userOne: this.getUserInformation(userOne)?.name,
         userTwo: this.getUserInformation(userTwo)?.name
@@ -66,7 +66,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations("Comms", ["UPDATE_SCROLL_POSITION"]),
+    ...mapMutations("Comms", ["UPDATE_SCROLL_POSITION", "UPDATE_ACTIVE_CHAT"]),
     ...mapActions("Comms", ["getChats"]),
     updateScrollPos() {
       if (this.isNewChat) {
@@ -75,6 +75,7 @@ export default {
     },
     updateActiveChat() {
       this.updateScrollPos();
+      this.UPDATE_ACTIVE_CHAT(this.chatInformation);
     },
     deleteChat() {
       this.request({
@@ -102,7 +103,7 @@ export default {
   border-bottom: 2px solid rgb(240, 240, 240);
   cursor: pointer;
   &.active {
-    background: rgb(252, 252, 252);
+    background: rgb(250, 250, 250);
   }
   &:hover .chat_extension_container {
     opacity: 1;

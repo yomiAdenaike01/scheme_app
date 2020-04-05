@@ -27,16 +27,14 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
-import GlobalSearch from "@/components/GlobalSearch";
-
 export default {
   name: "Common",
   components: {
     Navigation: () => import("@/components/Navigation"),
     AppBar: () => import("@/components/AppBar"),
     InstanceCheck: () => import("@/components/InstanceCheck"),
-    NprogressContainer,
-    GlobalSearch
+    GlobalSearch: () => import("@/components/GlobalSearch"),
+    NprogressContainer
   },
   data() {
     return {

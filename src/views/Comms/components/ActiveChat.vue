@@ -1,8 +1,9 @@
 <template>
-  <div class="current_chat_container">
+  <div v-loading="loading" class="current_chat_container">
     <div class="active_chat_container">
       <div class="current_chat_header">
         <el-autocomplete
+          v-if="activeChat.initChat"
           v-model="teamQuery"
           :trigger-on-focus="false"
           :fetch-suggestions="queryTeam"
@@ -12,12 +13,11 @@
       </div>
 
       <div class="chatmessages_container">
-        <p>Message</p>
-        <div v-if="messages.length > 0">
-          <div v-for="message in messages" :key="message._id">
-            <p>{{ message.content }}</p>
-          </div>
-        </div>
+        <ChatMessage
+          v-for="message in chatMessages"
+          :key="message._id"
+          v-bind="message"
+        />
       </div>
 
       <div class="current_chat_interaction">
@@ -44,12 +44,13 @@ export default {
   name: "ActiveChat",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
-    ChatActions: () => import("./ChatActions")
+    ChatActions: () => import("./ChatActions"),
+    ChatMessage: () => import("./ChatMessage")
   },
   data() {
     return {
       intervalID: null,
-      loading: false,
+      loading: true,
       teamQuery: "",
       chat: {
         content: "",
@@ -62,9 +63,21 @@ export default {
     };
   },
   computed: {
+    ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "messages"]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    chatMessages() {
+      return [...this.messages].map(message => {
+        return Object.assign(
+          {
+            sentAt: this.formatDate(message.sentAt),
+            isSentByUser: message.senderID == this.userInformation._id
+          },
+          message
+        );
+      });
+    },
     isNewChat() {
       return this.activeChat?.initChat;
     },
@@ -80,33 +93,22 @@ export default {
       });
     }
   },
-  activated() {
-    if (!this.activeChat?.initChat && this.hasEntries(this.activeChat)) {
-      this.intervalID = "getChatMessages";
-      this.loading = true;
-      this.CREATE_GLOBAL_INTERVAL({
-        immediate: true,
-        id: this.intervalID,
-        method: () => {
-          return new Promise((resolve, reject) => {
-            this.getChatMessages()
-              .then(() => {
-                resolve();
-                this.loading = false;
-              })
-              .catch(() => {
-                reject();
-                this.loading = false;
-              });
-          });
-        }
+  watch: {
+    activeChat() {
+      this.clearMessageInterval().then(() => {
+        this.initGetChats();
       });
     }
   },
-  deactivated() {
-    if (this.intervalID) {
-      this.CLEAR_GLOBAL_INTERVAL(this.intervalID);
-    }
+
+  mounted() {
+    this.initGetChats();
+  },
+  destroyed() {
+    this.clearMessageInterval();
+  },
+  beforeDestory() {
+    this.clearMessageInterval();
   },
   methods: {
     ...mapMutations([
@@ -116,6 +118,48 @@ export default {
     ]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
     ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
+    initGetChats() {
+      this.loading = true;
+      this.getChatMessages()
+        .then(() => {
+          this.loading = false;
+          this.beginMessageInterval();
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    },
+    beginMessageInterval() {
+      if (!this.activeChat?.initChat && this.hasEntries(this.activeChat)) {
+        this.intervalID = "getChatMessages";
+        this.CREATE_GLOBAL_INTERVAL({
+          id: this.intervalID,
+          method: () => {
+            return new Promise((resolve, reject) => {
+              this.getChatMessages()
+                .then(() => {
+                  resolve();
+                })
+                .catch(() => {
+                  reject();
+                });
+            });
+          }
+        });
+      }
+    },
+    clearMessageInterval() {
+      return new Promise((resolve, reject) => {
+        try {
+          if (this.intervalID) {
+            this.CLEAR_GLOBAL_INTERVAL(this.intervalID);
+            resolve();
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+    },
     includeEmoji(emoji) {
       console.log(emoji);
     },
@@ -148,12 +192,17 @@ export default {
       if (!this.chat.content) {
         return createError("No message content found.");
       }
-      if (!this.chat.recieverID || !userName) {
+      if ((this.isNewChat && !this.chat.recieverID) || !userName) {
         return createError("No reciever found.");
       }
 
       if (!this.activeChat._id) {
         return createError("No active chat found.");
+      }
+
+      if (!this.isNewChat) {
+        this.chat.recieverID = this.activeChat.userTwo;
+        userName = this.getUserInformation(this.chat.recieverID)?.name;
       }
 
       this.sendMessage({
@@ -174,6 +223,7 @@ export default {
   flex: 1;
   flex-direction: column;
   height: 100%;
+  width: 100%;
 }
 .current_chat_header {
   border-bottom: 2px solid whitesmoke;
@@ -198,6 +248,7 @@ export default {
   flex: 1;
   max-height: calc(100% - 90px);
   overflow-x: hidden;
+  width: 100%;
 }
 .active_chat_container {
   display: flex;
@@ -205,6 +256,7 @@ export default {
   position: relative;
   flex-direction: column;
   height: 100%;
+  width: 100%;
 }
 .current_chat_interaction {
   position: absolute;

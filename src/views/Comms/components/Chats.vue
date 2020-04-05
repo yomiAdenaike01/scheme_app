@@ -1,6 +1,6 @@
 <template>
   <div class="chats_container">
-    <div class="active_chats">
+    <div v-if="chats.length > 0" class="active_chats">
       <div class="chats_header">
         <el-input
           v-model="query"
@@ -16,6 +16,7 @@
     </div>
 
     <InformationDisplay
+      v-else
       class="no_content"
       :display-text="{
         heading: 'No previous chats',
@@ -74,7 +75,7 @@ export default {
     startNewChat() {
       let isoDate = new Date().toISOString();
       // Check if there is a fake chat
-      function createChat() {
+      const createChat = () => {
         this.UPDATE_CHATS({
           userOne: this.userInformation._id,
           userTwo: Math.random()
@@ -87,7 +88,7 @@ export default {
             .toString(16)
             .slice(2)
         });
-      }
+      };
       if (this.chats.length == 0) {
         createChat();
       } else {

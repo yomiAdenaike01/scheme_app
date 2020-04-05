@@ -1,7 +1,6 @@
 <template>
   <div
     id="app"
-    v-resize-text="defaultSize"
     v-loading="loading"
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."

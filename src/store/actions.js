@@ -18,6 +18,17 @@ const sortPayload = ({ state, getters }, payload) => {
   return payload;
 };
 
+const exitApplication = (context, networkError = false, logout = false) => {
+  context.commit("CLEAR_GLOBAL_INTERVAL");
+  context.dispatch("closeDialog");
+  if (networkError) {
+    context.commit("UPDATE_NETWORK_ERROR", true);
+  }
+  if (logout) {
+    context.commit("REMOVE_USER");
+  }
+};
+
 export default {
   updateDevices(context) {
     return new Promise((resolve, reject) => {
@@ -83,7 +94,7 @@ export default {
     });
   },
 
-  genNotification(context, notificationContent) {
+  genApiNotification(context, notificationContent) {
     return new Promise((resolve, reject) => {
       context
         .dispatch("request", {
@@ -146,66 +157,42 @@ export default {
     if (payload?.disableNotification) {
       enableNotifications = false;
     }
-    if (document.visibilityState == "visible") {
-      return new Promise((resolve, reject) => {
-        axios(payload)
-          .then(response => {
-            response = response.data;
-            if (response?.success) {
-              if (typeof response.content == "string" && enableNotifications) {
-                context.commit("UPDATE_NOTIFICATIONS", {
-                  message: response.content,
-                  type: "success"
-                });
-              }
-
-              resolve(response.content);
-            } else if (response?.error) {
-              reject(response.content);
-            }
-          })
-          .catch(error => {
-            const status = error?.request?.status;
-            console.log(error);
-
-            // Web token error
-            if (status === 401) {
+    return new Promise((resolve, reject) => {
+      axios(payload)
+        .then(response => {
+          response = response.data;
+          if (response?.success) {
+            if (typeof response.content == "string" && enableNotifications) {
               context.commit("UPDATE_NOTIFICATIONS", {
-                message:
-                  "Your session has expired, you will need to login click to refresh",
-                type: "info"
-              });
-              context.commit("REMOVE_USER");
-            }
-
-            if (error.hasOwnProperty("data")) {
-              error = error.data.content;
-            }
-            if (enableNotifications) {
-              context.commit("UPDATE_NOTIFICATIONS", {
-                message: error,
-                type: "error"
+                message: response.content,
+                type: "success"
               });
             }
-            context.commit("CLEAR_GLOBAL_INTERVAL");
-            context.dispatch("closeDialog");
-            context.commit("UPDATE_NETWORK_ERROR", true);
-            reject(error);
-          });
-      });
-    } else {
-      let timeout = null;
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        context.commit("UPDATE_NOTIFICATIONS", {
-          type: "info",
-          title: "Sessions revoked",
-          message:
-            "Your sessions has been revoked due to inactivity, please login to continue"
+
+            resolve(response.content);
+          } else if (response?.error) {
+            reject(response.content);
+          }
+        })
+        .catch(error => {
+          const status = error?.request?.status;
+          // Web token error
+          if (status === 401) {
+            exitApplication(context, false, true);
+          }
+
+          if (error?.data) {
+            error = error.data.content;
+          }
+          if (enableNotifications) {
+            context.commit("UPDATE_NOTIFICATIONS", {
+              message: error,
+              type: "error"
+            });
+          }
+          exitApplication(context, true);
+          reject(error);
         });
-        context.dispatch("closeDialog");
-        context.commit("REMOVE_USER");
-      }, 30000);
-    }
+    });
   }
 };
