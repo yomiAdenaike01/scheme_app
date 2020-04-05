@@ -60,23 +60,15 @@
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
 
-import User from "./components/User";
-import UserModuleDialog from "./components/UserModuleDialog";
-import UserGroup from "./components/UserGroup";
-import UserManagementActions from "./components/UserManagementActions";
-
-import Title from "@/components/Title";
-import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserModule",
 
   components: {
-    Title,
-    User,
-    UserGroup,
-    UserModuleDialog,
-    UserManagementActions,
-    InformationDisplay
+    User: () => import("./components/User"),
+    UserGroup: () => import("./components/UserGroup"),
+    UserModuleDialog: () => import("./components/UserModuleDialog"),
+    UserManagementActions: () => import("./components/UserManagementActions"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
 
   data() {

@@ -1,34 +1,37 @@
 <template>
   <div class="current_chat_container">
-    <div v-if="hasEntries(activeChat)" class="active_chat_container">
+    <div class="active_chat_container">
       <div class="current_chat_header">
-        <!-- Summary information about that user and their current position -->
         <el-autocomplete
-          v-if="isNewChat"
-          v-model="recieverName"
-          :fetch-suggestions="teamSearch"
+          v-model="teamQuery"
+          :trigger-on-focus="false"
+          :fetch-suggestions="queryTeam"
           placeholder="To: Enter name of person you want to message"
           @select="setReciever"
         ></el-autocomplete>
       </div>
 
       <div class="chatmessages_container">
-        <!-- Messages go here -->
-        <p>Messages</p>
+        <p>Message</p>
+        <div v-if="messages.length > 0">
+          <div v-for="message in messages" :key="message._id">
+            <p>{{ message.content }}</p>
+          </div>
+        </div>
       </div>
 
       <div class="current_chat_interaction">
-        <div class="quick_actions_container">
-          <!-- Send attachments -->
-          <!-- Send emoji -->
-        </div>
+        <ChatActions
+          @emojiSelection="includeEmoji"
+          @uploadAttachment="addAttachment"
+        />
         <div class="send_message_container">
           <el-input
-            v-model="chat.message"
+            v-model="chat.content"
             placeholder="Send a message..."
-            @keydown.enter="sendChatMessage"
+            @keypress.enter="sendChatMessage"
           />
-          <!-- Send message input -->
+          <el-button type="text" @click="sendChatMessage">Send</el-button>
         </div>
       </div>
     </div>
@@ -36,41 +39,57 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 export default {
-  name: "CurrentChat",
+  name: "ActiveChat",
   components: {
-    ChatMessage: () => import("./ChatMessage"),
-    InformationDisplay: () => import("@/components/InformationDisplay")
+    InformationDisplay: () => import("@/components/InformationDisplay"),
+    ChatActions: () => import("./ChatActions")
   },
   data() {
     return {
       intervalID: null,
       loading: false,
-      recieverName: "",
+      teamQuery: "",
       chat: {
-        message: "",
+        content: "",
+        attachements: [],
+        sentAt: new Date().toISOString(),
+        isRead: false,
+        editted: false,
         recieverID: ""
       }
     };
   },
   computed: {
-    ...mapState("Comms", ["activeChat"]),
+    ...mapState("Comms", ["activeChat", "messages"]),
     ...mapState("Admin", ["teamInformation"]),
+    ...mapGetters("Admin", ["getUserInformation"]),
     isNewChat() {
       return this.activeChat?.initChat;
+    },
+    activeChatEntries() {
+      return this.hasEntries(this.activeChat);
+    },
+    queryTeamList() {
+      return this.teamInformation.map(member => {
+        return {
+          value: member.name,
+          link: member._id
+        };
+      });
     }
   },
   activated() {
-    if (!this.activeChat?.initChat) {
-      this.intervalID = "getChatchatMessages";
+    if (!this.activeChat?.initChat && this.hasEntries(this.activeChat)) {
+      this.intervalID = "getChatMessages";
       this.loading = true;
       this.CREATE_GLOBAL_INTERVAL({
         immediate: true,
         id: this.intervalID,
         method: () => {
           return new Promise((resolve, reject) => {
-            this.getChatchatMessages()
+            this.getChatMessages()
               .then(() => {
                 resolve();
                 this.loading = false;
@@ -95,27 +114,55 @@ export default {
       "CREATE_GLOBAL_INTERVAL",
       "CLEAR_GLOBAL_INTERVAL"
     ]),
-    ...mapActions("Comms", ["getChatchatMessages"]),
-    setReciever(e) {
-      this.chat.recieverID = e;
+    ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
+    ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
+    includeEmoji(emoji) {
+      console.log(emoji);
     },
-    teamSearch(name) {
-      let foundTeam = [];
-      if (this.teamInformation.length > 0) {
-        name = name.toLowerCase() ?? this.recieverName.toLowerCase();
-        foundTeam = this.teamInformation.filter(x => {
-          x.name.toLowerCase() == name;
+    addAttachment(attachment) {
+      console.log(attachment);
+    },
+    setReciever({ link }) {
+      this.chat.recieverID = link;
+    },
+
+    queryTeam(name, cb) {
+      let queriedTeam = [];
+      if (this.queryTeamList.length > 0) {
+        name = name?.toLowerCase() ?? this.teamQuery?.toLowerCase();
+        queriedTeam = this.queryTeamList.filter(x => {
+          return x?.value?.toLowerCase() == name;
         });
       }
-      return foundTeam;
+      cb(queriedTeam.length > 0 ? queriedTeam : this.queryTeamList);
     },
     sendChatMessage() {
-      if (!this.chat.message) {
+      let userName = this.getUserInformation(this.chat.recieverID)?.name;
+      const createError = message => {
         this.UPDATE_NOTIFICATIONS({
           title: "Failed to send message",
-          message: "No content found in message"
+          message,
+          type: "error"
         });
+      };
+      if (!this.chat.content) {
+        return createError("No message content found.");
       }
+      if (!this.chat.recieverID || !userName) {
+        return createError("No reciever found.");
+      }
+
+      if (!this.activeChat._id) {
+        return createError("No active chat found.");
+      }
+
+      this.sendMessage({
+        ...this.chat,
+        chatID: this.activeChat._id,
+        isRead: false,
+        editted: false,
+        userName
+      });
     }
   }
 };
@@ -165,13 +212,24 @@ export default {
   left: 0;
   right: 0;
   display: flex;
+  align-items: center;
   flex: 1;
+  padding: 10px 20px;
   .send_message_container {
     display: flex;
     flex: 1;
-    background: whitesmoke;
+    &/deep/ {
+      .el-input__inner {
+        padding: 20px;
+        border: none;
+        background: rgb(250, 250, 250);
+        border-radius: 30px;
+      }
+      .el-input {
+        padding: 10px;
+        font-size: 1em;
+      }
+    }
   }
-}
-.user_information_sidebar {
 }
 </style>

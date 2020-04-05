@@ -83,46 +83,21 @@ export default {
     });
   },
 
-  updateTheme(context, content) {
-    context.dispatch("request", {
-      method: "POST",
-      url: "clients/update",
-      data: { update: content }
-    });
-  },
-
-  updateSettings(context) {
+  genNotification(context, notificationContent) {
     return new Promise((resolve, reject) => {
       context
         .dispatch("request", {
           method: "POST",
-          url: "settings/update",
-          data: context.state.localSettings
+          url: "extensions/notification",
+          data: notificationContent
         })
         .then(response => {
-          context.commit("UPDATE_NOTIFICATIONS", response);
           resolve(response);
         })
-        .catch(error => {
-          context.commit("UPDATE_NOTIFICATIONS", error);
-          reject(error);
+        .catch(err => {
+          reject(err);
         });
     });
-  },
-
-  genNotification(context, notificationContent) {
-    context
-      .dispatch("request", {
-        method: "POST",
-        url: "extensions/notification",
-        data: notificationContent
-      })
-      .then(response => {
-        resolve(response);
-      })
-      .catch(err => {
-        reject(err);
-      });
   },
   /**
    * 
@@ -171,49 +146,66 @@ export default {
     if (payload?.disableNotification) {
       enableNotifications = false;
     }
+    if (document.visibilityState == "visible") {
+      return new Promise((resolve, reject) => {
+        axios(payload)
+          .then(response => {
+            response = response.data;
+            if (response?.success) {
+              if (typeof response.content == "string" && enableNotifications) {
+                context.commit("UPDATE_NOTIFICATIONS", {
+                  message: response.content,
+                  type: "success"
+                });
+              }
 
-    return axios(payload)
-      .then(response => {
-        response = response.data;
+              resolve(response.content);
+            } else if (response?.error) {
+              reject(response.content);
+            }
+          })
+          .catch(error => {
+            const status = error?.request?.status;
+            console.log(error);
 
-        if (response.hasOwnProperty("success")) {
-          if (typeof response.content == "string" && enableNotifications) {
-            context.commit("UPDATE_NOTIFICATIONS", {
-              message: response.content,
-              type: "success"
-            });
-          }
-          return Promise.resolve(response.content);
-        } else if (response.hasOwnProperty("error")) {
-          return Promise.reject(response.content);
-        }
-      })
-      .catch(error => {
-        const status = error?.request?.status;
+            // Web token error
+            if (status === 401) {
+              context.commit("UPDATE_NOTIFICATIONS", {
+                message:
+                  "Your session has expired, you will need to login click to refresh",
+                type: "info"
+              });
+              context.commit("REMOVE_USER");
+            }
 
-        // Web token error
-        if (status === 401) {
-          context.commit("UPDATE_NOTIFICATIONS", {
-            message:
-              "Your session has expired, you will need to login click to refresh",
-            type: "info"
+            if (error.hasOwnProperty("data")) {
+              error = error.data.content;
+            }
+            if (enableNotifications) {
+              context.commit("UPDATE_NOTIFICATIONS", {
+                message: error,
+                type: "error"
+              });
+            }
+            context.commit("CLEAR_GLOBAL_INTERVAL");
+            context.dispatch("closeDialog");
+            context.commit("UPDATE_NETWORK_ERROR", true);
+            reject(error);
           });
-          context.commit("REMOVE_USER");
-        }
-
-        if (error.hasOwnProperty("data")) {
-          error = error.data.content;
-        }
-        if (enableNotifications) {
-          context.commit("UPDATE_NOTIFICATIONS", {
-            message: error,
-            type: "error"
-          });
-        }
-        context.commit("CLEAR_GLOBAL_INTERVAL");
-        context.dispatch("closeDialog");
-        context.commit("UPDATE_NETWORK_ERROR", true);
-        return Promise.reject(error);
       });
+    } else {
+      let timeout = null;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        context.commit("UPDATE_NOTIFICATIONS", {
+          type: "info",
+          title: "Sessions revoked",
+          message:
+            "Your sessions has been revoked due to inactivity, please login to continue"
+        });
+        context.dispatch("closeDialog");
+        context.commit("REMOVE_USER");
+      }, 30000);
+    }
   }
 };

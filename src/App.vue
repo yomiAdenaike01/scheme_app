@@ -140,7 +140,7 @@ html,
 #app {
   display: flex;
   flex: 1;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 h1,

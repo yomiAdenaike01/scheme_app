@@ -76,12 +76,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-
-import Popover from "@/components/Popover";
 export default {
   name: "InformationDisplay",
   components: {
-    Popover
+    Popover: () => import("@/components/Popover")
   },
   props: {
     mode: {

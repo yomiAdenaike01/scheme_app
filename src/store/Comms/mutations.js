@@ -1,10 +1,23 @@
 import Vue from "vue";
+const setActiveChat = (state, chat) => {
+  if (typeof chat == "object") {
+    Vue.set(state, "activeChat", chat);
+  } else {
+    Vue.set(state, "activeChat", chat[0]);
+  }
+};
 export default {
-  UPDATE_START_NEW_CHAT(state, payload) {
-    state.startNewChat = payload;
-  },
-  UPDATE_MESSAGES(state, payload) {
-    state.chatMessages = payload;
+  UPDATE_MESSAGES(state, messages) {
+    if (typeof messages == "object") {
+      let queriedMessage = state.messages.findIndex(message => {
+        return message._id == messages._id;
+      });
+      if (queriedMessage == -1) {
+        state.messages.push(messages);
+      }
+    } else {
+      state.messages = messages;
+    }
   },
 
   UPDATE_CHATS(state, payload) {
@@ -18,24 +31,21 @@ export default {
           state.chats.push(payload[i]);
         }
       }
-    } else if (Array.isArray(payload) && state.chats.length == 0) {
-      state.chats = payload;
-    } else if (typeof payload == "object") {
+    }
+    if (Array.isArray(payload) && state.chats.length == 0) {
+      console.log(payload);
+      Vue.set(state, "chats", payload);
+    }
+    if (typeof payload == "object") {
       state.chats.push(payload);
     }
-    if (payload?.initChat) {
-      if (typeof payload == "object") {
-        Vue.set(state, "activeChat", payload);
-      } else {
-        Vue.set(state, "activeChat", payload[0]);
-      }
-    }
+    setActiveChat(state, payload);
+  },
+  UPDATE_SCROLL_POSITION(state, elem) {
+    // get the scoll position and set it
+    Vue.set(state, "activeChatScrollPosition", elem);
   },
   UPDATE_ACTIVE_CHAT(state, payload) {
-    if (!payload) {
-      Vue.set(state, "activeChat", state.chats[0]);
-    } else {
-      Vue.set(state, "activeChat", payload);
-    }
+    setActiveChat(state, !payload ? state.chats : payload);
   }
 };

@@ -113,9 +113,9 @@ export default {
       delete notification.type;
     }
 
-    if (notification.type == "success") {
+    if (notification.type == "success" && !notification.title) {
       notification.title = "Operation Successful";
-    } else if (notification.type == "error") {
+    } else if (notification.type == "error" && !notification.title) {
       notification.title = "Operation Unsuccessful";
 
       if (typeof notification.message == "object") {

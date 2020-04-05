@@ -1,13 +1,14 @@
 <template>
   <div
+    ref="chatElem"
     class="transcript_container"
     :class="{ active: isActive }"
-    @click="UPDATE_ACTIVE_TRANSCRIPT(chatInformation._id)"
+    @click="updateActiveChat"
   >
-    <Avatar :name="usersInformation.userTwo" />
+    <Avatar name="Avatar Name" />
     <div class="text_container">
-      <p v-if="!chatInformation.hasOwnProperty('initChat')">
-        {{ truncate(chatInformation.lastMessage.content) }}
+      <p v-if="!isNewChat">
+        {{ chatInformation.message.content }}
       </p>
       <p v-else>New Message</p>
       <small class="grey">{{
@@ -34,9 +35,18 @@ export default {
   components: {
     Avatar: () => import("@/components/Avatar")
   },
+  props: {
+    chatInformation: {
+      type: Object,
+      default: () => {}
+    }
+  },
   computed: {
     ...mapState("Comms", ["activeChat"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    isNewChat() {
+      return this.chatInformation?.initChat;
+    },
     isActive() {
       return this.activeChat._id == this.chatInformation._id;
     },
@@ -48,24 +58,33 @@ export default {
       };
     }
   },
-  props: {
-    chatInformation: {
-      type: Object,
-      default: () => {}
-    }
+  activated() {
+    this.updateScrollPos();
   },
+  mounted() {
+    this.updateScrollPos();
+  },
+
   methods: {
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_TRANSCRIPT"]),
-    ...mapActions("Comms", ["getpreviousChats"]),
+    ...mapMutations("Comms", ["UPDATE_SCROLL_POSITION"]),
+    ...mapActions("Comms", ["getChats"]),
+    updateScrollPos() {
+      if (this.isNewChat) {
+        this.UPDATE_SCROLL_POSITION(this.$refs.chatElem.offsetTop);
+      }
+    },
+    updateActiveChat() {
+      this.updateScrollPos();
+    },
     deleteChat() {
       this.request({
         method: "DELETE",
-        url: "messenger/previousChats",
+        url: "messenger/chat",
         data: { _id: this.chatInformation._id }
       })
         .then(() => {
           this.loading = false;
-          this.getpreviousChats();
+          this.getChats();
         })
         .catch(() => {
           this.loading = false;

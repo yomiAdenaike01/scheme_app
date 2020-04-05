@@ -1,6 +1,6 @@
 export default {
-  chatMessages: [],
+  messages: [],
   chats: [],
   activeChat: {},
-  selectedChat: ""
+  activeChatScrollPosition: 0
 };

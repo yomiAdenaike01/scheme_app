@@ -1,16 +1,15 @@
 export default {
-  deleteChat(context, payload) {
+  deleteChat({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          {
-            method: "DELETE",
-            url: "messenger/previousChats",
-            data: payload
-          },
-          { root: true }
-        )
+      dispatch(
+        "request",
+        {
+          method: "DELETE",
+          url: "messenger/chats",
+          data: payload
+        },
+        { root: true }
+      )
         .then(response => {
           resolve(response);
         })
@@ -20,44 +19,51 @@ export default {
     });
   },
 
-  sendMessage(context, payload) {
+  sendMessage({ state, dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
-      context
-        .dispatch(
+      let activeChat = state.activeChat;
+      if (activeChat?.initChat) {
+        dispatch("startChat", payload);
+      }
+      // Add fake message
+      commit("UPDATE_MESSAGES", payload);
+      dispatch(
+        "request",
+        {
+          method: "POST",
+          url: "messenger/send",
+          data: payload
+        },
+        { root: true }
+      )
+        .then(() => {
+          dispatch("getChatMessages")
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        })
+        .catch(() => reject());
+    });
+  },
+  getChatMessages({ state: { activeChat }, dispatch, commit }) {
+    let chatID = Object.keys(activeChat).length > 0 ? activeChat._id : "";
+
+    return new Promise((resolve, reject) => {
+      if (chatID.length > 0) {
+        dispatch(
           "request",
           {
             method: "POST",
-            url: "messenger/send",
-            data: payload
+            url: "messenger/messages",
+            data: { chatID }
           },
           { root: true }
         )
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => reject(error));
-    });
-  },
-  getChatMessages(context, payload) {
-    let {
-      state: { activeChat }
-    } = context;
-    let transcriptID = Object.keys(activeChat).length > 0 ? activeChat._id : "";
-
-    return new Promise((resolve, reject) => {
-      if (transcriptID.length > 0) {
-        context
-          .dispatch(
-            "request",
-            {
-              method: "POST",
-              url: "messenger/chatMessages",
-              data: { transcriptID }
-            },
-            { root: true }
-          )
           .then(response => {
-            context.commit("UPDATE_chatMessages", response);
+            commit("UPDATE_MESSAGES", response);
             resolve();
           })
           .catch(error => {
@@ -68,16 +74,16 @@ export default {
       }
     });
   },
-  startChat(context, payload) {
+  startChat({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          { method: "POST", url: "messenger/start", data: payload },
-          { root: true }
-        )
+      dispatch(
+        "request",
+        { method: "POST", url: "messenger/start", data: payload },
+        { root: true }
+      )
         .then(response => {
-          context.commit("UPDATE_previousChats", response);
+          commit("UPDATE_CHATS", response);
+          dispatch("getChats");
           resolve();
         })
         .catch(error => {
@@ -85,24 +91,23 @@ export default {
         });
     });
   },
-  getChats({ dispatch, commit, state: { previousChats } }) {
+  getChats({ dispatch, commit }) {
     return new Promise((resolve, reject) => {
-      if (previousChats.length <= 0) {
-        const payload = {
-          method: "GET",
-          url: "/messenger/chats"
-        };
-        dispatch("request", payload, { root: true })
-          .then(response => {
-            if (response.length > 0) {
-              commit("UPDATE_PREVIOUS_CHATS", payload);
-            }
+      const payload = {
+        method: "GET",
+        url: "/messenger/chats"
+      };
+      dispatch("request", payload, { root: true })
+        .then(response => {
+          if (response.length > 0) {
+            commit("UPDATE_CHATS", response);
             resolve(response);
-          })
-          .catch(error => {
-            reject(error);
-          });
-      }
+          }
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   }
 };

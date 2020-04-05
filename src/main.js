@@ -25,7 +25,7 @@ Vue.use(NProgress, {
 
 let { hostname } = window.location;
 hostname = hostname.split(".")[0];
-document.title = `${hostname} - Powered By Schemeapp.cloud`;
+document.title = `${hostname} - Powered by schemeapp.cloud`;
 
 new Vue({
   router,

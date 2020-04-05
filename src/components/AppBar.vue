@@ -28,7 +28,9 @@
         </Popover>
       </el-badge>
       <el-button
-        type="text"
+        size="small"
+        circle
+        class="search"
         icon="el-icon-search"
         @click="$emit('runSearch', true)"
       />
@@ -39,55 +41,20 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
-import Dropdown from "@/components/Dropdown";
-import Popover from "@/components/Popover";
-import NotificationModule from "@/components/NotificationModule";
-
 export default {
   name: "AppBar",
   components: {
     Avatar: () => import("@/components/Avatar"),
     Logo: () => import("@/components/Logo"),
-    Dropdown,
-    Popover,
-    NotificationModule
+    Dropdown: () => import("@/components/Dropdown"),
+    Popover: () => import("@/components/Popover"),
+    NotificationModule: () => import("@/components/NotificationModule")
   },
   computed: {
-    ...mapState([
-      "userInformation",
-      "userNotifications",
-      "viewMobileMenu",
-      "client"
-    ]),
+    ...mapState(["userInformation", "viewMobileMenu"]),
 
-    ...mapGetters([
-      "getClientColours",
-      "getClient",
-      "getSidebarColour",
-      "getUserNotificationsLength"
-    ]),
+    ...mapGetters(["getUserNotificationsLength"]),
 
-    getPrimaryColour() {
-      return this.getClientColours.find(colour => {
-        return colour.label == "Primary";
-      }).colour;
-    },
-    navWidth() {
-      let styleWidth = { width: `${150}px` };
-      const navElem = document.getElementById("main_nav");
-      if (navElem) {
-        const width = navElem.offsetWidth;
-        styleWidth.width = `${width}px`;
-      }
-      return styleWidth;
-    },
-    notifications() {
-      return [
-        {
-          name: "You have a new message"
-        }
-      ];
-    },
     items() {
       return [
         {
@@ -181,6 +148,9 @@ export default {
   border-radius: 50%;
   padding: 5px;
   box-shadow: $box_shadow;
+}
+.search {
+  margin-left: 10px;
 }
 /**
  _   _  _  ___ _  _    ___ 
