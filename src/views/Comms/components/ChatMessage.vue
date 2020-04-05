@@ -40,7 +40,7 @@ export default {
     justify-content: flex-end;
     .message {
       background: whitesmoke;
-      color: #999;
+      color: #555;
       border-top-right-radius: 0px;
       &:hover {
         transform: translateX(-10px);

@@ -1,6 +1,6 @@
 <template>
   <div class="actions">
-    <Popover trigger="click">
+    <Popover v-bind="popoverConfig">
       <div slot="trigger" class="interaction_container emoji_container">
         <i class="bx bx-wink-smile bx-tada"></i>
       </div>
@@ -8,7 +8,7 @@
         <p>emoji content</p>
       </div>
     </Popover>
-    <Popover trigger="click">
+    <Popover v-bind="popoverConfig">
       <div slot="trigger" class="interaction_container emoji_container">
         <i class="bx bx-paperclip"></i>
       </div>
@@ -24,6 +24,14 @@ export default {
   name: "ChatActions",
   components: {
     Popover: () => import("@/components/Popover")
+  },
+  data() {
+    return {
+      popoverConfig: {
+        trigger: "click",
+        position: "top"
+      }
+    };
   }
 };
 </script>
@@ -33,7 +41,7 @@ export default {
   display: flex;
   flex: 1;
   justify-content: space-between;
-  max-width: 100px;
+  max-width: 90px;
 }
 .interaction_container {
   cursor: pointer;
