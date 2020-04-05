@@ -3,8 +3,21 @@
     <div class="message">
       <p>
         {{ props.content }}
-        <small class="grey">{{ props.sentAt }}</small>
       </p>
+    </div>
+    <div class="actions_container">
+      <el-button
+        icon="el-icon-edit-outline"
+        title="Edit message"
+        circle
+        @click="listeners['editMessage'](props.id)"
+      ></el-button>
+      <el-button
+        title="Delete message"
+        icon="el-icon-delete"
+        circle
+        @click="listeners['deleteMessage'](props.id)"
+      ></el-button>
     </div>
   </div>
 </template>
@@ -13,6 +26,9 @@
 export default {
   name: "Message",
   props: {
+    sentAt: {
+      type: String
+    },
     isSentByUser: {
       type: Boolean,
       default: false
@@ -24,6 +40,10 @@ export default {
     content: {
       type: String,
       default: null
+    },
+    id: {
+      type: String,
+      default: ""
     }
   }
 };
@@ -32,36 +52,39 @@ export default {
 <style lang="scss" scoped>
 .message_container {
   display: flex;
-  flex: 1;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
   width: 100%;
 
   &.is_user {
-    justify-content: flex-end;
+    align-items: flex-end;
     .message {
       background: whitesmoke;
       color: #555;
       border-top-right-radius: 0px;
-      &:hover {
-        transform: translateX(-10px);
-      }
     }
   }
 }
 .message {
-  background: red;
+  background: lighten($color: $default_colour, $amount: 30);
   color: white;
   padding: 20px;
   display: flex;
   height: 50px;
   margin: 10px;
   max-height: 450px;
-  border-top-left-radius: 0px;
   border-radius: 10px;
+  border-bottom-left-radius: 0px;
   transition: $default_transition transform;
   will-change: transform;
-  &:hover {
-    transform: translateX(10px);
-  }
+}
+.message_container:hover .actions_container {
+  opacity: 1;
+}
+.actions_container {
+  display: flex;
+  opacity: 0;
+  transition: $default_transition opacity;
+  will-change: opacity;
 }
 </style>

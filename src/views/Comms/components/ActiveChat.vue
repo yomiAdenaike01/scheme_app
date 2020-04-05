@@ -17,6 +17,8 @@
           v-for="message in chatMessages"
           :key="message._id"
           v-bind="message"
+          @editMessage="editMessage"
+          @deleteMessage="deleteMessage"
         />
       </div>
 
@@ -71,6 +73,7 @@ export default {
       return [...this.messages].map(message => {
         return Object.assign(
           {
+            id: message._id,
             sentAt: this.formatDate(message.sentAt),
             isSentByUser: message.senderID == this.userInformation._id
           },
@@ -118,6 +121,12 @@ export default {
     ]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
     ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
+    editMessage(messageID) {
+      console.log(messageID);
+    },
+    deleteMessage(messageID) {
+      console.log(messageID);
+    },
     initGetChats() {
       this.loading = true;
       this.getChatMessages()

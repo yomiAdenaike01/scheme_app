@@ -1,4 +1,4 @@
-// import sounds from "@/mixins/playSound";
+import sounds from "@/mixins/playSound";
 import Vue from "vue";
 import VueRouter from "../router";
 
@@ -101,6 +101,7 @@ export default {
       case "message":
         notification.icon = "message-rounded";
         notification.title = "New Message";
+        sounds.methods.playSuccessSound();
         break;
       case "announcement": {
         (notification.icon = "bx-user-voice"),
