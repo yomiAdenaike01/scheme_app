@@ -1,42 +1,18 @@
 <template>
   <!-- Display labels -->
   <div class="labels_container">
-    <div v-if="labels.length > 0" class="display_labels">
-      <div v-for="label in labels" :key="label._id" class="label">
-        {{ label }}
+    <div class="display_labels">
+      <div
+        v-for="(label, index) in labels"
+        :key="index"
+        :style="{ backgroundColor: label.colour }"
+        class="label"
+        :class="{ mini: modeInterface == 'mini' }"
+        @click="setMode"
+      >
+        <small v-if="modeInterface == 'labelled'">{{ label.name }}</small>
       </div>
     </div>
-    <el-popover v-model="displayPopover">
-      <span slot="reference" class="trigger">Create Label</span>
-      <div class="labels_functionality">
-        <header>
-          <i
-            v-if="displayForm"
-            class="bx bx-arrow-back trigger"
-            @click="displayForm = false"
-          ></i>
-          <span>Labels</span>
-        </header>
-        <el-input
-          v-model="labelSearch"
-          size="mini"
-          placeholder="Search labels..."
-        />
-        <h4>Labels</h4>
-        <div
-          v-for="label in labels"
-          :key="label._id"
-          class="label"
-          :style="{ backgroundColor: label.colour }"
-        >
-          <span>{{ label }}</span>
-          <el-button
-            icon="el-icon-write"
-            @click="displayForm = true"
-          ></el-button>
-        </div>
-      </div>
-    </el-popover>
   </div>
 </template>
 
@@ -48,6 +24,10 @@ export default {
     labels: {
       type: Array,
       default: () => []
+    },
+    mode: {
+      type: String,
+      default: "mini" // mini, labelled,
     }
   },
   data() {
@@ -56,15 +36,56 @@ export default {
       displayForm: false,
       displayPopover: false
     };
+  },
+  computed: {
+    modeInterface: {
+      get() {
+        return this.mode;
+      },
+      set(val) {
+        this.$emit("changeMode", val);
+      }
+    }
+  },
+  methods: {
+    setMode() {
+      if (this.modeInterface == "labelled") {
+        this.modeInterface = "mini";
+      } else {
+        this.modeInterface = "labelled";
+      }
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-header {
+.display_labels {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+.labels_container {
+  display: flex;
+  margin: 10px 0;
+}
+.label {
+  margin: 2px;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  flex-direction: column;
+  flex: 1;
+  border-radius: 10px;
+  min-width: 50px;
+  min-height: 10px;
+  cursor: pointer;
+  color: white;
+  padding: 1px 20px;
+  text-transform: capitalize;
+  transition: $default_transition;
+  &.mini {
+    height: 10px;
+    padding: 0;
+  }
 }
 </style>

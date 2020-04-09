@@ -6,19 +6,23 @@
       disabled: !isAssignedTo,
       completed: hasEntries(taskInformation) && currState == 'complete'
     }"
+    @click="viewTaskController"
   >
     <div class="task_inner_container">
       <!-- Populated task -->
       <div class="populated_task_container">
         <div>
+          <Labels
+            v-if="labels.length > 0"
+            class="labels"
+            :mode="labelMode"
+            :labels="labels"
+            @changeMode="labelMode = $event"
+          />
           <div class="header">
+            <!-- Task item labels -->
+
             <h3>{{ taskInformation.title }}</h3>
-            <!-- el-popover for transfer to board -->
-            <i
-              slot="reference"
-              class=" trigger bx bx-dots-horizontal-rounded grey"
-              @click="viewTaskController"
-            ></i>
           </div>
           <small class="grey">{{ taskInformation.description }}</small>
           <el-tag v-if="taskInformation.dueDate">{{
@@ -34,24 +38,7 @@
             >{{ getUserInformation(teamMember) }}</el-tag
           >
         </div>
-        <el-popover trigger="click">
-          <el-button
-            v-if="currState != 'complete'"
-            slot="reference"
-            class="complete_indication"
-            round
-            size="mini"
-            v-bind="buttonConfig"
-            >{{ buttonConfig.text }}</el-button
-          >
-          <Form
-            disable
-            emit-on-change
-            class="full_width"
-            :config="updateTaskStateConfig"
-            @change="updateTask"
-          />
-        </el-popover>
+
         <transition name="el-fade-in">
           <div v-if="currState == 'complete'" class="completed_overlay">
             <el-button
@@ -78,7 +65,8 @@ import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "TaskItem",
   components: {
-    Form: () => import("@/components/Form")
+    Form: () => import("@/components/Form"),
+    Labels: () => import("./Labels")
   },
   props: {
     taskInformation: {
@@ -92,13 +80,17 @@ export default {
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      labelMode: "mini"
     };
   },
   computed: {
-    ...mapState(["userInformation", "clientInformation"]),
+    ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    labels() {
+      return this.taskInformation?.labels ?? [];
+    },
     currState() {
       return this.stateOptionsXref[this.taskInformation?.state]?.toLowerCase();
     },
@@ -166,35 +158,6 @@ export default {
       if (this.currState != "complete") {
         this.$emit("viewTask", this.taskInformation);
       }
-    },
-    updateTask(update) {
-      return console.log(update);
-      this.loading = true;
-      this.request({
-        method: "PUT",
-        url: "tasks/update",
-        data: { _id: this.taskInformation._id, update }
-      })
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-    deleteTask() {
-      this.loading = true;
-      this.request({
-        method: "DELETE",
-        url: "tasks/delete",
-        data: { _id: this.taskInformation._id }
-      })
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
     }
   }
 };
@@ -205,16 +168,18 @@ export default {
   display: flex;
   text-overflow: ellipsis;
   position: relative;
-
+  cursor: pointer;
   background: white;
   box-shadow: 1px 2px 6px rgb(230, 230, 230);
   margin: 30px 0;
   border-radius: 10px;
-  max-height: 200px;
 
   &.completed {
     border-left: 2px solid $success_colour;
   }
+}
+.labels {
+  margin: 10px 0;
 }
 .task_inner_container {
   display: flex;
