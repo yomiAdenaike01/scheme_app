@@ -1,4 +1,8 @@
-function updateBoardQuota(commit, value) {
+function updateBoardQuota(commit, state, action = "minus") {
+  let value = state.clientInformation.boardQuota + 1;
+  if (action == "minus") {
+    state.clientInformation.boardQuota - 1;
+  }
   commit(
     "UPDATE_CLIENT_INFORMATION",
     {
@@ -31,16 +35,7 @@ export default {
     });
   },
 
-  deleteBoard(
-    {
-      dispatch,
-      commit,
-      rootState: {
-        clientInformation: { boardQuota }
-      }
-    },
-    payload
-  ) {
+  deleteBoard({ dispatch, commit, rootState }, payload) {
     return new Promise((resolve, reject) => {
       payload = {
         data: { ...payload },
@@ -57,7 +52,7 @@ export default {
         { root: true }
       ).then(() => {
         commit("DELETE_BOARD", payload.boardID);
-        updateBoardQuota(commit, boardQuota + 1);
+        updateBoardQuota(commit, rootState, "plus");
         dispatch("request", { _id: payload.boardID }, { root: true })
           .then(() => {
             resolve();
@@ -65,25 +60,16 @@ export default {
           .catch(() => {
             commit("UPDATE_BOARDS", { data: payload, action: "create" });
             commit("DELETE_BOARD", payload.boardID);
-            updateBoardQuota(commit, boardQuota - 1);
+            updateBoardQuota(commit, rootState, "minus");
             reject();
           });
       });
     });
   },
-  createBoard(
-    {
-      dispatch,
-      commit,
-      rootState: {
-        clientInformation: { boardQuota }
-      }
-    },
-    payload
-  ) {
+  createBoard({ dispatch, commit, rootState }, payload) {
     return new Promise((resolve, reject) => {
       commit("UPDATE_BOARDS", { data: payload, action: "create" });
-      updateBoardQuota(commit, boardQuota - 1);
+      updateBoardQuota(commit, rootState, "minus");
 
       payload = {
         data: { ...payload },
@@ -97,14 +83,14 @@ export default {
         })
         .catch(() => {
           commit("DELETE_BOARD", payload.boardID);
-          updateBoardQuota(commit, boardQuota + 1);
+          updateBoardQuota(commit, rootState, "plus");
           reject();
         });
     });
   },
   updateBoard({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
-      commit("UPDATE_BOARD", payload);
+      commit("UPDATE_BOARDS", { action: "update", ...payload });
       payload = {
         data: { ...payload },
         method: "PUT",

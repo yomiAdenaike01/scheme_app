@@ -199,7 +199,7 @@ export default {
     ]),
     ...mapActions(["request", "genPromptBox"]),
     deleteAction() {
-      this.deleteBoard({ _id: this.boardData._id });
+      this.deleteBoard({ boardID: this.boardData._id });
     },
     createAction({ name, description }) {
       this.createBoard({
@@ -211,7 +211,7 @@ export default {
       });
     },
     updateAction({ name, description }) {
-      this.updateBoard({ name, description });
+      this.updateBoard({ boardID: this.boardData._id, name, description });
     },
     createTask() {
       this.UPDATE_DIALOG_INDEX({

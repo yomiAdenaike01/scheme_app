@@ -25,6 +25,44 @@ function setRef(state, param, items) {
 }
 
 export default {
+  CREATE_EVENT_TEMPLATE(state, payload) {
+    state.eventTemplates.push(payload);
+    setRef(state, "templateRef", {
+      templateIndex: state.eventTemplates.length,
+      template: payload
+    });
+  },
+  DELETE_EVENT_TEMPLATE(state, payload) {
+    let templateIndex = findItemIndex(
+      state,
+      "eventTemplates",
+      payload.templateID
+    );
+    setRef(state, "templateRef", {
+      template: state.eventTemplates[templateIndex],
+      templateIndex
+    });
+  },
+  /**
+   *
+   * @param {Object} state
+   * @param {String} payload (push , pull, update)
+   */
+  RESTORE_EVENT_TEMPLATE(state, payload = "push") {
+    if (payload == "push") {
+      state.eventTemplates.push(state.templateRef.template);
+    }
+    if (payload == "pull") {
+      state.eventTemplates.splice(state.templateRef.templateIndex, 1);
+    }
+    if (payload == "update") {
+      state.eventTemplates.splice(
+        state.templateRef.templateIndex,
+        0,
+        state.templateRef.template
+      );
+    }
+  },
   UPDATE_EVENT_TEMPLATES(state, payload) {
     Vue.set(state, "eventTemplates", payload);
   },
@@ -79,7 +117,7 @@ export default {
   /**
    *
    * @param {*} state
-   * @param {Object} boardID, taskID, update
+   * @param {Object} boardID, taskID, update, action
    */
   UPDATE_TASKS(state, { data, action = "update" }) {
     let { boardID, taskID, update } = data;
