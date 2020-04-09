@@ -2,11 +2,11 @@ import Vue from "vue";
 
 /**
  *
- * @param {String} findQuery
+ * @param {string} findQuery
  * @param {Object} state
- * @param {String} param
- * @param {String} id
- * @param {String} query
+ * @param {string} param
+ * @param {string} id
+ * @param {string} query
  */
 function findItemIndex(state, param = "boards", id) {
   return state[param].findIndex(item => {
@@ -14,6 +14,13 @@ function findItemIndex(state, param = "boards", id) {
   });
 }
 
+/**
+ *
+ *
+ * @param {Object} state
+ * @param {string} param
+ * @param {Object,string} items
+ */
 function setRef(state, param, items) {
   if (items) {
     state[param] = {
@@ -82,7 +89,7 @@ export default {
   },
   /**
    * @description create or update a board at an index references created to restore later
-   * @param {*} state
+   * @param {Object} state
    * @param {Object} boardID (update) boardIndex, name , description (create)
    * @param {String} action
    * @param {String} action

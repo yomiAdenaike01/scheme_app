@@ -8,12 +8,12 @@
             <span>{{ truncate(boardData.description) }}</span>
           </div>
 
-          <Popover trigger="click" position="right">
+          <el-popover trigger="click" position="right">
             <i
-              slot="trigger"
+              slot="reference"
               class="trigger bx bx-dots-horizontal-rounded grey"
             ></i>
-            <div slot="content" class="content">
+            <div class="content">
               <Form
                 class="full_width"
                 :config="formConfig"
@@ -31,7 +31,7 @@
                 >Delete Board</el-button
               >
             </div>
-          </Popover>
+          </el-popover>
         </div>
         <el-progress
           v-if="tasks.length > 0"
@@ -78,35 +78,32 @@
           ...computeText
         }"
       >
-        <Popover
-          v-if="boardIndex == 0 && this.getIsAdmin"
+        <el-popover
+          v-if="boardIndex == 0 && getIsAdmin"
           slot="header"
           position="top"
           trigger="click"
         >
-          <el-button slot="trigger" type="text" icon="el-icon-plus"></el-button>
-          <Form
-            slot="content"
-            class="full_width"
-            :config="formConfig"
-            @val="createAction"
-          />
-        </Popover>
+          <el-button
+            slot="reference"
+            type="text"
+            icon="el-icon-plus"
+          ></el-button>
+          <Form class="full_width" :config="formConfig" @val="createAction" />
+        </el-popover>
       </InformationDisplay>
     </div>
   </div>
 </template>
 
 <script>
-import Popover from "@/components/Popover";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "TaskBoard",
   components: {
     Form: () => import("@/components/Form"),
     InformationDisplay: () => import("@/components/InformationDisplay"),
-    TaskItem: () => import("./TaskItem"),
-    Popover
+    TaskItem: () => import("./TaskItem")
   },
   props: {
     newBoard: {
@@ -152,9 +149,6 @@ export default {
         percentage,
         status
       };
-    },
-    calcBlankTasks() {
-      return this.tasks.length + 1 < 10;
     },
 
     computeText() {
@@ -233,6 +227,7 @@ export default {
   border-radius: 12px;
   border: 2px solid whitesmoke;
   height: 100%;
+  background: white;
 }
 .inner_board_container {
   display: flex;

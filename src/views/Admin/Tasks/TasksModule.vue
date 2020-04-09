@@ -55,7 +55,7 @@ export default {
     },
 
     calcBoardsLeft() {
-      return this.clientInformation.boardQuota;
+      return parseInt(this.clientInformation?.maxBoard ?? 5 - this.boardCount);
     }
   },
   methods: {
@@ -76,6 +76,7 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+  padding: 10px;
 }
 .boards_wrapper {
   display: flex;

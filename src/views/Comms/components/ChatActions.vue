@@ -1,30 +1,28 @@
 <template>
   <div class="actions">
-    <Popover v-bind="popoverConfig">
-      <div slot="trigger" class="interaction_container emoji_container">
+    <el-popover v-bind="popoverConfig">
+      <div slot="reference" class="interaction_container emoji_container">
         <i class="bx bx-wink-smile bx-tada"></i>
       </div>
-      <div slot="content" class="emoji_content">
+      <div class="emoji_content">
         <p>emoji content</p>
       </div>
-    </Popover>
-    <Popover v-bind="popoverConfig">
-      <div slot="trigger" class="interaction_container emoji_container">
+    </el-popover>
+    <el-popover v-bind="popoverConfig">
+      <div slot="reference" class="interaction_container emoji_container">
         <i class="bx bx-paperclip"></i>
       </div>
-      <div slot="content" class="emoji_content">
+      <div class="emoji_content">
         <p>attachments</p>
       </div>
-    </Popover>
+    </el-popover>
   </div>
 </template>
 
 <script>
 export default {
   name: "ChatActions",
-  components: {
-    Popover: () => import("@/components/Popover")
-  },
+
   data() {
     return {
       popoverConfig: {

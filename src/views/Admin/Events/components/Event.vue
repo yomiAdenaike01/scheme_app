@@ -7,14 +7,14 @@
     <div class="flex">
       <div class="event_details_container details_unit">
         <h4 class="member_name">{{ getEventType }}</h4>
-        <Popover v-if="assignUsers.arr.length > 1">
-          <div slot="content" class="content">
+        <el-popover v-if="assignUsers.arr.length > 1">
+          <div class="content">
             {{ assignedUsers.arr.join(", ") }}
           </div>
-          <p slot="trigger" class="member_name black">
+          <p slot="reference" class="member_name black">
             {{ assignedUsers.text }}
           </p>
-        </Popover>
+        </el-popover>
         <div class="tag_container">
           <el-tag
             v-if="approval.boolean"
@@ -62,13 +62,9 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
-import Popover from "@/components/Popover";
-import moment from "moment";
 export default {
   name: "Event",
-  components: {
-    Popover
-  },
+
   props: {
     event: Object
   },

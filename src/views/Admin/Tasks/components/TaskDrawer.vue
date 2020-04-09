@@ -4,7 +4,8 @@
       <h1 class="task_drawer_title">
         <strong>{{ taskInformation.title }}</strong>
       </h1>
-      <p class="grey">{{ taskInformation.description }}</p>
+      <span class="grey">{{ taskInformation.description }}</span>
+
       <div
         v-if="taskInformation.assignedTo.length > 1"
         class="multi_user_container assign_container"
@@ -24,14 +25,12 @@
         <el-tag :type="taskStateXref[taskInformation.state].type">{{
           taskStateXref[taskInformation.state].label
         }}</el-tag>
-        <Popover trigger="click">
-          <el-tag slot="trigger">{{
-            taskInformation.dueDate
-              ? formatDate(taskInformation.dueDate)
-              : "Set due date"
-          }}</el-tag>
-          <Form slot="content" :config="dueDateConfig" @val="setDueDate" />
-        </Popover>
+        <el-tag slot="reference">{{
+          taskInformation.dueDate
+            ? formatDate(taskInformation.dueDate)
+            : "Set due date"
+        }}</el-tag>
+        <Labels :labels="taskInformation.labels" />
       </div>
       {{ taskInformation }}
     </div>
@@ -44,8 +43,8 @@ export default {
   name: "TaskDrawer",
   components: {
     Avatar: () => import("@/components/Avatar"),
-    Popover: () => import("@/components/Popover"),
-    Form: () => import("@/components/Form")
+    Form: () => import("@/components/Form"),
+    Labels: () => import("./Labels")
   },
   props: {
     display: {
@@ -98,6 +97,9 @@ export default {
     ...mapActions("Admin", ["updateTask"]),
     update(update) {
       this.updateTask({ ...this.taskInformation, ...update });
+    },
+    setDueDate(date) {
+      console.log(date);
     }
   }
 };
@@ -117,6 +119,7 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin: 20px;
 }
 .information_container {
   border-radius: 5px;

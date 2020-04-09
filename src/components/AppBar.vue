@@ -15,17 +15,17 @@
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
       <el-badge :value="getUserNotificationsLength" class="item primary">
-        <Popover width="350" trigger="click">
-          <div slot="content" class="notifications_center">
+        <el-popover width="350" trigger="click">
+          <div class="notifications_center">
             <NotificationModule />
           </div>
           <el-button
-            slot="trigger"
+            slot="reference"
             size="small"
             circle
             icon="el-icon-bell trigger"
           ></el-button>
-        </Popover>
+        </el-popover>
       </el-badge>
       <el-button
         size="small"
@@ -47,7 +47,6 @@ export default {
     Avatar: () => import("@/components/Avatar"),
     Logo: () => import("@/components/Logo"),
     Dropdown: () => import("@/components/Dropdown"),
-    Popover: () => import("@/components/Popover"),
     NotificationModule: () => import("@/components/NotificationModule")
   },
   computed: {
@@ -136,7 +135,7 @@ export default {
 }
 .popover_container {
   &/deep/ {
-    .el-popover {
+    .el-el-popover {
       padding: 0;
     }
   }

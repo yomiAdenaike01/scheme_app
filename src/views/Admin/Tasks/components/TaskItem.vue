@@ -13,9 +13,9 @@
         <div>
           <div class="header">
             <h3>{{ taskInformation.title }}</h3>
-            <!-- Popover for transfer to board -->
+            <!-- el-popover for transfer to board -->
             <i
-              slot="trigger"
+              slot="reference"
               class=" trigger bx bx-dots-horizontal-rounded grey"
               @click="viewTaskController"
             ></i>
@@ -34,10 +34,10 @@
             >{{ getUserInformation(teamMember) }}</el-tag
           >
         </div>
-        <Popover trigger="click">
+        <el-popover trigger="click">
           <el-button
             v-if="currState != 'complete'"
-            slot="trigger"
+            slot="reference"
             class="complete_indication"
             round
             size="mini"
@@ -45,14 +45,13 @@
             >{{ buttonConfig.text }}</el-button
           >
           <Form
-            slot="content"
             disable
             emit-on-change
             class="full_width"
             :config="updateTaskStateConfig"
             @change="updateTask"
           />
-        </Popover>
+        </el-popover>
         <transition name="el-fade-in">
           <div v-if="currState == 'complete'" class="completed_overlay">
             <el-button
@@ -79,8 +78,7 @@ import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "TaskItem",
   components: {
-    Form: () => import("@/components/Form"),
-    Popover: () => import("@/components/Popover")
+    Form: () => import("@/components/Form")
   },
   props: {
     taskInformation: {

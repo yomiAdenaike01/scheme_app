@@ -45,16 +45,15 @@
         "
         >Decline Request</el-button
       >
-      <Popover v-if="!approved" trigger="click">
-        <el-button slot="trigger" size="mini" round>Update Request</el-button>
+      <el-popover v-if="!approved" trigger="click">
+        <el-button slot="reference" size="mini" round>Update Request</el-button>
         <Form
-          slot="content"
           submit-text="Update request"
           size="mini"
           :config="requestUpdateConfig"
           @val="$emit('updateRequest', { update: $event, _id: request._id })"
         />
-      </Popover>
+      </el-popover>
       <el-button
         plain
         type="danger"
@@ -68,14 +67,12 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import Popover from "@/components/Popover";
 import Form from "@/components/Form";
 
 export default {
   name: "Request",
   components: {
-    Form,
-    Popover
+    Form: () => import("@/components/Form")
   },
   props: {
     request: {

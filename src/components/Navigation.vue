@@ -4,7 +4,6 @@
     :default-active="$route.path"
     :router="true"
     mode="vertical"
-    background-color="#545c64"
     :collapse="true"
     :active-text-color="lightColour"
   >

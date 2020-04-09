@@ -14,6 +14,10 @@ function updateBoardQuota(commit, state, action = "minus") {
   );
 }
 export default {
+  /**
+   * @description get boards
+   * @param {object} context
+   */
   getBoards(context) {
     return new Promise((resolve, reject) => {
       context
@@ -35,13 +39,12 @@ export default {
     });
   },
 
+  /**
+   * @param {object} { dispatch, commit, rootState }
+   * @param {object} payload {boardID}
+   */
   deleteBoard({ dispatch, commit, rootState }, payload) {
     return new Promise((resolve, reject) => {
-      payload = {
-        data: { ...payload },
-        method: "DELETE",
-        url: "tasks/boards/delete"
-      };
       dispatch(
         "genPromptBox",
         {
@@ -53,7 +56,15 @@ export default {
       ).then(() => {
         commit("DELETE_BOARD", payload.boardID);
         updateBoardQuota(commit, rootState, "plus");
-        dispatch("request", { _id: payload.boardID }, { root: true })
+        dispatch(
+          "request",
+          {
+            method: "DELETE",
+            url: "tasks/boards/delete",
+            data: { _id: payload.boardID }
+          },
+          { root: true }
+        )
           .then(() => {
             resolve();
           })
@@ -66,6 +77,11 @@ export default {
       });
     });
   },
+
+  /**
+   * @param {object} { dispatch, commit, rootState }
+   * @param {object} payload
+   */
   createBoard({ dispatch, commit, rootState }, payload) {
     return new Promise((resolve, reject) => {
       commit("UPDATE_BOARDS", { data: payload, action: "create" });
@@ -88,6 +104,11 @@ export default {
         });
     });
   },
+
+  /**
+   * @param {object} { dispatch, commit }
+   * @param {object} payload
+   */
   updateBoard({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
       commit("UPDATE_BOARDS", { action: "update", ...payload });
@@ -108,6 +129,10 @@ export default {
     });
   },
 
+  /**
+   * @param {object} { dispatch, commit }
+   * @param {object} payload
+   */
   createTask({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
       commit("UPDATE_TASKS", payload);
@@ -123,6 +148,11 @@ export default {
         });
     });
   },
+
+  /**
+   * @param {object} { dispatch, commit }
+   * @param {object} payload
+   */
   updateTask({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
       commit("UPDATE_TASKS", { ...payload, action: "update" });
@@ -138,6 +168,11 @@ export default {
         });
     });
   },
+
+  /**
+   * @param {object} { dispatch, commit }
+   * @param {object} payload
+   */
   deleteTask({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
       commit("REMOVE_TASK", payload);

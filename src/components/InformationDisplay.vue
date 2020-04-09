@@ -3,10 +3,13 @@
     <div v-if="mode == 'tutorial' || mode == 'both'">
       <!-- Tutorial -->
       <div class="tutorial_wrapper">
-        <Popover popperclass="no_padding" trigger="click">
-          <i slot="trigger" class="bx bx-help-circle tutorial_icon trigger"></i>
+        <el-popover popperclass="no_padding" trigger="click">
+          <i
+            slot="reference"
+            class="bx bx-help-circle tutorial_icon trigger"
+          ></i>
 
-          <div slot="content" class="tutorial_container">
+          <div class="tutorial_container">
             <div class="tutorial_title_bar">
               <small class="capitalize">{{
                 makePretty(tutorial.feature)
@@ -38,7 +41,7 @@
               ></div>
             </div>
           </div>
-        </Popover>
+        </el-popover>
       </div>
     </div>
     <!-- Title display -->
@@ -78,9 +81,6 @@
 import { mapGetters } from "vuex";
 export default {
   name: "InformationDisplay",
-  components: {
-    Popover: () => import("@/components/Popover")
-  },
   props: {
     mode: {
       type: String,

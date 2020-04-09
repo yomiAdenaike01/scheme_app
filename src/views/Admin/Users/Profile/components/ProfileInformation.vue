@@ -7,17 +7,13 @@
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container">
           <el-button-group>
-            <Popover trigger="click">
-              <el-button v-if="getIsAdmin" slot="trigger">{{
+            <el-popover trigger="click">
+              <el-button v-if="getIsAdmin" slot="reference">{{
                 localUserInformation.groupID == 0
                   ? "Assign to group"
                   : "Reassign to group"
               }}</el-button>
-              <el-select
-                slot="content"
-                v-model="selectedGroup"
-                @change="assignUserToGroup"
-              >
+              <el-select v-model="selectedGroup" @change="assignUserToGroup">
                 <el-option
                   v-for="{ label, value } in getUserGroups"
                   :key="value"
@@ -26,18 +22,19 @@
                 >
                 </el-option>
               </el-select>
-            </Popover>
+            </el-popover>
 
-            <Popover trigger="click">
-              <el-button slot="trigger">Update Personal Information</el-button>
+            <el-popover trigger="click">
+              <el-button slot="reference"
+                >Update Personal Information</el-button
+              >
               <Form
-                slot="content"
                 class="full_width"
                 submit-text="Update user"
                 :config="updateUserForm"
                 @val="updateUser"
               />
-            </Popover>
+            </el-popover>
             <el-button v-if="getIsAdmin" plain type="danger" @click="removeUser"
               >Delete Account</el-button
             >
@@ -57,11 +54,11 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-import Popover from "@/components/Popover";
-import Form from "@/components/Form";
 export default {
   name: "ProfileInformation",
-
+  components: {
+    Form: () => import("@/components/Form")
+  },
   data() {
     return {
       selectedGroup: "",
@@ -213,10 +210,6 @@ export default {
           console.warn(err);
         });
     }
-  },
-  components: {
-    Popover,
-    Form
   }
 };
 </script>
