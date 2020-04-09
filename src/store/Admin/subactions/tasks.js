@@ -42,8 +42,6 @@ export default {
     payload
   ) {
     return new Promise((resolve, reject) => {
-      commit("DELETE_BOARD", payload.boardID);
-      updateBoardQuota(commit, boardQuota + 1);
       payload = {
         data: { ...payload },
         method: "DELETE",
@@ -55,20 +53,22 @@ export default {
           boxType: "confirm",
           text: "Are you sure you want to delete this board ?",
           title: "Delete Board"
-        }.then(() => {
-          dispatch("request", payload, { root: true })
-            .then(() => {
-              resolve();
-            })
-            .catch(() => {
-              commit("UPDATE_BOARDS", { data: payload, action: "create" });
-              commit("DELETE_BOARD", payload.boardID);
-              updateBoardQuota(commit, boardQuota - 1);
-              reject();
-            });
-        }),
+        },
         { root: true }
-      );
+      ).then(() => {
+        commit("DELETE_BOARD", payload.boardID);
+        updateBoardQuota(commit, boardQuota + 1);
+        dispatch("request", { _id: payload.boardID }, { root: true })
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            commit("UPDATE_BOARDS", { data: payload, action: "create" });
+            commit("DELETE_BOARD", payload.boardID);
+            updateBoardQuota(commit, boardQuota - 1);
+            reject();
+          });
+      });
     });
   },
   createBoard(

@@ -116,7 +116,7 @@ export default {
       taskIndex,
       task: state.boards[boardIndex].tasks[taskIndex]
     });
-    Vue.delete(state.boards[boardIndex].tasks, taskIndex);
+    state.boards[boardIndex].tasks.splice(taskIndex, 1);
   },
   /**
    *@description delete board at index create a ref to restore if fails
@@ -130,8 +130,7 @@ export default {
       boardIndex: boardToDeleteIndex,
       board: state.boards[boardToDeleteIndex]
     });
-
-    Vue.delete(state.boards, boardToDeleteIndex);
+    state.boards.splice(boardToDeleteIndex, 1);
   },
 
   /**
