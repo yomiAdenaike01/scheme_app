@@ -48,12 +48,20 @@ export default {
 
   CLEAR_GLOBAL_INTERVAL(state, intervalID = null) {
     clearStateInterval(state, intervalID);
-    console.log(state.runningIntervals);
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    Vue.set(state, "clientInformation", payload);
-    localStorage.setItem("clientInformation", JSON.stringify(payload));
+    let action = payload.action ? payload.action : (payload.action = "assign");
+    if (action == "assign") {
+      state.clientInformation = payload;
+      localStorage.setItem("clientInformation", JSON.stringify(payload));
+    } else {
+      state.clientInformation[payload.key] = payload.value;
+      localStorage.setItem(
+        "clientInformation",
+        JSON.stringify(state.clientInformation)
+      );
+    }
   },
 
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
@@ -77,6 +85,7 @@ export default {
   UPDATE_USER(state, { user, token }) {
     Vue.set(state, "token", token);
     Vue.set(state, "userInformation", user);
+    console.log(state.userInformation);
 
     localStorage.setItem("token", token);
     localStorage.setItem("userInformation", JSON.stringify(user));

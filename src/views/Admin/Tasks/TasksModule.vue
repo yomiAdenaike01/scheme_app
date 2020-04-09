@@ -21,6 +21,7 @@
       />
     </div>
     <TaskDrawer
+      v-if="displayTask"
       :display="displayTask"
       :task-information="viewTaskInformation"
       @toggle="displayTask = $event"
@@ -31,7 +32,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  name: "Tasks",
+  name: "TasksModule",
   components: {
     TaskBoard: () => import("./components/TaskBoard"),
     CreateTask: () => import("./components/CreateTask"),
@@ -46,12 +47,15 @@ export default {
     };
   },
   computed: {
-    ...mapState("Admin", ["boardsInformation"]),
-    boards() {
-      return this.boardsInformation ?? [];
+    ...mapState(["clientInformation"]),
+    ...mapState("Admin", ["boards"]),
+
+    boardCount() {
+      return this.boards.length;
     },
+
     calcBoardsLeft() {
-      return this.clientInformation?.boardQuota ?? 5 - this.boards.length;
+      return this.clientInformation.boardQuota;
     }
   },
   methods: {

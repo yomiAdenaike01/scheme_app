@@ -21,7 +21,6 @@ export default {
   mixins: [refactorLocation],
   data() {
     return {
-      clientInterval: null,
       loading: true
     };
   },
@@ -48,8 +47,6 @@ export default {
   },
 
   created() {
-    window.console.warn = function() {};
-
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -58,9 +55,9 @@ export default {
 
     let currentHostname = window.location.hostname.toString().split(".");
     let subdomain = currentHostname[0];
-
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
+      id: "client",
       method: () => {
         return new Promise((resolve, reject) => {
           this.request({
@@ -88,7 +85,7 @@ export default {
             });
         });
       },
-      ...this.requestIntervals.client
+      duration: this.requestIntervals.client
     });
   },
 
@@ -130,15 +127,18 @@ Fonts
 body,
 html,
 #app {
+  height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
-
 #app {
   display: flex;
   flex: 1;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 

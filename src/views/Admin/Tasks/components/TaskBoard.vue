@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="board_container">
+  <div class="board_container">
     <div v-if="!newBoard && boardData" class="inner_board_container">
       <div class="board_header">
         <div class="update_board_container">
@@ -18,7 +18,7 @@
                 class="full_width"
                 :config="formConfig"
                 :submit-button="{ text: 'Update board' }"
-                @val="updateBoard"
+                @val="updateAction"
               />
               <el-divider></el-divider>
 
@@ -27,19 +27,19 @@
                 class="long"
                 size="mini"
                 plain
-                @click="deleteBoard"
+                @click="deleteAction"
                 >Delete Board</el-button
               >
             </div>
           </Popover>
         </div>
         <el-progress
-          v-if="boardData.tasks.length > 0"
+          v-if="tasks.length > 0"
           :status="progressCount.status"
           :percentage="progressCount.percentage"
         ></el-progress>
       </div>
-      <div v-if="!hasTasks" class="no_tasks_container">
+      <div v-if="!tasks.length > 0" class="no_tasks_container">
         <InformationDisplay
           :display-text="{
             hasIcon: true,
@@ -79,7 +79,7 @@
         }"
       >
         <Popover
-          v-if="boardIndex == 0"
+          v-if="boardIndex == 0 && this.getIsAdmin"
           slot="header"
           position="top"
           trigger="click"
@@ -89,7 +89,7 @@
             slot="content"
             class="full_width"
             :config="formConfig"
-            @val="createBoard"
+            @val="createAction"
           />
         </Popover>
       </InformationDisplay>
@@ -99,7 +99,7 @@
 
 <script>
 import Popover from "@/components/Popover";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "TaskBoard",
   components: {
@@ -124,18 +124,24 @@ export default {
   },
   data() {
     return {
-      loading: false,
       taskCap: 10
     };
   },
   computed: {
+    ...mapGetters(["getIsAdmin"]),
+    tasks() {
+      return this.boardData?.tasks ?? [];
+    },
     progressCount() {
-      let tasksTotal = this.boardData?.tasks?.length ?? 0,
-        completedCount = this.boardData.tasks.filter(task => {
+      let percentage = 0,
+        status = "warning";
+      if (this.tasks.length > 0) {
+        let completedCount = this.tasks.filter(task => {
           return task.state == 1;
-        }).length,
-        percentage = Math.round((completedCount / tasksTotal) * 100),
-        status = "";
+        }).length;
+        (percentage = Math.round((completedCount / this.tasks.length) * 100)),
+          (status = "");
+      }
 
       if (percentage > 50) {
         status = "success";
@@ -148,20 +154,23 @@ export default {
       };
     },
     calcBlankTasks() {
-      return this.boardData?.tasks.length + 1 < 10;
+      return this.tasks.length + 1 < 10;
     },
-    hasTasks() {
-      return this.boardData.tasks.length > 0;
-    },
+
     computeText() {
       let index = this.boardIndex;
       let displayText = {
         heading: "Board is disabled",
         content: "Initialise the board before to enable this board."
       };
-      if (index == 0) {
+      if (index == 0 && this.getIsAdmin) {
         displayText.heading = "Initialise Board";
         displayText.content = "Press the button above to initialse this board";
+      }
+      if (!this.getIsAdmin && index == 0) {
+        displayText.heading = "Initialise Board";
+        displayText.content =
+          "Only system administrators can initialise a task board";
       }
       return displayText;
     },
@@ -182,60 +191,27 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["getBoards"]),
+    ...mapActions("Admin", [
+      "getBoards",
+      "createBoard",
+      "updateBoard",
+      "deleteBoard"
+    ]),
     ...mapActions(["request", "genPromptBox"]),
-    deleteBoard() {
-      this.loading = true;
-      this.genPromptBox({
-        boxType: "confirm",
-        text: "Are you sure you want to delete this board ?",
-        title: "Delete Board"
-      })
-        .then(() => {
-          return console.log("Hello");
-          this.request({
-            method: "DELETE",
-            url: "tasks/boards/delete",
-            data: { _id: this.boardID }
-          })
-            .then(() => {
-              this.loading = false;
-            })
-            .catch(() => {
-              this.loading = false;
-            });
-        })
-        .catch(() => {
-          this.loading = false;
-        });
+    deleteAction() {
+      this.deleteBoard({ _id: this.boardData._id });
     },
-    createBoard({ name, description }) {
-      this.loading = true;
-      this.request({
-        method: "POST",
-        url: "tasks/boards/create",
-        data: { name, description }
-      })
-        .then(() => {
-          this.getBoards();
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
+    createAction({ name, description }) {
+      this.createBoard({
+        name,
+        description,
+        _id: Math.random()
+          .toString(16)
+          .slice(2)
+      });
     },
-    updateBoard({ name, description }) {
-      this.request({
-        method: "PUT",
-        url: "tasks/boards/update",
-        data: { name, description }
-      })
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
+    updateAction({ name, description }) {
+      this.updateBoard({ name, description });
     },
     createTask() {
       this.UPDATE_DIALOG_INDEX({

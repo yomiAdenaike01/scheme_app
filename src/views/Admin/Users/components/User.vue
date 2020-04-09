@@ -93,4 +93,7 @@ p {
   padding: 0;
   margin: 0;
 }
+.member_name {
+  text-transform: capitalize;
+}
 </style>

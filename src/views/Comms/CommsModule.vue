@@ -14,7 +14,8 @@ export default {
     ActiveChat: () => import("./components/ActiveChat")
   },
   computed: {
-    ...mapState("Comms", ["activeChat"])
+    ...mapState("Comms", ["activeChat"]),
+    ...mapState(["requestIntervals"])
   },
   created() {
     this.CREATE_GLOBAL_INTERVAL({
@@ -31,7 +32,7 @@ export default {
             });
         });
       },
-      duration: 40000
+      duration: this.requestIntervals.chat
     });
   },
   methods: {

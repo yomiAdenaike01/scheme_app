@@ -231,9 +231,7 @@ export default {
       }
     }
   },
-  created() {
-    console.log(this.predefinedData);
-  },
+
   methods: {
     resetForm() {
       this.$refs.form.resetFields();

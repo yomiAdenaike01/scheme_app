@@ -1,12 +1,12 @@
 export default {
   eventFilters: {},
-  boardsInformation: [],
-  viewNote: {
-    display: false
-  },
+  boards: [],
+  boardRef: "",
+  taskRef: "",
+  eventRef: "",
+
   teamInformation: [],
-  notes: [],
-  tasks: [],
+
   eventsInformation: {
     all: [],
     upcoming: [],

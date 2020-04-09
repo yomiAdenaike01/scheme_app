@@ -10,6 +10,8 @@ import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
 import "./plugins/shortKeys";
+import "./plugins/intro";
+
 import "boxicons";
 
 // Prototypes

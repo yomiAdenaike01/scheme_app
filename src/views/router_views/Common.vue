@@ -46,7 +46,7 @@ export default {
     this.checkDevice();
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
-      duration: 10000,
+      duration: this.requestIntervals.admin,
       id: "team",
       method: () => {
         return new Promise((resolve, reject) => {
@@ -73,7 +73,7 @@ export default {
     }
 
     if (Notification.permission != "granted") {
-      this.requestNotificationPermission();
+      this.notificationPermission();
     }
 
     this.displayWeeklyNotification();
@@ -83,7 +83,8 @@ export default {
       "userInformation",
       "userNotifications",
       "viewMobileMenu",
-      "weeklyTimesheetUploaded"
+      "weeklyTimesheetUploaded",
+      "requestIntervals"
     ]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
@@ -141,7 +142,7 @@ export default {
         console.log("Find device in array or add a new one");
       }
     },
-    requestNotificationPermission() {
+    notificationPermission() {
       if (!window.Notification) {
         let {
           browser: { name, version }

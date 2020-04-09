@@ -5,7 +5,7 @@
         {{ props.content }}
       </p>
     </div>
-    <div class="actions_container">
+    <!-- <div v-if="props.isSentByUser" class="actions_container">
       <el-button
         icon="el-icon-edit-outline"
         title="Edit message"
@@ -18,7 +18,7 @@
         circle
         @click="listeners['deleteMessage'](props.id)"
       ></el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -51,10 +51,13 @@ export default {
 
 <style lang="scss" scoped>
 .message_container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
+  // display: flex;
+  // flex: 1;
+  // height: inherit;
+  // flex-direction: column;
+  // align-items: flex-start;
+  // max-height: 150px;
+  margin: 5px;
 
   &.is_user {
     align-items: flex-end;
@@ -68,11 +71,9 @@ export default {
 .message {
   background: lighten($color: $default_colour, $amount: 30);
   color: white;
-  padding: 20px;
+  padding: 5px;
   display: flex;
-  height: 50px;
-  margin: 10px;
-  max-height: 450px;
+
   border-radius: 10px;
   border-bottom-left-radius: 0px;
   transition: $default_transition transform;

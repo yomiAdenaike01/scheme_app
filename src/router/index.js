@@ -16,7 +16,7 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    redirect: { name: "events" }
+    redirect: { name: "signIn" }
   },
 
   {

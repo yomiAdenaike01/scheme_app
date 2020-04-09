@@ -12,7 +12,7 @@
         ></el-autocomplete>
       </div>
 
-      <div class="chatmessages_container">
+      <div class="chat_messages_container">
         <ChatMessage
           v-for="message in chatMessages"
           :key="message._id"
@@ -82,7 +82,7 @@ export default {
       });
     },
     isNewChat() {
-      return this.activeChat?.initChat;
+      return this.activeChat.hasOwnProperty("initChat");
     },
     activeChatEntries() {
       return this.hasEntries(this.activeChat);
@@ -143,6 +143,7 @@ export default {
         this.intervalID = "getChatMessages";
         this.CREATE_GLOBAL_INTERVAL({
           id: this.intervalID,
+          duration: this.requestIntervals.chatMessages,
           method: () => {
             return new Promise((resolve, reject) => {
               this.getChatMessages()
@@ -201,9 +202,6 @@ export default {
       if (!this.chat.content) {
         return createError("No message content found.");
       }
-      if ((this.isNewChat && !this.chat.recieverID) || !userName) {
-        return createError("No reciever found.");
-      }
 
       if (!this.activeChat._id) {
         return createError("No active chat found.");
@@ -252,30 +250,20 @@ export default {
     flex: 1;
   }
 }
-.chatmessages_container {
-  display: flex;
-  flex: 1;
-  max-height: calc(100% - 90px);
+.chat_messages_container {
+  height: 90vh;
   overflow-x: hidden;
   width: 100%;
 }
 .active_chat_container {
-  display: flex;
-  flex: 1;
-  position: relative;
-  flex-direction: column;
   height: 100%;
-  width: 100%;
 }
 .current_chat_interaction {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
   align-items: center;
   flex: 1;
+  background: white;
   padding: 10px 20px;
+  height: 100px;
   .send_message_container {
     display: flex;
     flex: 1;

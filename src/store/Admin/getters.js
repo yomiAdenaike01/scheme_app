@@ -122,7 +122,7 @@ export default {
     params = "_id"
   ) => {
     let userInfo = null;
-    if (params == userInformation[params]) {
+    if (match == userInformation[params]) {
       userInfo = userInformation;
     } else {
       if (Vue.prototype.hasEntries(teamInformation)) {

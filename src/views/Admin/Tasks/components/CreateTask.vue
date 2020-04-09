@@ -11,7 +11,7 @@
         <Form
           :config="createTaskForm"
           submit-text="Create task"
-          @val="createTask"
+          @val="create"
         />
       </div>
     </div>
@@ -92,17 +92,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
-    createTask(taskInformation) {
+    ...mapActions("Admin", ["createTask"]),
+    create(taskInformation) {
       this.loading = true;
-      this.request({
-        method: "POST",
-        url: "tasks/create",
-        data: {
-          ...taskInformation,
-          boardID: this.createTaskInformation._id
-        }
+      this.createTask({
+        ...taskInformation,
+        boardID: this.createTaskInformation._id
       })
+
         .then(() => {
           this.loading = false;
           this.view = false;

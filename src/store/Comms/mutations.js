@@ -9,7 +9,12 @@ const setActiveChat = (state, chat) => {
 };
 export default {
   UPDATE_MESSAGES(state, messages) {
-    state.messages = messages;
+    if (typeof messages == "object") {
+      state.messages.push(messages);
+    }
+    if (Array.isArray(messages)) {
+      state.messages = messages;
+    }
   },
 
   UPDATE_CHATS(state, payload) {

@@ -2,12 +2,11 @@ import vars from "@/assets/Styles/defaults.scss";
 export default {
   runningIntervals: {},
   requestIntervals: {
-    team: 6000,
-    events: 6000,
-    client: { id: "client", immediate: true, duration: 10000 },
+    admin: 60000,
+    client: 20000,
     chatMessages: 3000,
-    previousChats: 3000,
-    templates: 3000
+    chat: 30000,
+    templates: 30000
   },
   clientInformation: localStorage.getItem("clientInformation")
     ? JSON.parse(localStorage.getItem("clientInformation"))
