@@ -32,13 +32,7 @@ export default {
   UPDATE_EVENT_FILTERS(state, payload) {
     Vue.set(state, "eventFilters", payload);
   },
-  // Regular admins
-  UPDATE_DISPLAY_NOTE(state, payload, display) {
-    if (display) {
-      Vue.set(state.viewNote, "display", display);
-    }
-    Vue.set(state, "viewNote", payload);
-  },
+
   UPDATE_EVENTS(state, payload) {
     Vue.set(state, "eventsInformation", payload);
   },
@@ -47,13 +41,6 @@ export default {
   },
   UPDATE_TEAM(state, payload) {
     Vue.set(state, "teamInformation", payload);
-  },
-
-  UPDATE_NOTES(state, payload) {
-    if (Array.isArray(payload)) {
-      Vue.set(state, "notes", payload);
-    }
-    state.notes.push(payload);
   },
   /**
    * @description create or update a board at an index references created to restore later
@@ -65,8 +52,6 @@ export default {
   UPDATE_BOARDS(state, { data, action = "update" }) {
     // Update board at an index and create a reference
     if (action == "update") {
-      console.log("UPDATING", data, action);
-
       if (Array.isArray(data)) {
         state.boards = data;
       }
@@ -84,8 +69,6 @@ export default {
         }
       }
     } else {
-      console.log("Create BOARD", data, action);
-
       // Push a new board this is so that it can be removed if the creation goes wrong
       let boardIndex = state.boards.length - 1;
       let { name, description, _id } = data;

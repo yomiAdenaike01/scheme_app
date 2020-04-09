@@ -1,12 +1,12 @@
 import Vue from "vue";
-const setActiveChat = (state, chat) => {
+function setActiveChat(state, chat) {
   if (typeof chat == "object") {
     Vue.set(state, "activeChat", chat);
   }
   if (Array.isArray(chat)) {
     Vue.set(state, "activeChat", chat[0]);
   }
-};
+}
 export default {
   UPDATE_MESSAGES(state, messages) {
     if (typeof messages == "object") {
