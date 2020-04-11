@@ -4,18 +4,11 @@
       'action_icon_wrapper',
       data.class,
       data.staticClass,
-      { multi_icon: props.displayPlus }
+      { multi_icon: props.displayPlus, rounded: props.actionStyle == 'rounded' }
     ]"
   >
-    <i
-      :class="` bx bx-${props.icon}`"
-      @click="
-        $event.stopPropgation();
-        $listeners.click;
-      "
-    ></i>
-    <i v-if="props.displayPlus" :class="`bx bx-plus`"></i>
-    <span>{{ props.text }}</span>
+    <i :class="` bx bx-${props.icon}`" v-on="$listeners"></i>
+    <span v-if="props.text.length > 0">{{ props.text }}</span>
   </div>
 </template>
 
@@ -23,6 +16,10 @@
 export default {
   name: "ActionIcon",
   props: {
+    actionStyle: {
+      type: String,
+      default: "rounded"
+    },
     displayPlus: {
       type: Boolean,
       default: false
@@ -32,7 +29,8 @@ export default {
       default: "plus"
     },
     text: {
-      type: String | Number
+      type: String | Number,
+      default: ""
     }
   }
 };
@@ -45,10 +43,17 @@ export default {
   color: rgb(200, 200, 200);
   cursor: pointer;
   display: block;
-  padding: 5px;
-  max-width: fit-content;
-  border-radius: 20px;
-  border-top-left-radius: 0px;
+  padding: 9px;
+  width: fit-content;
+  span {
+    margin-left: 5px;
+    font-size: 1em;
+  }
+  &.rounded {
+    border-radius: 50%;
+    border-top-left-radius: 0px;
+  }
+  border-radius: 5px;
   &.multi_icon {
     border-radius: 10px;
     border-top-left-radius: inherit;

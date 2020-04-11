@@ -4,33 +4,43 @@
       <i class="bx bx-message-rounded grey"></i>
       <small class="grey">{{ commentCount }}</small>
     </div>
-    <div
-      v-if="comments.length > 0 && mode != 'overview'"
-      class="comments_container"
-    >
-      <div
-        v-for="comment in commnets"
-        :key="comment._id"
-        class="comment_wrapper"
-      >
-        <Avatar :name="comment.userName" />
-        <div
-          class="comment_message"
-          @mouseover="handleDisplayActions(comment.userID)"
-          @click="editMessage = true"
-        >
-          <p v-if="(editMessage = false)">{{ comment.message }}</p>
-          <el-input
-            v-model="commentMessage"
-            :placeholder="comment.message"
-            @keyup.enter="updateMessage(comment.message)"
-          />
+    <div v-if="mode != 'overview'" class="comments_container">
+      <div v-if="comments.length > 0">
+        <div v-for="comment in commnets" :key="comment._id" class="comment">
+          <div class="comment_header">
+            <Avatar :name="comment.userName" />
+            <small>{{ comment.userName }}</small>
+            <small class="grey timestamp">{{
+              initMoment(comment.dateCreated).calendar()
+            }}</small>
+          </div>
+
+          <div
+            class="comment_message"
+            @mouseover="handleDisplayActions(comment.userID)"
+            @click="editMessage = true"
+          >
+            <p v-if="(editMessage = false)">{{ comment.message }}</p>
+            <el-input
+              v-model="commentMessage"
+              :placeholder="comment.message"
+              @keyup.enter="updateMessage(comment.message)"
+            />
+          </div>
         </div>
       </div>
       <!-- Comment actions -->
       <div class="actions_wrapper" :class="{ visible: displayActions }">
         <!-- Delete comment -->
         <ActionIcon icon="trash" @click="$emit('deleteComment')" />
+      </div>
+      <div v-if="canInteract" class="empty_comment_wrapper">
+        <Avatar class="comment_avatar" :name="userInformation.name" />
+        <el-input
+          v-model="commentMessage"
+          placeholder="Write a comment..."
+          @keyup.enter="$emit('createComment', commentMessage)"
+        ></el-input>
       </div>
     </div>
   </div>
@@ -56,12 +66,16 @@ export default {
     commentCount: {
       type: Number,
       default: 0
+    },
+    canInteract: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       editMessage: false,
-      commentMessage: false,
+      commentMessage: "",
       displayActions: false
     };
   },
@@ -75,6 +89,7 @@ export default {
         this.displayActions = true;
       }
     },
+
     updateMessage(message) {
       if (
         message.toLowerCase().trim() != this.commentMessage.toLowerCase().trim()
@@ -99,12 +114,21 @@ export default {
 }
 .comment {
   display: flex;
+  flex: 1;
   align-items: center;
 }
+.comment_header {
+  display: flex;
+  align-items: center;
+  &/deep/ .avatar_container {
+    margin-right: 10px;
+  }
+  .timestamp {
+    color: rgb(230, 230, 230);
+  }
+}
 .comment_message {
-  border-radius: 20px;
-  background: rgb(250, 250, 250);
-  border-top-left-radius: 0px;
+  padding: 10px;
 }
 .actions_wrapper {
   opacity: 0;
@@ -113,5 +137,12 @@ export default {
   &.visible {
     opacity: 1;
   }
+}
+.empty_comment_wrapper {
+  display: flex;
+  align-items: center;
+}
+.comment_avatar {
+  margin-right: 10px;
 }
 </style>

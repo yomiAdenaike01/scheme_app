@@ -1,33 +1,71 @@
 <template>
-  <el-drawer :visible.sync="view">
-    <div class="task_drawer_container">
-      <div class="task_drawer_header">
-        <h1 class="task_drawer_title">
-          <strong>{{ taskInformation.title }}</strong>
-        </h1>
-        <span class="grey">{{ taskInformation.description }}</span>
-        <small>found in {{ boardName }}</small>
-      </div>
-      <div class="information_wrapper">
-        <Labels
-          mode="board"
-          :labels="taskInformation.labels"
-          @update="update"
-        />
-        <div class=""></div>
+  <el-dialog :visible.sync="view" width="200">
+    <div class="inner_container">
+      <div class="task_info_title">
+        <div class="inner_wrapper">
+          <!-- Labels, duedate, and assigned users -->
+          <div class="information_wrapper">
+            <div class="information_unit">
+              <p>Assigned team members</p>
+              <AssignedUsers :users="users" />
+            </div>
+            <div class="information_unit">
+              <p>Labels</p>
+              <Labels
+                mode="board"
+                :icon-config="{
+                  text: 'Create label',
+                  actionStyle: 'squared'
+                }"
+              />
+            </div>
+            <div class="information_unit">
+              <p>Due date</p>
+              <div v-if="taskInformation.dueDate">
+                <i class="bx bx-time"></i>
+                {{ taskInformation.dueDate }}
+              </div>
+              <el-popover trigger="click">
+                <ActionIcon
+                  slot="reference"
+                  icon="time"
+                  text="Set due date"
+                  action-style="squared"
+                />
+                <Form :config="dueDateConfig" @val="setDueDate" />
+              </el-popover>
+            </div>
+          </div>
+          <!-- Description container -->
+          <div class="description_container">
+            <div class="task_info_title">
+              <i class="bx bx-align-left"></i>
+              <span>Description</span>
+            </div>
+            <p>{{ taskInformation.description }}</p>
+          </div>
+          <Comments
+            :can-interact="canInteract"
+            mode="full"
+            :comments="comments"
+          />
+        </div>
       </div>
     </div>
-  </el-drawer>
+  </el-dialog>
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 export default {
   name: "TaskDrawer",
   components: {
     Avatar: () => import("@/components/Avatar"),
     Form: () => import("@/components/Form"),
-    Labels: () => import("./Labels")
+    Labels: () => import("./Labels"),
+    Comments: () => import("./Comments"),
+    AssignedUsers: () => import("./AssignedUsers"),
+    ActionIcon: () => import("@/components/ActionIcon")
   },
   props: {
     display: {
@@ -40,39 +78,40 @@ export default {
     }
   },
   computed: {
+    ...mapState(["userInformation"]),
     ...mapState("Admin", ["boards"]),
+    ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation", "getGroupName"]),
-    boardName() {
-      return this.boards.find(board => {
-        return board._id == this.taskInformation.boardID;
-      })?.name;
+    users() {
+      return this.taskInformation.assignedTo.map(assignee => {
+        return this.getUserInformation(assignee);
+      });
+    },
+    comments() {
+      return this.taskInformation?.comments ?? [];
+    },
+    canInteract() {
+      return (
+        this.taskInformation.assignedTo.indexOf(this.userInformation._id) >
+          -1 || this.getIsAdmin
+      );
     },
     dueDateConfig() {
       return [
         {
           "component-type": "date-picker",
+          "input-type": "date",
           model: "dueDate",
-          placeholder: "Due date"
+          placeholder: "Set due date"
         }
       ];
     },
-    taskStateXref() {
-      return [
-        { type: "info", label: "Incomplete" },
-        { type: "success", label: "Complete" },
-        { type: "warning", label: "Deferred" }
-      ];
+    boardName() {
+      return this.boards.find(board => {
+        return board._id == this.taskInformation.boardID;
+      })?.name;
     },
 
-    userInfo() {
-      return this.taskInformation?.assignedTo?.map(assignee => {
-        let userInformation = this.getUserInformation(assignee);
-        return {
-          name: userInformation?.name ?? "Username",
-          group: this.getGroupName("user", userInformation.groupID).label
-        };
-      });
-    },
     view: {
       get() {
         return this.display;
@@ -83,52 +122,49 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", ["updateTask"]),
-    update(update) {
-      this.updateTask({ ...this.taskInformation, ...update });
-    },
-    setDueDate(date) {
-      console.log(date);
+    setDueDate(e) {
+      this.updateTask({ dueDate: e });
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.task_drawer_container {
+.information_wrapper {
   display: flex;
-  flex: 1;
-  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
 }
-.task_drawer_header {
+.information_unit {
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
-  background: rgb(250, 250, 250);
-  padding: 20px;
-  line-height: 2em;
-}
-.task_drawer_title {
-  font-size: 1.6em;
-  text-transform: capitalize;
-  padding: 0;
-  margin: 0;
-}
-
-.assign_container {
-  display: flex;
   justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin: 20px;
 }
-.information_container {
-  border-radius: 5px;
+.task_info_title {
+  margin: 20px 0;
+  span,
+  .bx {
+    font-weight: 400;
+    color: #999;
+  }
+  span {
+    margin-left: 10px;
+  }
+}
+.inner_wrapper {
+  padding: 0 50px;
+}
+.information_wrapper {
+  p {
+    font-weight: 400;
+    font-size: 1.2em;
+    padding: 0;
+    margin: 0 0 10px 0;
+    color: grey;
+  }
+}
+.inner_container {
   padding: 10px;
-  border: 2px solid whitesmoke;
-  display: flex;
-  align-items: center;
-  flex: 1;
 }
 </style>

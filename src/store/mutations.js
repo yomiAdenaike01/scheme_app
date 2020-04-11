@@ -110,7 +110,9 @@ export default {
       case "message":
         notification.icon = "message-rounded";
         notification.title = "New Message";
-        sounds.methods.playSuccessSound();
+        if (document.visibilityState == "visible") {
+          sounds.methods.playSuccessSound();
+        }
         break;
       case "announcement": {
         (notification.icon = "bx-user-voice"),

@@ -1,9 +1,5 @@
 <template>
-  <div class="avatar_container">
-    <el-avatar :style="{ background: randColour() }">{{
-      !isNameTheSame ? initials : "ME"
-    }}</el-avatar>
-  </div>
+  <el-avatar :style="{ background: randColour() }">{{ initials }}</el-avatar>
 </template>
 
 <script>
@@ -49,30 +45,10 @@ export default {
   }
 };
 </script>
-
 <style lang="scss" scoped>
-.avatar_container {
-  max-height: fit-content;
-  max-width: fit-content;
+.el-avatar {
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 5px;
-  box-shadow: $box_shadow;
-  border-radius: 50%;
-  &.full {
-    max-height: initial;
-    max-width: initial;
-  }
-  &/deep/ .el-avatar {
-    display: flex;
-    align-self: center;
-    line-height: initial;
-    justify-content: center;
-    padding: 11px 10px;
-    width: initial;
-    height: initial;
-  }
 }
 </style>

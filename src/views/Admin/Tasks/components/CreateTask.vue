@@ -3,7 +3,7 @@
     <div v-loading="loading" class="create_task_container">
       <InformationDisplay
         :display-text="{
-          heading: `Create task for <strong>${createTaskInformation.name} board</strong>`,
+          heading: `Create task for <strong>${createTaskInformation.name}</strong>`,
           content: 'Fill in the form below to create a new task'
         }"
       />
@@ -45,6 +45,7 @@ export default {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsAdmin"]),
+    ...mapGetters("Admin", ["getDropdownTeamMembers"]),
     view: {
       get() {
         return this.display;
@@ -70,7 +71,6 @@ export default {
         {
           "component-type": "date-picker",
           "input-type": "date",
-          options: this.teamInformation,
           placeholder: "Select a due date",
           model: "dueDate",
           optional: true
@@ -80,8 +80,8 @@ export default {
       if (this.getIsAdmin) {
         createTaskForm.splice(2, 0, {
           "component-type": "select",
-          options: this.teamInformation,
-          placeholder: "Assign task to someone",
+          options: this.getDropDownTeamMembers,
+          placeholder: "Assign task to team member",
           model: "assignedTo",
           optional: true,
           hint:

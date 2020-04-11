@@ -6,15 +6,12 @@
       trigger="click"
       placement="right"
     >
-      <div slot="reference" class="create_label_trigger grey">
-        <i class="bx bx-label"></i> <span>Labels</span>
-      </div>
+      <ActionIcon slot="reference" v-bind="iconConfig" />
       <Form
         class="full_width"
         :submit-button="{
           text: 'Create label',
           size: 'mini',
-          plain: true,
           type: 'primary'
         }"
         :config="createLabelConfig"
@@ -38,7 +35,6 @@
         <small v-if="modeInterface == 'labelled'">{{ label.name }}</small>
       </div>
     </div>
-    <ActionIcon @click="$emit('addLabel')" />
   </div>
 </template>
 
@@ -58,6 +54,15 @@ export default {
     mode: {
       type: String,
       default: "mini" // mini, labelled,
+    },
+    iconConfig: {
+      type: Object,
+      default: () => {
+        return {
+          displayPlus: false,
+          text: null
+        };
+      }
     }
   },
   data() {

@@ -113,7 +113,7 @@ Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Sen&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
 /*
 
  Default
@@ -121,7 +121,7 @@ Fonts
 
 */
 * {
-  font-family: "Sen", sans-serif;
+  font-family: "Lato", sans-serif;
 }
 
 body,
@@ -142,19 +142,11 @@ html,
   overflow: hidden;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span {
-  font-weight: 300;
-}
-
 .grey {
   color: #999;
+}
+.capitalise {
+  text-transform: capitalize;
 }
 
 .columns {
@@ -271,6 +263,15 @@ input,
 select,
 textarea {
   font-size: 0.9em !important;
+}
+.el-input,
+.el-input__inner {
+  border-radius: 10px !important;
+  border-color: rgb(240, 240, 240) !important;
+}
+.el-input__inner:focus,
+.el-input__inner:hover {
+  border-color: rgb(220, 220, 220) !important;
 }
 
 /*
