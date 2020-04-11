@@ -1,6 +1,31 @@
 <template>
   <!-- Display labels -->
   <div class="labels_container">
+    <el-popover
+      v-if="modeInterface == 'board'"
+      trigger="click"
+      placement="right"
+    >
+      <div slot="reference" class="create_label_trigger grey">
+        <i class="bx bx-label"></i> <span>Labels</span>
+      </div>
+      <Form
+        class="full_width"
+        :submit-button="{
+          text: 'Create label',
+          size: 'mini',
+          plain: true,
+          type: 'primary'
+        }"
+        :config="createLabelConfig"
+        @val="$emit('update')"
+      >
+        <div slot="footer" class="form_footer">
+          <ColourUnit v-model="colourUnitVal" />
+          <span class="grey">{{ colourUnitVal }}</span>
+        </div>
+      </Form>
+    </el-popover>
     <div class="display_labels">
       <div
         v-for="(label, index) in labels"
@@ -13,13 +38,18 @@
         <small v-if="modeInterface == 'labelled'">{{ label.name }}</small>
       </div>
     </div>
+    <ActionIcon @click="$emit('addLabel')" />
   </div>
 </template>
 
 <script>
 export default {
   name: "Labels",
-
+  components: {
+    Form: () => import("@/components/Form"),
+    ColourUnit: () => import("@/components/ColourUnit"),
+    ActionIcon: () => import("@/components/ActionIcon")
+  },
   props: {
     labels: {
       type: Array,
@@ -33,11 +63,21 @@ export default {
   data() {
     return {
       labelSearch: "",
-      displayForm: false,
-      displayPopover: false
+      displayPopover: false,
+      page: 0,
+      colourUnitVal: "#fff"
     };
   },
   computed: {
+    createLabelConfig() {
+      return [
+        {
+          "component-type": "text",
+          model: "name",
+          placeholder: "Label name"
+        }
+      ];
+    },
     modeInterface: {
       get() {
         return this.mode;
@@ -60,6 +100,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.create_label_trigger {
+  display: flex;
+  flex: 1;
+  background: rgb(250, 250, 250);
+  padding: 50px;
+  cursor: pointer;
+  border-radius: 10px;
+}
 .display_labels {
   display: flex;
   flex-wrap: wrap;
@@ -86,6 +134,16 @@ export default {
   &.mini {
     height: 10px;
     padding: 0;
+  }
+}
+.form_footer {
+  display: flex;
+  align-items: center;
+  span {
+    margin-left: 20px;
+    background: whitesmoke;
+    padding: 10px;
+    border-radius: 5px;
   }
 }
 </style>

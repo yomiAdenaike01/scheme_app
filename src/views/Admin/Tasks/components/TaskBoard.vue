@@ -224,7 +224,7 @@ export default {
   flex: 1;
   flex-direction: column;
   margin: 0 10px;
-  border-radius: 12px;
+  border-radius: 5px;
   border: 2px solid whitesmoke;
   height: 100%;
   background: white;
@@ -234,7 +234,6 @@ export default {
   flex-direction: column;
   flex: 1;
   position: relative;
-  padding: 0 20px;
   height: 90%;
   overflow-x: hidden;
 }

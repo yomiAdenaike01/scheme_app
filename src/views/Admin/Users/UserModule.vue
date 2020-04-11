@@ -37,7 +37,7 @@
                 <User
                   v-for="member in group.teamMembers"
                   :key="member._id"
-                  :user-information="{ ...member, groupID: group.value }"
+                  :user-information="{ ...member, groupID: group.groupID }"
                   @viewUser="viewUser = $event"
                 />
               </div>
@@ -108,10 +108,10 @@ export default {
 
       for (let j = 0, len = userGroups.length; j < len; j++) {
         let userGroup = { ...userGroups[j], teamMembers: [] };
-        let { value } = userGroup;
+        let { groupID } = userGroup;
 
         team.map(member => {
-          if (member.groupID == value) {
+          if (member.groupID == groupID) {
             userGroup.teamMembers.push(member);
           }
         });

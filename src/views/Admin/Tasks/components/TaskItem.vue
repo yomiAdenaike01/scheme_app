@@ -12,22 +12,25 @@
       <!-- Populated task -->
       <div class="populated_task_container">
         <div>
-          <Labels
-            v-if="labels.length > 0"
-            class="labels"
-            :mode="labelMode"
-            :labels="labels"
-            @changeMode="labelMode = $event"
-          />
           <div class="header">
             <!-- Task item labels -->
-
             <h3>{{ taskInformation.title }}</h3>
           </div>
-          <small class="grey">{{ taskInformation.description }}</small>
-          <el-tag v-if="taskInformation.dueDate">{{
-            formatDate(taskInformation.dueDate)
-          }}</el-tag>
+          <small class="grey">{{
+            truncate(taskInformation.description, 100)
+          }}</small>
+
+          <div class="info_wrapper">
+            <Comments mode="overview" :comment-count="comments.length" />
+            <AssignedUsers
+              class="user_wrapper"
+              :users="assignedUsers"
+              @assignUser="assignToTask"
+            />
+            <el-tag v-if="taskInformation.dueDate">{{
+              formatDate(taskInformation.dueDate)
+            }}</el-tag>
+          </div>
         </div>
         <div
           v-if="taskInformation.assignedTo.indexOf(userInformation._id) == -1"
@@ -66,7 +69,9 @@ export default {
   name: "TaskItem",
   components: {
     Form: () => import("@/components/Form"),
-    Labels: () => import("./Labels")
+    Labels: () => import("./Labels"),
+    AssignedUsers: () => import("./AssignedUsers"),
+    Comments: () => import("./Comments")
   },
   props: {
     taskInformation: {
@@ -88,6 +93,17 @@ export default {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    comments() {
+      return this.taskInformation?.comments ?? [];
+    },
+    assignedUsers() {
+      return (
+        this.taskInformation?.assignedTo?.map(assignee => {
+          return this.getUserInformation(assignee);
+        }) ?? []
+      );
+    },
+
     labels() {
       return this.taskInformation?.labels ?? [];
     },
@@ -158,6 +174,9 @@ export default {
       if (this.currState != "complete") {
         this.$emit("viewTask", this.taskInformation);
       }
+    },
+    assignToTask(e) {
+      console.log(e);
     }
   }
 };
@@ -165,17 +184,23 @@ export default {
 
 <style lang="scss" scoped>
 .task_container {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   text-overflow: ellipsis;
   position: relative;
   cursor: pointer;
   background: white;
-  box-shadow: 1px 2px 6px rgb(230, 230, 230);
-  margin: 30px 0;
-  border-radius: 10px;
 
+  margin: 30px 0;
+  border-top: 2px solid whitesmoke;
+  border-bottom: 2px solid whitesmoke;
+  transition: $default_transition;
   &.completed {
     border-left: 2px solid $success_colour;
+  }
+  &:hover {
+    box-shadow: $box_shadow;
   }
 }
 .labels {
@@ -226,5 +251,14 @@ export default {
 .complete_indication {
   text-transform: capitalize;
   margin: 20px 0px;
+}
+.info_wrapper {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid whitesmoke;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>

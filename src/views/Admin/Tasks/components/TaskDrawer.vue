@@ -1,44 +1,27 @@
 <template>
   <el-drawer :visible.sync="view">
     <div class="task_drawer_container">
-      <h1 class="task_drawer_title">
-        <strong>{{ taskInformation.title }}</strong>
-      </h1>
-      <span class="grey">{{ taskInformation.description }}</span>
-
-      <div
-        v-if="taskInformation.assignedTo.length > 1"
-        class="multi_user_container assign_container"
-      >
-        <Avatar
-          v-for="(user, index) in userInfo"
-          :key="index"
-          :name="user.name"
+      <div class="task_drawer_header">
+        <h1 class="task_drawer_title">
+          <strong>{{ taskInformation.title }}</strong>
+        </h1>
+        <span class="grey">{{ taskInformation.description }}</span>
+        <small>found in {{ boardName }}</small>
+      </div>
+      <div class="information_wrapper">
+        <Labels
+          mode="board"
+          :labels="taskInformation.labels"
+          @update="update"
         />
-        <p>Multiple users</p>
+        <div class=""></div>
       </div>
-      <div v-else class="single_user_container assign_container">
-        <Avatar :name="userInfo[0].name" />
-        <h1 class="task_drawer_title">{{ userInfo[0].name }}</h1>
-      </div>
-      <div class="information_container">
-        <el-tag :type="taskStateXref[taskInformation.state].type">{{
-          taskStateXref[taskInformation.state].label
-        }}</el-tag>
-        <el-tag slot="reference">{{
-          taskInformation.dueDate
-            ? formatDate(taskInformation.dueDate)
-            : "Set due date"
-        }}</el-tag>
-        <Labels :labels="taskInformation.labels" />
-      </div>
-      {{ taskInformation }}
     </div>
   </el-drawer>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 export default {
   name: "TaskDrawer",
   components: {
@@ -57,7 +40,13 @@ export default {
     }
   },
   computed: {
+    ...mapState("Admin", ["boards"]),
     ...mapGetters("Admin", ["getUserInformation", "getGroupName"]),
+    boardName() {
+      return this.boards.find(board => {
+        return board._id == this.taskInformation.boardID;
+      })?.name;
+    },
     dueDateConfig() {
       return [
         {
@@ -106,14 +95,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.task_drawer_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.task_drawer_header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: rgb(250, 250, 250);
+  padding: 20px;
+  line-height: 2em;
+}
 .task_drawer_title {
+  font-size: 1.6em;
   text-transform: capitalize;
   padding: 0;
   margin: 0;
 }
-.task_drawer_container {
-  padding: 20px;
-}
+
 .assign_container {
   display: flex;
   justify-content: center;
@@ -125,5 +127,8 @@ export default {
   border-radius: 5px;
   padding: 10px;
   border: 2px solid whitesmoke;
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 </style>

@@ -16,7 +16,7 @@
         <div v-if="currentDisplay.length > 0" class="group_mutation_container">
           <Form
             v-if="currentDisplay == 'create_group'"
-            submit-text="Create Group"
+            :submit-button="{ text: 'Create Group' }"
             :config="userGroupForm"
             @val="groupController"
           />
@@ -91,6 +91,12 @@ export default {
           clearable: true,
           placeholder: "Group name",
           model: "label"
+        },
+        {
+          "component-type": "switch",
+          placeholder: "Enable bi-directional requesting",
+          model: "bidirectionalRequest",
+          hint: "This will enable members of this user group to reject events."
         }
       ];
     }
@@ -156,18 +162,18 @@ export default {
     createUserGroup(content) {
       content.groupType = "userGroups";
       content.value = this.localUserGroupLength + 1;
+      if (content?.bidirectionalRequest == true) {
+        content.value = Object.assign(
+          { bidirectionalRequest: true },
+          content.value
+        );
+      }
       this.currentDisplay = "";
       this.request({
         method: "POST",
         url: "clients/group",
         data: content
-      })
-        .then(response => {
-          console.log(response);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      });
     }
   }
 };

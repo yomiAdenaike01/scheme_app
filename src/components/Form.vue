@@ -27,8 +27,8 @@
               ? 'el-input-number'
               : input['component-type'] == 'time-picker'
               ? 'el-time-picker'
-              : input['component-type'] == 'cascader'
-              ? 'el-cascader'
+              : input['component-type'] == 'switch'
+              ? 'el-switch'
               : null
           "
           v-model="formContent[input.model]"
@@ -56,6 +56,11 @@
           "
           v-bind="input"
           :placeholder="
+            input.optional || allOptional
+              ? `(Optional) ${input.placeholder}`
+              : input.placeholder
+          "
+          :active-text="
             input.optional || allOptional
               ? `(Optional) ${input.placeholder}`
               : input.placeholder
@@ -89,9 +94,9 @@
           >Clear Form</el-button
         >
         <el-button
-          :size="submitButton.size"
-          :plain="submitButton.plain"
-          :type="submitButton.type"
+          :size="submitButton.size ? submitButton.size : 'mini'"
+          :plain="submitButton.plain ? submitButton.plain : false"
+          :type="submitButton.type ? submitButton.type : 'primary'"
           class="button_text"
           @click="submitForm"
           >{{ submitButton.text }}</el-button
