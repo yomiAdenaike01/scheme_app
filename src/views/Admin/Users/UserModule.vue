@@ -79,16 +79,6 @@ export default {
     };
   },
 
-  activated() {
-    Promise.all([this.getEvents(), this.getTeam()])
-      .then(() => {
-        this.loading = false;
-      })
-      .catch(() => {
-        this.loading = false;
-      });
-  },
-
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState("Admin", ["teamInformation", "groupIDs"]),
@@ -120,6 +110,16 @@ export default {
 
       return userGroupArr;
     }
+  },
+
+  activated() {
+    Promise.all([this.getEvents(), this.getTeam()])
+      .then(() => {
+        this.loading = false;
+      })
+      .catch(() => {
+        this.loading = false;
+      });
   },
   methods: {
     ...mapActions("Admin", ["getTeam", "getEvents"])

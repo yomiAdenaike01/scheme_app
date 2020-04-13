@@ -6,25 +6,13 @@
     </div>
     <InformationDisplay v-else :display-text="infoDisplayText">
       <i slot="header" class="bx bxs-no-entry"></i>
-      <div slot="body" class="button_container flex_center">
-        <el-button
-          v-if="getIsAdmin"
-          @click="
-            UPDATE_DIALOG_INDEX({
-              dialog: 'eventModule',
-              view: true,
-              data: { assignedTo: [getActiveDialog().data] }
-            })
-          "
-          >Create event for this user</el-button
-        >
-      </div>
+      <div slot="body" class="button_container flex_center"></div>
     </InformationDisplay>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 import Event from "@/views/Admin/Events/components/Event";
 import InformationDisplay from "@/components/InformationDisplay";
 export default {
@@ -61,7 +49,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["UPDATE_DIALOG_INDEX"]),
     ...mapActions(["closeDialog"])
   }
 };
