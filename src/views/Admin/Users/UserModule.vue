@@ -95,8 +95,8 @@ export default {
     ...mapGetters("Admin", ["getFilteredTeam"]),
 
     filteredGroupsWithUsers() {
-      let groups = this.groupsWithUsers.filter(({ label, teamMembers }) => {
-        return label != "System Administrator" && teamMembers.length > 0;
+      let groups = this.groupsWithUsers.filter(({ teamMembers }) => {
+        return teamMembers.length > 0;
       });
 
       return [groups];
