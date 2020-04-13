@@ -33,8 +33,7 @@ export default {
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     infoDisplayText() {
       let heading = "No events to display",
-        content =
-          "Using the button below you can create an event for this user.";
+        content = "All events a user is assigned to will be displayed below.";
       if (!this.getIsAdmin) {
         (heading = "Blocked"),
           (content =
