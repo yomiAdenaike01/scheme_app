@@ -18,7 +18,9 @@ export default {
         });
     });
   },
+
   createEventTemplate({ dispatch, commit }, payload) {
+    commit("CREATE_EVENT_TEMPLATE", payload);
     return new Promise((resolve, reject) => {
       dispatch(
         "request",
@@ -31,8 +33,11 @@ export default {
       )
         .then(() => {
           dispatch("getTemplates");
+          resolve();
         })
-        .catch(() => {});
+        .catch(() => {
+          reject();
+        });
     });
   }
 };

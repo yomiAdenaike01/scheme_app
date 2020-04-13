@@ -1,7 +1,7 @@
 <template>
   <div
     v-loading="loading"
-    class="server_health_container"
+    class="instance_check_container"
     :class="[
       { healthy: instanceInformation.healthy },
       { unhealthy: !instanceInformation.healthy }
@@ -11,9 +11,9 @@
       v-if="!loading"
       circle
       class="disabled button_display"
-      :icon="instanceInformation.healthy ? 'el-icon-check' : 'el-icon-cross'"
+      :icon="instanceInformation.healthy ? 'el-icon-check' : 'el-icon-close'"
     ></el-button>
-    <h4>{{ displayText }}</h4>
+    <p>{{ displayText }}</p>
   </div>
 </template>
 
@@ -37,7 +37,7 @@ export default {
       }
     }
   },
-  activated() {
+  created() {
     this.checkInstance();
   },
   methods: {
@@ -60,12 +60,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.server_health_container {
+.instance_check_container {
   display: flex;
   justify-content: center;
   align-items: center;
   background: whitesmoke;
-  padding: 5px;
   color: white;
   width: 100%;
 

@@ -12,7 +12,8 @@ Vue.prototype.hasEntries = function(elem) {
   if (typeof elem != undefined) {
     if (typeof elem == "object") {
       return Object.keys(elem).length > 0;
-    } else if (Array.isArray(elem) || typeof elem == "string") {
+    }
+    if (Array.isArray(elem) || typeof elem == "string") {
       return elem.length > 0;
     }
   } else {
@@ -50,7 +51,7 @@ Vue.prototype.initMoment = function(date = new Date()) {
 Vue.prototype.formatDate = function(date, formatString = "DD/MM/YYYY HH:mm") {
   return moment(date).format(formatString);
 };
-Vue.prototype.ArrIncludes = function(arr, item, displayIndex = true, key = "") {
+Vue.prototype.arrIncludes = function(arr, item, displayIndex = true, key = "") {
   let res;
   if (!displayIndex) {
     res = arr.some(arrItem => arrItem == item);

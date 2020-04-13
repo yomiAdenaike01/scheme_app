@@ -1,6 +1,7 @@
 const EventsModule = () => import("@/views/Admin/Events/EventsModule");
 const UserModule = () => import("@/views/Admin/Users/UserModule");
-const Comms = () => import("@/views/Comms/CommsModule");
+const CommsModule = () => import("@/views/Comms/CommsModule");
+const TasksModule = () => import("@/views/Admin/Tasks/TasksModule");
 
 export default [
   {
@@ -23,7 +24,15 @@ export default [
   {
     path: "messenger",
     name: "comms",
-    component: Comms,
+    component: CommsModule,
+    meta: {
+      authRequired: true
+    }
+  },
+  {
+    path: "tasks",
+    name: "tasks",
+    component: TasksModule,
     meta: {
       authRequired: true
     }

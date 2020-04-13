@@ -1,27 +1,35 @@
 import Vue from "vue";
+function setActiveChat(state, chat) {
+  if (typeof chat == "object") {
+    Vue.set(state, "activeChat", chat);
+  }
+  if (Array.isArray(chat)) {
+    Vue.set(state, "activeChat", chat[0]);
+  }
+}
 export default {
-  UPDATE_TRANSCRIPT_LOADING(state, payload = false) {
-    state.transcriptLoading = payload;
-  },
-  UPDATE_START_NEW_CHAT(state, payload) {
-    state.startNewChat = payload;
-  },
-  UPDATE_MESSAGES(state, payload) {
-    state.messages = payload;
+  UPDATE_MESSAGES(state, messages) {
+    if (typeof messages == "object") {
+      state.messages.push(messages);
+    }
+    if (Array.isArray(messages)) {
+      state.messages = messages;
+    }
   },
 
-  UPDATE_TRANSCRIPTS(state, { type, data }) {
-    if (type == "all") {
-      state.transcripts = data;
+  UPDATE_CHATS(state, payload) {
+    if (Array.isArray(payload)) {
+      state.chats = payload;
     } else {
-      state.transcripts = [...state.transcripts, ...{ type, data }];
+      state.chats.push(payload);
     }
+    setActiveChat(state, payload);
   },
-  UPDATE_ACTIVE_TRANSCRIPT(state, payload) {
-    if (!payload) {
-      Vue.set(state, "activeTranscript", state.transcripts[0]);
-    } else {
-      Vue.set(state, "activeTranscript", payload);
-    }
+  UPDATE_SCROLL_POSITION(state, elem) {
+    // get the scoll position and set it
+    Vue.set(state, "activeChatScrollPosition", elem);
+  },
+  UPDATE_ACTIVE_CHAT(state, payload) {
+    setActiveChat(state, !payload ? state.chats : payload);
   }
 };

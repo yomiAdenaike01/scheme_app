@@ -14,7 +14,6 @@
         <component
           :is="returnComponents.component"
           :data="returnComponents.props"
-          @toggle="closeDialog('profile')"
         />
       </ProfileContainer>
     </div>

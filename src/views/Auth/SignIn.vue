@@ -25,7 +25,7 @@ import Logo from "@/components/Logo";
 
 import validateInput from "@/mixins/validateInput";
 export default {
-  name: "UserAuth",
+  name: "SignIn",
   components: {
     Form,
     Logo
@@ -173,12 +173,12 @@ export default {
         .then(response => {
           this.UPDATE_USER(response);
 
-          if (response.user.admin_gen == true) {
+          if (response.user.adminGen == true) {
             this.UPDATE_NOTIFICATIONS({
               type: "warning",
               title: "Insecure Password Detected",
               message:
-                "Your password is insecure, please consider changing it in the user settings."
+                "Use the forgot password functionality to reset you password."
             });
 
             this.$router.push({ name: "events" });

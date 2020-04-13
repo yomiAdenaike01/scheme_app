@@ -5,64 +5,40 @@
       class="collapse_container"
     >
       <el-collapse-item title="Quick Actions" name="1">
-        <div class="quick_actions_container flex  align-center">
-          <el-button
-            type="primary"
-            plain
-            round
-            size="mini"
-            @click="requestgenEmail"
-            >Contact</el-button
-          >
-          <Popover trigger="click">
-            <el-button
-              v-if="getIsAdmin"
-              slot="trigger"
-              type="primary"
-              plain
-              round
-              size="mini"
-              >{{
+        <div class="quick_actions_container">
+          <el-button-group>
+            <el-popover trigger="click">
+              <el-button v-if="getIsAdmin" slot="reference">{{
                 localUserInformation.groupID == 0
                   ? "Assign to group"
                   : "Reassign to group"
-              }}</el-button
-            >
-            <el-select
-              slot="content"
-              v-model="selectedGroup"
-              @change="assignUserToGroup"
-            >
-              <el-option
-                v-for="{ label, value } in getUserGroups"
-                :key="value"
-                :label="label"
-                :value="value"
-              >
-              </el-option>
-            </el-select>
-          </Popover>
+              }}</el-button>
+              <el-select v-model="selectedGroup" @change="assignUserToGroup">
+                <el-option
+                  v-for="{ label, value } in getUserGroups"
+                  :key="value"
+                  :label="label"
+                  :value="value"
+                >
+                </el-option>
+              </el-select>
+            </el-popover>
 
-          <Popover trigger="click">
-            <el-button slot="trigger" type="primary" plain round size="mini"
-              >Update Personal Information</el-button
+            <el-popover trigger="click">
+              <el-button slot="reference"
+                >Update Personal Information</el-button
+              >
+              <Form
+                class="full_width"
+                submit-text="Update user"
+                :config="updateUserForm"
+                @val="updateUser"
+              />
+            </el-popover>
+            <el-button v-if="getIsAdmin" plain type="danger" @click="removeUser"
+              >Delete Account</el-button
             >
-            <Form
-              slot="content"
-              submit-text="Update user"
-              :config="updateUserForm"
-              @val="updateUser"
-            />
-          </Popover>
-          <el-button
-            v-if="getIsAdmin"
-            type="danger"
-            plain
-            round
-            size="mini"
-            @click="removeUser"
-            >Delete Account</el-button
-          >
+          </el-button-group>
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -70,6 +46,7 @@
       <p>{{ date }}</p>
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
+
       <p class="member_name">{{ group }}</p>
     </div>
   </div>
@@ -77,11 +54,11 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-import Popover from "@/components/Popover";
-import Form from "@/components/Form";
 export default {
   name: "ProfileInformation",
-
+  components: {
+    Form: () => import("@/components/Form")
+  },
   data() {
     return {
       selectedGroup: "",
@@ -233,10 +210,6 @@ export default {
           console.warn(err);
         });
     }
-  },
-  components: {
-    Popover,
-    Form
   }
 };
 </script>
@@ -252,11 +225,7 @@ export default {
   margin-top: 20px;
   padding: 20px;
 }
-.quick_actions_container {
-  & /deep/ > * {
-    margin-right: 10px;
-  }
-}
+
 .collapse_container {
   border: none;
   border-bottom: none;

@@ -9,7 +9,11 @@ import "./plugins/mobile";
 import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
+import "./plugins/shortKeys";
+import "./plugins/intro";
+
 import "boxicons";
+
 // Prototypes
 import "./plugins/prototypes";
 
@@ -23,7 +27,7 @@ Vue.use(NProgress, {
 
 let { hostname } = window.location;
 hostname = hostname.split(".")[0];
-document.title = `${hostname} - Powered By Schemeapp.cloud`;
+document.title = `${hostname} - Powered by schemeapp.cloud`;
 
 new Vue({
   router,

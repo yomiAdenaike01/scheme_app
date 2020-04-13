@@ -1,9 +1,8 @@
 <template>
-  <div @keyup.enter="submitForm">
+  <div class="form_wrapper" @keyup.enter="submitForm">
     <slot name="header"></slot>
     <el-form
       ref="form"
-      class="p-1"
       :inline="inline"
       :disabled="disableForm"
       :rules="form.validate"
@@ -28,8 +27,8 @@
               ? 'el-input-number'
               : input['component-type'] == 'time-picker'
               ? 'el-time-picker'
-              : input['component-type'] == 'cascader'
-              ? 'el-cascader'
+              : input['component-type'] == 'switch'
+              ? 'el-switch'
               : null
           "
           v-model="formContent[input.model]"
@@ -57,7 +56,12 @@
           "
           v-bind="input"
           :placeholder="
-            input.optional
+            input.optional || allOptional
+              ? `(Optional) ${input.placeholder}`
+              : input.placeholder
+          "
+          :active-text="
+            input.optional || allOptional
               ? `(Optional) ${input.placeholder}`
               : input.placeholder
           "
@@ -86,16 +90,16 @@
 
       <!-- Submit button -->
       <div v-if="!disable" class="button_container">
-        <el-button v-if="displayReset" round :size="size" @click="resetForm"
+        <el-button v-if="displayReset" :size="size" @click="resetForm"
           >Clear Form</el-button
         >
         <el-button
-          :size="size"
-          type="primary"
+          :size="submitButton.size ? submitButton.size : 'mini'"
+          :plain="submitButton.plain ? submitButton.plain : false"
+          :type="submitButton.type ? submitButton.type : 'primary'"
           class="button_text"
-          round
           @click="submitForm"
-          >{{ submitText }}</el-button
+          >{{ submitButton.text }}</el-button
         >
       </div>
     </el-form>
@@ -105,6 +109,7 @@
 <script>
 export default {
   name: "Form",
+
   props: {
     displayReset: {
       type: Boolean,
@@ -122,13 +127,25 @@ export default {
       type: Boolean,
       default: false
     },
-    submitText: {
-      type: String,
-      default: "Submit"
+    submitButton: {
+      type: Object,
+      default: () => {
+        return {
+          text: "Submit",
+          plain: false,
+          type: "primary",
+          size: "mini"
+        };
+      }
     },
     config: {
       type: Array,
+      default: () => [],
       required: false
+    },
+    allOptional: {
+      type: Boolean,
+      default: false
     },
     customMethod: {
       type: Function,
@@ -142,6 +159,10 @@ export default {
     size: {
       type: String,
       default: "mini"
+    },
+    predefinedData: {
+      type: Object,
+      required: false
     }
   },
   data() {
@@ -155,11 +176,9 @@ export default {
       let form = [...this.config];
       for (let i = 0, len = form.length; i < len; i++) {
         let formItem = form[i];
-        let formItemName = formItem.hasOwnProperty("name")
-          ? formItem.name
-          : formItem.model;
+        let formItemName = formItem?.name ?? formItem.model;
 
-        if (!formItem?.optional && !formItem?.disabled) {
+        if (!formItem?.optional && !this.allOptional && !formItem?.disabled) {
           let validArr = [];
           let compType = formItem["component-type"];
           let inputType = formItem["input-type"];
@@ -212,11 +231,12 @@ export default {
       deep: true,
       handler(val) {
         if (this.emitOnChange) {
-          this.$emit("formValChange", val);
+          this.$emit("change", val);
         }
       }
     }
   },
+
   methods: {
     resetForm() {
       this.$refs.form.resetFields();
@@ -258,6 +278,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.form_wrapper {
+  &.full_width {
+    width: 100%;
+    .dialog_item {
+      max-width: 100%;
+    }
+    .el-button {
+      width: 100%;
+    }
+  }
+  .dialog_item {
+    min-width: 70%;
+    max-width: 70%;
+  }
+}
 .button_container {
   display: flex;
   justify-content: space-between;
@@ -266,10 +301,7 @@ export default {
 .button_text {
   text-transform: capitalize;
 }
-.dialog_item {
-  min-width: 70%;
-  max-width: 70%;
-}
+
 .description {
   color: #999;
   display: block;

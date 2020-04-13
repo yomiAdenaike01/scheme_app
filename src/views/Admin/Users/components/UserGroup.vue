@@ -53,8 +53,9 @@ export default {
 .group_container {
   display: flex;
   flex: 1;
-  box-shadow: $box_shadow;
   margin: 10px;
+  border: 2px solid whitesmoke;
+  background: white;
   max-height: 100%;
   &/deep/ {
     .el-card__body {
@@ -62,7 +63,7 @@ export default {
     }
   }
   &.new_group {
-    flex: 1;
+    flex: 0.4;
   }
 }
 .user_group_inner_container {

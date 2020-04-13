@@ -2,18 +2,22 @@
   <div
     v-loading="loading"
     element-loading-text="Loading events and team members...."
-    class="main_container"
+    class="common_container"
   >
     <NprogressContainer />
-    <AppBar />
+
+    <AppBar @runSearch="displaySearch = $event" />
     <InstanceCheck />
+    <GlobalSearch
+      v-hotkey="keymap"
+      :display="displaySearch"
+      @closeSearch="displaySearch = false"
+    />
     <div class="inner_app_container">
       <Navigation v-if="$mq == 'lg' || viewMobileMenu" />
-      <RouterAnimation>
-        <keep-alive>
-          <router-view />
-        </keep-alive>
-      </RouterAnimation>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -23,34 +27,30 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
-import AppBar from "@/components/AppBar";
-import Navigation from "@/components/Navigation";
-import InstanceCheck from "@/components/InstanceCheck";
-import RouterAnimation from "@/components/RouterAnimation";
-
 export default {
-  name: "Main",
+  name: "Common",
   components: {
-    Navigation,
-    AppBar,
-    NprogressContainer,
-    InstanceCheck,
-    RouterAnimation
+    Navigation: () => import("@/components/Navigation"),
+    AppBar: () => import("@/components/AppBar"),
+    InstanceCheck: () => import("@/components/InstanceCheck"),
+    GlobalSearch: () => import("@/components/GlobalSearch"),
+    NprogressContainer
   },
   data() {
     return {
-      loading: true
+      loading: true,
+      displaySearch: false
     };
   },
   activated() {
     this.checkDevice();
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
-      duration: 3000,
-      id: "eventsAndTeam",
+      duration: this.requestIntervals.admin,
+      id: "team",
       method: () => {
         return new Promise((resolve, reject) => {
-          Promise.all([this.getEvents(), this.getTeam()])
+          this.getTeam()
             .then(() => {
               this.loading = false;
               resolve();
@@ -73,7 +73,7 @@ export default {
     }
 
     if (Notification.permission != "granted") {
-      this.requestNotificationPermission();
+      this.notificationPermission();
     }
 
     this.displayWeeklyNotification();
@@ -83,11 +83,16 @@ export default {
       "userInformation",
       "userNotifications",
       "viewMobileMenu",
-      "weeklyTimesheetUploaded"
+      "weeklyTimesheetUploaded",
+      "requestIntervals"
     ]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
-
+    keymap() {
+      return {
+        "ctrl+shift+space": this.toggleDisplaySearch
+      };
+    },
     returnIsStartOfWeek() {
       return this.initMoment().get("day") <= 1;
     },
@@ -114,7 +119,9 @@ export default {
     ...mapActions(["updateDevices"]),
     ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
-
+    toggleDisplaySearch() {
+      this.displaySearch = !this.displaySearch;
+    },
     triggerDeviceNotification() {
       this.UPDATE_NOTIFICATIONS({
         title: "Register new device detected",
@@ -135,7 +142,7 @@ export default {
         console.log("Find device in array or add a new one");
       }
     },
-    requestNotificationPermission() {
+    notificationPermission() {
       if (!window.Notification) {
         let {
           browser: { name, version }
@@ -223,7 +230,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.main_container {
+.common_container {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -233,5 +240,6 @@ export default {
   display: flex;
   flex: 1;
   height: 100%;
+  background: rgb(251, 251, 251);
 }
 </style>

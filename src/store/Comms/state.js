@@ -1,8 +1,6 @@
 export default {
   messages: [],
-  transcripts: [],
-  activeTranscript: {},
-  startNewChat: false,
-  selectedChat: "",
-  transcriptLoading: false
+  chats: [],
+  activeChat: {},
+  activeChatScrollPosition: 0
 };

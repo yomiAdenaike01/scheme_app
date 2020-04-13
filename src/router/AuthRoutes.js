@@ -1,9 +1,9 @@
-const UserAuth = () => import("@/views/Auth/UserAuth");
+const SignIn = () => import("@/views/Auth/SignIn");
 
 export default [
   {
-    path: "/auth",
-    name: "login",
-    component: UserAuth
+    path: "/signin",
+    name: "signIn",
+    component: SignIn
   }
 ];

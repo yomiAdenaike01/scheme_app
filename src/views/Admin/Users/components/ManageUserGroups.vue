@@ -5,10 +5,10 @@
       <div class="button_container">
         <div v-for="(management, index) in managementConfig" :key="index">
           <el-button
-            plain
+            :type="currentDisplay == makeUgly(management) ? 'primary' : 'plain'"
             class="user_group_btn grey"
-            @click="currentDisplay = makeUgly(management.name)"
-            >{{ management.name }}</el-button
+            @click="currentDisplay = makeUgly(management)"
+            >{{ management }}</el-button
           >
         </div>
       </div>
@@ -16,7 +16,7 @@
         <div v-if="currentDisplay.length > 0" class="group_mutation_container">
           <Form
             v-if="currentDisplay == 'create_group'"
-            submit-text="Create Group"
+            :submit-button="{ text: 'Create Group' }"
             :config="userGroupForm"
             @val="groupController"
           />
@@ -46,7 +46,6 @@
             <el-button
               v-if="toDelete.length > 0"
               plain
-              round
               type="danger"
               @click="deleteGroup"
               >Confirm</el-button
@@ -63,27 +62,26 @@ import Form from "@/components/Form";
 import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "ManageUserGroups",
+  components: {
+    Form
+  },
   data() {
     return {
       currentDisplay: "",
       toDelete: [],
-      runningDelete: []
+      runningDelete: [],
+      localUserGroupLength: 0
     };
+  },
+  activated() {
+    this.localUserGroupLength = this.clientInformation.userGroups.length;
   },
   computed: {
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters("Admin", ["getUserGroups"]),
     managementConfig() {
-      return [
-        {
-          name: "Create Group"
-        },
-
-        {
-          name: "Delete Group"
-        }
-      ];
+      return ["Create Group", "Delete Group"];
     },
 
     userGroupForm() {
@@ -93,6 +91,12 @@ export default {
           clearable: true,
           placeholder: "Group name",
           model: "label"
+        },
+        {
+          "component-type": "switch",
+          placeholder: "Enable bi-directional requesting",
+          model: "bidirectionalRequest",
+          hint: "This will enable members of this user group to reject events."
         }
       ];
     }
@@ -157,37 +161,25 @@ export default {
 
     createUserGroup(content) {
       content.groupType = "userGroups";
-      content.value = this.clientInformation.userGroups.length + 1;
+      content.value = this.localUserGroupLength + 1;
+      if (content?.bidirectionalRequest == true) {
+        content.value = Object.assign(
+          { bidirectionalRequest: true },
+          content.value
+        );
+      }
       this.currentDisplay = "";
       this.request({
         method: "POST",
         url: "clients/group",
         data: content
-      })
-        .then(response => {
-          console.log(response);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      });
     }
-  },
-  components: {
-    Form
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.user_group_btn {
-  font-size: 1.3em;
-  &/deep/ {
-    .el-button {
-      width: 100px;
-    }
-  }
-}
-
 .button_container {
   display: flex;
   justify-content: center;
@@ -199,12 +191,16 @@ export default {
   padding: 20px;
 }
 .delete_group_container {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  flex: 1;
   .group {
     display: flex;
     justify-content: center;
     align-items: center;
     flex: 1;
+    padding: 10px;
     margin: 10px;
     border: 1.3px solid #ebeef5;
     border-radius: 5px;
@@ -213,6 +209,8 @@ export default {
     max-height: 200px;
     min-height: 150px;
     transition: 0.56s ease all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     &.active {
       border-color: $error_colour;
       color: $error_colour;
@@ -228,6 +226,6 @@ export default {
 .delete_groups {
   display: flex;
   flex: 1;
-  justify-content: space-between;
+  flex-wrap: wrap;
 }
 </style>

@@ -1,9 +1,5 @@
 <template>
-  <div class="avatar_container">
-    <el-avatar :style="{ background: randColour() }">{{
-      !isNameTheSame ? initials : "ME"
-    }}</el-avatar>
-  </div>
+  <el-avatar :style="{ background: randColour() }">{{ initials }}</el-avatar>
 </template>
 
 <script>
@@ -11,7 +7,8 @@ import { mapState } from "vuex";
 export default {
   name: "Avatar",
   props: {
-    name: String
+    name: String,
+    default: null
   },
   computed: {
     ...mapState(["defaultCustomColours", "userInformation"]),
@@ -25,20 +22,17 @@ export default {
     },
 
     initials() {
-      let initials, username;
-      username = "John Doe";
-      if (this.name) {
-        username = this.name;
-        let parts = username.split(/[ -]/);
-        initials = "";
-        for (var i = 0; i < parts.length; i++) {
-          initials += parts[i].charAt(0);
-        }
-        if (initials.length > 3 && initials.search(/[A-Z]/) !== -1) {
-          initials = initials.replace(/[a-z]+/g, "");
-        }
-        initials = initials.substr(0, 3).toUpperCase();
+      let initials,
+        username = this.name ? this.name : "User";
+      let parts = username.split(/[ -]/);
+      initials = "";
+      for (var i = 0; i < parts.length; i++) {
+        initials += parts[i].charAt(0);
       }
+      if (initials.length > 3 && initials.search(/[A-Z]/) !== -1) {
+        initials = initials.replace(/[a-z]+/g, "");
+      }
+      initials = initials.substr(0, 3).toUpperCase();
       return initials;
     }
   },
@@ -51,17 +45,10 @@ export default {
   }
 };
 </script>
-
 <style lang="scss" scoped>
-.avatar_container {
-  max-height: 40px;
-  max-width: 40px;
-  padding: 5px;
-  box-shadow: $box_shadow;
-  border-radius: 50%;
-  &.full {
-    max-height: initial;
-    max-width: initial;
-  }
+.el-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

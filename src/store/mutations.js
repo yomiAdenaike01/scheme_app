@@ -1,4 +1,4 @@
-// import sounds from "@/mixins/playSound";
+import sounds from "@/mixins/playSound";
 import Vue from "vue";
 import VueRouter from "../router";
 
@@ -26,17 +26,19 @@ export default {
       method();
     }
     let timeout;
-    const runInterval = () => {
-      timeout = setTimeout(() => {
-        method()
-          .finally(() => {
-            runInterval();
-          })
-          .catch(() => {
-            clearStateInterval(state, id);
-          });
-      }, duration);
-    };
+    if (!state.runningIntervals?.id) {
+      var runInterval = () => {
+        timeout = setTimeout(() => {
+          method()
+            .finally(() => {
+              runInterval();
+            })
+            .catch(() => {
+              clearStateInterval(state, id);
+            });
+        }, duration);
+      };
+    }
 
     if (!state.runningIntervals[id]) {
       runInterval();
@@ -44,13 +46,22 @@ export default {
     }
   },
 
-  CLEAR_GLOBAL_INTERVAL(state, intervalID) {
+  CLEAR_GLOBAL_INTERVAL(state, intervalID = null) {
     clearStateInterval(state, intervalID);
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    Vue.set(state, "clientInformation", payload);
-    localStorage.setItem("clientInformation", JSON.stringify(payload));
+    let action = payload.action ? payload.action : (payload.action = "assign");
+    if (action == "assign") {
+      state.clientInformation = payload;
+      localStorage.setItem("clientInformation", JSON.stringify(payload));
+    } else {
+      state.clientInformation[payload.key] = payload.value;
+      localStorage.setItem(
+        "clientInformation",
+        JSON.stringify(state.clientInformation)
+      );
+    }
   },
 
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
@@ -66,12 +77,15 @@ export default {
   REMOVE_USER(state) {
     state.userNotifications = [];
     state.localNotifications = [];
-    VueRouter.push({ name: "login" });
+    if (VueRouter.currentRoute.name != "signIn") {
+      VueRouter.push({ name: "signIn" });
+    }
     localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {
     Vue.set(state, "token", token);
     Vue.set(state, "userInformation", user);
+    console.log(state.userInformation);
 
     localStorage.setItem("token", token);
     localStorage.setItem("userInformation", JSON.stringify(user));
@@ -96,6 +110,9 @@ export default {
       case "message":
         notification.icon = "message-rounded";
         notification.title = "New Message";
+        if (document.visibilityState == "visible") {
+          sounds.methods.playSuccessSound();
+        }
         break;
       case "announcement": {
         (notification.icon = "bx-user-voice"),
@@ -111,9 +128,9 @@ export default {
       delete notification.type;
     }
 
-    if (notification.type == "success") {
+    if (notification.type == "success" && !notification.title) {
       notification.title = "Operation Successful";
-    } else if (notification.type == "error") {
+    } else if (notification.type == "error" && !notification.title) {
       notification.title = "Operation Unsuccessful";
 
       if (typeof notification.message == "object") {

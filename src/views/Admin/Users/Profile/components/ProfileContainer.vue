@@ -41,13 +41,11 @@
 
 <script>
 import { mapGetters } from "vuex";
-import Avatar from "@/components/Avatar";
-import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "ProfileContainer",
   components: {
-    Avatar,
-    InformationDisplay
+    Avatar: () => import("@/components/Avatar"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
   props: {
     tabItems: {

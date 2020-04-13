@@ -34,15 +34,15 @@ export default {
 
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
-      duration: 4000,
+      duration: this.requestIntervals.admin,
       id: "adminIntervals",
       method: () => {
         return new Promise((resolve, reject) => {
           Promise.all([
-            this.getTeam(),
             this.getNotifications(),
             this.getEvents(),
-            this.getRequests()
+            this.getRequests(),
+            this.getBoards()
           ])
             .then(() => {
               resolve();
@@ -66,7 +66,8 @@ export default {
       "getTeam",
       "getEvents",
       "getNotifications",
-      "getRequests"
+      "getRequests",
+      "getBoards"
     ]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL", "CLEAR_GLOBAL_INTERVAL"]),
     displayNewNotification() {

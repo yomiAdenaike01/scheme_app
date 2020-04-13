@@ -37,7 +37,7 @@
                 <User
                   v-for="member in group.teamMembers"
                   :key="member._id"
-                  :user-information="{ ...member, groupID: group.value }"
+                  :user-information="{ ...member, groupID: group.groupID }"
                   @viewUser="viewUser = $event"
                 />
               </div>
@@ -60,23 +60,15 @@
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
 
-import User from "./components/User";
-import UserModuleDialog from "./components/UserModuleDialog";
-import UserGroup from "./components/UserGroup";
-import UserManagementActions from "./components/UserManagementActions";
-
-import Title from "@/components/Title";
-import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserModule",
 
   components: {
-    Title,
-    User,
-    UserGroup,
-    UserModuleDialog,
-    UserManagementActions,
-    InformationDisplay
+    User: () => import("./components/User"),
+    UserGroup: () => import("./components/UserGroup"),
+    UserModuleDialog: () => import("./components/UserModuleDialog"),
+    UserManagementActions: () => import("./components/UserManagementActions"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
 
   data() {
@@ -116,10 +108,10 @@ export default {
 
       for (let j = 0, len = userGroups.length; j < len; j++) {
         let userGroup = { ...userGroups[j], teamMembers: [] };
-        let { value } = userGroup;
+        let { groupID } = userGroup;
 
         team.map(member => {
-          if (member.groupID == value) {
+          if (member.groupID == groupID) {
             userGroup.teamMembers.push(member);
           }
         });

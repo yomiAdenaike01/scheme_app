@@ -1,16 +1,15 @@
 export default {
-  deleteChat(context, payload) {
+  deleteChat({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          {
-            method: "DELETE",
-            url: "messenger/transcripts",
-            data: payload
-          },
-          { root: true }
-        )
+      dispatch(
+        "request",
+        {
+          method: "DELETE",
+          url: "messenger/chats",
+          data: payload
+        },
+        { root: true }
+      )
         .then(response => {
           resolve(response);
         })
@@ -19,68 +18,52 @@ export default {
         });
     });
   },
-  readMessages({ dispatch, commit, state: { activeTranscript } }, payload) {
+
+  sendMessage({ state, dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
-      if (Object.keys(activeTranscript).length > 0) {
+      let activeChat = state.activeChat;
+      if (activeChat?.initChat) {
+        dispatch("startChat", payload);
+      }
+      // Add fake message
+      commit("UPDATE_MESSAGES", payload);
+      dispatch(
+        "request",
+        {
+          method: "POST",
+          url: "messenger/send",
+          data: payload
+        },
+        { root: true }
+      )
+        .then(() => {
+          dispatch("getChatMessages")
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        })
+        .catch(() => reject());
+    });
+  },
+  getChatMessages({ state: { activeChat }, dispatch, commit }) {
+    let chatID = Object.keys(activeChat).length > 0 ? activeChat._id : "";
+
+    return new Promise((resolve, reject) => {
+      if (chatID.length > 0) {
         dispatch(
           "request",
           {
             method: "POST",
-            url: "messenger/read",
-            data: { transcriptID: activeTranscript._id }
+            url: "messenger/messages",
+            data: { chatID }
           },
           { root: true }
         )
-          .then(() => {
-            resolve();
-          })
-          .catch(() => {
-            reject();
-          });
-      } else {
-        resolve();
-      }
-    });
-  },
-  sendMessage(context, payload) {
-    return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          {
-            method: "POST",
-            url: "messenger/send",
-            data: payload
-          },
-          { root: true }
-        )
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => reject(error));
-    });
-  },
-  getMessages(context, payload) {
-    let {
-      state: { activeTranscript }
-    } = context;
-    let transcriptID =
-      Object.keys(activeTranscript).length > 0 ? activeTranscript._id : "";
-
-    return new Promise((resolve, reject) => {
-      if (transcriptID.length > 0) {
-        context
-          .dispatch(
-            "request",
-            {
-              method: "POST",
-              url: "messenger/messages",
-              data: { transcriptID }
-            },
-            { root: true }
-          )
           .then(response => {
-            context.commit("UPDATE_MESSAGES", response);
+            commit("UPDATE_MESSAGES", response);
             resolve();
           })
           .catch(error => {
@@ -91,16 +74,16 @@ export default {
       }
     });
   },
-  startChat(context, payload) {
+  startChat({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
-      context
-        .dispatch(
-          "request",
-          { method: "POST", url: "messenger/start", data: payload },
-          { root: true }
-        )
+      dispatch(
+        "request",
+        { method: "POST", url: "messenger/start", data: payload },
+        { root: true }
+      )
         .then(response => {
-          context.commit("UPDATE_TRANSCRIPTS", response);
+          commit("UPDATE_CHATS", response);
+          dispatch("getChats");
           resolve();
         })
         .catch(error => {
@@ -108,25 +91,23 @@ export default {
         });
     });
   },
-  getTranscripts({ dispatch, commit, state: { transcripts } }) {
+  getChats({ dispatch, commit }) {
     return new Promise((resolve, reject) => {
-      if (transcripts.length <= 0) {
-        const payload = {
-          method: "GET",
-          url: "/messenger/transcripts"
-        };
-        dispatch("request", payload, { root: true })
-          .then(response => {
-            commit("UPDATE_TRANSCRIPTS", {
-              data: response,
-              type: "all"
-            });
+      const payload = {
+        method: "GET",
+        url: "/messenger/chats"
+      };
+      dispatch("request", payload, { root: true })
+        .then(response => {
+          if (response.length > 0) {
+            commit("UPDATE_CHATS", response);
             resolve(response);
-          })
-          .catch(error => {
-            reject(error);
-          });
-      }
+          }
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   }
 };

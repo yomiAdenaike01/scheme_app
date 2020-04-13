@@ -2,9 +2,16 @@ import Vue from "vue";
 
 export default {
   getUserGroups(state, getters, { clientInformation }) {
-    return clientInformation?.userGroups?.filter(x => {
-      return x.value != 0;
-    });
+    let arr = [];
+    for (let i = 0, len = clientInformation?.userGroups.length; i < len; i++) {
+      let group = clientInformation?.userGroups[i];
+      if (group?.groupID == 0) {
+        continue;
+      } else {
+        arr.push({ label: group.label, value: group.groupID });
+      }
+    }
+    return arr;
   },
   getClientTimings(state, getters, { clientInformation: { timings } }) {
     return timings;
@@ -81,13 +88,17 @@ export default {
       let eventGroups = [...clientInformation.eventGroups];
       let { groupID } = userInformation;
 
-      return eventGroups.filter(group => {
-        // enabled for equal to user group
-        let index = group.enabledFor.findIndex(enbled => {
-          return enbled == groupID || enbled == 0;
-        });
-        return index > -1;
-      });
+      let arr = [];
+      for (let i = 0, len = eventGroups.length; i < len; i++) {
+        let eventGroup = eventGroups[i],
+          enabledIndex = eventGroup.enabledFor.findIndex(index => {
+            return index == groupID || index == 0;
+          });
+        if (enabledIndex > -1) {
+          arr.push({ label: eventGroup.label, value: eventGroup.groupID });
+        }
+      }
+      return arr;
     }
   },
 
@@ -95,7 +106,7 @@ export default {
     let team = [...state.teamInformation];
     return team.map(({ name, _id }) => {
       return {
-        text: name,
+        label: name,
         value: _id
       };
     });
@@ -111,8 +122,8 @@ export default {
     }
 
     if (Vue.prototype.hasEntries(clientInformation)) {
-      res = clientInformation[groupType].find(({ value }) => {
-        return value == id;
+      res = clientInformation[groupType].find(({ groupID }) => {
+        return groupID == id;
       });
     }
     return res;
@@ -122,7 +133,7 @@ export default {
     params = "_id"
   ) => {
     let userInfo = null;
-    if (params == userInformation[params]) {
+    if (match == userInformation[params]) {
       userInfo = userInformation;
     } else {
       if (Vue.prototype.hasEntries(teamInformation)) {

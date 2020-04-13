@@ -14,22 +14,26 @@
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-badge
-        :value="getUserNotificationsLength"
-        class="item ml-2 mt-1 primary"
-      >
-        <Popover width="350" trigger="click">
-          <div slot="content" class="notifications_center">
+      <el-badge :value="getUserNotificationsLength" class="item primary">
+        <el-popover width="350" trigger="click">
+          <div class="notifications_center">
             <NotificationModule />
           </div>
           <el-button
-            slot="trigger"
+            slot="reference"
             size="small"
             circle
             icon="el-icon-bell trigger"
           ></el-button>
-        </Popover>
+        </el-popover>
       </el-badge>
+      <el-button
+        size="small"
+        circle
+        class="search"
+        icon="el-icon-search"
+        @click="$emit('runSearch', true)"
+      />
     </div>
   </div>
 </template>
@@ -37,58 +41,19 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
-import Avatar from "./Avatar.vue";
-
-import Dropdown from "@/components/Dropdown";
-import Logo from "@/components/Logo";
-import Popover from "@/components/Popover";
-import NotificationModule from "@/components/NotificationModule";
-
 export default {
   name: "AppBar",
   components: {
-    Dropdown,
-    Avatar,
-    Logo,
-    Popover,
-    NotificationModule
+    Avatar: () => import("@/components/Avatar"),
+    Logo: () => import("@/components/Logo"),
+    Dropdown: () => import("@/components/Dropdown"),
+    NotificationModule: () => import("@/components/NotificationModule")
   },
   computed: {
-    ...mapState([
-      "userInformation",
-      "userNotifications",
-      "viewMobileMenu",
-      "client"
-    ]),
+    ...mapState(["userInformation", "viewMobileMenu"]),
 
-    ...mapGetters([
-      "getClientColours",
-      "getClient",
-      "getSidebarColour",
-      "getUserNotificationsLength"
-    ]),
+    ...mapGetters(["getUserNotificationsLength"]),
 
-    getPrimaryColour() {
-      return this.getClientColours.find(colour => {
-        return colour.label == "Primary";
-      }).colour;
-    },
-    navWidth() {
-      let styleWidth = { width: `${150}px` };
-      const navElem = document.getElementById("main_nav");
-      if (navElem) {
-        const width = navElem.offsetWidth;
-        styleWidth.width = `${width}px`;
-      }
-      return styleWidth;
-    },
-    notifications() {
-      return [
-        {
-          name: "You have a new message"
-        }
-      ];
-    },
     items() {
       return [
         {
@@ -170,7 +135,7 @@ export default {
 }
 .popover_container {
   &/deep/ {
-    .el-popover {
+    .el-el-popover {
       padding: 0;
     }
   }
@@ -182,6 +147,9 @@ export default {
   border-radius: 50%;
   padding: 5px;
   box-shadow: $box_shadow;
+}
+.search {
+  margin-left: 10px;
 }
 /**
  _   _  _  ___ _  _    ___ 

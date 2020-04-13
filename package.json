@@ -21,6 +21,7 @@
     "tinycolor2": "^1.4.1",
     "ua-parser-js": "^0.7.21",
     "uuid-by-string": "^3.0.2",
+    "v-hotkey": "^0.8.0",
     "vue": "^2.6.10",
     "vue-cal": "^2.24.7",
     "vue-markdown": "^2.2.4",
@@ -28,6 +29,7 @@
     "vue-nprogress": "^0.1.5",
     "vue-resize-text": "^0.1.1",
     "vue-router": "^3.1.6",
+    "vue-shepherd": "^0.1.0",
     "vuex": "^3.1.2"
   },
   "devDependencies": {
@@ -40,12 +42,10 @@
     "babel-eslint": "^10.0.3",
     "eslint": "^5.16.0",
     "eslint-formatter-pretty": "^2.1.1",
-    "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-vue": "^5.2.3",
     "node-sass": "^4.12.0",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2",
-    "stylelint-order": "^4.0.0",
     "vue-cli-plugin-fontawesome": "~0.2.0",
     "vue-template-compiler": "^2.6.11"
   },

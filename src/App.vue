@@ -1,25 +1,26 @@
 <template>
   <div
     id="app"
-    v-resize-text="defaultSize"
     v-loading="loading"
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <transition name="el-fade-in" mode="out-in">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
-
+import refactorLocation from "@/mixins/refactorLocation";
 export default {
   name: "App",
+  mixins: [refactorLocation],
   data() {
     return {
-      clientInterval: null,
       loading: true
     };
   },
@@ -28,8 +29,7 @@ export default {
       "requestIntervals",
       "notifications",
       "defaultSize",
-      "clientInformation",
-      "criticalNetworkError"
+      "clientInformation"
     ]),
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters(["getIsIE"]),
@@ -47,8 +47,6 @@ export default {
   },
 
   created() {
-    window.console.warn = function() {};
-
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -57,9 +55,9 @@ export default {
 
     let currentHostname = window.location.hostname.toString().split(".");
     let subdomain = currentHostname[0];
-
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
+      id: "client",
       method: () => {
         return new Promise((resolve, reject) => {
           this.request({
@@ -74,11 +72,20 @@ export default {
             })
             .catch(() => {
               this.loading = false;
+              this.genPromptBox({
+                boxType: "prompt",
+                title: "No client found",
+                text:
+                  "Please enter your client subdomain to go to your scheme cloud instance",
+                type: "info"
+              }).then(({ value }) => {
+                this.refactorWindowLocation(value);
+              });
               reject();
             });
         });
       },
-      ...this.requestIntervals.client
+      duration: this.requestIntervals.client
     });
   },
 
@@ -88,7 +95,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "genPromptBox"]),
     ...mapMutations([
       "REMOVE_USER",
       "CREATE_GLOBAL_INTERVAL",
@@ -102,12 +109,11 @@ export default {
 <style lang="scss">
 /*
 
- Fonts
+Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Sen&display=swap");
-
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
 /*
 
  Default
@@ -115,38 +121,32 @@ export default {
 
 */
 * {
-  font-family: "Sen", sans-serif;
+  font-family: "Lato", sans-serif;
 }
 
 body,
 html,
 #app {
+  height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
-
 #app {
   display: flex;
   flex: 1;
-  overflow-x: hidden;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span {
-  font-weight: 300;
-
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .grey {
   color: #999;
+}
+.capitalise {
+  text-transform: capitalize;
 }
 
 .columns {
@@ -169,28 +169,6 @@ span {
 }
 .no_padding {
   padding: 0 !important;
-}
-
-/*
-
- Transitions
-
-
-*/
-.fade-transform-leave-active,
-.fade-transform-enter-active {
-  will-change: transform;
-  transition: transform 0.5s;
-}
-
-.fade-transform-enter {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-.fade-transform-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
 }
 
 .disabled {
@@ -236,13 +214,14 @@ span {
 
 
 */
+.long {
+  width: 100%;
+}
 .el-collapse-item__header,
 .el-collapse-item__wrap {
   border: none !important;
 }
-.popover_container {
-  padding: 0;
-}
+
 .popover_item {
   &.no_events {
     opacity: 0.4;
@@ -284,6 +263,23 @@ input,
 select,
 textarea {
   font-size: 0.9em !important;
+}
+.el-input,
+.el-textarea,
+.el-textarea__inner,
+.el-input__inner {
+  border-radius: 10px !important;
+  border-color: rgb(240, 240, 240) !important;
+}
+.el-textarea__inner {
+  padding: 10px !important;
+  min-height: 100px !important;
+}
+.el-textarea__inner:focus,
+.el-textarea__inner:hover,
+.el-input__inner:focus,
+.el-input__inner:hover {
+  border-color: rgb(200, 200, 200) !important;
 }
 
 /*

@@ -26,14 +26,6 @@
               : null
           }}</el-button
         >
-        <el-button
-          v-if="isEventMine && isEventToday"
-          round
-          plain
-          size="small"
-          @click="clockIn"
-          >Clock in</el-button
-        >
 
         <el-button
           v-if="hasPermissions"
@@ -75,21 +67,13 @@
           >
             <Avatar class="mr-3" :name="member" />
             <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
-            <el-button
-              class="remove_icon ml-4"
-              size="mini"
-              round
-              @click="dropUserFromEvent(member)"
-              >Drop user</el-button
-            >
           </div>
 
           <div v-if="canAddMoreUsers" class="add_new_user p-4 trigger">
-            <Popover>
+            <el-popover>
               <div
                 v-for="option in getFilteredTeam"
                 :key="option._id"
-                slot="content"
                 class="users_container trigger"
                 :class="{
                   disabled: event.assignedToIDs.indexOf(option._id) > -1
@@ -98,28 +82,27 @@
               >
                 <span>{{ option.name }}</span>
               </div>
-              <span slot="trigger">
+              <span slot="reference">
                 <i class="bx bx-plus"></i> Assign new user
               </span>
-            </Popover>
+            </el-popover>
           </div>
         </div>
         <div class="view_dialog_information_container">
           <h3>Event date information</h3>
-          <Popover trigger="click">
+          <el-popover trigger="click">
             <Form
-              slot="content"
               :config="configXref"
               submit-text="Update"
               @val="updateEvent"
             />
             <el-button
-              slot="trigger"
+              slot="reference"
               size="mini"
               @click="selectedConfig = 'date'"
               >Update date information</el-button
             >
-          </Popover>
+          </el-popover>
 
           <div class="info_unit">
             <span class="info_label">Event start:</span>
@@ -132,20 +115,19 @@
         </div>
         <div class="view_dialog_information_container">
           <h3>Event type & duration</h3>
-          <Popover trigger="click">
+          <el-popover trigger="click">
             <Form
-              slot="content"
               :config="configXref"
               submit-text="Update"
               @val="updateEvent"
             />
             <el-button
-              slot="trigger"
+              slot="reference"
               size="mini"
               @click="selectedConfig = 'type'"
               >Update event type information</el-button
             >
-          </Popover>
+          </el-popover>
 
           <div class="info_unit">
             <span class="info_label">Event duration:</span>
@@ -162,19 +144,12 @@
 
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
-
-import InformationDisplay from "@/components/InformationDisplay";
-import Avatar from "@/components/Avatar";
-import Popover from "@/components/Popover";
-import Form from "@/components/Form";
-
 export default {
   name: "ViewEventDialog",
   components: {
-    InformationDisplay,
-    Avatar,
-    Popover,
-    Form
+    InformationDisplay: () => import("@/components/InformationDisplay"),
+    Avatar: () => import("@/components/Avatar"),
+    Form: () => import("@/components/Form")
   },
   data() {
     return {
@@ -309,7 +284,7 @@ export default {
       "genEmail",
       "genPromptBox",
       "closeDialog",
-      "genNotification"
+      "getApiNotification"
     ]),
     ...mapActions("Admin", ["getEvents", "updateEvents"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
@@ -355,7 +330,7 @@ export default {
           .then(() => {
             this.getEvents();
             // Notify user they have been dropped
-            this.genNotification({
+            this.getApiNotification({
               type: "attention",
               title: "Event Update",
               message: "You have been removed from an event",
@@ -426,7 +401,7 @@ export default {
         index++
       ) {
         let assignee = assignedToIDs[i];
-        this.genNotification({
+        this.getApiNotification({
           type: "attention",
           title: "Event removal",
           for: assignee,
