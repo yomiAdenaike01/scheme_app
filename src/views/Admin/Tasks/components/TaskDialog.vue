@@ -5,16 +5,21 @@
         <div class="inner_wrapper">
           <!-- Task actions -->
           <div class="button_container">
-            <el-button v-if="canInteract" @click="handleUpdate({ state: 1 })"
+            <el-button
+              v-if="canInteract"
+              type="success"
+              plain
+              @click="handleUpdate({ state: 1 })"
               >Mark as complete</el-button
             >
             <el-button
-              type="text"
+              type="danger"
+              plain
               @click="
                 deleteTask(defaultPayload);
                 view = false;
               "
-              >Delete</el-button
+              >Delete Task</el-button
             >
           </div>
           <!-- Labels, duedate, and assigned users -->
@@ -98,7 +103,6 @@
             mode="full"
             :comments="comments"
             @createComment="handleComments['create'].function($event)"
-            @updateComment="handleComments['update'].function($event)"
             @deleteComment="handleComments['delete'].function($event)"
           />
         </div>
@@ -243,24 +247,7 @@ export default {
             });
           }
         },
-        update: {
-          method: "PUT",
-          url,
-          function: function({ _id, message, commentIndex }) {
-            let payload = Object.assign(
-              { commentIndex, data: message, _id },
-              defaultPayload
-            );
-            vm.UPDATE_COMMENT(payload);
-            vm.request({
-              method: this.method,
-              url: this.url,
-              data: { message, _id }
-            }).catch(() => {
-              vm.RESTORE_COMMENT();
-            });
-          }
-        },
+
         delete: {
           method: "DELETE",
           url,
@@ -314,10 +301,9 @@ export default {
 
   methods: {
     ...mapActions(["request"]),
-    ...mapActions("Admin", ["deleteTask"]),
+    ...mapActions("Admin", ["deleteTask", "updateTask"]),
     ...mapMutations("Admin", [
       "CREATE_COMMENT",
-      "UPDATE_COMMENT",
       "REMOVE_COMMENT",
       "CREATE_LABEL",
       "UPDATE_LABEL",
@@ -327,7 +313,7 @@ export default {
       this.updateTask({ dueDate: e });
     },
     handleUpdate(update) {
-      this.updateTask({ ...this.defaultPayload, ...update });
+      this.updateTask({ ...this.defaultPayload, update });
     },
     handleDescriptions() {
       // admin or assigned to
@@ -340,6 +326,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.button_container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  .el-button {
+    flex: 1;
+  }
+}
 .information_wrapper {
   display: flex;
   justify-content: space-evenly;

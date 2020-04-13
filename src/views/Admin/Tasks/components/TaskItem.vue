@@ -41,7 +41,17 @@
               icon="el-icon-check"
               type="success"
             />
-            <el-button size="mini" type="text" @click="updateTask({ state: 0 })"
+            <el-button
+              size="mini"
+              type="text"
+              @click="
+                updateTask({
+                  boardIndex,
+                  taskIndex,
+                  _id: taskInformation._id,
+                  update: { state: 0 }
+                })
+              "
               >Undo complete</el-button
             >
           </div>
@@ -158,6 +168,7 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
+    ...mapActions("Admin", ["updateTask"]),
     viewTaskController() {
       if (this.currState != "complete") {
         this.$emit("viewTask", {

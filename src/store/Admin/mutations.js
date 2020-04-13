@@ -136,8 +136,8 @@ export default {
    * @param {*} state
    * @param {Object} boardID, taskID, update, action
    */
-  UPDATE_TASKS(state, { data }) {
-    let { boardIndex, taskIndex, update } = data;
+  UPDATE_TASKS(state, payload) {
+    let { boardIndex, taskIndex, update } = payload;
 
     // Update task at index
     let task = state.boards[boardIndex].tasks[taskIndex];
@@ -147,6 +147,7 @@ export default {
       ...task,
       ...update
     };
+    console.log(task, update);
   },
   /**
    * @description remove task from board and create a reference to restore later if an error occurs
@@ -206,23 +207,6 @@ export default {
     });
     console.log(data);
     state.boards[boardIndex].tasks[taskIndex]?.comments.push(data);
-  },
-
-  /**
-   * @param {*} state
-   * @param {*} { boardIndex, taskIndex, commentIndex, data }
-   */
-  UPDATE_COMMENT(state, { boardIndex, taskIndex, commentIndex }) {
-    let commentsArr = state.boards[boardIndex].tasks[taskIndex].comments;
-    let comment =
-      state.boards[boardIndex].tasks[taskIndex].comments[commentIndex];
-    updateBreadCrumbs(state, "commentsRef", {
-      taskIndex,
-      boardIndex,
-      commentIndex,
-      comment
-    });
-    commentsArr.splice(commentIndex, 0, data);
   },
 
   /**

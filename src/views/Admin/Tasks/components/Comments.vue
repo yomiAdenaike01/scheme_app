@@ -4,8 +4,12 @@
       <i class="bx bx-message-rounded grey"></i>
       <small class="grey">{{ commentCount }}</small>
     </div>
-    <div v-if="mode != 'overview'" class="comments_container">
-      <div v-if="comments.length > 0">
+    <div v-if="mode != 'overview'">
+      <div
+        v-if="comments.length > 0"
+        ref="comments_wrapper"
+        class="comments_wrapper"
+      >
         <div
           v-for="(comment, index) in comments"
           :key="comment._id"
@@ -15,30 +19,12 @@
             <Avatar :name="comment.assignedTo.name" />
             <small class="username">{{ comment.assignedTo.name }}</small>
             <small class="timestamp">{{
-              formatDate(comment.dateCreated)
+              initMoment(comment.dateCreated).calendar()
             }}</small>
           </div>
 
           <div class="comment_message" @click="editMessage = true">
-            <p v-if="editMessage == false">{{ comment.message }}</p>
-            <div v-else class="update_comment_container">
-              <el-input
-                v-model="commentMessage"
-                :placeholder="comment.message"
-                @keyup.enter="comment.message, comment._id"
-              />
-              <el-button
-                type="text"
-                @click="
-                  $emit('updateComment', {
-                    commentIndex: index,
-                    message: commentMessage,
-                    _id: comment._id
-                  })
-                "
-                >Post</el-button
-              >
-            </div>
+            <p>{{ comment.message }}</p>
           </div>
         </div>
       </div>
@@ -47,13 +33,17 @@
         <Avatar class="comment_avatar" :name="userInformation.name" />
         <el-input
           v-model="newMessage"
+          class="input_comment"
           placeholder="Write a comment..."
           @keyup.enter="$emit('createComment', newMessage), reset()"
         ></el-input>
         <el-button
           type="text"
           :disabled="newMessage.length == 0"
-          @click="$emit('createComment', newMessage), reset()"
+          @click="
+            $emit('createComment', newMessage);
+            reset();
+          "
           >Post</el-button
         >
       </div>
@@ -99,11 +89,15 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapState(["userInformation"])
   },
+
   methods: {
     reset() {
       this.newMessage = "";
       this.commentMessage = "";
       this.editMessage = false;
+      let { comments_wrapper } = this.$refs;
+      comments_wrapper.scrollTop =
+        comments_wrapper.scrollHeight - comments_wrapper.clientHeight;
     },
     handleDisplayActions(userID) {
       if (this.getIsAdmin || userID == this.userInformation._id) {
@@ -133,6 +127,10 @@ export default {
     margin-right: 10px;
   }
 }
+.comments_wrapper {
+  max-height: 450px;
+  overflow: auto;
+}
 .comment {
   display: flex;
   flex-direction: column;
@@ -140,9 +138,9 @@ export default {
   margin-bottom: 10px;
   max-height: fit-content;
   border-radius: 10px;
-  .el-input {
-    margin-right: 10px;
-  }
+}
+.input_comment {
+  margin-right: 10px;
 }
 .update_comment_container {
   display: flex;
