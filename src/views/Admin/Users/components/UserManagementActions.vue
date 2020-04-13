@@ -87,7 +87,7 @@ export default {
             type: "attention",
             for: [this.userInformation._id]
           }
-        }).then(response => {
+        }).then(() => {
           this.isSuccess = "create_announcement";
         });
       });
