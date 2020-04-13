@@ -160,17 +160,12 @@ export default {
    */
   updateTask({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
-      commit("UPDATE_TASKS", { ...payload, action: "update" });
-      payload = { method: "PUT", url: "tasks/update", data: { ...payload } };
+      commit("UPDATE_TASKS", payload);
+      payload = { method: "PUT", url: "tasks/update", data: payload };
 
       dispatch("request", payload, { root: true })
-        .then(response => {
-          commit("UPDATE_TASKS", { data: response, action: "update" });
-          resolve();
-        })
-        .catch(() => {
-          reject();
-        });
+        .then(resolve)
+        .catch(reject);
     });
   },
 
@@ -184,9 +179,8 @@ export default {
       payload = {
         method: "DELETE",
         url: "tasks/delete",
-        data: { _id: payload.taskID }
+        data: { _id: payload._id }
       };
-
       dispatch("request", payload, { root: true })
         .then(() => {
           resolve();

@@ -44,6 +44,7 @@ export default {
 
 <style lang="scss" scoped>
 .comms_container {
+  background: white;
   display: flex;
   flex: 1;
   height: 100%;

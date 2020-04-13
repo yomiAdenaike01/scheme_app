@@ -3,6 +3,20 @@
     <div class="inner_container">
       <div class="task_info_title">
         <div class="inner_wrapper">
+          <!-- Task actions -->
+          <div class="button_container">
+            <el-button v-if="canInteract" @click="handleUpdate({ state: 1 })"
+              >Mark as complete</el-button
+            >
+            <el-button
+              type="text"
+              @click="
+                deleteTask(defaultPayload);
+                view = false;
+              "
+              >Delete</el-button
+            >
+          </div>
           <!-- Labels, duedate, and assigned users -->
           <div class="information_wrapper">
             <div class="information_unit">
@@ -300,6 +314,7 @@ export default {
 
   methods: {
     ...mapActions(["request"]),
+    ...mapActions("Admin", ["deleteTask"]),
     ...mapMutations("Admin", [
       "CREATE_COMMENT",
       "UPDATE_COMMENT",
@@ -310,6 +325,9 @@ export default {
     ]),
     setDueDate(e) {
       this.updateTask({ dueDate: e });
+    },
+    handleUpdate(update) {
+      this.updateTask({ ...this.defaultPayload, ...update });
     },
     handleDescriptions() {
       // admin or assigned to

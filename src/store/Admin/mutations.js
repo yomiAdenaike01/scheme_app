@@ -137,11 +137,9 @@ export default {
    * @param {Object} boardID, taskID, update, action
    */
   UPDATE_TASKS(state, { data }) {
-    let { boardID, taskID, update } = data;
-    let boardIndex = findItemIndex(state, null, boardID);
+    let { boardIndex, taskIndex, update } = data;
 
     // Update task at index
-    let taskIndex = findItemIndex(state, "boards"[boardIndex].tasks, taskID);
     let task = state.boards[boardIndex].tasks[taskIndex];
     updateBreadCrumbs(state, "taskRef", { boardIndex, task, taskIndex });
 
@@ -206,6 +204,7 @@ export default {
       commentIndex:
         state.boards[boardIndex].tasks[taskIndex].comments.length - 1
     });
+    console.log(data);
     state.boards[boardIndex].tasks[taskIndex]?.comments.push(data);
   },
 
