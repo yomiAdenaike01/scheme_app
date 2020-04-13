@@ -109,7 +109,8 @@ export default {
 .quick_actions_wrapper {
   display: flex;
   flex-direction: column;
-  box-shadow: $box_shadow;
+  border: 2px solid whitesmoke;
+  background: white;
   margin: 10px;
   flex: 0.5;
   /deep/ {

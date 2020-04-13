@@ -131,7 +131,6 @@ html,
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
 #app {
@@ -139,7 +138,6 @@ html,
   flex: 1;
   width: 100%;
   height: 100%;
-  overflow: hidden;
 }
 
 .grey {
@@ -190,9 +188,6 @@ html,
   color: white;
   font-weight: bold;
   padding: 5px 19px;
-}
-.overflow {
-  overflow: auto;
 }
 
 .rounded {
