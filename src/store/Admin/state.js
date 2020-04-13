@@ -4,6 +4,7 @@ export default {
   boardRef: "",
   taskRef: "",
   eventRef: "",
+  commentRef: "",
 
   teamInformation: [],
 

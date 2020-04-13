@@ -265,13 +265,21 @@ textarea {
   font-size: 0.9em !important;
 }
 .el-input,
+.el-textarea,
+.el-textarea__inner,
 .el-input__inner {
   border-radius: 10px !important;
   border-color: rgb(240, 240, 240) !important;
 }
+.el-textarea__inner {
+  padding: 10px !important;
+  min-height: 100px !important;
+}
+.el-textarea__inner:focus,
+.el-textarea__inner:hover,
 .el-input__inner:focus,
 .el-input__inner:hover {
-  border-color: rgb(220, 220, 220) !important;
+  border-color: rgb(200, 200, 200) !important;
 }
 
 /*

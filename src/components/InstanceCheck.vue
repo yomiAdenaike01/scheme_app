@@ -13,7 +13,7 @@
       class="disabled button_display"
       :icon="instanceInformation.healthy ? 'el-icon-check' : 'el-icon-close'"
     ></el-button>
-    <h4>{{ displayText }}</h4>
+    <p>{{ displayText }}</p>
   </div>
 </template>
 

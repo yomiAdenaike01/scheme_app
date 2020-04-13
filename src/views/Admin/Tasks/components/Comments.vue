@@ -6,13 +6,15 @@
     </div>
     <div v-if="mode != 'overview'" class="comments_container">
       <div v-if="comments.length > 0">
-        <div v-for="comment in commnets" :key="comment._id" class="comment">
+        <div
+          v-for="(comment, index) in comments"
+          :key="comment._id"
+          class="comment"
+        >
           <div class="comment_header">
-            <Avatar :name="comment.userName" />
-            <small>{{ comment.userName }}</small>
-            <small class="grey timestamp">{{
-              initMoment(comment.dateCreated).calendar()
-            }}</small>
+            <Avatar :name="comment.assignedTo.name" />
+            <small class="username">{{ comment.assignedTo.name }}</small>
+            <small class="timestamp">{{ new Date(comment.dateCreated) }}</small>
           </div>
 
           <div
@@ -20,27 +22,42 @@
             @mouseover="handleDisplayActions(comment.userID)"
             @click="editMessage = true"
           >
-            <p v-if="(editMessage = false)">{{ comment.message }}</p>
-            <el-input
-              v-model="commentMessage"
-              :placeholder="comment.message"
-              @keyup.enter="updateMessage(comment.message)"
-            />
+            <p v-if="editMessage == false">{{ comment.message }}</p>
+            <div v-else class="update_comment_container">
+              <el-input
+                v-model="commentMessage"
+                :placeholder="comment.message"
+                @keyup.enter="comment.message, comment._id"
+              />
+              <el-button
+                type="text"
+                @click="
+                  $emit('updateComment', {
+                    commentIndex: index,
+                    message: commentMessage,
+                    _id: comment._id
+                  })
+                "
+                >Post</el-button
+              >
+            </div>
           </div>
         </div>
       </div>
-      <!-- Comment actions -->
-      <div class="actions_wrapper" :class="{ visible: displayActions }">
-        <!-- Delete comment -->
-        <ActionIcon icon="trash" @click="$emit('deleteComment')" />
-      </div>
+
       <div v-if="canInteract" class="empty_comment_wrapper">
         <Avatar class="comment_avatar" :name="userInformation.name" />
         <el-input
-          v-model="commentMessage"
+          v-model="newMessage"
           placeholder="Write a comment..."
-          @keyup.enter="$emit('createComment', commentMessage)"
+          @keyup.enter="$emit('createComment', newMessage), reset()"
         ></el-input>
+        <el-button
+          type="text"
+          :disabled="newMessage.length == 0"
+          @click="$emit('createComment', newMessage), reset()"
+          >Post</el-button
+        >
       </div>
     </div>
   </div>
@@ -76,6 +93,7 @@ export default {
     return {
       editMessage: false,
       commentMessage: "",
+      newMessage: "",
       displayActions: false
     };
   },
@@ -84,17 +102,22 @@ export default {
     ...mapState(["userInformation"])
   },
   methods: {
+    reset() {
+      this.newMessage = "";
+      this.commentMessage = "";
+      this.editMessage = false;
+    },
     handleDisplayActions(userID) {
       if (this.getIsAdmin || userID == this.userInformation._id) {
         this.displayActions = true;
       }
     },
 
-    updateMessage(message) {
+    updateMessage(message, _id) {
       if (
         message.toLowerCase().trim() != this.commentMessage.toLowerCase().trim()
       ) {
-        this.$emit("updateComment", this.commentMessage);
+        this.$emit("updateComment", { comment: this.commentMessage, _id });
         this.editMessage = false;
       } else {
         this.editMessage = false;
@@ -114,8 +137,19 @@ export default {
 }
 .comment {
   display: flex;
-  flex: 1;
+  flex-direction: column;
+  background: rgb(250, 250, 250);
+  margin-bottom: 10px;
+  max-height: fit-content;
+  border-radius: 10px;
+  .el-input {
+    margin-right: 10px;
+  }
+}
+.update_comment_container {
+  display: flex;
   align-items: center;
+  flex: 1;
 }
 .comment_header {
   display: flex;
@@ -124,23 +158,22 @@ export default {
     margin-right: 10px;
   }
   .timestamp {
-    color: rgb(230, 230, 230);
+    color: rgb(200, 200, 200);
+    margin-left: 10px;
+  }
+  .username {
+    margin-left: 5px;
+    text-transform: capitalize;
   }
 }
 .comment_message {
   padding: 10px;
 }
-.actions_wrapper {
-  opacity: 0;
-  will-change: opacity;
-  transition: $default_transition opacity;
-  &.visible {
-    opacity: 1;
-  }
-}
+
 .empty_comment_wrapper {
   display: flex;
   align-items: center;
+  padding: 20px;
 }
 .comment_avatar {
   margin-right: 10px;

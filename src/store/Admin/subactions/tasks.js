@@ -54,7 +54,7 @@ export default {
         },
         { root: true }
       ).then(() => {
-        commit("DELETE_BOARD", payload.boardID);
+        commit("DELETE_BOARD", payload.boardIndex);
         updateBoardQuota(commit, rootState, "plus");
         dispatch(
           "request",
@@ -131,19 +131,24 @@ export default {
 
   /**
    * @param {object} { dispatch, commit }
-   * @param {object} payload
+   * @param {object} payload {boardIndex, name, description, date_time, labels, comments, completedDate (optional), assignedTo (optional)}
    */
-  createTask({ dispatch, commit }, payload) {
+  createTask({ state, dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
-      commit("UPDATE_TASKS", payload);
-      payload = { method: "POST", url: "tasks/create", data: { ...payload } };
-
+      commit("CREATE_TASK", payload.mutationData);
+      payload = {
+        method: "POST",
+        url: "tasks/create",
+        data: { ...payload.requestBody }
+      };
       dispatch("request", payload, { root: true })
-        .then(response => {
-          commit("UPDATE_TASKS", { data: response, action: "create" });
+        .then(() => {
           resolve();
         })
         .catch(() => {
+          commit("REMOVE_TASK", {
+            ...state.commentRef
+          });
           reject();
         });
     });

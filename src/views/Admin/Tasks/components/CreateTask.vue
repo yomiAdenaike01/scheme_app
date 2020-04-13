@@ -3,7 +3,7 @@
     <div v-loading="loading" class="create_task_container">
       <InformationDisplay
         :display-text="{
-          heading: `Create task for <strong>${createTaskInformation.name}</strong>`,
+          heading: `Create task for <strong>${boardData.name}</strong>`,
           content: 'Fill in the form below to create a new task'
         }"
       />
@@ -11,7 +11,7 @@
         <Form
           :config="createTaskForm"
           submit-text="Create task"
-          @val="create"
+          @val="createAction"
         />
       </div>
     </div>
@@ -54,12 +54,19 @@ export default {
         this.$emit("toggleDisplay", false);
       }
     },
+    boardData() {
+      let task = this.createTaskInformation;
+      return {
+        index: task.boardIndex,
+        ...task.boardData
+      };
+    },
     createTaskForm() {
       let createTaskForm = [
         {
           "component-type": "text",
           placeholder: "Task name",
-          model: "title"
+          model: "name"
         },
         {
           "component-type": "text",
@@ -93,19 +100,32 @@ export default {
   },
   methods: {
     ...mapActions("Admin", ["createTask"]),
-    create(taskInformation) {
-      this.loading = true;
+    createAction(taskInformation) {
+      taskInformation = Object.assign(
+        { assignedTo: [this.userInformation._id] },
+        taskInformation
+      );
       this.createTask({
-        ...taskInformation,
-        boardID: this.createTaskInformation._id
+        requestBody: {
+          ...taskInformation,
+          boardID: this.boardData._id
+        },
+        mutationData: {
+          ...taskInformation,
+          state: 0,
+          completeDate: null,
+          labels: [],
+          comments: [],
+          dateCreated: new Date().toISOString(),
+          boardIndex: this.boardData.index
+        }
       })
 
         .then(() => {
-          this.loading = false;
           this.view = false;
         })
         .catch(() => {
-          this.loading = false;
+          this.view = false;
         });
     }
   }

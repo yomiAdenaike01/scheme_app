@@ -5,7 +5,7 @@
         <div class="update_board_container">
           <div class="text_container">
             <h2>{{ boardData.name }}</h2>
-            <span>{{ truncate(boardData.description) }}</span>
+            <span>{{ truncate(description) }}</span>
           </div>
 
           <el-popover trigger="click" position="right">
@@ -54,14 +54,15 @@
       </div>
       <TaskItem
         v-for="(task, index) in boardData.tasks"
-        :key="task._id"
+        :key="`${task._id}${index}`"
         :task-information="task"
         :task-index="index"
+        :board-index="boardIndex"
         @viewTask="$emit('viewTask', $event)"
       />
       <div
         class="create_new_task_wrapper grey"
-        @click="$emit('createTask', { boardData, display: true })"
+        @click="$emit('createTask', { boardData, boardIndex, display: true })"
       >
         <span> <i class="bx bx-plus"></i> Create new task</span>
       </div>
@@ -126,6 +127,9 @@ export default {
   },
   computed: {
     ...mapGetters(["getIsAdmin"]),
+    description() {
+      return this.boardData?.description ?? "";
+    },
     tasks() {
       return this.boardData?.tasks ?? [];
     },
@@ -193,7 +197,10 @@ export default {
     ]),
     ...mapActions(["request", "genPromptBox"]),
     deleteAction() {
-      this.deleteBoard({ boardID: this.boardData._id });
+      this.deleteBoard({
+        boardIndex: this.boardIndex,
+        boardID: this.boardData._id
+      });
     },
     createAction({ name, description }) {
       this.createBoard({

@@ -21,7 +21,7 @@ function findItemIndex(state, param = "boards", id) {
  * @param {string} param
  * @param {Object,string} items
  */
-function setRef(state, param, items) {
+function updateBreadCrumbs(state, param, items) {
   if (items) {
     state[param] = {
       ...items
@@ -34,7 +34,7 @@ function setRef(state, param, items) {
 export default {
   CREATE_EVENT_TEMPLATE(state, payload) {
     state.eventTemplates.push(payload);
-    setRef(state, "templateRef", {
+    updateBreadCrumbs(state, "templateRef", {
       templateIndex: state.eventTemplates.length,
       template: payload
     });
@@ -45,7 +45,7 @@ export default {
       "eventTemplates",
       payload.templateID
     );
-    setRef(state, "templateRef", {
+    updateBreadCrumbs(state, "templateRef", {
       template: state.eventTemplates[templateIndex],
       templateIndex
     });
@@ -99,11 +99,10 @@ export default {
     if (action == "update") {
       if (Array.isArray(data)) {
         state.boards = data;
-      }
-      if (typeof data == "object") {
-        let { boardID, name, description } = data;
-        let boardIndex = findItemIndex(state, null, boardID);
-        if (boardIndex == -1) {
+      } else {
+        let { name, description } = data;
+        let boardIndex = data.boardIndex;
+        if (state.boards[boardIndex]) {
           state.boards.push(data);
         } else {
           state.boardRef = state.boards[boardIndex];
@@ -117,46 +116,47 @@ export default {
       // Push a new board this is so that it can be removed if the creation goes wrong
       let boardIndex = state.boards.length - 1;
       let { name, description, _id } = data;
-      setRef(state, "boardRef", { boardIndex, ...data });
+      updateBreadCrumbs(state, "boardRef", { boardIndex, ...data });
       state.boards.push({ name, description, _id, tasks: [] });
     }
+  },
+  CREATE_TASK(state, data) {
+    let { boardIndex } = data;
+    // Create task for board at index
+
+    state.boards[boardIndex].tasks.push(data);
+    // Create ref for created task
+    updateBreadCrumbs(state, "taskRef", {
+      boardIndex,
+      taskIndex: state.boards[boardIndex].tasks.length - 1
+    });
   },
   /**
    *
    * @param {*} state
    * @param {Object} boardID, taskID, update, action
    */
-  UPDATE_TASKS(state, { data, action = "update" }) {
+  UPDATE_TASKS(state, { data }) {
     let { boardID, taskID, update } = data;
     let boardIndex = findItemIndex(state, null, boardID);
-    if (action == "update") {
-      let taskIndex = findItemIndex(state, "boards"[boardIndex].tasks, taskID);
-      let task = state.boards[boardIndex].tasks[taskIndex];
-      setRef(state, "taskRef", { boardIndex, task, taskIndex });
 
-      state.boards[boardIndex].tasks[taskIndex] = {
-        ...task,
-        ...update
-      };
-    } else {
-      // Create task for board at index
-      state.boards[boardIndex].tasks.push(data);
-      // Create ref for created task
-      setRef(state, "taskRef", {
-        boardIndex,
-        taskIndex: state.boards[boardIndex].tasks.length
-      });
-    }
+    // Update task at index
+    let taskIndex = findItemIndex(state, "boards"[boardIndex].tasks, taskID);
+    let task = state.boards[boardIndex].tasks[taskIndex];
+    updateBreadCrumbs(state, "taskRef", { boardIndex, task, taskIndex });
+
+    state.boards[boardIndex].tasks[taskIndex] = {
+      ...task,
+      ...update
+    };
   },
   /**
    * @description remove task from board and create a reference to restore later if an error occurs
    * @param {*} state
-   * @param {Object} boardID, taskID
+   * @param {Object} boardIndex, taskIndex
    */
-  REMOVE_TASK(state, { boardID, taskID }) {
-    let boardIndex = findItemIndex(state, null, boardID);
-    let taskIndex = findItemIndex(state, "boards"[boardIndex].tasks, taskID);
-    setRef(state, "taskRef", {
+  REMOVE_TASK(state, { boardIndex, taskIndex }) {
+    updateBreadCrumbs(state, "taskRef", {
       boardIndex,
       taskIndex,
       task: state.boards[boardIndex].tasks[taskIndex]
@@ -168,14 +168,12 @@ export default {
    * @param {*} state
    * @param {String} boardID
    */
-  DELETE_BOARD(state, boardID) {
-    let boardToDeleteIndex = findItemIndex(state, "boards", boardID);
-
-    setRef(state, "boardRef", {
-      boardIndex: boardToDeleteIndex,
-      board: state.boards[boardToDeleteIndex]
+  DELETE_BOARD(state, boardIndex) {
+    updateBreadCrumbs(state, "boardRef", {
+      boardIndex,
+      board: state.boards[boardIndex]
     });
-    state.boards.splice(boardToDeleteIndex, 1);
+    state.boards.splice(boardIndex, 1);
   },
 
   /**
@@ -192,6 +190,82 @@ export default {
    * @description Clear the restore referecence for the give key in state
    */
   CLEAR_REFERENCE(state, ref) {
-    setRef(state, ref, null);
+    updateBreadCrumbs(state, ref, null);
+  },
+
+  /**
+   *
+   *
+   * @param {*} state
+   * @param {*} { taskIndex, boardIndex, data }
+   */
+  CREATE_COMMENT(state, { taskIndex, boardIndex, data }) {
+    updateBreadCrumbs(state, "commentsRef", {
+      taskIndex,
+      boardIndex,
+      commentIndex:
+        state.boards[boardIndex].tasks[taskIndex].comments.length - 1
+    });
+    state.boards[boardIndex].tasks[taskIndex]?.comments.push(data);
+  },
+
+  /**
+   * @param {*} state
+   * @param {*} { boardIndex, taskIndex, commentIndex, data }
+   */
+  UPDATE_COMMENT(state, { boardIndex, taskIndex, commentIndex }) {
+    let commentsArr = state.boards[boardIndex].tasks[taskIndex].comments;
+    let comment =
+      state.boards[boardIndex].tasks[taskIndex].comments[commentIndex];
+    updateBreadCrumbs(state, "commentsRef", {
+      taskIndex,
+      boardIndex,
+      commentIndex,
+      comment
+    });
+    commentsArr.splice(commentIndex, 0, data);
+  },
+
+  /**
+   *
+   * @param {*} state
+   * @param {*} { boardIndex, taskIndex, commentIndex }
+   */
+  REMOVE_COMMENT(state, { boardIndex, taskIndex, commentIndex }) {
+    let comment =
+      state.boards[boardIndex].tasks[taskIndex]?.comments[commentIndex];
+    updateBreadCrumbs(state, "commentsRef", {
+      boardIndex,
+      taskIndex,
+      commentIndex,
+      comment
+    });
+    state.boards[boardIndex].tasks[taskIndex].comments.splice(commentIndex, 1);
+  },
+
+  //  Labels
+  CREATE_LABEL(state, { boardIndex, taskIndex, data = state.labelRef?.label }) {
+    state.boards[boardIndex].tasks[taskIndex].labels.push(data);
+    updateBreadCrumbs(state, "labelRef", {
+      boardIndex,
+      taskIndex,
+      labelIndex: state.boards[boardIndex].tasks[taskIndex].labels.length - 1
+    });
+  },
+  UPDATE_LABEL(state, { boardIndex, taskIndex, data }) {
+    let tasks = state.boards[boardIndex].tasks[taskIndex];
+    updateBreadCrumbs(state, "labelRef", { ...arguments[1] });
+    tasks.labels.splice(data.labelIndex, 0, {
+      ...data
+    });
+  },
+  REMOVE_LABEL(state, labelIndex = state.labelRef.labelIndex) {
+    let { boardIndex, taskIndex } = state.labelRef;
+    updateBreadCrumbs(state, "labelRef", {
+      boardIndex,
+      taskIndex,
+      label: state.boards[boardIndex].tasks[taskIndex].labels[labelIndex]
+    });
+    state.boards[boardIndex].tasks[taskIndex].labels.splice(labelIndex, 1);
   }
 };

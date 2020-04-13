@@ -15,7 +15,7 @@
           type: 'primary'
         }"
         :config="createLabelConfig"
-        @val="$emit('update')"
+        @val="$emit('createLabel', $event)"
       >
         <div slot="footer" class="form_footer">
           <ColourUnit v-model="colourUnitVal" />

@@ -14,7 +14,7 @@
         <div>
           <div class="header">
             <!-- Task item labels -->
-            <h3>{{ taskInformation.title }}</h3>
+            <h3>{{ taskInformation.name }}</h3>
           </div>
           <small class="grey">{{
             truncate(taskInformation.description, 100)
@@ -24,22 +24,13 @@
             <Comments mode="overview" :comment-count="comments.length" />
             <AssignedUsers
               class="user_wrapper"
-              :users="assignedUsers"
+              :users="taskInformation.assignedTo"
               @assignUser="assignToTask"
             />
             <el-tag v-if="taskInformation.dueDate">{{
               formatDate(taskInformation.dueDate)
             }}</el-tag>
           </div>
-        </div>
-        <div
-          v-if="taskInformation.assignedTo.indexOf(userInformation._id) == -1"
-        >
-          <el-tag
-            v-for="teamMember in taskInformation.assignedTo"
-            :key="teamMember"
-            >{{ getUserInformation(teamMember) }}</el-tag
-          >
         </div>
 
         <transition name="el-fade-in">
@@ -81,6 +72,10 @@ export default {
     taskIndex: {
       type: Number,
       default: 0
+    },
+    boardIndex: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -95,13 +90,6 @@ export default {
     ...mapGetters("Admin", ["getUserInformation"]),
     comments() {
       return this.taskInformation?.comments ?? [];
-    },
-    assignedUsers() {
-      return (
-        this.taskInformation?.assignedTo?.map(assignee => {
-          return this.getUserInformation(assignee);
-        }) ?? []
-      );
     },
 
     labels() {
@@ -172,7 +160,11 @@ export default {
     ...mapActions(["request"]),
     viewTaskController() {
       if (this.currState != "complete") {
-        this.$emit("viewTask", this.taskInformation);
+        this.$emit("viewTask", {
+          boardIndex: this.boardIndex,
+          taskIndex: this.taskIndex,
+          ...this.taskInformation
+        });
       }
     },
     assignToTask(e) {
@@ -191,11 +183,12 @@ export default {
   position: relative;
   cursor: pointer;
   background: white;
-
-  margin: 30px 0;
-  border-top: 2px solid whitesmoke;
   border-bottom: 2px solid whitesmoke;
   transition: $default_transition;
+  &:first-of-type {
+    border-top: 2px solid whitesmoke;
+    margin-top: 20px;
+  }
   &.completed {
     border-left: 2px solid $success_colour;
   }

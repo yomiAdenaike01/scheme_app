@@ -20,7 +20,7 @@
         new-board
       />
     </div>
-    <TaskDrawer
+    <TaskDialog
       v-if="displayTask"
       :display="displayTask"
       :task-information="viewTaskInformation"
@@ -36,7 +36,7 @@ export default {
   components: {
     TaskBoard: () => import("./components/TaskBoard"),
     CreateTask: () => import("./components/CreateTask"),
-    TaskDrawer: () => import("./components/TaskDrawer")
+    TaskDialog: () => import("./components/TaskDialog")
   },
   data() {
     return {
@@ -61,7 +61,10 @@ export default {
   methods: {
     toggleCreateTask(e) {
       this.display = e.display;
-      this.createTaskInformation = e.boardData;
+      this.createTaskInformation = {
+        boardData: e.boardData,
+        boardIndex: e.boardIndex
+      };
     },
     viewTask(task) {
       this.displayTask = true;
