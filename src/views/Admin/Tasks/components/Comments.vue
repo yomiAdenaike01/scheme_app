@@ -1,6 +1,6 @@
 <template>
   <div class="comments_container">
-    <div v-if="mode == 'overview'" class="overview_wrapper ">
+    <div v-if="mode == 'overview'" class="overview_wrapper">
       <i class="bx bx-message-rounded grey"></i>
       <small class="grey">{{ commentCount }}</small>
     </div>
@@ -14,14 +14,12 @@
           <div class="comment_header">
             <Avatar :name="comment.assignedTo.name" />
             <small class="username">{{ comment.assignedTo.name }}</small>
-            <small class="timestamp">{{ new Date(comment.dateCreated) }}</small>
+            <small class="timestamp">{{
+              formatDate(comment.dateCreated)
+            }}</small>
           </div>
 
-          <div
-            class="comment_message"
-            @mouseover="handleDisplayActions(comment.userID)"
-            @click="editMessage = true"
-          >
+          <div class="comment_message" @click="editMessage = true">
             <p v-if="editMessage == false">{{ comment.message }}</p>
             <div v-else class="update_comment_container">
               <el-input

@@ -48,7 +48,31 @@
               <i class="bx bx-align-left"></i>
               <span>Description</span>
             </div>
-            <p>{{ taskInformation.description }}</p>
+            <p v-if="editDescription == false" @click="handleDescriptions">
+              {{ taskInformation.description }}
+            </p>
+            <el-input
+              v-if="editDescription"
+              v-model="description"
+              type="textarea"
+              :placeholder="taskInformation.description"
+            ></el-input>
+            <el-button
+              v-if="description.length > 0"
+              type="text"
+              @click="updateTask"
+              >Save</el-button
+            >
+            <el-button
+              v-if="editDescription"
+              size="mini"
+              type="text"
+              @click="
+                editDescription = false;
+                description = '';
+              "
+              >Cancel</el-button
+            >
           </div>
           <div class="task_info_title">
             <i class="bx bx-comment"></i>
@@ -90,6 +114,16 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  data() {
+    return {
+      commentAction: "",
+      editDescription: false,
+      description: "",
+      popoverDisplay: {
+        dueDate: false
+      }
+    };
   },
   computed: {
     ...mapState(["userInformation"]),
@@ -263,14 +297,7 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      commentAction: "",
-      popoverDisplay: {
-        dueDate: false
-      }
-    };
-  },
+
   methods: {
     ...mapActions(["request"]),
     ...mapMutations("Admin", [
@@ -283,6 +310,12 @@ export default {
     ]),
     setDueDate(e) {
       this.updateTask({ dueDate: e });
+    },
+    handleDescriptions() {
+      // admin or assigned to
+      if (this.taskInformation.createdBy._id == this.userInformation._id) {
+        this.editDescription = true;
+      }
     }
   }
 };
