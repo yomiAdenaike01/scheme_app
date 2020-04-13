@@ -196,13 +196,7 @@ export default {
   background: white;
   border-bottom: 2px solid whitesmoke;
   transition: $default_transition;
-  &:first-of-type {
-    border-top: 2px solid whitesmoke;
-    margin-top: 20px;
-  }
-  &.completed {
-    border-left: 2px solid $success_colour;
-  }
+
   &:hover {
     box-shadow: $box_shadow;
   }

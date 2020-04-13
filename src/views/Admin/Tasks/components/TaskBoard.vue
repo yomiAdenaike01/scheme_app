@@ -249,6 +249,8 @@ export default {
   flex-direction: column;
   padding-left: 20px;
   text-transform: capitalize;
+  padding-bottom: 20px;
+  border-bottom: 2px solid whitesmoke;
   h1,
   h2,
   h3 {
