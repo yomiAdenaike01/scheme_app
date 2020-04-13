@@ -6,39 +6,35 @@
     >
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container">
-          <el-button-group>
-            <el-popover trigger="click">
-              <el-button v-if="getIsAdmin" slot="reference">{{
-                localUserInformation.groupID == 0
-                  ? "Assign to group"
-                  : "Reassign to group"
-              }}</el-button>
-              <el-select v-model="selectedGroup" @change="assignUserToGroup">
-                <el-option
-                  v-for="{ label, value } in getUserGroups"
-                  :key="value"
-                  :label="label"
-                  :value="value"
-                >
-                </el-option>
-              </el-select>
-            </el-popover>
-
-            <el-popover trigger="click">
-              <el-button slot="reference"
-                >Update Personal Information</el-button
+          <el-popover trigger="click">
+            <el-button v-if="getIsAdmin" slot="reference">{{
+              localUserInformation.groupID == 0
+                ? "Assign to group"
+                : "Reassign to group"
+            }}</el-button>
+            <el-select v-model="selectedGroup" @change="assignUserToGroup">
+              <el-option
+                v-for="{ label, value } in getUserGroups"
+                :key="value"
+                :label="label"
+                :value="value"
               >
-              <Form
-                class="full_width"
-                submit-text="Update user"
-                :config="updateUserForm"
-                @val="updateUser"
-              />
-            </el-popover>
-            <el-button v-if="getIsAdmin" plain type="danger" @click="removeUser"
-              >Delete Account</el-button
-            >
-          </el-button-group>
+              </el-option>
+            </el-select>
+          </el-popover>
+
+          <el-popover trigger="click">
+            <el-button slot="reference">Update Personal Information</el-button>
+            <Form
+              class="full_width"
+              submit-text="Update user"
+              :config="updateUserForm"
+              @val="updateUser"
+            />
+          </el-popover>
+          <el-button v-if="getIsAdmin" plain type="danger" @click="removeUser"
+            >Delete Account</el-button
+          >
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -218,6 +214,16 @@ export default {
 .user_info_container {
   line-height: 2em;
 }
+.quick_actions_container {
+  display: flex;
+  align-items: center;
+
+  * {
+    flex: 1;
+    width: 100%;
+    margin: 5px;
+  }
+}
 .info_container {
   border: 2px solid whitesmoke;
   border-radius: 5px;
@@ -227,8 +233,7 @@ export default {
 }
 
 .collapse_container {
-  border: none;
-  border-bottom: none;
+  border-top: none;
   padding: 20px;
 }
 </style>

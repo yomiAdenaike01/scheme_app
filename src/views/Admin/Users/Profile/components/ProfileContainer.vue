@@ -105,6 +105,12 @@ export default {
   margin-bottom: 20px;
   padding: 20px;
 }
+.capitalize {
+  font-weight: 400;
+  font-size: 1.3em;
+  margin: 0;
+  padding: 0;
+}
 .dot_container {
   &/deep/ {
     .el-badge__content {
