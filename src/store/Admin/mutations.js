@@ -22,13 +22,7 @@ function findItemIndex(state, param = "boards", id) {
  * @param {Object,string} items
  */
 function updateBreadCrumbs(state, param, items) {
-  if (items) {
-    state[param] = {
-      ...items
-    };
-  } else {
-    state[param] = items;
-  }
+  state[param] = items;
 }
 
 export default {
@@ -84,8 +78,61 @@ export default {
   UPDATE_REQUESTS(state, payload) {
     state.requestsInformation = payload;
   },
+
+  REASSIGN_ELEMENTS(state, { assignment = "teamInformation", group }) {
+    let groupedElements = [],
+      groupKey = assignment == "teamInformation" ? "grouID" : "type";
+    for (let i = 0, len = state[assignment].length; i < len; i++) {
+      let { groupID } = state[assignment][i];
+      if (groupID == group) {
+        groupedElements.push({ index: i, groupID });
+        Vue.set(state[assignment][i], groupKey, 0);
+      }
+    }
+    updateBreadCrumbs(state, "groupRef", { group: group, groupedElements });
+  },
+
+  //  Teams
   UPDATE_TEAM(state, payload) {
-    Vue.set(state, "teamInformation", payload);
+    if (Array.isArray(payload) && state.teamInformation.length == 0) {
+      state.teamInformation = payload;
+    }
+    if (Array.isArray(payload) && state.teamInformation.length > 0) {
+      for (let i = 0, len = state.teamInformation.length; i < len; i++) {
+        let teamMember = state.teamInformation[i];
+        let member = payload.find(payloadMember => {
+          return payloadMember._id == teamMember._id;
+        });
+        if (!member) {
+          state.teamInformation.push(member);
+        }
+      }
+    }
+  },
+  ADD_TEAM_MEMBER(state, payload) {
+    let isPresent =
+      state.teamInformation.findIndex(x => {
+        return x._id == payload._id || x.name == payload.name;
+      }) > -1;
+    if (!isPresent) {
+      state.teamInformation.push(payload);
+      updateBreadCrumbs(state, "teamRef", payload);
+    }
+  },
+  DELETE_TEAM_MEMBER(state, teamMemberIndex) {
+    updateBreadCrumbs(state, "teamRef", state.teamInformation[teamMemberIndex]);
+    Vue.delete(state.teamInformation, teamMemberIndex);
+  },
+  UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
+    updateBreadCrumbs(state, "teamRef", {
+      index,
+      payload: state.teamInformation[index]
+    });
+    Vue.set(state.teamInformation, index, {
+      ...state.teamInformation[index],
+      ...payload
+    });
+    console.log(state.teamInformation);
   },
   /**
    * @description create or update a board at an index references created to restore later
@@ -188,8 +235,8 @@ export default {
    * @param {String} ref
    * @description Clear the restore referecence for the give key in state
    */
-  CLEAR_REFERENCE(state, ref) {
-    updateBreadCrumbs(state, ref, null);
+  CLEAR_BREADCRUMBS(state, ref) {
+    Vue.set(state, ref, null);
   },
 
   /**

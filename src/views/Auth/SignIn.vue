@@ -4,6 +4,7 @@
       class="form_container"
       :config="formConfig"
       :submit-text="submitText"
+      :submit-button="{ text: 'Sign in' }"
       @val="submitController"
     >
       <div slot="header" class="logo_wrapper">

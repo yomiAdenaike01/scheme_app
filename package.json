@@ -69,7 +69,8 @@
       "vue/no-side-effects-in-computed-properties": "off",
       "vue/require-prop-type-constructor": "off",
       "vue/no-unused-components": "off",
-      "vue/no-unused-vars": "off"
+      "vue/no-unused-vars": "off",
+      "vue/no-async-in-computed-properties":"off"
     }
   },
   "browserslist": [

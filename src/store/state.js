@@ -23,6 +23,7 @@ export default {
   userNotifications: [],
   viewMobileMenu: false,
 
+  lastDialog: {},
   dialogIndex: {
     profile: { view: false, data: null, tabIndex: 0 },
     viewEvent: { view: false, data: null, tabIndex: 0 },
@@ -71,5 +72,6 @@ export default {
       label: "Sundays",
       value: 7
     }
-  ]
+  ],
+  rootGroupRef: ""
 };

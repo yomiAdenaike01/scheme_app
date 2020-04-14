@@ -30,6 +30,9 @@ const exitApplication = (context, networkError = false, logout = false) => {
 };
 
 export default {
+  restoreDialog(context) {
+    context.commit("UPDATE_DIALOG_INDEX", context.state.lastDialog);
+  },
   updateDevices(context) {
     return new Promise((resolve, reject) => {
       context

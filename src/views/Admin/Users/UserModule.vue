@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-loading="loading"
-    class="user_module_container"
-    element-loading-text="Getting team please wait...."
-  >
+  <div class="user_module_container">
     <UserGroup add-new @createUserGroup="displayDialog = $event" />
 
     <UserGroup v-if="hasEntries(teamInformation)">
@@ -58,11 +54,10 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   name: "UserModule",
-
   components: {
     User: () => import("./components/User"),
     UserGroup: () => import("./components/UserGroup"),
@@ -74,7 +69,6 @@ export default {
   data() {
     return {
       displayDialog: false,
-      loading: true,
       viewUser: false
     };
   },
@@ -107,22 +101,8 @@ export default {
         });
         userGroupArr.push(userGroup);
       }
-
       return userGroupArr;
     }
-  },
-
-  activated() {
-    Promise.all([this.getEvents(), this.getTeam()])
-      .then(() => {
-        this.loading = false;
-      })
-      .catch(() => {
-        this.loading = false;
-      });
-  },
-  methods: {
-    ...mapActions("Admin", ["getTeam", "getEvents"])
   }
 };
 </script>

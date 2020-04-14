@@ -13,14 +13,45 @@ const clearStateInterval = (state, intervalID) => {
     Vue.set(state.runningIntervals, intervalID, null);
   }
 };
-
+function updateBreadCrumbs(state, param, items) {
+  state[param] = items;
+}
 export default {
   UPDATE_DIALOG_INDEX(
-    { dialogIndex },
+    state,
     { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
   ) {
-    Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
+    Vue.set(state.dialogIndex, dialog, { view, id, data, tabIndex });
+    state.lastDialog = { dialog, view, id, data, tabIndex };
   },
+  // Groups
+  CREATE_GROUP(state, { groupType, payload }) {
+    let groupExists =
+      state.clientInformation[groupType].findIndex(group => {
+        return group.label == payload.label;
+      }) > -1;
+    if (!groupExists) {
+      state.clientInformation[groupType].push(payload);
+      updateBreadCrumbs(state, "rootGroupRef", { groupType, payload });
+    }
+    console.log(state.rootGroupRef, state.clientInformation[groupType]);
+  },
+  DELETE_GROUP(state, { groupType, groupIndex }) {
+    Vue.delete(state.clientInformation[groupType], groupIndex);
+  },
+  UPDATE_GROUP(state, { groupType, groupIndex, payload }) {
+    updateBreadCrumbs(state, "rootGroupRef", {
+      groupType,
+      groupIndex,
+      payload
+    });
+    Vue.set(
+      state.clientInformation[groupType][groupIndex],
+      "label",
+      payload.label
+    );
+  },
+
   CREATE_GLOBAL_INTERVAL(state, { duration = 3000, method, id, immediate }) {
     if (immediate) {
       method();
@@ -83,10 +114,8 @@ export default {
     localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {
-    Vue.set(state, "token", token);
-    Vue.set(state, "userInformation", user);
-    console.log(state.userInformation);
-
+    state.token = token;
+    state.userInformation = user;
     localStorage.setItem("token", token);
     localStorage.setItem("userInformation", JSON.stringify(user));
   },

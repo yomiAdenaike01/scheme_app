@@ -25,17 +25,16 @@
 <script>
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 
-import ManageUserGroups from "./ManageUserGroups";
-
 import Tabs from "@/components/Tabs";
 import InformationDisplay from "@/components/InformationDisplay";
+import UpdateGroups from "../../Events/components/UpdateGroups.vue";
 
 export default {
   name: "UserModuleDialog",
   components: {
     InformationDisplay,
     Tabs,
-    ManageUserGroups
+    UpdateGroups
   },
 
   props: {
@@ -68,8 +67,8 @@ export default {
         {
           label: "Manage user groups",
           view: {
-            component: ManageUserGroups,
-            props: ""
+            component: UpdateGroups,
+            props: { groupType: "userGroups" }
           }
         },
         {

@@ -22,7 +22,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 
 import TemplateManagement from "./TemplateManagement";
 import RequestManagement from "./RequestManagement";
-import EventGroupManagement from "./EventGroupManagement";
+import UpdateGroups from "./UpdateGroups";
 
 import InformationDisplay from "@/components/InformationDisplay";
 import Tabs from "@/components/Tabs";
@@ -87,9 +87,7 @@ export default {
         eventsInformation.assignedTo = [this.userInformation._id];
       }
       let templatesInformation = {
-        content: {
-          ...eventsInformation
-        }
+        content: eventsInformation
       };
 
       if (eventsInformation?.userGroups?.length > 0) {
@@ -166,7 +164,7 @@ export default {
         tabs.unshift({
           label: "Manage event groups",
           view: {
-            component: EventGroupManagement
+            component: UpdateGroups
           }
         });
 

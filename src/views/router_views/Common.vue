@@ -42,42 +42,6 @@ export default {
       displaySearch: false
     };
   },
-  activated() {
-    this.checkDevice();
-    this.CREATE_GLOBAL_INTERVAL({
-      immediate: true,
-      duration: this.requestIntervals.admin,
-      id: "team",
-      method: () => {
-        return new Promise((resolve, reject) => {
-          this.getTeam()
-            .then(() => {
-              this.loading = false;
-              resolve();
-            })
-            .catch(() => {
-              this.loading = false;
-              reject();
-            });
-        });
-      }
-    });
-
-    let isVerified = this.userInformation.verified;
-    if (!isVerified) {
-      this.UPDATE_NOTIFICATIONS({
-        title: "Activate account",
-        type: "info",
-        message: "Open settings to activate account."
-      });
-    }
-
-    if (Notification.permission != "granted") {
-      this.notificationPermission();
-    }
-
-    this.displayWeeklyNotification();
-  },
   computed: {
     ...mapState([
       "userInformation",
@@ -113,6 +77,96 @@ export default {
         }) > -1
       );
     }
+  },
+  watch: {
+    hasAnnoucement: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          let notificationTitle =
+            "A notification requires your attention, press the bell icon to view them";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Attention",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "A notification requires your attention",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
+        }
+      }
+    },
+    hasRequestOrNotifications: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          let userNoty = this.userNotifications;
+          for (let i = 0, len = userNoty.length; i < len; i++) {
+            this.UPDATE_NOTIFICATIONS(userNoty[i]);
+          }
+        }
+      }
+    },
+    hasReminder: {
+      immediate: true,
+
+      handler(val) {
+        if (val) {
+          let notificationTitle =
+            "You have a reminder scheduled, close the notification to complete the reminder";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Reminder",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "You have reminder",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
+        }
+      }
+    }
+  },
+  activated() {
+    this.checkDevice();
+    this.CREATE_GLOBAL_INTERVAL({
+      immediate: true,
+      duration: this.requestIntervals.admin,
+      id: "team",
+      method: () => {
+        return new Promise((resolve, reject) => {
+          this.getTeam()
+            .then(() => {
+              this.loading = false;
+              resolve();
+            })
+            .catch(() => {
+              this.loading = false;
+              reject();
+            });
+        });
+      }
+    });
+
+    let isVerified = this.userInformation.verified;
+    if (!isVerified) {
+      this.UPDATE_NOTIFICATIONS({
+        title: "Activate account",
+        type: "info",
+        message: "Open settings to activate account."
+      });
+    }
+
+    if (Notification.permission != "granted") {
+      this.notificationPermission();
+    }
+
+    this.displayWeeklyNotification();
   },
 
   methods: {
@@ -169,61 +223,6 @@ export default {
           message: "Start the new week off by uploading a new weekly timesheet",
           title: "Upload Timesheet"
         });
-    }
-  },
-
-  watch: {
-    hasAnnoucement: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          let notificationTitle =
-            "A notification requires your attention, press the bell icon to view them";
-          this.UPDATE_NOTIFICATIONS({
-            title: "Attention",
-            message: notificationTitle,
-            type: "info",
-            desktop: {
-              title: "A notification requires your attention",
-              content: {
-                body: notificationTitle
-              }
-            }
-          });
-        }
-      }
-    },
-    hasRequestOrNotifications: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          let userNoty = this.userNotifications;
-          for (let i = 0, len = userNoty.length; i < len; i++) {
-            this.UPDATE_NOTIFICATIONS(userNoty[i]);
-          }
-        }
-      }
-    },
-    hasReminder: {
-      immediate: true,
-
-      handler(val) {
-        if (val) {
-          let notificationTitle =
-            "You have a reminder scheduled, close the notification to complete the reminder";
-          this.UPDATE_NOTIFICATIONS({
-            title: "Reminder",
-            message: notificationTitle,
-            type: "info",
-            desktop: {
-              title: "You have reminder",
-              content: {
-                body: notificationTitle
-              }
-            }
-          });
-        }
-      }
     }
   }
 };
