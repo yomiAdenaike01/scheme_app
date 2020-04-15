@@ -35,7 +35,7 @@
           v-model="newMessage"
           class="input_comment"
           placeholder="Write a comment..."
-          @keyup.enter="$emit('createComment', newMessage), reset()"
+          @keyup.enter.native="$emit('createComment', newMessage), reset()"
         ></el-input>
         <el-button
           type="text"

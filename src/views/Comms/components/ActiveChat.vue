@@ -12,7 +12,7 @@
         ></el-autocomplete>
       </div>
 
-      <div class="chat_messages_container">
+      <div ref="chatMessages" class="chat_messages_container">
         <ChatMessage
           v-for="message in chatMessages"
           :key="message._id"
@@ -31,7 +31,7 @@
           <el-input
             v-model="chat.content"
             placeholder="Send a message..."
-            @keypress.enter="sendChatMessage"
+            @keyup.enter.native="sendChatMessage"
           />
           <el-button type="text" @click="sendChatMessage">Send</el-button>
         </div>
@@ -121,6 +121,7 @@ export default {
     ]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
     ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
+
     editMessage(messageID) {
       console.log(messageID);
     },
@@ -219,6 +220,7 @@ export default {
         editted: false,
         userName
       });
+      this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
     }
   }
 };

@@ -1,5 +1,3 @@
-export default {
-  updateBreadCrumbs(state, param, items) {
-    state[param] = items;
-  }
-};
+export default function updateBreadCrumbs(state, param, items) {
+  state[param] = items;
+}

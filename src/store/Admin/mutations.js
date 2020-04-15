@@ -41,7 +41,7 @@ export default {
   CREATE_EVENT(state, payload) {
     // Push to upcoming
     state.eventsInformation.upcoming.push(payload);
-    updateBreadCrumbs(state, {
+    updateBreadCrumbs(state, "eventRef", {
       index: state.eventsInformation.length - 1
     });
   },

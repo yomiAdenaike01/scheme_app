@@ -238,7 +238,8 @@ export default {
 .inner_app_container {
   display: flex;
   flex: 1;
-  height: 100%;
+  height: calc(100% - 130px);
+
   background: rgb(251, 251, 251);
 }
 </style>

@@ -3,10 +3,10 @@ import updateBreadCrumbs from "../helpers";
 
 function setActiveChat(state, chat) {
   if (typeof chat == "object") {
-    Vue.set(state, "activeChat", chat);
+    state.activeChat = chat;
   }
   if (Array.isArray(chat)) {
-    Vue.set(state, "activeChat", chat[0]);
+    state.activeChat = chat[0];
   }
 }
 export default {
@@ -27,17 +27,17 @@ export default {
     }
     setActiveChat(state, payload);
   },
-  UPDATE_SCROLL_POSITION(state, elem) {
-    // get the scoll position and set it
-    Vue.set(state, "activeChatScrollPosition", elem);
-  },
+
   UPDATE_ACTIVE_CHAT(state, payload) {
     setActiveChat(state, !payload ? state.chats : payload);
   },
   DELETE_CHAT(state, index) {
     //Delete the messages
     updateBreadCrumbs(state, "chatRef", { index, chat: state.chats[index] });
-    state.messages = {};
+    state.messages = [];
+    if (state.chats[index - 1]) {
+      setActiveChat(state, state.chats[index - 1]);
+    }
     Vue.delete(state.chats, index);
   }
 };

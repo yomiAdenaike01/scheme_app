@@ -86,6 +86,5 @@ export default {
 .admin_container {
   display: flex;
   flex: 1;
-  height: 100%;
 }
 </style>

@@ -27,25 +27,15 @@ export default {
       }
       // Add fake message
       commit("UPDATE_MESSAGES", payload);
-      dispatch(
-        "request",
-        {
-          method: "POST",
-          url: "messenger/send",
-          data: payload
-        },
-        { root: true }
-      )
-        .then(() => {
-          dispatch("getChatMessages")
-            .then(() => {
-              resolve();
-            })
-            .catch(() => {
-              reject();
-            });
-        })
-        .catch(() => reject());
+      // dispatch(
+      //   "request",
+      //   {
+      //     method: "POST",
+      //     url: "messenger/send",
+      //     data: payload
+      //   },
+      //   { root: true }
+      // ).catch(() => reject());
     });
   },
   getChatMessages({ state: { activeChat }, dispatch, commit }) {

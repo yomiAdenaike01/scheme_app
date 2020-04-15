@@ -70,11 +70,13 @@ export default {
   },
 
   methods: {
-    ...mapMutations("Comms", ["UPDATE_SCROLL_POSITION", "UPDATE_ACTIVE_CHAT"]),
+    ...mapActions(["request"]),
     ...mapActions("Comms", ["getChats"]),
+    ...mapMutations(["REMOVE_GLOBAL_INTERVAL"]),
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT", "DELETE_CHAT"]),
     updateScrollPos() {
       if (this.isNewChat) {
-        this.UPDATE_SCROLL_POSITION(this.$refs.chatElem.offsetTop);
+        this.$emit("scroll");
       }
     },
     updateActiveChat() {
@@ -86,6 +88,7 @@ export default {
     },
     deleteChat() {
       this.DELETE_CHAT(this.chatIndex);
+      this.REMOVE_GLOBAL_INTERVAL("getChatMessages");
       this.request({
         method: "DELETE",
         url: "messenger/chat",

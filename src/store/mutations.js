@@ -1,7 +1,7 @@
 import sounds from "@/mixins/playSound";
 import Vue from "vue";
 import VueRouter from "../router";
-import updateBreadCrumbs from "../helpers";
+import updateBreadCrumbs from "./helpers";
 
 const clearStateInterval = (state, intervalID) => {
   if (!intervalID) {

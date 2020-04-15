@@ -253,16 +253,15 @@ export default {
       });
     },
     completeForm() {
-      try {
-        this.$emit("val", this.formContent);
-        if (this.customMethod) {
-          this.customMethod();
-        }
+      this.$emit("val", this.formContent);
+      this.formContent = {};
+      if (this.customMethod) {
+        this.customMethod();
+      }
 
-        if (this.nextTab) {
-          this.$emit("changeTab");
-        }
-      } catch (error) {}
+      if (this.nextTab) {
+        this.$emit("changeTab");
+      }
     },
     submitForm() {
       this.runValidation()
