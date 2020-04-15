@@ -23,6 +23,7 @@ export default {
     Vue.set(state.dialogIndex, dialog, { view, id, data, tabIndex });
     state.lastDialog = { dialog, view, id, data, tabIndex };
   },
+
   // Groups
   CREATE_GROUP(state, { groupType, payload }) {
     let group = state.clientInformation[groupType];

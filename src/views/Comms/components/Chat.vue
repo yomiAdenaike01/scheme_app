@@ -5,7 +5,7 @@
     :class="{ active: isActive }"
     @click="updateActiveChat"
   >
-    <Avatar :name="usersInformation.userTwo" />
+    <Avatar :name="chatInformation.userTwo.name" />
     <div class="text_container">
       <p v-if="!isNewChat">
         {{ chatInformation.message.content }}
@@ -53,13 +53,6 @@ export default {
     },
     isActive() {
       return this.activeChat._id == this.chatInformation._id;
-    },
-    usersInformation() {
-      let { userOne, userTwo } = this.chatInformation;
-      return {
-        userOne: this.getUserInformation(userOne)?.name,
-        userTwo: this.getUserInformation(userTwo)?.name
-      };
     }
   },
   activated() {

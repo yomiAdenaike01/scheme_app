@@ -53,6 +53,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
+    ...mapState("Admin", ["teamRef"]),
     ...mapGetters("Admin", ["getUserGroups"]),
 
     genPwd() {
@@ -146,6 +147,7 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations("Admin", ["CREATE_USER", "REMOVE_USER"]),
 
     userModuleController(val) {
       switch (this.currentTab) {
@@ -166,6 +168,7 @@ export default {
 
     createOneUser(employee) {
       this.loading = true;
+      this.CREATE_USER(employee);
       this.request({
         method: "POST",
         url: "users/register/one",
@@ -175,46 +178,15 @@ export default {
           adminGen: true
         }
       })
-        .then(response => {
+        .then(() => {
           this.loading = false;
           this.view = false;
         })
         .catch(error => {
           this.loading = false;
-          console.error(error);
+          this.REMOVE_USER(this.teamRef?.index);
           return error;
         });
-    },
-
-    async cleanData(JSONData) {
-      let JSONContent = await csvtojson().fromString(JSONData);
-
-      let schema = {
-        name: null,
-        email: "",
-        gender: "",
-        phoneNumber: "",
-        password: ""
-      };
-
-      const len = JSONContent.length;
-
-      for (let i = 0; i < len; i++) {
-        let employee = JSONContent[i];
-        employee.clientID = this.clientInformation._id;
-
-        for (let property in schema) {
-          property = property.toLowerCase().trim();
-
-          if (!employee[property]) {
-            this.fileError = true;
-            return Promise.reject("Missing parameters for employee timesheet");
-            break;
-          }
-        }
-      }
-      this.fileError = false;
-      return Promise.resolve(JSONContent);
     },
 
     createUsers(employees) {

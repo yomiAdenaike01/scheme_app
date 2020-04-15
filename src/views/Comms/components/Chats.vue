@@ -102,6 +102,8 @@ export default {
         });
         if (chatIndex == -1) {
           createChat();
+        } else {
+          this.UPDATE_ACTIVE_CHAT(this.chats[chatIndex]);
         }
       }
     }

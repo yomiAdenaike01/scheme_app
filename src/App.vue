@@ -216,6 +216,12 @@ html,
 
 
 */
+.el-drawer {
+  height: 100%;
+}
+.el-drawer__body {
+  height: calc(100% - 39px);
+}
 .long {
   width: 100%;
 }
@@ -271,19 +277,8 @@ textarea {
 .el-textarea__inner,
 .el-input__inner {
   border-radius: 10px !important;
-  border-color: rgb(240, 240, 240) !important;
+  border-color: rgb(190, 190, 190) !important;
 }
-.el-textarea__inner {
-  padding: 10px !important;
-  min-height: 100px !important;
-}
-.el-textarea__inner:focus,
-.el-textarea__inner:hover,
-.el-input__inner:focus,
-.el-input__inner:hover {
-  border-color: rgb(200, 200, 200) !important;
-}
-
 /*
 
  Notifications

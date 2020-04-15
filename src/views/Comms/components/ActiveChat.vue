@@ -74,8 +74,10 @@ export default {
         return Object.assign(
           {
             id: message._id,
-            sentAt: this.formatDate(message.sentAt),
-            isSentByUser: message.senderID == this.userInformation._id
+            sentAt: this.initMoment(message.sentAt).calendar(),
+            sentBy: message.senderID.name,
+            recievedBy: message.senderID.name,
+            isSentByUser: message.senderID._id == this.userInformation._id
           },
           message
         );
@@ -268,6 +270,7 @@ export default {
   position: relative;
 }
 .current_chat_interaction {
+  border-top: 2px solid rgb(240, 240, 240);
   align-items: center;
   background: white;
   padding: 10px 20px;

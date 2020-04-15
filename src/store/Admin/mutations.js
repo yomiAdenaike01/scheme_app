@@ -9,6 +9,16 @@ import updateBreadCrumbs from "../helpers";
  */
 
 export default {
+  // create user
+  CREATE_USER(state, payload) {
+    updateBreadCrumbs(state, "teamRef", {
+      index: state.teamInformation.length
+    });
+    state.teamInformation.push(payload);
+  },
+  REMOVE_USER(state, index) {
+    Vue.delete(state.teamInformation, index);
+  },
   UPDATE_EVENT_TEMPLATES(state, payload) {
     Vue.set(state, "eventTemplates", payload);
   },

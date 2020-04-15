@@ -42,7 +42,6 @@ export default {
   name: "AppBar",
   components: {
     Avatar: () => import("@/components/Avatar"),
-    Logo: () => import("@/components/Logo"),
     Dropdown: () => import("@/components/Dropdown"),
     NotificationModule: () => import("@/components/NotificationModule")
   },

@@ -1,10 +1,12 @@
 <template functional>
   <div class="message_container" :class="{ is_user: props.isSentByUser }">
+    <p class="user">{{ props.sentBy }}</p>
     <div class="message">
       <p>
         {{ props.content }}
       </p>
     </div>
+    <small class="grey">{{ props.sentAt }}</small>
     <div v-if="props.isSentByUser" class="actions_container">
       <el-button
         icon="el-icon-edit-outline"
@@ -26,6 +28,12 @@
 export default {
   name: "Message",
   props: {
+    recievedBy: {
+      type: String
+    },
+    sentBy: {
+      type: String
+    },
     sentAt: {
       type: String
     },
@@ -57,6 +65,7 @@ export default {
   align-items: flex-start;
   max-height: 150px;
   margin: 5px;
+  font-size: 1.1em;
 
   &.is_user {
     align-items: flex-end;
@@ -66,6 +75,11 @@ export default {
       border-top-right-radius: 0px;
     }
   }
+}
+.user {
+  text-transform: capitalize;
+  padding: 0;
+  margin: 0;
 }
 .message {
   background: lighten($color: $default_colour, $amount: 30);

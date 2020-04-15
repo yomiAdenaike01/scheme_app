@@ -4,17 +4,13 @@
       <i class="bx bx-message-rounded grey"></i>
       <small class="grey">{{ commentCount }}</small>
     </div>
-    <div v-if="mode != 'overview'">
+    <div v-if="mode != 'overview'" class="full_mode_container">
       <div
         v-if="comments.length > 0"
         ref="comments_wrapper"
         class="comments_wrapper"
       >
-        <div
-          v-for="(comment, index) in comments"
-          :key="comment._id"
-          class="comment"
-        >
+        <div v-for="comment in comments" :key="comment._id" class="comment">
           <div class="comment_header">
             <Avatar :name="comment.assignedTo.name" />
             <small class="username">{{ comment.assignedTo.name }}</small>
@@ -40,10 +36,7 @@
         <el-button
           type="text"
           :disabled="newMessage.length == 0"
-          @click="
-            $emit('createComment', newMessage);
-            reset();
-          "
+          @click="createComment"
           >Post</el-button
         >
       </div>
@@ -91,13 +84,27 @@ export default {
   },
 
   methods: {
+    emitComment(message) {
+      return new Promise((resolve, reject) => {
+        try {
+          this.$emit("createComment", message);
+          resolve();
+        } catch (error) {
+          reject();
+        }
+      });
+    },
+    createComment(message) {
+      this.emitComment(message).then(() => {
+        this.reset();
+      });
+    },
+
     reset() {
       this.newMessage = "";
       this.commentMessage = "";
       this.editMessage = false;
-      let { comments_wrapper } = this.$refs;
-      comments_wrapper.scrollTop =
-        comments_wrapper.scrollHeight - comments_wrapper.clientHeight;
+      this.$emit("scrollToBottom", this.$refs.comments_wrapper);
     },
     handleDisplayActions(userID) {
       if (this.getIsAdmin || userID == this.userInformation._id) {
@@ -127,8 +134,14 @@ export default {
     margin-right: 10px;
   }
 }
+.full_mode_container {
+  height: 100%;
+}
+.comments_container {
+  height: 100%;
+}
 .comments_wrapper {
-  max-height: 450px;
+  max-height: calc(100% - 400px);
   overflow: auto;
 }
 .comment {

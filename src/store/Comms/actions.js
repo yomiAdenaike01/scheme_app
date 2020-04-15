@@ -27,19 +27,22 @@ export default {
       }
       // Add fake message
       commit("UPDATE_MESSAGES", payload);
-      // dispatch(
-      //   "request",
-      //   {
-      //     method: "POST",
-      //     url: "messenger/send",
-      //     data: payload
-      //   },
-      //   { root: true }
-      // ).catch(() => reject());
+      dispatch(
+        "request",
+        {
+          method: "POST",
+          url: "messenger/send",
+          data: payload
+        },
+        { root: true }
+      ).catch(() => reject());
     });
   },
   getChatMessages({ state: { activeChat }, dispatch, commit }) {
-    let chatID = Object.keys(activeChat).length > 0 ? activeChat._id : "";
+    let chatID =
+      Object.keys(activeChat).length > 0 && !activeChat?.initChat
+        ? activeChat._id
+        : "";
 
     return new Promise((resolve, reject) => {
       if (chatID.length > 0) {

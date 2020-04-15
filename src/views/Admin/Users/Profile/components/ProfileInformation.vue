@@ -146,7 +146,7 @@ export default {
         this.request({
           method: "PUT",
           url: "users/update",
-          data: { update: e, _id: this.localUserInformation._id }
+          data: { update: e, _id: this.localUserInformation?._id }
         }).catch(() => {
           this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);
         });
