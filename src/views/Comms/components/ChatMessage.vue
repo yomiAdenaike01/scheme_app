@@ -27,6 +27,7 @@
 <script>
 export default {
   name: "Message",
+
   props: {
     recievedBy: {
       type: String
@@ -72,7 +73,7 @@ export default {
     .message {
       background: whitesmoke;
       color: #555;
-      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
     }
   }
 }
@@ -80,15 +81,14 @@ export default {
   text-transform: capitalize;
   padding: 0;
   margin: 0;
+  font-size: 0.9em;
 }
 .message {
   background: lighten($color: $default_colour, $amount: 30);
   color: white;
-  padding: 5px;
+  padding: 15px;
   display: flex;
-
-  border-radius: 10px;
-  border-bottom-left-radius: 0px;
+  border-radius: 30px;
   transition: $default_transition transform;
   will-change: transform;
 }

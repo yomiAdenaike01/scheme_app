@@ -23,6 +23,7 @@
     "uuid-by-string": "^3.0.2",
     "v-hotkey": "^0.8.0",
     "vue": "^2.6.10",
+    "vue-avatar": "^2.2.0",
     "vue-cal": "^2.24.7",
     "vue-markdown": "^2.2.4",
     "vue-mq": "^1.0.1",
@@ -70,7 +71,7 @@
       "vue/require-prop-type-constructor": "off",
       "vue/no-unused-components": "off",
       "vue/no-unused-vars": "off",
-      "vue/no-async-in-computed-properties":"off"
+      "vue/no-async-in-computed-properties": "off"
     }
   },
   "browserslist": [

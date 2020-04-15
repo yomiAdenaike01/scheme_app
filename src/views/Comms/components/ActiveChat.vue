@@ -224,7 +224,7 @@ export default {
         editted: false,
         userName
       }).then(() => {});
-      this.scrollToBottom(this.$refs.chatMessages.scrollTop);
+      this.scrollToBottom(this.$refs.chatMessages);
       this.chat.content = "";
     }
   }
@@ -258,8 +258,8 @@ export default {
 }
 .chat_messages_container {
   overflow-x: hidden;
-  width: 100%;
   flex: 1;
+  padding: 0 28px;
   display: flex;
   flex-direction: column;
   max-height: calc(100% - 130px);

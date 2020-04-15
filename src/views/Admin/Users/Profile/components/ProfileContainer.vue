@@ -11,7 +11,11 @@
     <div class="profile_info_wrapper">
       <div class="avatar_info_container">
         <el-badge is-dot :type="badgeType" class="dot_container">
-          <Avatar class="sidebar_avatar full" :name="returnUsername" />
+          <Avatar
+            :size="100"
+            class="sidebar_avatar full"
+            :name="returnUsername"
+          />
         </el-badge>
         <div class="profile_info_text">
           <h3 class="capitalize">{{ returnUsername }}</h3>

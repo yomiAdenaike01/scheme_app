@@ -113,7 +113,7 @@ Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Sen:300,400&display=swap");
 /*
 
  Default
@@ -121,7 +121,7 @@ Fonts
 
 */
 * {
-  font-family: "Lato", Arial, Helvetica, sans-serif;
+  font-family: "Sen", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
 
   :before,

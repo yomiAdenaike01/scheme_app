@@ -10,6 +10,7 @@
         :key="user._id ? user._id : index"
         class="avatar_wrapper"
         :name="user.name"
+        :size="size"
       >
         <div
           v-if="removeUser"
@@ -54,6 +55,10 @@ export default {
     removeUser: {
       type: Boolean,
       default: false
+    },
+    size: {
+      type: Number,
+      default: 40
     }
   },
   computed: {
@@ -107,10 +112,10 @@ export default {
 }
 .remove_avatar_wrapper {
   position: absolute;
-  top: -10px;
-  bottom: 30px;
+  top: -2px;
+  bottom: 35px;
   right: -2px;
-  left: 20px;
+  left: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
