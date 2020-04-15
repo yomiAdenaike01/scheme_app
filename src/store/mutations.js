@@ -1,6 +1,7 @@
 import sounds from "@/mixins/playSound";
 import Vue from "vue";
 import VueRouter from "../router";
+import updateBreadCrumbs from "../helpers";
 
 const clearStateInterval = (state, intervalID) => {
   if (!intervalID) {
@@ -13,9 +14,7 @@ const clearStateInterval = (state, intervalID) => {
     Vue.set(state.runningIntervals, intervalID, null);
   }
 };
-function updateBreadCrumbs(state, param, items) {
-  state[param] = items;
-}
+
 export default {
   UPDATE_DIALOG_INDEX(
     state,

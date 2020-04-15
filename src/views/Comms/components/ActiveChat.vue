@@ -228,7 +228,6 @@ export default {
 .current_chat_container {
   display: flex;
   flex: 1;
-  flex-direction: column;
   height: 100%;
   width: 100%;
 }
@@ -251,33 +250,42 @@ export default {
   }
 }
 .chat_messages_container {
-  height: 90vh;
   overflow-x: hidden;
   width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .active_chat_container {
-  height: 100%;
+  max-height: fit-content;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 .current_chat_interaction {
   align-items: center;
-  flex: 1;
   background: white;
   padding: 10px 20px;
   height: 100px;
-  .send_message_container {
-    display: flex;
-    flex: 1;
-    &/deep/ {
-      .el-input__inner {
-        padding: 20px;
-        border: none;
-        background: rgb(250, 250, 250);
-        border-radius: 30px;
-      }
-      .el-input {
-        padding: 10px;
-        font-size: 1em;
-      }
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.send_message_container {
+  display: flex;
+  flex: 1;
+  &/deep/ {
+    .el-input__inner {
+      padding: 20px;
+      border: none;
+      background: rgb(250, 250, 250);
+      border-radius: 30px;
+    }
+    .el-input {
+      padding: 10px;
+      font-size: 1em;
     }
   }
 }

@@ -36,6 +36,10 @@ export default {
     Avatar: () => import("@/components/Avatar")
   },
   props: {
+    chatIndex: {
+      type: Number,
+      default: 0
+    },
     chatInformation: {
       type: Object,
       default: () => {}
@@ -75,9 +79,13 @@ export default {
     },
     updateActiveChat() {
       this.updateScrollPos();
-      this.UPDATE_ACTIVE_CHAT(this.chatInformation);
+      this.UPDATE_ACTIVE_CHAT({
+        index: this.chatIndex,
+        ...this.chatInformation
+      });
     },
     deleteChat() {
+      this.DELETE_CHAT(this.chatIndex);
       this.request({
         method: "DELETE",
         url: "messenger/chat",

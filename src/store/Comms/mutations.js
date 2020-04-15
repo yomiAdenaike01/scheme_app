@@ -1,4 +1,6 @@
 import Vue from "vue";
+import updateBreadCrumbs from "../helpers";
+
 function setActiveChat(state, chat) {
   if (typeof chat == "object") {
     Vue.set(state, "activeChat", chat);
@@ -31,5 +33,11 @@ export default {
   },
   UPDATE_ACTIVE_CHAT(state, payload) {
     setActiveChat(state, !payload ? state.chats : payload);
+  },
+  DELETE_CHAT(state, index) {
+    //Delete the messages
+    updateBreadCrumbs(state, "chatRef", { index, chat: state.chats[index] });
+    state.messages = {};
+    Vue.delete(state.chats, index);
   }
 };

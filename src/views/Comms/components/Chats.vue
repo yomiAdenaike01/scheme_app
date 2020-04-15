@@ -8,7 +8,12 @@
           placeholder="Search chats"
         />
       </div>
-      <Chat v-for="chat in chats" :key="chat._id" :chat-information="chat" />
+      <Chat
+        v-for="(chat, index) in chats"
+        :key="chat._id"
+        :chat-index="index"
+        :chat-information="chat"
+      />
       <div class="blank_message grey" @click="startNewChat">
         <i class="bx bx-plus"></i>
         <span>Compose</span>

@@ -1,4 +1,5 @@
 import Vue from "vue";
+import updateBreadCrumbs from "../helpers";
 /**
  *
  *
@@ -6,16 +7,18 @@ import Vue from "vue";
  * @param {string} param
  * @param {Object,string} items
  */
-function updateBreadCrumbs(state, param, items) {
-  state[param] = items;
-}
 
 export default {
   UPDATE_EVENT_TEMPLATES(state, payload) {
     Vue.set(state, "eventTemplates", payload);
   },
   CREATE_EVENT_TEMPLATE(state, payload) {
-    state.eventsTemplates.push(payload);
+    if (payload.index) {
+      let eventTemplate = state.eventTemplates[payload.index];
+      state.eventTemplates.splice(payload.index, 1, eventTemplate);
+    } else {
+      state.eventsTemplates.push(payload);
+    }
     updateBreadCrumbs(state, { index: state.eventTemplate.length, payload });
   },
   DELETE_EVENT_TEMPLATE(state, { index }) {

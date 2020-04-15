@@ -121,7 +121,13 @@ Fonts
 
 */
 * {
-  font-family: "Lato", sans-serif;
+  font-family: "Lato", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+  :before,
+  :after {
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
 body,
@@ -131,6 +137,7 @@ html,
   width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
 #app {
