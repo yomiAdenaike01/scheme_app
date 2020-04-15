@@ -1,5 +1,8 @@
 <template>
-  <el-avatar :style="{ background: randColour() }">{{ initials }}</el-avatar>
+  <el-avatar :style="{ position: 'relative', background: randColour() }"
+    >{{ initials }}
+    <slot />
+  </el-avatar>
 </template>
 
 <script>
@@ -50,5 +53,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: initial;
 }
 </style>

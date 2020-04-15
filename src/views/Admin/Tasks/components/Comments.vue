@@ -202,7 +202,6 @@ export default {
 .comment_footer {
   display: none;
   width: 100%;
-  padding: 10px;
 }
 .delete_comment {
   border: none;

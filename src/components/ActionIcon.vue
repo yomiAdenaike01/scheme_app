@@ -51,7 +51,6 @@ export default {
   }
   &.rounded {
     border-radius: 50%;
-    border-top-left-radius: 0px;
   }
   border-radius: 5px;
   &.multi_icon {

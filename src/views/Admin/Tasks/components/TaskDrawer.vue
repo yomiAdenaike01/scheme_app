@@ -25,7 +25,13 @@
         <div class="information_wrapper">
           <div class="information_unit">
             <p>Assigned team members</p>
-            <AssignedUsers :users="taskInformation.assignedTo" />
+            <AssignedUsers
+              remove-user
+              add-new
+              :users="taskInformation.assignedTo"
+              @assignUser="handleUpdate"
+              @removeUser="handleUpdate"
+            />
           </div>
           <div class="information_unit">
             <p>Labels</p>
@@ -35,9 +41,9 @@
                 text: 'Create label',
                 actionStyle: 'squared'
               }"
-              @createLabel="handleLabels['create'].function($event)"
-              @updateLabel="handleLabels['update'].function($event)"
-              @deleteLabel="handleLabels['delete'].function($event)"
+              @createLabel="handleLabels['create'].function"
+              @updateLabel="handleLabels['update'].function"
+              @deleteLabel="handleLabels['delete'].function"
             />
           </div>
           <div class="information_unit">
@@ -322,6 +328,7 @@ export default {
     },
     handleUpdate(update) {
       this.updateTask({ ...this.defaultPayload, update });
+      this.view = false;
     },
     handleDescriptions() {
       // admin or assigned to
