@@ -10,7 +10,11 @@
         ref="comments_wrapper"
         class="comments_wrapper"
       >
-        <div v-for="comment in comments" :key="comment._id" class="comment">
+        <div
+          v-for="(comment, index) in comments"
+          :key="comment._id"
+          class="comment"
+        >
           <div class="comment_header">
             <Avatar :name="comment.assignedTo.name" />
             <small class="username">{{ comment.assignedTo.name }}</small>
@@ -22,16 +26,29 @@
           <div class="comment_message" @click="editMessage = true">
             <p>{{ comment.message }}</p>
           </div>
+          <div v-show="canInteract" class="comment_footer">
+            <el-button
+              class="delete_comment"
+              icon="el-icon-delete"
+              circle
+              @click="
+                $emit('deleteComment', {
+                  commentIndex: index,
+                  _id: comment._id
+                })
+              "
+            ></el-button>
+          </div>
         </div>
       </div>
 
-      <div v-if="canInteract" class="empty_comment_wrapper">
+      <div v-if="canInteract" class="create_comment_wrapper">
         <Avatar class="comment_avatar" :name="userInformation.name" />
         <el-input
           v-model="newMessage"
           class="input_comment"
           placeholder="Write a comment..."
-          @keyup.enter.native="$emit('createComment', newMessage), reset()"
+          @keyup.enter.native="createComment"
         ></el-input>
         <el-button
           type="text"
@@ -84,27 +101,17 @@ export default {
   },
 
   methods: {
-    emitComment(message) {
-      return new Promise((resolve, reject) => {
-        try {
-          this.$emit("createComment", message);
-          resolve();
-        } catch (error) {
-          reject();
-        }
-      });
-    },
-    createComment(message) {
-      this.emitComment(message).then(() => {
+    createComment() {
+      this.$emit("createComment", {
+        ref: this.$refs.comments_wrapper,
+        message: this.newMessage
+      }),
         this.reset();
-      });
     },
-
     reset() {
       this.newMessage = "";
       this.commentMessage = "";
       this.editMessage = false;
-      this.$emit("scrollToBottom", this.$refs.comments_wrapper);
     },
     handleDisplayActions(userID) {
       if (this.getIsAdmin || userID == this.userInformation._id) {
@@ -141,8 +148,8 @@ export default {
   height: 100%;
 }
 .comments_wrapper {
-  max-height: calc(100% - 400px);
-  overflow: auto;
+  max-height: calc(100% - 700px);
+  overflow-x: hidden;
 }
 .comment {
   display: flex;
@@ -151,6 +158,11 @@ export default {
   margin-bottom: 10px;
   max-height: fit-content;
   border-radius: 10px;
+  &:hover {
+    .comment_footer {
+      display: initial;
+    }
+  }
 }
 .input_comment {
   margin-right: 10px;
@@ -179,12 +191,21 @@ export default {
   padding: 10px;
 }
 
-.empty_comment_wrapper {
+.create_comment_wrapper {
   display: flex;
   align-items: center;
   padding: 20px;
 }
 .comment_avatar {
   margin-right: 10px;
+}
+.comment_footer {
+  display: none;
+  width: 100%;
+  padding: 10px;
+}
+.delete_comment {
+  border: none;
+  color: black;
 }
 </style>

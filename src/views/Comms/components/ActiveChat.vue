@@ -42,6 +42,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import scrollToBottom from "@/mixins/scrollToBottom";
 export default {
   name: "ActiveChat",
   components: {
@@ -49,6 +50,7 @@ export default {
     ChatActions: () => import("./ChatActions"),
     ChatMessage: () => import("./ChatMessage")
   },
+  mixins: [scrollToBottom],
   data() {
     return {
       intervalID: null,
@@ -222,7 +224,7 @@ export default {
         editted: false,
         userName
       }).then(() => {});
-      this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
+      this.scrollToBottom(this.$refs.chatMessages.scrollTop);
       this.chat.content = "";
     }
   }

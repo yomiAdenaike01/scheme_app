@@ -242,15 +242,18 @@ export default {
    * @param {*} state
    * @param {*} { taskIndex, boardIndex, data }
    */
-  CREATE_COMMENT(state, { taskIndex, boardIndex, data }) {
+  CREATE_COMMENT(state, { taskIndex, boardIndex, commentIndex = 0, data }) {
+    let comments = state.boards[boardIndex].tasks[taskIndex].comments;
     updateBreadCrumbs(state, "commentsRef", {
       taskIndex,
       boardIndex,
-      commentIndex:
-        state.boards[boardIndex].tasks[taskIndex].comments.length - 1
+      commentIndex: comments.length - 1
     });
-    console.log(data);
-    state.boards[boardIndex].tasks[taskIndex]?.comments.push(data);
+    if (commentIndex == 0) {
+      comments.push(data);
+    } else {
+      comments.splice(commentIndex, 0, data);
+    }
   },
 
   /**
@@ -258,14 +261,14 @@ export default {
    * @param {*} state
    * @param {*} { boardIndex, taskIndex, commentIndex }
    */
-  REMOVE_COMMENT(state, { boardIndex, taskIndex, commentIndex }) {
+  DELETE_COMMENT(state, { boardIndex, taskIndex, commentIndex }) {
     let comment =
       state.boards[boardIndex].tasks[taskIndex]?.comments[commentIndex];
     updateBreadCrumbs(state, "commentsRef", {
       boardIndex,
       taskIndex,
       commentIndex,
-      comment
+      data: comment
     });
     state.boards[boardIndex].tasks[taskIndex].comments.splice(commentIndex, 1);
   },

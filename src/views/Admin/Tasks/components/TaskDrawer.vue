@@ -63,7 +63,11 @@
             <i class="bx bx-align-left"></i>
             <span>Description</span>
           </div>
-          <p v-if="editDescription == false" @click="handleDescriptions">
+          <p
+            v-if="editDescription == false"
+            class="description"
+            @click="handleDescriptions"
+          >
             {{ taskInformation.description }}
           </p>
           <el-input
@@ -145,7 +149,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["boards"]),
+    ...mapState("Admin", ["boards", "commentRef"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation", "getGroupName"]),
     users() {
@@ -223,7 +227,7 @@ export default {
         create: {
           method: "POST",
           url,
-          function: function(message) {
+          function: function({ ref, message }) {
             vm.CREATE_COMMENT(
               Object.assign(
                 {
@@ -246,8 +250,9 @@ export default {
               url: this.url,
               data: { message, taskID: defaultPayload._id }
             }).catch(() => {
-              vm.REMOVE_COMMENT();
+              vm.DELETE_COMMENT();
             });
+            vm.scrollToBottom(ref);
           }
         },
 
@@ -255,13 +260,13 @@ export default {
           method: "DELETE",
           url,
           function: function({ commentIndex, _id }) {
-            vm.REMOVE_COMMENT(Object.assign({ commentIndex }, defaultPayload));
+            vm.DELETE_COMMENT(Object.assign({ commentIndex }, defaultPayload));
             vm.request({
               method: this.method,
               url: this.url,
               data: { _id }
             }).catch(() => {
-              vm.RESTORE_COMMENT();
+              vm.CREATE_COMMENT(this.commentRef);
             });
           }
         }
@@ -307,7 +312,7 @@ export default {
     ...mapActions("Admin", ["deleteTask", "updateTask"]),
     ...mapMutations("Admin", [
       "CREATE_COMMENT",
-      "REMOVE_COMMENT",
+      "DELETE_COMMENT",
       "CREATE_LABEL",
       "UPDATE_LABEL",
       "REMOVE_LABEL"
@@ -353,6 +358,14 @@ export default {
   }
 }
 
+.description {
+  min-height: 300px;
+  max-height: 300px;
+  overflow-x: hidden;
+  padding: 10px;
+  background: rgb(250, 250, 250);
+  border-radius: 10px;
+}
 .inner_wrapper {
   padding: 0 50px;
   height: 100%;
