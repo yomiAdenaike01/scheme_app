@@ -239,7 +239,6 @@ export default {
   display: flex;
   flex: 1;
   height: calc(100% - 130px);
-
   background: rgb(251, 251, 251);
 }
 </style>

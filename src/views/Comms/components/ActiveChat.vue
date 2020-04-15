@@ -219,8 +219,10 @@ export default {
         isRead: false,
         editted: false,
         userName
+      }).then(() => {
+        this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
       });
-      this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
+      this.chat.content = "";
     }
   }
 };
@@ -257,6 +259,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  max-height: calc(100% - 130px);
 }
 .active_chat_container {
   max-height: fit-content;
