@@ -219,9 +219,8 @@ export default {
         isRead: false,
         editted: false,
         userName
-      }).then(() => {
-        this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
-      });
+      }).then(() => {});
+      this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
       this.chat.content = "";
     }
   }

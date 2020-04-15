@@ -27,7 +27,6 @@ export default {
       }
       // Add fake message
       commit("UPDATE_MESSAGES", payload);
-      resolve();
       // dispatch(
       //   "request",
       //   {
