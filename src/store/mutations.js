@@ -26,15 +26,15 @@ export default {
   },
   // Groups
   CREATE_GROUP(state, { groupType, payload }) {
+    let group = state.clientInformation[groupType];
     let groupExists =
       state.clientInformation[groupType].findIndex(group => {
         return group.label == payload.label;
       }) > -1;
     if (!groupExists) {
-      state.clientInformation[groupType].push(payload);
+      group.push(payload);
       updateBreadCrumbs(state, "rootGroupRef", { groupType, payload });
     }
-    console.log(state.rootGroupRef, state.clientInformation[groupType]);
   },
   DELETE_GROUP(state, { groupType, groupIndex }) {
     Vue.delete(state.clientInformation[groupType], groupIndex);

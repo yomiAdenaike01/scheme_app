@@ -1,19 +1,4 @@
 import Vue from "vue";
-
-/**
- *
- * @param {string} findQuery
- * @param {Object} state
- * @param {string} param
- * @param {string} id
- * @param {string} query
- */
-function findItemIndex(state, param = "boards", id) {
-  return state[param].findIndex(item => {
-    return item._id == id;
-  });
-}
-
 /**
  *
  *
@@ -26,46 +11,21 @@ function updateBreadCrumbs(state, param, items) {
 }
 
 export default {
-  CREATE_EVENT_TEMPLATE(state, payload) {
-    state.eventTemplates.push(payload);
-    updateBreadCrumbs(state, "templateRef", {
-      templateIndex: state.eventTemplates.length,
-      template: payload
-    });
-  },
-  DELETE_EVENT_TEMPLATE(state, payload) {
-    let templateIndex = findItemIndex(
-      state,
-      "eventTemplates",
-      payload.templateID
-    );
-    updateBreadCrumbs(state, "templateRef", {
-      template: state.eventTemplates[templateIndex],
-      templateIndex
-    });
-  },
-  /**
-   *
-   * @param {Object} state
-   * @param {String} payload (push , pull, update)
-   */
-  RESTORE_EVENT_TEMPLATE(state, payload = "push") {
-    if (payload == "push") {
-      state.eventTemplates.push(state.templateRef.template);
-    }
-    if (payload == "pull") {
-      state.eventTemplates.splice(state.templateRef.templateIndex, 1);
-    }
-    if (payload == "update") {
-      state.eventTemplates.splice(
-        state.templateRef.templateIndex,
-        0,
-        state.templateRef.template
-      );
-    }
-  },
   UPDATE_EVENT_TEMPLATES(state, payload) {
     Vue.set(state, "eventTemplates", payload);
+  },
+  CREATE_EVENT_TEMPLATE(state, payload) {
+    state.eventsTemplates.push(payload);
+    updateBreadCrumbs(state, { index: state.eventTemplate.length, payload });
+  },
+  DELETE_EVENT_TEMPLATE(state, { index }) {
+    updateBreadCrumbs(state, { payload: state.eventTemplates[index] });
+    Vue.delete(state.eventTemplates, index);
+  },
+  UPDATE_EVENT_TEMPLATE(state, { index, payload }) {
+    updateBreadCrumbs(state, { index, payload: state.eventTemplates[index] });
+    let template = state.eventTemplates[index];
+    template = Object.assign(payload, template);
   },
   // Reports
   UPDATE_EVENT_FILTERS(state, payload) {
@@ -75,13 +35,37 @@ export default {
   UPDATE_EVENTS(state, payload) {
     Vue.set(state, "eventsInformation", payload);
   },
+  CREATE_EVENT(state, payload) {
+    // Push to upcoming
+    state.eventsInformation.upcoming.push(payload);
+    updateBreadCrumbs(state, {
+      index: state.eventsInformation.length - 1
+    });
+  },
+  UPDATE_EVENT(state, { eventIndex, eventArray, payload }) {
+    state.eventsInformation[eventArray][eventIndex] = {
+      ...payload,
+      ...state.eventsInformation[eventArray][eventIndex]
+    };
+    updateBreadCrumbs(state, "eventRef", arguments[1]);
+  },
+  DELETE_EVENT(state, { eventIndex, eventArray }) {
+    let eventAtIndex = state.eventsInformation[eventArray][eventIndex],
+      events = state.eventsInformation[eventArray];
+    updateBreadCrumbs(state, "eventRef", {
+      eventIndex,
+      eventArray,
+      payload: eventAtIndex
+    });
+    Vue.delete(events, eventAtIndex);
+  },
   UPDATE_REQUESTS(state, payload) {
     state.requestsInformation = payload;
   },
 
   REASSIGN_ELEMENTS(state, { assignment = "teamInformation", group }) {
     let groupedElements = [],
-      groupKey = assignment == "teamInformation" ? "grouID" : "type";
+      groupKey = assignment == "teamInformation" ? "groupID" : "type";
     for (let i = 0, len = state[assignment].length; i < len; i++) {
       let { groupID } = state[assignment][i];
       if (groupID == group) {

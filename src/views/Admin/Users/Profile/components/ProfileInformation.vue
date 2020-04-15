@@ -141,6 +141,8 @@ export default {
           index: this.teamMemberIndex,
           payload: e
         });
+        this.closeDialog();
+
         this.request({
           method: "PUT",
           url: "users/update",
@@ -155,6 +157,7 @@ export default {
         index: this.teamMemberIndex,
         payload: { groupID: this.selectedGroup }
       });
+      this.closeDialog();
 
       this.request({
         method: "PUT",

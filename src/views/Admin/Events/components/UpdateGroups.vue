@@ -39,9 +39,9 @@ export default {
   },
   data() {
     return {
-      selectedConfig: "Create",
+      selectedConfig: "",
       groupData: {},
-      displayContent: true
+      displayContent: false
     };
   },
   computed: {
@@ -322,7 +322,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "genPromptBox"]),
     ...mapMutations(["CREATE_GROUP", "UPDATE_GROUP", "DELETE_GROUP"]),
     ...mapMutations("Admin", ["CLEAR_BREADCRUMBS", "REASSIGN_ELEMENTS"]),
     changeContent(button) {
