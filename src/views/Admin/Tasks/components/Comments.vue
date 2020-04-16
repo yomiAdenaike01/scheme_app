@@ -26,20 +26,32 @@
           <div class="comment_message" @click="editMessage = true">
             <p>{{ comment.message }}</p>
           </div>
-          <div v-show="canInteract" class="comment_footer">
-            <el-button
-              class="delete_comment"
-              icon="el-icon-delete"
-              circle
-              @click="
-                $emit('deleteComment', {
-                  commentIndex: index,
-                  _id: comment._id
-                })
-              "
-            ></el-button>
-          </div>
+          <el-button
+            v-show="canInteract"
+            class="delete_comment"
+            icon="el-icon-close"
+            type="danger"
+            circle
+            @click="
+              $emit('deleteComment', {
+                commentIndex: index,
+                _id: comment._id
+              })
+            "
+          ></el-button>
         </div>
+      </div>
+
+      <div v-else class="no_comments_wrapper">
+        <InformationDisplay
+          :display-text="{
+            hasIcon: true,
+
+            content: 'Be the first to comment on this task'
+          }"
+        >
+          <i slot="header" class="grey large_icon bx bx-comment-detail"></i>
+        </InformationDisplay>
       </div>
 
       <div v-if="canInteract" class="create_comment_wrapper">
@@ -67,7 +79,8 @@ export default {
   name: "Comments",
   components: {
     ActionIcon: () => import("@/components/ActionIcon"),
-    Avatar: () => import("@/components/Avatar")
+    Avatar: () => import("@/components/Avatar"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
   props: {
     mode: {
@@ -153,6 +166,7 @@ export default {
 }
 .comment {
   display: flex;
+  position: relative;
   flex-direction: column;
   background: rgb(250, 250, 250);
   margin-bottom: 10px;
@@ -199,12 +213,22 @@ export default {
 .comment_avatar {
   margin-right: 10px;
 }
-.comment_footer {
-  display: none;
-  width: 100%;
+.no_comments_wrapper {
+  background: rgb(250, 250, 250);
 }
+
 .delete_comment {
   border: none;
-  color: black;
+  color: #444;
+  position: absolute;
+  right: 0;
+  top: 0px;
+  background: rgb(240, 240, 240);
+  &:hover {
+    background: rgb(230, 230, 230);
+  }
+}
+.large_icon {
+  font-size: 3em;
 }
 </style>
