@@ -1,6 +1,7 @@
 <template>
   <div class="avatar_container">
-    <customAvatar :username="name" :size="size" class="avatar"> </customAvatar>
+    <customAvatar :username="name" :lighten="100" :size="size" class="avatar">
+    </customAvatar>
     <slot />
   </div>
 </template>

@@ -1,6 +1,11 @@
 import "@/assets/element-variables.scss";
-
 import Vue from "vue";
+import lang from "element-ui/lib/locale/lang/en";
+import locale from "element-ui/lib/locale";
+
+// configure language
+locale.use(lang);
+
 import {
   Dialog,
   Autocomplete,
