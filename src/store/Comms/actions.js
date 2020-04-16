@@ -94,14 +94,16 @@ export default {
       }
     });
   },
-  startChat({ dispatch }, payload) {
+  startChat({ dispatch, commit, state: { chats } }, payload) {
     return new Promise((resolve, reject) => {
       dispatch(
         "request",
         { method: "POST", url: "messenger/start", data: payload },
         { root: true }
       )
-        .then(() => {
+        .then(response => {
+          commit("DELETE_CHAT", chats.length - 1);
+          commit("UPDATE_CHATS", response);
           resolve();
         })
         .catch(error => {

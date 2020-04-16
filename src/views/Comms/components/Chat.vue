@@ -80,19 +80,20 @@ export default {
     },
     deleteChat() {
       this.DELETE_CHAT(this.chatIndex);
-      this.REMOVE_GLOBAL_INTERVAL("getChatMessages");
-      this.request({
-        method: "DELETE",
-        url: "messenger/chat",
-        data: { _id: this.chatInformation._id }
-      })
-        .then(() => {
-          this.loading = false;
-          this.getChats();
+      if (!this.chatInformation?.initChat) {
+        this.request({
+          method: "DELETE",
+          url: "messenger/chat",
+          data: { _id: this.chatInformation._id }
         })
-        .catch(() => {
-          this.loading = false;
-        });
+          .then(() => {
+            this.loading = false;
+            this.getChats();
+          })
+          .catch(() => {
+            this.loading = false;
+          });
+      }
     }
   }
 };
