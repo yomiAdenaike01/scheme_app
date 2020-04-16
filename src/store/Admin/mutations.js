@@ -20,7 +20,7 @@ export default {
     Vue.delete(state.teamInformation, index);
   },
   UPDATE_EVENT_TEMPLATES(state, payload) {
-    Vue.set(state, "eventTemplates", payload);
+    state.eventTemplates = payload;
   },
   CREATE_EVENT_TEMPLATE(state, payload) {
     if (payload.index) {
@@ -29,7 +29,7 @@ export default {
     } else {
       state.eventsTemplates.push(payload);
     }
-    updateBreadCrumbs(state, { index: state.eventTemplate.length, payload });
+    updateBreadCrumbs(state, { index: state.eventTemplates.length, payload });
   },
   DELETE_EVENT_TEMPLATE(state, { index }) {
     updateBreadCrumbs(state, { payload: state.eventTemplates[index] });
@@ -40,6 +40,7 @@ export default {
     let template = state.eventTemplates[index];
     template = Object.assign(payload, template);
   },
+
   // Reports
   UPDATE_EVENT_FILTERS(state, payload) {
     Vue.set(state, "eventFilters", payload);

@@ -1,4 +1,31 @@
 export default {
+  createStubChat(context) {
+    let isoDate = new Date().toISOString();
+    context.commit("UPDATE_CHATS", {
+      mutedNotifications: [],
+      userOne: {
+        name: context.rootState.userInformation.name,
+        _id: context.rootState.userInformation._id
+      },
+      userTwo: {
+        name: "New message",
+        _id: Math.random()
+          .toString(16)
+          .slice(2)
+      },
+      dateCreated: isoDate,
+      dateUpdated: isoDate,
+      initChat: true,
+      _id: Math.random()
+        .toString(16)
+        .slice(2),
+      messages: []
+    });
+    context.commit(
+      "UPDATE_ACTIVE_CHAT",
+      context.state.chats[context.state.chats.length - 1]
+    );
+  },
   deleteChat({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
       dispatch(
@@ -67,16 +94,14 @@ export default {
       }
     });
   },
-  startChat({ dispatch, commit }, payload) {
+  startChat({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
       dispatch(
         "request",
         { method: "POST", url: "messenger/start", data: payload },
         { root: true }
       )
-        .then(response => {
-          commit("UPDATE_CHATS", response);
-          dispatch("getChats");
+        .then(() => {
           resolve();
         })
         .catch(error => {

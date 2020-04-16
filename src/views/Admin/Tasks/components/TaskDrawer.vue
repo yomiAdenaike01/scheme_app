@@ -50,7 +50,7 @@
             <p>Due date</p>
             <div v-if="taskInformation.dueDate">
               <i class="bx bx-time"></i>
-              {{ taskInformation.dueDate }}
+              {{ formatDate(taskInformation.dueDate) }}
             </div>
             <el-popover v-model="popoverDisplay.dueDate" trigger="click">
               <ActionIcon
@@ -59,7 +59,11 @@
                 text="Set due date"
                 action-style="squared"
               />
-              <Form :config="dueDateConfig" @val="setDueDate" />
+              <Form
+                :config="dueDateConfig"
+                class="full_width"
+                @val="setDueDate"
+              />
             </el-popover>
           </div>
         </div>

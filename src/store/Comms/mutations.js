@@ -10,22 +10,28 @@ function setActiveChat(state, chat) {
   }
 }
 export default {
-  UPDATE_MESSAGES(state, messages) {
-    if (typeof messages == "object") {
-      state.messages.push(messages);
-    }
-    if (Array.isArray(messages)) {
-      state.messages = messages;
-    }
-  },
-
   UPDATE_CHATS(state, payload) {
-    if (Array.isArray(payload)) {
-      state.chats = payload;
-    } else {
-      state.chats.push(payload);
+    payload = Array.isArray(payload) ? payload : [payload];
+
+    if (payload.length > 0) {
+      let otherLen = state.chats.length;
+      for (let i = 0, len = payload.length; i < len; i++) {
+        if (otherLen == 0) {
+          state.chats.push(payload[i]);
+        } else {
+          let foundChat = state.chats.find(chat => {
+            return chat._id == payload[i]._id;
+          });
+          if (!foundChat) {
+            state.chats.push(payload[i]);
+          }
+        }
+      }
     }
-    setActiveChat(state, payload);
+    setActiveChat(state, state.chats[state.chats.length - 1]);
+  },
+  UPDATE_MESSAGES(state, payload) {
+    state.chats[state.activeChat?.index]?.messages?.push(payload);
   },
 
   UPDATE_ACTIVE_CHAT(state, payload) {

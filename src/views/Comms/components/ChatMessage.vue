@@ -29,9 +29,6 @@ export default {
   name: "Message",
 
   props: {
-    recievedBy: {
-      type: String
-    },
     sentBy: {
       type: String
     },

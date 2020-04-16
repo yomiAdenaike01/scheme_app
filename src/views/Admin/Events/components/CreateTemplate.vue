@@ -93,7 +93,9 @@ export default {
           model: "type",
           "component-type": "select",
           placeholder: "Select event type",
-          options: this.clientInformation.eventGroups,
+          options: [...this.clientInformation.eventGroups].map(group => {
+            return { label: group.label, value: group.groupID };
+          }),
           optional: true,
           mutiple: true
         },
@@ -190,11 +192,11 @@ export default {
         );
       }
       this.createEventTemplate({ ...templateForm })
-        .then(response => {
+        .then(() => {
           this.loading = false;
           this.$emit("toggle", false);
         })
-        .catch(err => {
+        .catch(() => {
           this.loading = false;
           this.$emit("toggle", false);
         });

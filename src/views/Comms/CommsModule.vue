@@ -1,7 +1,7 @@
 <template>
   <div class="comms_container">
     <Chats />
-    <ActiveChat v-if="hasEntries(activeChat)" />
+    <ActiveChat v-if="hasEntries(activeChat)" :router-user="$route" />
   </div>
 </template>
 

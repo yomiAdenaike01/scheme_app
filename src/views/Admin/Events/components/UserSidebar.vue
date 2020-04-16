@@ -20,7 +20,7 @@
             :type="member.isOnline ? 'success' : 'danger'"
             class="item"
           >
-            <Avatar :name="member.name" />
+            <Avatar :name="member.name" :size="40" />
           </el-badge>
         </Dropdown>
       </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import InformationDisplay from "@/components/InformationDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
@@ -72,21 +72,20 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {
-      let items = [
-        // {
-        //   name: "Message Team Member",
-        //   command: "message"
-        // },
+      return [
         {
-          name: "View Team Member",
+          name: "Message",
+          command: "message"
+        },
+        {
+          name: "View",
           command: "view_team_member"
         }
       ];
-
-      return items;
     }
   },
   methods: {
+    ...mapActions("Comms", ["createStubChat"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     handleEvents(event) {
@@ -96,6 +95,7 @@ export default {
             name: "comms",
             params: { id: this.hoveredTeamMember }
           });
+          this.createStubChat();
           break;
         }
         case "view_team_member": {

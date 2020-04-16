@@ -10,16 +10,14 @@
         {{ `${button} group` }}
       </el-button>
     </div>
-    <el-collapse-transition>
-      <div v-if="displayContent" class="group_management_container">
-        <Form
-          :config="form"
-          all-optional
-          :submit-button="{ text: `${selectedConfig} group` }"
-          @val="handleRequest"
-        />
-      </div>
-    </el-collapse-transition>
+    <div v-if="displayContent" class="group_management_container">
+      <Form
+        :config="form"
+        all-optional
+        :submit-button="{ text: `${selectedConfig} group` }"
+        @val="handleRequest"
+      />
+    </div>
   </div>
 </template>
 

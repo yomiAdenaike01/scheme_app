@@ -12,7 +12,6 @@
         >
       </div>
     </div>
-    <el-collapse-transition>
       <div v-if="displayDetails" class="mt-3">
         <h3><strong>Details</strong></h3>
         {{ getEventAssignedTo(data.content.assignedTo).text }}
@@ -33,7 +32,6 @@
           >Apply</el-button
         >
       </div>
-    </el-collapse-transition>
   </div>
 </template>
 

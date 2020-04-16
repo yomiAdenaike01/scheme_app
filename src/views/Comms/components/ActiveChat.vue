@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="current_chat_container">
+  <div class="current_chat_container">
     <div class="active_chat_container">
       <div class="current_chat_header">
         <el-autocomplete
@@ -51,6 +51,12 @@ export default {
     ChatMessage: () => import("./ChatMessage")
   },
   mixins: [scrollToBottom],
+  props: {
+    routeUser: {
+      type: String,
+      default: ""
+    }
+  },
   data() {
     return {
       intervalID: null,
@@ -62,7 +68,7 @@ export default {
         sentAt: new Date().toISOString(),
         isRead: false,
         editted: false,
-        recieverID: ""
+        reciever: ""
       }
     };
   },
@@ -72,14 +78,14 @@ export default {
     ...mapState("Admin", ["teamInformation"]),
     ...mapGetters("Admin", ["getUserInformation"]),
     chatMessages() {
-      return [...this.messages].map(message => {
+      return [...this.activeChat?.messages].map(message => {
+        console.log(message.sender._id, this.userInformation._id);
         return Object.assign(
           {
             id: message._id,
             sentAt: this.initMoment(message.sentAt).calendar(),
-            sentBy: message.senderID.name,
-            recievedBy: message.senderID.name,
-            isSentByUser: message.senderID._id == this.userInformation._id
+            sentBy: message.sender?.name,
+            isSentByUser: message.sender._id == this.userInformation._id
           },
           message
         );
@@ -92,31 +98,30 @@ export default {
       return this.hasEntries(this.activeChat);
     },
     queryTeamList() {
-      return this.teamInformation.map(member => {
-        return {
-          value: member.name,
-          link: member._id
-        };
-      });
-    }
-  },
-  watch: {
-    activeChat() {
-      this.clearMessageInterval().then(() => {
-        this.initGetChats();
-      });
+      let query = [];
+      if (!this.routeUser) {
+        query = this.teamInformation.map(member => {
+          return {
+            value: member.name,
+            link: member._id
+          };
+        });
+      } else {
+        query = this.teamInformation.findIndex(member => {
+          return member._id == this.routerUser;
+        });
+        query = [
+          {
+            value: query.name,
+            link: query._id
+          }
+        ];
+      }
+      console.log(query);
+      return query;
     }
   },
 
-  mounted() {
-    this.initGetChats();
-  },
-  destroyed() {
-    this.clearMessageInterval();
-  },
-  beforeDestory() {
-    this.clearMessageInterval();
-  },
   methods: {
     ...mapMutations([
       "UPDATE_NOTIFICATIONS",
@@ -132,49 +137,7 @@ export default {
     deleteMessage(messageID) {
       console.log(messageID);
     },
-    initGetChats() {
-      this.loading = true;
-      this.getChatMessages()
-        .then(() => {
-          this.loading = false;
-          this.beginMessageInterval();
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-    beginMessageInterval() {
-      if (!this.activeChat?.initChat && this.hasEntries(this.activeChat)) {
-        this.intervalID = "getChatMessages";
-        this.CREATE_GLOBAL_INTERVAL({
-          id: this.intervalID,
-          duration: this.requestIntervals.chatMessages,
-          method: () => {
-            return new Promise((resolve, reject) => {
-              this.getChatMessages()
-                .then(() => {
-                  resolve();
-                })
-                .catch(() => {
-                  reject();
-                });
-            });
-          }
-        });
-      }
-    },
-    clearMessageInterval() {
-      return new Promise((resolve, reject) => {
-        try {
-          if (this.intervalID) {
-            this.CLEAR_GLOBAL_INTERVAL(this.intervalID);
-            resolve();
-          }
-        } catch (error) {
-          reject(error);
-        }
-      });
-    },
+
     includeEmoji(emoji) {
       console.log(emoji);
     },
@@ -182,28 +145,30 @@ export default {
       console.log(attachment);
     },
     setReciever({ link }) {
-      this.chat.recieverID = link;
+      this.chat.reciever = link;
     },
 
     queryTeam(name, cb) {
       let queriedTeam = [];
-      if (this.queryTeamList.length > 0) {
+      if (Array.isArray(this.queryTeamList) && this.queryTeamList.length > 0) {
         name = name?.toLowerCase() ?? this.teamQuery?.toLowerCase();
         queriedTeam = this.queryTeamList.filter(x => {
           return x?.value?.toLowerCase() == name;
         });
+      } else {
+        queriedTeam = this.queryTeamList;
       }
       cb(queriedTeam.length > 0 ? queriedTeam : this.queryTeamList);
     },
     sendChatMessage() {
-      let userName = this.getUserInformation(this.chat.recieverID)?.name;
-      const createError = message => {
+      let userName = this.getUserInformation(this.chat.reciever)?.name;
+      function createError(message) {
         this.UPDATE_NOTIFICATIONS({
           title: "Failed to send message",
           message,
           type: "error"
         });
-      };
+      }
       if (!this.chat.content) {
         return createError("No message content found.");
       }
@@ -213,19 +178,22 @@ export default {
       }
 
       if (!this.isNewChat) {
-        this.chat.recieverID = this.activeChat.userTwo;
-        userName = this.getUserInformation(this.chat.recieverID)?.name;
+        this.chat.reciever = this.activeChat.userTwo;
+        userName = this.getUserInformation(this.chat.reciever)?.name;
       }
-
-      this.sendMessage({
+      let sendMessagePayload = {
         ...this.chat,
         chatID: this.activeChat._id,
         isRead: false,
         editted: false,
-        userName
-      }).then(() => {});
-      this.scrollToBottom(this.$refs.chatMessages);
+        sender: {
+          _id: this.userInformation._id,
+          name: this.userInformation.name
+        }
+      };
+      this.sendMessage(sendMessagePayload);
       this.chat.content = "";
+      this.scrollToBottom(this.$refs.chatMessages);
     }
   }
 };

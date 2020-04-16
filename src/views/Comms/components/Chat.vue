@@ -8,7 +8,7 @@
     <Avatar :name="chatInformation.userTwo.name" />
     <div class="text_container">
       <p v-if="!isNewChat">
-        {{ chatInformation.message.content }}
+        {{ lastMessage.content }}
       </p>
       <p v-else>New Message</p>
       <small class="grey">{{
@@ -48,18 +48,17 @@ export default {
   computed: {
     ...mapState("Comms", ["activeChat"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    lastMessage() {
+      return this.chatInformation.messages[
+        this.chatInformation.messages.length - 1
+      ];
+    },
     isNewChat() {
       return this.chatInformation?.initChat;
     },
     isActive() {
-      return this.activeChat._id == this.chatInformation._id;
+      return this.activeChat?._id == this.chatInformation._id;
     }
-  },
-  activated() {
-    this.updateScrollPos();
-  },
-  mounted() {
-    this.updateScrollPos();
   },
 
   methods: {

@@ -50,13 +50,11 @@
         ></i>
       </div>
     </div>
-    <el-collapse-transition>
       <div v-if="displayMoreDetails">
         <el-button type="danger" plain size="small" @click="deleteEvent"
           >Delete event</el-button
         >
       </div>
-    </el-collapse-transition>
   </div>
 </template>
 
