@@ -41,8 +41,10 @@ export default {
     //Delete the messages
     updateBreadCrumbs(state, "chatRef", { index, chat: state.chats[index] });
     state.messages = [];
-    if (state.chats[index - 1]) {
+    if (index > 0) {
       setActiveChat(state, state.chats[index - 1]);
+    } else {
+      Vue.set(state, "activeChat", {});
     }
     Vue.delete(state.chats, index);
   }

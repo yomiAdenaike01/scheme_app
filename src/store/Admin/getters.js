@@ -26,10 +26,10 @@ export default {
       weekends
     };
   },
-  getUsersInUserGroup: ({ teamInformation }) => userGroupID => {
+  getUsersInUserGroup: ({ teamInformation }) => userGroup => {
     return teamInformation
       .filter(({ groupID }) => {
-        return userGroupID == groupID;
+        return userGroup == groupID;
       })
       .map(({ _id }) => {
         return _id;
