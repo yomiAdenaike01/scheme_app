@@ -1,7 +1,24 @@
 <template>
-  <div class="comms_container">
+  <div v-if="team.length > 0" class="comms_container">
     <Chats />
-    <ActiveChat v-if="hasEntries(activeChat)" :router-user="$route" />
+    <ActiveChat
+      v-if="hasEntries(activeChat)"
+      :user-to-message="userToMessage"
+    />
+  </div>
+  <div v-else class="no_content center">
+    <InformationDisplay
+      :display-text="{
+        heading: 'No team members',
+        hasIcon: true,
+        content: 'To create a team member please go to user management'
+      }"
+    >
+      <i slot="header" class="bx bx-user"></i>
+      <el-button slot="body" type="text" @click="$router.push({ name: 'user' })"
+        >Go to user management</el-button
+      >
+    </InformationDisplay>
   </div>
 </template>
 
@@ -11,11 +28,16 @@ export default {
   name: "CommsModule",
   components: {
     Chats: () => import("./components/Chats"),
-    ActiveChat: () => import("./components/ActiveChat")
+    ActiveChat: () => import("./components/ActiveChat"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
   computed: {
+    ...mapState(["requestIntervals"]),
+    ...mapState("Admin", ["team"]),
     ...mapState("Comms", ["activeChat"]),
-    ...mapState(["requestIntervals"])
+    userToMessage() {
+      return this.$route.params?.userToMessage;
+    }
   },
   created() {
     this.CREATE_GLOBAL_INTERVAL({

@@ -43,7 +43,7 @@
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
 
-      <p class="member_name">{{ group }}</p>
+      <p class="member_name">{{ localUserInformation.userGroup.label }}</p>
     </div>
   </div>
 </template>
@@ -61,17 +61,19 @@ export default {
     };
   },
   computed: {
-    ...mapState(["userInformation"]),
-    ...mapState("Admin", ["teamInformation"]),
-    ...mapGetters([
-      "getIsAdmin",
-      "getPreviousDeviceInformation",
-      "getActiveDialog"
-    ]),
-    ...mapGetters("Admin", ["getGroupName", "getUserGroups", "teamRef"]),
+    ...mapState(["userInformation", "clientInformation"]),
+    ...mapState("Admin", ["team"]),
+    ...mapGetters(["getIsAdmin", "getActiveDialog"]),
+    ...mapGetters("Admin", ["getUserGroups", "teamRef"]),
 
     localUserInformation() {
       return this.getActiveDialog()?.data;
+    },
+
+    selectedGroupData() {
+      return this.clientInformation.userGroups.find(group => {
+        return group._id == this.selectedGroup;
+      });
     },
 
     updateUserForm() {
@@ -108,12 +110,9 @@ export default {
     date() {
       return this.formatDate(this.localUserInformation.dateCreated);
     },
-    group() {
-      return this.getGroupName("user", this.localUserInformation.groupID)
-        ?.label;
-    },
+
     teamMemberIndex() {
-      return this.teamInformation.findIndex(x => {
+      return this.team.findIndex(x => {
         return x._id == this.localUserInformation._id;
       });
     }
@@ -128,7 +127,7 @@ export default {
     ]),
     ...mapActions("Admin", ["getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
-    ...mapMutations("Admin", ["UPDATE_ONE_TEAM_MEMBER", ""]),
+    ...mapMutations("Admin", ["UPDATE_ONE_TEAM_MEMBER", "DELETE_TEAM_MEMBER"]),
     updateUser(e) {
       if (!this.hasEntries(e)) {
         this.UPDATE_NOTIFICATIONS({
@@ -155,21 +154,20 @@ export default {
     assignUserToGroup() {
       this.UPDATE_ONE_TEAM_MEMBER({
         index: this.teamMemberIndex,
-        payload: { groupID: this.selectedGroup }
+        payload: { userGroup: this.selectedGroupData }
       });
-      this.closeDialog();
 
       this.request({
         method: "PUT",
         url: "users/update",
         data: {
           _id: this.localUserInformation._id,
-          update: { groupID: this.selectedGroup }
+          update: { userGroup: this.selectedGroup }
         }
       }).catch(() => {
         this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);
-        this.loading = false;
       });
+      this.closeDialog();
     },
     removeUser() {
       this.genPromptBox({

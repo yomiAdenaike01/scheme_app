@@ -50,7 +50,7 @@ export default {
       "weeklyTimesheetUploaded",
       "requestIntervals"
     ]),
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
     keymap() {
       return {

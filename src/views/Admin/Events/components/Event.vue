@@ -79,7 +79,7 @@ export default {
     ...mapState(["userInformation"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getGroupName", "getEventAssignedTo"]),
-    ...mapState("Admin", ["groupIDs", "teamInformation"]),
+    ...mapState("Admin", ["groupIDs", "team"]),
 
     isEventMine() {
       return (

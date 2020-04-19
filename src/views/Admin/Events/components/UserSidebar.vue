@@ -4,7 +4,7 @@
 
     <div v-if="getFilteredTeam.length > 0" class="users_container">
       <div
-        v-for="(member, index) in teamInformation"
+        v-for="(member, index) in team"
         :key="index"
         class="team_member_container"
       >
@@ -12,7 +12,7 @@
           :items="items"
           position="left"
           :icon="false"
-          @click.native="hoveredTeamMember = member"
+          @click.native="selectedUser = member"
           @method="handleEvents"
         >
           <el-badge
@@ -62,13 +62,13 @@ export default {
 
   data() {
     return {
-      hoveredTeamMember: null,
+      selectedUser: null,
       loaderTimeout: null,
       loadingTeam: true
     };
   },
   computed: {
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {
@@ -93,7 +93,12 @@ export default {
         case "message": {
           this.$router.push({
             name: "comms",
-            params: { id: this.hoveredTeamMember }
+            params: {
+              userToMessage: {
+                name: this.selectedUser?.name,
+                _id: this.selectedUser?._id
+              }
+            }
           });
           this.createStubChat();
           break;
@@ -102,7 +107,7 @@ export default {
           this.UPDATE_DIALOG_INDEX({
             dialog: "profile",
             view: true,
-            data: this.hoveredTeamMember
+            data: this.selectedUser
           });
           break;
         }

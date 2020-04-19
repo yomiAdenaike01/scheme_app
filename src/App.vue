@@ -21,7 +21,8 @@ export default {
   mixins: [refactorLocation],
   data() {
     return {
-      loading: true
+      loading: true,
+      dialogShowing: false
     };
   },
   computed: {
@@ -31,7 +32,7 @@ export default {
       "defaultSize",
       "clientInformation"
     ]),
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters(["getIsIE"]),
 
     isValidClient() {
@@ -72,15 +73,19 @@ export default {
             })
             .catch(() => {
               this.loading = false;
-              this.genPromptBox({
-                boxType: "prompt",
-                title: "No client found",
-                text:
-                  "Please enter your client subdomain to go to your scheme cloud instance",
-                type: "info"
-              }).then(({ value }) => {
-                this.refactorWindowLocation(value);
-              });
+              this.REMOVE_USER();
+              if (this.dialogShowing == false) {
+                this.genPromptBox({
+                  boxType: "prompt",
+                  title: "No client found",
+                  text:
+                    "Please enter your client subdomain to go to your scheme cloud instance",
+                  type: "info"
+                }).then(({ value }) => {
+                  this.refactorWindowLocation(value);
+                });
+                this.dialogShowing = true;
+              }
               reject();
             });
         });
@@ -146,10 +151,16 @@ html,
   width: 100%;
   height: 100%;
 }
-p,
-span {
-  font-size: 0.9em;
+.no_content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  &.center {
+    justify-content: center;
+    align-items: center;
+  }
 }
+
 .grey {
   color: #999;
 }
@@ -213,6 +224,20 @@ span {
 
 .no_events {
   pointer-events: none;
+}
+.hover_indicator {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  border-radius: 50%;
+  background: #efefef;
+  padding: 0px 10px;
+  z-index: 999;
+  color: #888;
+  cursor: pointer;
+  &:hover {
+    background: darken(#efefef, 4);
+  }
 }
 /*
 
@@ -280,8 +305,10 @@ textarea {
 .el-textarea,
 .el-textarea__inner,
 .el-input__inner {
-  border-radius: 10px !important;
-  border-color: rgb(190, 190, 190) !important;
+  border-color: rgb(200, 200, 200) !important;
+}
+.el-form--label-top {
+  padding: 0 !important;
 }
 /*
 

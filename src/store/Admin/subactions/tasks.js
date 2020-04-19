@@ -86,9 +86,10 @@ export default {
     return new Promise((resolve, reject) => {
       commit("UPDATE_BOARDS", { data: payload, action: "create" });
       updateBoardQuota(commit, rootState, "minus");
+      let { _id, ...data } = payload;
 
       payload = {
-        data: { ...payload },
+        data,
         method: "POST",
         url: "tasks/boards/create"
       };

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from "vuex";
+import { mapActions, mapState, mapMutations, mapGetters } from "vuex";
 import Form from "@/components/Form";
 export default {
   name: "UpdateGroups",
@@ -44,7 +44,9 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation", "rootGroupRef"]),
-    ...mapState("Admin", ["teamInformation", "groupRef"]),
+    ...mapState("Admin", ["team", "groupRef"]),
+    ...mapGetters(["genRandomID"]),
+    ...mapGetters("Admin", ["getUserGroups"]),
     langXref() {
       let lang = {
         eventGroups: {
@@ -85,13 +87,12 @@ export default {
     modGroups() {
       let modGroups = [...this.clientInformation[this.groupType]];
       let allUsersIndex = modGroups.findIndex(group => {
-        return group.groupID == 0;
+        return group.label.toLowerCase() == "system administrator";
       });
       modGroups.splice(allUsersIndex, 1, {
         label: "All team members",
         groupID: 0
       });
-
       return modGroups;
     },
     enabledFor() {
@@ -102,11 +103,11 @@ export default {
     usersInGroup() {
       let users = [];
       if (this.enabledFor) {
-        users = this.teamInformation.map(({ name, _id }) => {
+        users = this.team.map(({ name, _id }) => {
           return { name, _id };
         });
       } else {
-        users = this.teamInformation.filter(teamMember => {
+        users = this.team.filter(teamMember => {
           return this.enabledFor?.indexOf(teamMember.groupID) > -1;
         });
       }
@@ -165,11 +166,15 @@ export default {
             if (this.groupType == "userGroups") {
               payload.groupID = this.groupLen;
             } else {
-              payload.enabledFor = this.groupData.enabledFor;
+              payload.enabledFor = this.getUserGroups;
             }
+            return console.log({
+              label: this.groupData.label,
+              _id: this.genRandomID
+            });
             this.CREATE_GROUP({
               groupType: this.groupType,
-              payload: { label: this.groupData.label, groupID: this.groupLen }
+              payload: { label: this.groupData.label, _id: this.genRandomID }
             });
           },
           form: (function(vm) {
@@ -185,9 +190,9 @@ export default {
             } else {
               createForm.push(newGroupName, {
                 "component-type": "select",
-                placeholder: `Enable group for`,
+                placeholder: `Enable group for user groups`,
                 required: true,
-                options: vm.groups,
+                options: vm.getUserGroups,
                 model: "enabledFor",
                 multiple: true
               });
@@ -201,7 +206,6 @@ export default {
             method: "PUT"
           },
           mutation: () => {
-            console.log(mutationData);
             this.UPDATE_GROUP(mutationData);
           },
           catch: () => {
@@ -249,7 +253,7 @@ export default {
               this.REASSIGN_ELEMENTS(this.rootGroupRef);
             } else {
               this.REASSIGN_ELEMENTS({
-                assignment: "eventsInformation",
+                assignment: "events",
                 ...this.rootGroupRef
               });
             }
@@ -270,7 +274,7 @@ export default {
                 this.REASSIGN_ELEMENTS(payload);
               } else {
                 this.REASSIGN_ELEMENTS({
-                  assignment: "eventsInformation",
+                  assignment: "events",
                   ...payload
                 });
               }
@@ -305,7 +309,7 @@ export default {
     },
     config() {
       let arr = ["Create"];
-      if (this.clientInformation.eventGroups.length > 0) {
+      if (this.clientInformation[this.groupType].length > 0) {
         arr.push("Delete", "Edit");
       }
       return arr;

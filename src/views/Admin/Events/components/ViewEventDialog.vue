@@ -59,26 +59,31 @@
           v-if="hasEntries(event.assignedTo)"
           class="info_unit avatar_wrapper"
         >
-          <div
-            v-for="(member, index) in event.assignedTo"
-            ref="user"
-            :key="index"
-            class="assigned_user_container"
-          >
-            <Avatar class="mr-3" :name="member" />
-            <span v-if="$mq == 'lg'" class="member_name">{{ member }}</span>
+          <div class="assigned_users_container">
+            <div
+              v-for="(member, index) in event.assignedTo"
+              ref="user"
+              :key="index"
+            >
+              <Avatar :size="70" :name="member.name" multiple>
+                <div class="hover_indicator" @click="removeUser(member)">x</div>
+              </Avatar>
+            </div>
           </div>
 
-          <div v-if="canAddMoreUsers" class="add_new_user p-4 trigger">
+          <div v-if="canAddMoreUsers" class="add_new_user trigger">
             <el-popover>
               <div
                 v-for="option in getFilteredTeam"
                 :key="option._id"
                 class="users_container trigger"
                 :class="{
-                  disabled: event.assignedToIDs.indexOf(option._id) > -1
+                  disabled:
+                    event.assignedTo.findIndex(assignee => {
+                      return assignee._id == option._id;
+                    }) > -1
                 }"
-                @click="assignNewUser(option._id)"
+                @click="assignNewUser(option)"
               >
                 <span>{{ option.name }}</span>
               </div>
@@ -94,6 +99,7 @@
             <Form
               :config="configXref"
               submit-text="Update"
+              class="full_width"
               @val="updateEvent"
             />
             <el-button
@@ -119,6 +125,7 @@
             <Form
               :config="configXref"
               submit-text="Update"
+              class="full_width"
               @val="updateEvent"
             />
             <el-button
@@ -134,7 +141,7 @@
             <span>{{ duration }} hours</span>
             <br />
             <span class="info_label">Event type:</span>
-            <span class="member_name">{{ eventType }}</span>
+            <span class="member_name">{{ event.type.label }}</span>
           </div>
         </div>
       </div>
@@ -159,16 +166,15 @@ export default {
     };
   },
   computed: {
-    ...mapState("Admin", ["teamInformation", "eventsInformation"]),
+    ...mapState("Admin", ["team", "events", "eventRef"]),
     ...mapState(["userInformation", "dialogIndex"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
-    ...mapGetters("Admin", [
-      "getEventAssginedTo",
-      "getFilteredTeam",
-      "getUserInformation",
-      "getEnabledEvents"
-    ]),
-
+    ...mapGetters("Admin", ["getFilteredTeam", "getValidEventTypes"]),
+    currentEventIndex() {
+      return this.events.findIndex(event => {
+        return event._id == this.event._id;
+      });
+    },
     updateConfigs() {
       return [
         {
@@ -192,7 +198,7 @@ export default {
         {
           "component-type": "select",
           placeholder: "Select event type",
-          options: this.getEnabledEvents,
+          options: this.getValidEventTypes,
           model: "type",
           validType: "number",
           tag: "type",
@@ -207,7 +213,7 @@ export default {
     },
 
     canAddMoreUsers() {
-      return this.event.assignedToIDs.length < this.teamInformation.length;
+      return this.event.assignedTo.length < this.team.length;
     },
 
     event() {
@@ -240,17 +246,6 @@ export default {
       }
 
       return approval;
-    },
-    getEmail() {
-      let { assignedToIDs } = this.event;
-      assignedToIDs = [...assignedToIDs];
-      let assignedToEmails = assignedToIDs.map(assignee => {
-        let { email } = this.teamInformation.find(member => {
-          return member._id == assignee;
-        });
-        return { assignee, email };
-      });
-      return assignedToEmails;
     },
 
     dates() {
@@ -287,6 +282,12 @@ export default {
       "getApiNotification"
     ]),
     ...mapActions("Admin", ["getEvents", "updateEvents"]),
+    ...mapMutations("Admin", [
+      "UPDATE_EVENT",
+      "ADD_USER_TO_EVENT",
+      "REMOVE_USER_FROM_EVENT",
+      "DELETE_EVENT"
+    ]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
 
     updateEvent(updateInformation) {
@@ -314,54 +315,33 @@ export default {
     },
 
     // Currently locks database still keeping function for later rework button is hidden
-    dropUserFromEvent(userName) {
-      // Cannot be the last one
-      const newLen = this.event.assignedToIDs.length;
-      if (newLen >= 1) {
-        let userID = this.getUserInformation(userName, "name")?._id;
-        this.request({
-          method: "DELETE",
-          url: "events/user",
-          data: {
-            eventID: this.event.id,
-            userID
-          }
-        })
-          .then(() => {
-            this.getEvents();
-            // Notify user they have been dropped
-            this.getApiNotification({
-              type: "attention",
-              title: "Event Update",
-              message: "You have been removed from an event",
-              for: userID
-            });
-          })
-          .catch(err => {
-            return err;
-          });
-      } else {
-        this.genPromptBox({
-          boxType: "confirm",
-          title: "Confirm",
-          text:
-            "You cannot remove the last user from an event doing so will remove the event, press this notification if you want to do so",
-          confirm: "Yes"
-        }).then(() => {
-          this.deleteEvent();
-        });
-      }
-    },
-    assignNewUser(userID) {
+    removeUser(user) {
+      let userIndex = this.event.assignedTo.findIndex(assignee => {
+        return assignee._id == user._id;
+      });
+      this.REMOVE_USER_FROM_EVENT({
+        eventIndex: this.currentEventIndex,
+        userIndex
+      });
       this.request({
-        method: "PUT",
+        method: "DELETE",
         url: "events/user",
-        data: {
-          eventID: this.event.id,
-          userID
-        }
-      }).then(() => {
-        this.getEvents();
+        data: { eventID: this.event._id, userID: user._id }
+      }).catch(() => {
+        this.ADD_USER_TO_EVENT(this.eventRef);
+      });
+    },
+    assignNewUser(user) {
+      this.ADD_USER_TO_EVENT({
+        eventIndex: this.currentEventIndex,
+        payload: user
+      });
+      this.request({
+        url: "events/user",
+        data: { eventID: this.event._id, userID: user._id },
+        method: "PUT"
+      }).catch(() => {
+        this.REMOVE_USER_FROM_EVENT(this.eventRef);
       });
     },
     deleteEvent() {
@@ -371,6 +351,7 @@ export default {
         text: "Are you sure you want to delete this event ?",
         confirm: "Yes"
       }).then(() => {
+        // Delete event
         this.request({
           method: "DELETE",
           url: "events/delete",
@@ -378,14 +359,13 @@ export default {
             _id: this.event.id
           }
         }).then(() => {
-          this.getEvents();
           this.closeDialog("viewEvent");
           this.notifyAssignees();
         });
       });
     },
     notifyAssignees() {
-      let assignedToIDs = this.event.assignedToIDs;
+      let assignedTo = this.event.assignedTo;
       let removalMessage = `You have an event on ${this.dates.start} to ${this.dates.end} has been deleted by ${this.userInformation.name}`;
       this.genEmail({
         subject: "Event removal",
@@ -396,11 +376,11 @@ export default {
       });
 
       for (
-        let index = 0, len = assignedToIDs.length;
-        index < assignedToIDs.length;
+        let index = 0, len = assignedTo.length;
+        index < assignedTo.length;
         index++
       ) {
-        let assignee = assignedToIDs[i];
+        let assignee = assignedTo[i];
         this.getApiNotification({
           type: "attention",
           title: "Event removal",
@@ -411,7 +391,7 @@ export default {
     },
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
-      let assignedTo = [...this.event.assignedToIDs, this.userInformation._id];
+      let assignedTo = [...this.event.assignedTo, this.userInformation._id];
       this.genEmail({
         subject: "Reminder",
         to: this.getEmail,
@@ -481,6 +461,15 @@ h3 {
 .view_event_col {
   margin: 1em;
 }
+.avatar_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.assigned_users_container {
+  display: flex;
+}
 
 .mobile {
   .info_button_container {
@@ -501,15 +490,7 @@ h3 {
   opacity: 0;
   visibility: hidden;
 }
-.assigned_user_container {
-  display: flex;
-  align-items: center;
-  margin: 20px 0;
 
-  &.cloked_in {
-    opacity: 0.5;
-  }
-}
 .users_container {
   padding: 10px;
   &:hover {
@@ -517,6 +498,7 @@ h3 {
   }
 }
 .add_new_user {
+  display: block;
   border: 2px whitesmoke dashed;
   border-radius: $border_radius;
   padding: 10px;

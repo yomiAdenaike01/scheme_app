@@ -2,7 +2,7 @@
   <div class="user_module_container">
     <UserGroup add-new @createUserGroup="displayDialog = $event" />
 
-    <UserGroup v-if="hasEntries(teamInformation)">
+    <UserGroup v-if="hasEntries(team)">
       <div class="user_groups_table_container">
         <InformationDisplay
           :display-text="{
@@ -44,7 +44,7 @@
     </UserGroup>
 
     <!-- Quick actions -->
-    <UserManagementActions v-if="teamInformation.length > 0" />
+    <UserManagementActions v-if="team.length > 0" />
     <!-- User Module dialog -->
     <UserModuleDialog
       :display="displayDialog"
@@ -65,17 +65,15 @@ export default {
     UserManagementActions: () => import("./components/UserManagementActions"),
     InformationDisplay: () => import("@/components/InformationDisplay")
   },
-
   data() {
     return {
       displayDialog: false,
       viewUser: false
     };
   },
-
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
-    ...mapState("Admin", ["teamInformation", "groupIDs"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
 
     filteredGroupsWithUsers() {
@@ -85,17 +83,18 @@ export default {
 
       return [groups];
     },
+
     groupsWithUsers() {
       let { userGroups } = { ...this.clientInformation };
       let userGroupArr = [];
-      let team = [...this.teamInformation];
+      let team = [...this.team];
 
       for (let j = 0, len = userGroups.length; j < len; j++) {
         let userGroup = { ...userGroups[j], teamMembers: [] };
-        let { groupID } = userGroup;
+        let clientGroupID = userGroup?._id;
 
         team.map(member => {
-          if (member.groupID == groupID) {
+          if (clientGroupID == member.userGroup._id) {
             userGroup.teamMembers.push(member);
           }
         });
@@ -135,6 +134,7 @@ export default {
 .user_group_container {
   display: flex;
   flex: 1;
+  max-height: fit-content;
   flex-direction: column;
 }
 .user_group_col {

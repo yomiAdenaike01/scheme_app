@@ -8,26 +8,14 @@ export default {
       if (group?.groupID == 0) {
         continue;
       } else {
-        arr.push({ label: group.label, value: group.groupID });
+        arr.push({ label: group.label, value: group._id });
       }
     }
     return arr;
   },
-  getClientTimings(state, getters, { clientInformation: { timings } }) {
-    return timings;
-  },
-  getCalTimings(state, { getClientTimings = { ...getClientTimings } }) {
-    let { weekends, openingTime, closingTime } = getClientTimings;
-    openingTime = openingTime * 60;
-    closingTime = closingTime * 60;
-    return {
-      from: openingTime,
-      to: closingTime,
-      weekends
-    };
-  },
-  getUsersInUserGroup: ({ teamInformation }) => userGroup => {
-    return teamInformation
+
+  getUsersInUserGroup: ({ team }) => userGroup => {
+    return team
       .filter(({ groupID }) => {
         return userGroup == groupID;
       })
@@ -35,75 +23,60 @@ export default {
         return _id;
       });
   },
-  getFilteredTeam: ({ teamInformation }, getters, { userInformation }) => {
-    return teamInformation.filter(({ _id }) => {
+  getFilteredTeam: ({ team }, getters, { userInformation }) => {
+    return team.filter(({ _id }) => {
       return _id != userInformation._id;
     });
   },
-  getEventAssignedTo: ({ teamInformation }) => assignedTo => {
-    let assignedToData = {
-      arr: [],
-      text: ""
-    };
-    let formattedAssignedTo = [];
-    if (Vue.prototype.hasEntries(teamInformation)) {
-      assignedTo = assignedTo.map(assignee => {
-        teamInformation.map(teamMember => {
-          let { _id, name } = teamMember;
 
-          if (assignee == _id) {
-            formattedAssignedTo.push(name);
-          }
-        });
-      });
-    }
-
-    if (Vue.prototype.hasEntries(formattedAssignedTo)) {
-      assignedToData.arr = formattedAssignedTo;
-      let text =
-        formattedAssignedTo.length > 1
-          ? `+${formattedAssignedTo.length - 1} others`
-          : "";
-
-      assignedToData.text = `${formattedAssignedTo[0]} ${text}`;
-    }
-    return assignedToData;
-  },
-
-  getAllEvents({ eventsInformation }) {
-    return eventsInformation.all;
-  },
-
-  getUsersEvents: ({ eventsInformation }) => id => {
-    return eventsInformation.all.filter(event => {
+  getUsersEvents: ({ events }) => id => {
+    return events.all.filter(event => {
       return event.assignedTo.some(a => {
         return a == id;
       });
     });
   },
 
-  getEnabledEvents(state, getters, { clientInformation, userInformation }) {
+  getValidEventTypes(
+    state,
+    getters,
+    { clientInformation, userInformation },
+    rootGetters
+  ) {
     let hasValues = Vue.prototype.hasEntries(clientInformation);
+    let arr = [];
     if (hasValues) {
       let eventGroups = [...clientInformation.eventGroups];
-      let { groupID } = userInformation;
-
-      let arr = [];
-      for (let i = 0, len = eventGroups.length; i < len; i++) {
-        let eventGroup = eventGroups[i],
-          enabledIndex = eventGroup.enabledFor.findIndex(index => {
-            return index == groupID || index == 0;
-          });
-        if (enabledIndex > -1) {
-          arr.push({ label: eventGroup.label, value: eventGroup.groupID });
+      let {
+        userGroup: { _id }
+      } = userInformation;
+      if (!rootGetters.getIsAdmin) {
+        for (let i = 0, len = eventGroups.length; i < len; i++) {
+          let eventGroup = eventGroups[i];
+          let userGroupIndex = eventGroup.enabledFor.indexOf(_id);
+          if (userGroupIndex > -1) {
+            let enabledGroup = eventGroup.enabledFor[userGroupIndex];
+            let dropDownData = {
+              value: enabledGroup._id,
+              label: enabledGroup.label
+            };
+            arr.push(dropDownData);
+          }
         }
+      } else {
+        arr = eventGroups.map(group => {
+          return {
+            label: group.label,
+            value: group._id
+          };
+        });
       }
-      return arr;
     }
+    return arr;
   },
 
   getDropdownTeamMembers(state) {
-    let team = [...state.teamInformation];
+    let team = [...state.team];
     return team.map(({ name, _id }) => {
       return {
         label: name,
@@ -128,7 +101,7 @@ export default {
     }
     return res;
   },
-  getUserInformation: ({ teamInformation }, getters, { userInformation }) => (
+  getUserInformation: ({ team }, getters, { userInformation }) => (
     match,
     params = "_id"
   ) => {
@@ -136,8 +109,8 @@ export default {
     if (match == userInformation[params]) {
       userInfo = userInformation;
     } else {
-      if (Vue.prototype.hasEntries(teamInformation)) {
-        userInfo = teamInformation.find(member => {
+      if (Vue.prototype.hasEntries(team)) {
+        userInfo = team.find(member => {
           return member[params] == match;
         });
       }

@@ -56,10 +56,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation", "requestIntervals"]),
-    ...mapState("Admin", ["eventsInformation"]),
-    hasEventsToday() {
-      return this.eventsInformation.today.length > 0;
-    }
+    ...mapState("Admin", ["events"])
   },
   methods: {
     ...mapActions("Admin", [

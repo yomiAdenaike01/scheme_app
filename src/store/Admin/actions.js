@@ -5,7 +5,7 @@ export default {
   ...templateActions,
   ...eventActions,
   ...taskActions,
-  getNotes(context, id) {
+  getNotes(context) {
     return new Promise((resolve, reject) => {
       context
         .dispatch(
@@ -17,7 +17,6 @@ export default {
           { root: true }
         )
         .then(response => {
-          console.log(response);
           context.commit("UPDATE_NOTES", response);
           resolve();
         })
@@ -26,7 +25,7 @@ export default {
         });
     });
   },
-  getTasks(context, id) {
+  getTasks(context) {
     return new Promise((resolve, reject) => {
       context
         .dispatch(

@@ -1,7 +1,11 @@
 export default {
   methods: {
     scrollToBottom(element) {
-      element.scrollTop = element.scrollHeight;
+      if (!element) {
+        element.scrollTop = element.scrollHeight;
+      } else {
+        console.error("Failed to perform scroll to bottom on element", element);
+      }
     }
   }
 };

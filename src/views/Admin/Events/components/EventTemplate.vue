@@ -57,7 +57,7 @@ export default {
       "getGroupName",
       "getDropdownTeamMembers",
       "getEventAssignedTo",
-      "getEnabledEvents"
+      "getValidEventTypes"
     ]),
     ...mapState(["daysOfWeek"]),
     updateTemplateConfig() {
@@ -80,7 +80,7 @@ export default {
         {
           "component-type": "select",
           placeholder: "Event type",
-          options: this.getEnabledEvents,
+          options: this.getValidEventTypes,
           model: "type",
           optional: true
         },

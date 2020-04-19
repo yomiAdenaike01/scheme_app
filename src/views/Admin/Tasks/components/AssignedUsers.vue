@@ -11,6 +11,7 @@
         class="avatar_wrapper"
         :name="user.name"
         :size="size"
+        multiple
       >
         <div
           v-if="removeUser"
@@ -62,11 +63,11 @@ export default {
     }
   },
   computed: {
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     teamMembers() {
       let members = [];
-      for (let i = 0, len = this.teamInformation?.length; i < len; i++) {
-        let teamMember = this.teamInformation[i];
+      for (let i = 0, len = this.team?.length; i < len; i++) {
+        let teamMember = this.team[i];
         if (this.users.indexOf(teamMember._id) == -1) {
           members.push({ label: teamMember.name, value: teamMember._id });
         }

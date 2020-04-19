@@ -1,5 +1,5 @@
 <template>
-  <div class="avatar_container">
+  <div class="avatar_container" :class="{ multiple }">
     <custom-avatar
       :username="name"
       :lighten="100"
@@ -24,6 +24,10 @@ export default {
     size: {
       type: Number,
       default: 50
+    },
+    multiple: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -31,6 +35,10 @@ export default {
 <style lang="scss" scoped>
 .avatar_container {
   position: relative;
+  &.multiple {
+    margin: 0 -10px;
+    cursor: pointer;
+  }
 }
 .avatar {
   margin: 5px;

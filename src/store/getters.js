@@ -1,5 +1,6 @@
 import { guide } from "@/stubs/guide";
 import UAParser from "ua-parser-js";
+
 const genUUID = require("uuid-by-string");
 
 export default {
@@ -56,8 +57,8 @@ export default {
     }
   },
 
-  getIsAdmin({ userInformation: { groupID } }) {
-    return groupID == 1;
+  getIsAdmin({ userInformation: { userGroup } }) {
+    return userGroup.label.toLowerCase() == "system administrator";
   },
 
   getGuide() {
@@ -65,5 +66,12 @@ export default {
   },
   getDefaultColour({ defaultCustomColours }) {
     return defaultCustomColours[0];
+  },
+  genRandomID() {
+    return genUUID(
+      Math.random()
+        .toString(16)
+        .slice(2)
+    );
   }
 };

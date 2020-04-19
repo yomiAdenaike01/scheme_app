@@ -126,13 +126,13 @@ export default {
   genEmail(
     {
       admin: {
-        state: { teamInformation }
+        state: { team }
       }
     },
     emailContent
   ) {
     emailContent.to == "all"
-      ? (emailContent.to = teamInformation.map(member => {
+      ? (emailContent.to = team.map(member => {
           return member.email;
         }))
       : emailContent.to;

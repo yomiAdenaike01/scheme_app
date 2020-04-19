@@ -255,6 +255,7 @@ export default {
                 defaultPayload
               )
             );
+
             vm.request({
               method: this.method,
               url: this.url,

@@ -4,9 +4,6 @@
       v-model.number="currentTab"
       v-loading="loading"
       :tabs="tabs"
-      :disable-form="fileContent != null"
-      @fileContent="fileContent = $event"
-      @deleteContent="fileContent = $event"
       @val="userModuleController"
     >
       <div slot="header">
@@ -45,8 +42,6 @@ export default {
     return {
       currentTab: 0,
       loading: false,
-      fileContent: null,
-      fileError: null,
       convertedData: {},
       createUserForm: {}
     };
@@ -125,9 +120,8 @@ export default {
         },
         {
           placeholder: "Group",
-          model: "groupID",
+          model: "userGroup",
           "component-type": "select",
-          validType: "number",
           clearable: true,
           options: this.getUserGroups
         }
@@ -152,12 +146,7 @@ export default {
     userModuleController(val) {
       switch (this.currentTab) {
         case 1: {
-          if (!this.fileContent) {
-            this.createOneUser(val);
-          } else {
-            console.log("Creating multiple users");
-            // this.createUsers()
-          }
+          this.createOneUser(val);
           break;
         }
         default: {
@@ -167,8 +156,11 @@ export default {
     },
 
     createOneUser(employee) {
-      this.loading = true;
-      this.CREATE_USER(employee);
+      let uGroup = this.clientInformation.userGroups.find(group => {
+        return group._id == employee.userGroup;
+      });
+      let _employee = { ...employee, userGroup: uGroup };
+      this.CREATE_USER(_employee);
       this.request({
         method: "POST",
         url: "users/register/one",
@@ -187,20 +179,6 @@ export default {
           this.REMOVE_USER(this.teamRef?.index);
           return error;
         });
-    },
-
-    createUsers(employees) {
-      return new Promise((resolve, reject) => {
-        let url = "users/register/multiple";
-
-        this.request({
-          method: "POST",
-          url,
-          data: { employees }
-        })
-          .then(response => resolve(response))
-          .catch(error => reject(error));
-      });
     }
   }
 };

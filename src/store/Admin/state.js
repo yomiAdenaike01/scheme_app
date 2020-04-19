@@ -9,18 +9,9 @@ export default {
   teamRef: "",
   groupRef: "",
 
-  teamInformation: [],
+  team: [],
 
-  eventsInformation: {
-    all: [],
-    upcoming: [],
-    today: [],
-    previous: []
-  },
+  events: [],
   requestsInformation: [],
-  eventTemplates: [],
-  featureRequests: {
-    all: [],
-    user: []
-  }
+  eventTemplates: []
 };

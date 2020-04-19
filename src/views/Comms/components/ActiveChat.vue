@@ -52,34 +52,39 @@ export default {
   },
   mixins: [scrollToBottom],
   props: {
-    routeUser: {
-      type: String,
-      default: ""
+    userToMessage: {
+      type: Object,
+      default: () => {
+        return {
+          name: "",
+          _id: ""
+        };
+      }
     }
   },
   data() {
     return {
       intervalID: null,
       loading: true,
-      teamQuery: "",
+      teamQuery: this.userToMessage?.name,
       chat: {
         content: "",
         attachements: [],
         sentAt: new Date().toISOString(),
         isRead: false,
         editted: false,
-        reciever: ""
+        reciever: this.userToMessage?._id
       }
     };
   },
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "messages"]),
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+
     chatMessages() {
       return [...this.activeChat?.messages].map(message => {
-        console.log(message.sender._id, this.userInformation._id);
         return Object.assign(
           {
             id: message._id,
@@ -99,25 +104,22 @@ export default {
     },
     queryTeamList() {
       let query = [];
-      if (!this.routeUser) {
-        query = this.teamInformation.map(member => {
+      let userToMessage = this.userToMessage;
+      if (!userToMessage) {
+        query = this.team.map(member => {
           return {
             value: member.name,
             link: member._id
           };
         });
       } else {
-        query = this.teamInformation.findIndex(member => {
-          return member._id == this.routerUser;
-        });
         query = [
           {
-            value: query.name,
-            link: query._id
+            value: userToMessage.name,
+            link: userToMessage._id
           }
         ];
       }
-      console.log(query);
       return query;
     }
   },
@@ -162,6 +164,7 @@ export default {
     },
     sendChatMessage() {
       let userName = this.getUserInformation(this.chat.reciever)?.name;
+
       function createError(message) {
         this.UPDATE_NOTIFICATIONS({
           title: "Failed to send message",
@@ -169,6 +172,7 @@ export default {
           type: "error"
         });
       }
+
       if (!this.chat.content) {
         return createError("No message content found.");
       }
@@ -181,7 +185,7 @@ export default {
         this.chat.reciever = this.activeChat.userTwo;
         userName = this.getUserInformation(this.chat.reciever)?.name;
       }
-      let sendMessagePayload = {
+      let sendMessage = {
         ...this.chat,
         chatID: this.activeChat._id,
         isRead: false,
@@ -191,7 +195,7 @@ export default {
           name: this.userInformation.name
         }
       };
-      this.sendMessage(sendMessagePayload);
+      this.sendMessage(sendMessage);
       this.chat.content = "";
       this.scrollToBottom(this.$refs.chatMessages);
     }

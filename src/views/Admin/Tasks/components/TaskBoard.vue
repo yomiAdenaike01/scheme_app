@@ -85,11 +85,9 @@
           position="top"
           trigger="click"
         >
-          <el-button
-            slot="reference"
-            type="text"
-            icon="el-icon-plus"
-          ></el-button>
+          <div slot="reference" class="references_wrapper">
+            <i class="bx bx-plus reference"></i>
+          </div>
           <Form class="full_width" :config="formConfig" @val="createAction" />
         </el-popover>
       </InformationDisplay>
@@ -158,15 +156,16 @@ export default {
     computeText() {
       let index = this.boardIndex;
       let displayText = {
-        heading: "Board is disabled",
+        heading: "Task board is disabled",
         content: "Initialise the board before to enable this board."
       };
+      let heading = "Create task board";
       if (index == 0 && this.getIsAdmin) {
-        displayText.heading = "Initialise Board";
+        displayText.heading = heading;
         displayText.content = "Press the button above to initialse this board";
       }
       if (!this.getIsAdmin && index == 0) {
-        displayText.heading = "Initialise Board";
+        displayText.heading = heading;
         displayText.content =
           "Only system administrators can initialise a task board";
       }
@@ -277,11 +276,7 @@ export default {
   align-items: center;
   flex: 1;
 }
-.info_display {
-  &/deep/ .heading {
-    font-weight: bold;
-  }
-}
+
 .popover_form {
   &/deep/ .el-form-item__content,
   .dialog_item {
@@ -315,6 +310,20 @@ export default {
   }
   &:hover span {
     transform: translateY(-10px);
+  }
+}
+.references_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background: darken(#99b898, 10);
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background: darken(#99b898, 14);
   }
 }
 </style>

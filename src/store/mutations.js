@@ -26,10 +26,15 @@ export default {
 
   // Groups
   CREATE_GROUP(state, { groupType, payload }) {
+    /**
+     * {
+     *  label,_id,enableEventRejection
+     * }
+     */
     let group = state.clientInformation[groupType];
     let groupExists =
       state.clientInformation[groupType].findIndex(group => {
-        return group.label == payload.label;
+        return group?.label?.toLowerCase() == payload?.label?.toLowerCase();
       }) > -1;
     if (!groupExists) {
       group.push(payload);

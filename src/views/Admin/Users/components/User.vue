@@ -21,19 +21,18 @@
 
     <div class="text_content">
       <p class="member_name">{{ name }}</p>
-      <small class="grey">{{ foundGroupName }}</small>
+      <small class="grey">{{ groupName }}</small>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
-import Avatar from "@/components/Avatar";
 export default {
   name: "User",
   components: {
-    Avatar
+    Avatar: () => import("@/components/Avatar")
   },
   props: {
     displayPrescence: {
@@ -48,17 +47,16 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapGetters("Admin", ["getGroupName"]),
     name() {
       return this.userInformation.name;
     },
-    foundGroupName() {
-      return this.getGroupName("user", this.userInformation.groupID)?.label;
+    groupName() {
+      return this.userInformation?.userGroup?.label;
     },
     group() {
       let name = "Group not found";
       if (this.hasEntries(this.clientInformation)) {
-        name = this.foundGroupName;
+        name = this.groupName;
       }
       return name;
     }

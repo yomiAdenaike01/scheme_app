@@ -48,14 +48,14 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     quickActions() {
       return [
         {
           icon: "bx bx-volume-full",
           heading: "Create announcement",
           id: "create_announcement",
-          condition: this.teamInformation.length == 0,
+          condition: this.team.length == 0,
           click: this.createAnnoucement,
           content:
             "Create a system wide notification that will notify all users this can be through email or scheme messenger."

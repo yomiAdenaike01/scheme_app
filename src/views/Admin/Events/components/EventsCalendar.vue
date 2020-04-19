@@ -1,15 +1,5 @@
 <template>
   <div class="cal_container">
-    <div class="bar_incidator">
-      <span>
-        <h1>
-          <strong :style="{ color: `${getDefaultColour}` }"
-            >{{ upcomingEventCount }}
-          </strong>
-        </h1>
-        upcoming events.
-      </span>
-    </div>
     <VueCal
       ref="eventsCalendar"
       v-loading="loading"
@@ -37,113 +27,32 @@ export default {
   },
 
   computed: {
-    ...mapState("Admin", [
-      "eventsInformation",
-      "teamInformation",
-      "eventFilters"
-    ]),
+    ...mapState("Admin", ["events", "team", "eventFilters"]),
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin", "getDefaultColour"]),
-    ...mapGetters("Admin", [
-      "getAllEvents",
-      "getGroupName",
-      "getEventAssignedTo",
-      "getUsersEvents",
-      "getCalTimings"
-    ]),
-
-    upcomingEventCount() {
-      return this.eventsInformation.upcoming.length;
-    },
-
-    eventGroup() {
-      let eventGroup = [];
-      if (this.hasEntries(this.clientInformation)) {
-        eventGroup = this.clientInformation.eventGroups;
-      }
-      return eventGroup;
-    },
-
-    returnCalendarOptions() {
-      return [
-        {
-          label: "Days",
-          value: "day"
-        },
-        {
-          label: "Weeks",
-          value: "week"
-        },
-        {
-          label: "Month",
-          value: "month"
-        },
-        {
-          label: "Year",
-          value: "year"
-        }
-      ];
-    },
+    ...mapGetters(["getIsAdmin"]),
 
     calEvents() {
-      /**
-       * title,
-       * name,
-       * id,
-       * class,
-       * formatted time
-       * approval
-       */
-      let events = this.eventsInformation.all;
-      let filteredEvents = [];
-      let format = "YYYY-MM-DD HH:mm";
-      // Check that the assigned to is a string or array
-
-      for (let i = 0, len = events.length; i < len; i++) {
-        let event = events[i];
-
-        let {
-          isApproved,
-          startDate,
-          _id,
-          endDate,
-          assignedTo,
-          type,
-          clockedIn
-        } = event;
-        if (assignedTo.length > 0) {
-          assignedTo = this.getEventAssignedTo([...assignedTo]);
-        } else {
-          assignedTo = [];
+      let dateFormat = "YYYY-MM-DD hh:mm";
+      return [...this.events].map(event => {
+        let firstAssignee = event.assignedTo[0];
+        let content = `${firstAssignee.name}'s ${event.type.label} event`;
+        if (event.assignedTo.length - 1 > 0) {
+          content = `${content} +${parseInt(
+            event.assignedTo.length - 1
+          )} others`;
         }
 
-        type = this.getGroupName("event", type)?.label ?? "Unknown";
-
-        startDate = this.formatDate(startDate, format);
-        endDate = this.formatDate(endDate, format);
-
-        let eventClass = this.makeUgly(type)?.toLowerCase();
-
-        filteredEvents.push({
-          id: _id,
-          start: startDate,
-          end: endDate,
-          content: assignedTo.text,
-          class: eventClass,
-          isApproved,
-          assignedTo: assignedTo.arr,
-          assignedToIDs: event.assignedTo,
-          type,
-          clockedIn
-        });
-      }
-
-      return filteredEvents;
-    },
-
-    returnEventDetails() {
-      return this.eventsInformation.find(event => {
-        return event.id == this.event_id;
+        return {
+          title: `${event.type.label} event`,
+          content,
+          start: this.formatDate(event.startDate, dateFormat),
+          end: this.formatDate(event.endDate, dateFormat),
+          class: `${event.type.label}`,
+          isApproved: event.isApproved,
+          assignedTo: event.assignedTo,
+          type: event.type,
+          _id: event._id
+        };
       });
     }
   },
@@ -157,82 +66,6 @@ export default {
         dialog: "viewEvent",
         data: event
       });
-    },
-
-    displayCreateNewShift() {
-      this.$emit("displayCreateShift", true);
-    },
-
-    changeShiftTime(event) {
-      const canEdit =
-        event.assignedTo == this.userInformation._id || this.getIsAdmin;
-
-      if (canEdit) {
-        let confirmResponse = this.confirmShiftChangeTime(event);
-
-        if (confirmResponse) {
-          let { startDate, endDate } = event;
-          this.loading = true;
-          this.updateEvent(event);
-        }
-      } else {
-        this.loading = false;
-
-        this.UPDATE_NOTIFICATIONS({
-          title: "Error changing event type",
-          message:
-            "You cannot edit this event because you are not an admin or this event is not yours.",
-          type: "info"
-        });
-
-        this.$forceUpdate();
-      }
-    },
-
-    confirmShiftChangeTime(event) {
-      let { type, assignedTo, start, end } = event;
-
-      return this.$confirm(
-        `Are you sure you would like to change ${type.toLowerCase()} from ${start} to ${end}`,
-        "Confirm",
-        {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "info"
-        }
-      )
-        .then(response => {
-          return response;
-        })
-        .catch(error => {
-          return error;
-        });
-    },
-
-    updateEvent({ startDate, endDate, _id }) {
-      startDate = startDate.toISOString();
-      endDate = endDate.toISOString();
-
-      const payload = {
-        id: _id,
-        update: {
-          startDate,
-          endDate
-        }
-      };
-
-      return this.request({
-        url: "events/update",
-        method: "POST",
-        data: payload
-      })
-        .then(response => {
-          return response;
-        })
-        .catch(error => {
-          this.loading = false;
-          return error;
-        });
     }
   },
   components: {
@@ -246,7 +79,7 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
-  max-height: calc(100% - 50px);
+  max-height: calc(100% - 20px);
   overflow: auto;
   &/deep/ {
     .vuecal__now-line {

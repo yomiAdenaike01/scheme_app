@@ -1,4 +1,6 @@
 import vars from "@/assets/Styles/defaults.scss";
+const genUUID = require("uuid-by-string");
+
 export default {
   runningIntervals: {},
   requestIntervals: {
@@ -73,5 +75,15 @@ export default {
       value: 7
     }
   ],
-  rootGroupRef: ""
+  rootGroupRef: "",
+  persmissions: [
+    {
+      _id: genUUID(
+        Math.random()
+          .toString(16)
+          .slice(2)
+      ),
+      name: ""
+    }
+  ]
 };
