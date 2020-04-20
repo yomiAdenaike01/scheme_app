@@ -167,7 +167,7 @@ export default {
       if (!this.getIsAdmin && index == 0) {
         displayText.heading = heading;
         displayText.content =
-          "Only system administrators can initialise a task board";
+          "Only system administrators can create a task board";
       }
       return displayText;
     },

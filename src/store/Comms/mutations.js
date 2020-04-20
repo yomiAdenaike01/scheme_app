@@ -9,8 +9,24 @@ function setActiveChat(state, chat) {
     state.activeChat = chat[0];
   }
 }
+
 export default {
   UPDATE_CHATS(state, payload) {
+    function checkMessagesDifference(state, payload, i) {
+      // check the messages
+      let payloadMessages = payload[i].messages;
+      let stateMessages = state.chats[i].messages;
+      // check whether the payload has more messages
+      payloadMessages.map(sMessage => {
+        let foundPMessage = stateMessages.find(pMessage => {
+          return pMessage._id == sMessage._id;
+        });
+
+        if (!foundPMessage) {
+          state.chats[i].messages.push(sMessage);
+        }
+      });
+    }
     payload = Array.isArray(payload) ? payload : [payload];
 
     if (payload.length > 0) {
@@ -25,19 +41,7 @@ export default {
           if (!foundChat) {
             state.chats.push(payload[i]);
           } else {
-            // check the messages
-            let payloadMessages = payload[i].messages;
-            let stateMessages = state.chats[i].messages;
-            // check whether the payload has more messages
-            payloadMessages.map(sMessage => {
-              let foundPMessage = stateMessages.find(pMessage => {
-                return pMessage._id == sMessage._id;
-              });
-
-              if (!foundPMessage) {
-                state.chats[i].messages.push(sMessage);
-              }
-            });
+            checkMessagesDifference(state, payload, i);
           }
         }
       }
@@ -69,7 +73,7 @@ export default {
     if (index > 0) {
       setActiveChat(state, { index: index - 1, ...state.chats[index - 1] });
     } else {
-      Vue.set(state, "activeChat", {});
+      state.activeChat = {};
     }
     Vue.delete(state.chats, index);
   }

@@ -43,7 +43,11 @@
         >
       </div>
       <!-- Required actions -->
-      <div class="view_dialog_information_container">
+
+      <div
+        v-if="userInformation.userGroup.enableEventRejection"
+        class="view_dialog_information_container"
+      >
         <h3>Actions</h3>
         <!-- Reject event -->
         <div class="info_unit">

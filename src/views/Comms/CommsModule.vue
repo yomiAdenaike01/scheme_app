@@ -2,7 +2,7 @@
   <div v-if="team.length > 0" class="comms_container">
     <Chats />
     <ActiveChat
-      v-if="hasEntries(activeChat)"
+      v-if="Object.values(activeChat).length > 0"
       :user-to-message="userToMessage"
     />
   </div>
