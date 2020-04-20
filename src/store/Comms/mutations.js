@@ -1,35 +1,80 @@
 import Vue from "vue";
+import updateBreadCrumbs from "../helpers";
+
 function setActiveChat(state, chat) {
   if (typeof chat == "object") {
-    Vue.set(state, "activeChat", chat);
+    state.activeChat = chat;
   }
   if (Array.isArray(chat)) {
-    Vue.set(state, "activeChat", chat[0]);
+    state.activeChat = chat[0];
   }
 }
+
 export default {
-  UPDATE_MESSAGES(state, messages) {
-    if (typeof messages == "object") {
-      state.messages.push(messages);
+  UPDATE_CHATS(state, payload) {
+    function checkMessagesDifference(state, payload, i) {
+      // check the messages
+      let payloadMessages = payload[i].messages;
+      let stateMessages = state.chats[i].messages;
+      // check whether the payload has more messages
+      payloadMessages.map(sMessage => {
+        let foundPMessage = stateMessages.find(pMessage => {
+          return pMessage._id == sMessage._id;
+        });
+
+        if (!foundPMessage) {
+          state.chats[i].messages.push(sMessage);
+        }
+      });
     }
-    if (Array.isArray(messages)) {
-      state.messages = messages;
+    payload = Array.isArray(payload) ? payload : [payload];
+
+    if (payload.length > 0) {
+      let otherLen = state.chats.length;
+      for (let i = 0, len = payload.length; i < len; i++) {
+        if (otherLen == 0) {
+          state.chats.push(payload[i]);
+        } else {
+          let foundChat = state.chats.find(chat => {
+            return chat._id == payload[i]._id;
+          });
+          if (!foundChat) {
+            state.chats.push(payload[i]);
+          } else {
+            checkMessagesDifference(state, payload, i);
+          }
+        }
+      }
     }
+    if (Object.values(state.activeChat).length == 0) {
+      setActiveChat(state, {
+        index: state.chats.length - 1,
+        ...state.chats[state.chats.length - 1]
+      });
+    }
+  },
+  UPDATE_MESSAGES(state, payload) {
+    let chatIndex = state.activeChat.index;
+
+    state.chats[chatIndex].messages.push(payload);
+    updateBreadCrumbs(state, "messageRef", {
+      messageIndex: state.chats[chatIndex].messages.length - 1,
+      chatIndex
+    });
   },
 
-  UPDATE_CHATS(state, payload) {
-    if (Array.isArray(payload)) {
-      state.chats = payload;
-    } else {
-      state.chats.push(payload);
-    }
-    setActiveChat(state, payload);
-  },
-  UPDATE_SCROLL_POSITION(state, elem) {
-    // get the scoll position and set it
-    Vue.set(state, "activeChatScrollPosition", elem);
-  },
   UPDATE_ACTIVE_CHAT(state, payload) {
     setActiveChat(state, !payload ? state.chats : payload);
+  },
+  DELETE_CHAT(state, index) {
+    //Delete the messages
+    updateBreadCrumbs(state, "chatRef", { index, chat: state.chats[index] });
+    state.messages = [];
+    if (index > 0) {
+      setActiveChat(state, { index: index - 1, ...state.chats[index - 1] });
+    } else {
+      state.activeChat = {};
+    }
+    Vue.delete(state.chats, index);
   }
 };

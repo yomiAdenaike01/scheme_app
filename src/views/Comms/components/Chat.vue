@@ -5,10 +5,10 @@
     :class="{ active: isActive }"
     @click="updateActiveChat"
   >
-    <Avatar :name="usersInformation.userTwo" />
+    <Avatar :name="oppositeUser" />
     <div class="text_container">
       <p v-if="!isNewChat">
-        {{ chatInformation.message.content }}
+        {{ lastMessage.content }}
       </p>
       <p v-else>New Message</p>
       <small class="grey">{{
@@ -36,60 +36,72 @@ export default {
     Avatar: () => import("@/components/Avatar")
   },
   props: {
+    chatIndex: {
+      type: Number,
+      default: 0
+    },
     chatInformation: {
       type: Object,
       default: () => {}
     }
   },
   computed: {
+    ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    oppositeUser() {
+      if (this.chatInformation.userTwo._id == this.userInformation._id) {
+        return this.chatInformation.userOne.name;
+      } else {
+        return this.chatInformation.userTwo.name;
+      }
+    },
+    lastMessage() {
+      return this.chatInformation.messages[
+        this.chatInformation.messages.length - 1
+      ];
+    },
     isNewChat() {
       return this.chatInformation?.initChat;
     },
     isActive() {
-      return this.activeChat._id == this.chatInformation._id;
-    },
-    usersInformation() {
-      let { userOne, userTwo } = this.chatInformation;
-      return {
-        userOne: this.getUserInformation(userOne)?.name,
-        userTwo: this.getUserInformation(userTwo)?.name
-      };
+      return this.activeChat?._id == this.chatInformation._id;
     }
-  },
-  activated() {
-    this.updateScrollPos();
-  },
-  mounted() {
-    this.updateScrollPos();
   },
 
   methods: {
-    ...mapMutations("Comms", ["UPDATE_SCROLL_POSITION", "UPDATE_ACTIVE_CHAT"]),
+    ...mapActions(["request"]),
     ...mapActions("Comms", ["getChats"]),
+    ...mapMutations(["REMOVE_GLOBAL_INTERVAL"]),
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT", "DELETE_CHAT"]),
     updateScrollPos() {
       if (this.isNewChat) {
-        this.UPDATE_SCROLL_POSITION(this.$refs.chatElem.offsetTop);
+        this.$emit("scroll");
       }
     },
     updateActiveChat() {
       this.updateScrollPos();
-      this.UPDATE_ACTIVE_CHAT(this.chatInformation);
+      this.UPDATE_ACTIVE_CHAT({
+        index: this.chatIndex,
+        ...this.chatInformation
+      });
     },
     deleteChat() {
-      this.request({
-        method: "DELETE",
-        url: "messenger/chat",
-        data: { _id: this.chatInformation._id }
-      })
-        .then(() => {
-          this.loading = false;
-          this.getChats();
+      this.DELETE_CHAT(this.chatIndex);
+      if (!this.chatInformation?.initChat) {
+        this.request({
+          method: "DELETE",
+          url: "messenger/chat",
+          data: { _id: this.chatInformation._id }
         })
-        .catch(() => {
-          this.loading = false;
-        });
+          .then(() => {
+            this.loading = false;
+            this.getChats();
+          })
+          .catch(() => {
+            this.loading = false;
+          });
+      }
     }
   }
 };

@@ -1,10 +1,7 @@
 <template>
   <div class="appbar_container">
-    <div v-if="$mq == 'lg'" class="scheme_logo_container">
-      <Logo />
-    </div>
     <div
-      v-else
+      v-if="$mq != 'lg'"
       class="nav_toggle"
       @click="UPDATE_TOGGLE_MOBILE_MENU(!viewMobileMenu)"
     >
@@ -45,7 +42,6 @@ export default {
   name: "AppBar",
   components: {
     Avatar: () => import("@/components/Avatar"),
-    Logo: () => import("@/components/Logo"),
     Dropdown: () => import("@/components/Dropdown"),
     NotificationModule: () => import("@/components/NotificationModule")
   },
@@ -140,14 +136,7 @@ export default {
     }
   }
 }
-.scheme_logo_container {
-  display: flex;
-  padding: 5px;
-  justify-content: center;
-  border-radius: 50%;
-  padding: 5px;
-  box-shadow: $box_shadow;
-}
+
 .search {
   margin-left: 10px;
 }

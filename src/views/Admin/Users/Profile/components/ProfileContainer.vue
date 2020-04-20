@@ -11,11 +11,15 @@
     <div class="profile_info_wrapper">
       <div class="avatar_info_container">
         <el-badge is-dot :type="badgeType" class="dot_container">
-          <Avatar class="sidebar_avatar full" :name="returnUsername" />
+          <Avatar
+            :size="100"
+            class="sidebar_avatar full"
+            :name="returnUsername"
+          />
         </el-badge>
         <div class="profile_info_text">
           <h3 class="capitalize">{{ returnUsername }}</h3>
-          <h4 class="grey">{{ returnGroupName }}</h4>
+          <h4 class="grey">{{ userData.userGroup.label }}</h4>
         </div>
       </div>
     </div>
@@ -59,7 +63,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters("Admin", ["getGroupName", "getUserInformation"]),
     ...mapGetters(["getDefaultColour", "getActiveDialog"]),
     userData() {
       return this.getActiveDialog("profile")?.data;
@@ -70,9 +73,7 @@ export default {
     returnUsername() {
       return this.userData?.name ?? "Username";
     },
-    returnGroupName() {
-      return this.getGroupName("user", this.userData?.groupID)?.name;
-    },
+
     selectedTab: {
       get() {
         return this.currentTab;

@@ -1,11 +1,12 @@
 <template functional>
   <div class="message_container" :class="{ is_user: props.isSentByUser }">
+    <p class="user">{{ props.sentBy }}</p>
     <div class="message">
       <p>
         {{ props.content }}
       </p>
     </div>
-    <!-- <div v-if="props.isSentByUser" class="actions_container">
+    <div v-if="props.isSentByUser" class="actions_container">
       <el-button
         icon="el-icon-edit-outline"
         title="Edit message"
@@ -18,14 +19,18 @@
         circle
         @click="listeners['deleteMessage'](props.id)"
       ></el-button>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "Message",
+
   props: {
+    sentBy: {
+      type: String
+    },
     sentAt: {
       type: String
     },
@@ -51,31 +56,35 @@ export default {
 
 <style lang="scss" scoped>
 .message_container {
-  // display: flex;
-  // flex: 1;
-  // height: inherit;
-  // flex-direction: column;
-  // align-items: flex-start;
-  // max-height: 150px;
+  display: flex;
+  height: inherit;
+  flex-direction: column;
+  align-items: flex-start;
+  max-height: 150px;
   margin: 5px;
+  font-size: 1.1em;
 
   &.is_user {
     align-items: flex-end;
     .message {
       background: whitesmoke;
       color: #555;
-      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
     }
   }
+}
+.user {
+  text-transform: capitalize;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9em;
 }
 .message {
   background: lighten($color: $default_colour, $amount: 30);
   color: white;
-  padding: 5px;
+  padding: 15px;
   display: flex;
-
-  border-radius: 10px;
-  border-bottom-left-radius: 0px;
+  border-radius: 30px;
   transition: $default_transition transform;
   will-change: transform;
 }

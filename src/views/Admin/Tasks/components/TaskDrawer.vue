@@ -1,120 +1,134 @@
 <template>
-  <el-dialog :visible.sync="view" width="200">
+  <el-drawer :visible.sync="view" width="200">
     <div class="inner_container">
-      <div class="task_info_title">
-        <div class="inner_wrapper">
-          <!-- Task actions -->
-          <div class="button_container">
-            <el-button
-              v-if="canInteract"
-              type="success"
-              plain
-              @click="handleUpdate({ state: 1 })"
-              >Mark as complete</el-button
-            >
-            <el-button
-              type="danger"
-              plain
-              @click="
-                deleteTask(defaultPayload);
-                view = false;
-              "
-              >Delete Task</el-button
-            >
-          </div>
-          <!-- Labels, duedate, and assigned users -->
-          <div class="information_wrapper">
-            <div class="information_unit">
-              <p>Assigned team members</p>
-              <AssignedUsers :users="taskInformation.assignedTo" />
-            </div>
-            <div class="information_unit">
-              <p>Labels</p>
-              <Labels
-                mode="board"
-                :icon-config="{
-                  text: 'Create label',
-                  actionStyle: 'squared'
-                }"
-                @createLabel="handleLabels['create'].function($event)"
-                @updateLabel="handleLabels['update'].function($event)"
-                @deleteLabel="handleLabels['delete'].function($event)"
-              />
-            </div>
-            <div class="information_unit">
-              <p>Due date</p>
-              <div v-if="taskInformation.dueDate">
-                <i class="bx bx-time"></i>
-                {{ taskInformation.dueDate }}
-              </div>
-              <el-popover v-model="popoverDisplay.dueDate" trigger="click">
-                <ActionIcon
-                  slot="reference"
-                  icon="time"
-                  text="Set due date"
-                  action-style="squared"
-                />
-                <Form :config="dueDateConfig" @val="setDueDate" />
-              </el-popover>
-            </div>
-            <div class="information_unit">
-              <p>Assign to event</p>
-            </div>
-          </div>
-          <!-- Description container -->
-          <div class="description_container">
-            <div class="task_info_title">
-              <i class="bx bx-align-left"></i>
-              <span>Description</span>
-            </div>
-            <p v-if="editDescription == false" @click="handleDescriptions">
-              {{ taskInformation.description }}
-            </p>
-            <el-input
-              v-if="editDescription"
-              v-model="description"
-              type="textarea"
-              :placeholder="taskInformation.description"
-            ></el-input>
-            <el-button
-              v-if="description.length > 0"
-              type="text"
-              @click="updateTask"
-              >Save</el-button
-            >
-            <el-button
-              v-if="editDescription"
-              size="mini"
-              type="text"
-              @click="
-                editDescription = false;
-                description = '';
-              "
-              >Cancel</el-button
-            >
-          </div>
-          <div class="task_info_title">
-            <i class="bx bx-comment"></i>
-            <span>Comments</span>
-          </div>
-
-          <Comments
-            :can-interact="canInteract"
-            mode="full"
-            :comments="comments"
-            @createComment="handleComments['create'].function($event)"
-            @deleteComment="handleComments['delete'].function($event)"
-          />
+      <div class="inner_wrapper">
+        <!-- Task actions -->
+        <div class="button_container">
+          <el-button
+            v-if="canInteract"
+            type="success"
+            plain
+            round
+            @click="handleUpdate({ state: 1 })"
+            >Mark as complete</el-button
+          >
+          <el-button
+            type="danger"
+            round
+            plain
+            @click="
+              deleteTask(defaultPayload);
+              view = false;
+            "
+            >Delete Task</el-button
+          >
         </div>
+        <!-- Labels, duedate, and assigned users -->
+        <div class="information_wrapper">
+          <div class="information_unit">
+            <p>Assigned team members</p>
+            <AssignedUsers
+              remove-user
+              add-new
+              :users="taskInformation.assignedTo"
+              @assignUser="handleUpdate"
+              @removeUser="handleUpdate"
+            />
+          </div>
+          <div class="information_unit">
+            <p>Labels</p>
+            <Labels
+              mode="board"
+              :icon-config="{
+                text: 'Create label',
+                actionStyle: 'squared'
+              }"
+              @createLabel="handleLabels['create'].function"
+              @updateLabel="handleLabels['update'].function"
+              @deleteLabel="handleLabels['delete'].function"
+            />
+          </div>
+          <div class="information_unit">
+            <p>Due date</p>
+            <div v-if="taskInformation.dueDate">
+              <i class="bx bx-time"></i>
+              {{ formatDate(taskInformation.dueDate) }}
+            </div>
+            <el-popover v-model="popoverDisplay.dueDate" trigger="click">
+              <ActionIcon
+                slot="reference"
+                icon="time"
+                text="Set due date"
+                action-style="squared"
+              />
+              <Form
+                :config="dueDateConfig"
+                class="full_width"
+                @val="setDueDate"
+              />
+            </el-popover>
+          </div>
+        </div>
+        <!-- Description container -->
+        <div class="description_container">
+          <div class="task_info_title">
+            <i class="bx bx-align-left"></i>
+            <span>Description</span>
+          </div>
+          <p
+            v-if="editDescription == false"
+            class="description"
+            @click="handleDescriptions"
+          >
+            {{ taskInformation.description }}
+          </p>
+          <el-input
+            v-if="editDescription"
+            v-model="description"
+            type="textarea"
+            :placeholder="taskInformation.description"
+          ></el-input>
+          <el-button
+            v-if="description.length > 0"
+            type="text"
+            @click="updateTask"
+            >Save</el-button
+          >
+          <el-button
+            v-if="editDescription"
+            size="mini"
+            type="text"
+            @click="
+              editDescription = false;
+              description = '';
+            "
+            >Cancel</el-button
+          >
+        </div>
+        <div class="task_info_title">
+          <i class="bx bx-comment"></i>
+          <span>Comments</span>
+        </div>
+
+        <Comments
+          :can-interact="canInteract"
+          mode="full"
+          :comments="comments"
+          @createComment="handleComments['create'].function($event)"
+          @deleteComment="handleComments['delete'].function($event)"
+          @scrollToBottom="scrollToBottom($event)"
+        />
       </div>
     </div>
-  </el-dialog>
+  </el-drawer>
 </template>
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+import scrollToBottom from "@/mixins/scrollToBottom.js";
+
 export default {
-  name: "TaskDialog",
+  name: "TaskDrawer",
   components: {
     Avatar: () => import("@/components/Avatar"),
     Form: () => import("@/components/Form"),
@@ -123,6 +137,8 @@ export default {
     AssignedUsers: () => import("./AssignedUsers"),
     ActionIcon: () => import("@/components/ActionIcon")
   },
+  mixins: [scrollToBottom],
+
   props: {
     display: {
       type: Boolean,
@@ -145,7 +161,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["boards"]),
+    ...mapState("Admin", ["boards", "commentRef"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation", "getGroupName"]),
     users() {
@@ -223,7 +239,7 @@ export default {
         create: {
           method: "POST",
           url,
-          function: function(message) {
+          function: function({ ref, message }) {
             vm.CREATE_COMMENT(
               Object.assign(
                 {
@@ -232,19 +248,24 @@ export default {
                     updated: false,
                     dateCreated: new Date().toISOString(),
                     taskID: defaultPayload._id,
-                    assignedTo: vm.userInformation._id
+                    assignedTo: {
+                      name: vm.userInformation.name,
+                      _id: vm.userInformation._id
+                    }
                   }
                 },
                 defaultPayload
               )
             );
+
             vm.request({
               method: this.method,
               url: this.url,
               data: { message, taskID: defaultPayload._id }
             }).catch(() => {
-              vm.REMOVE_COMMENT();
+              vm.DELETE_COMMENT();
             });
+            vm.scrollToBottom(ref);
           }
         },
 
@@ -252,13 +273,13 @@ export default {
           method: "DELETE",
           url,
           function: function({ commentIndex, _id }) {
-            vm.REMOVE_COMMENT(Object.assign({ commentIndex }, defaultPayload));
+            vm.DELETE_COMMENT(Object.assign({ commentIndex }, defaultPayload));
             vm.request({
               method: this.method,
               url: this.url,
               data: { _id }
             }).catch(() => {
-              vm.RESTORE_COMMENT();
+              vm.CREATE_COMMENT(this.commentRef);
             });
           }
         }
@@ -304,7 +325,7 @@ export default {
     ...mapActions("Admin", ["deleteTask", "updateTask"]),
     ...mapMutations("Admin", [
       "CREATE_COMMENT",
-      "REMOVE_COMMENT",
+      "DELETE_COMMENT",
       "CREATE_LABEL",
       "UPDATE_LABEL",
       "REMOVE_LABEL"
@@ -314,6 +335,7 @@ export default {
     },
     handleUpdate(update) {
       this.updateTask({ ...this.defaultPayload, update });
+      this.view = false;
     },
     handleDescriptions() {
       // admin or assigned to
@@ -344,20 +366,23 @@ export default {
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  font-size: 0.8em;
+  &/deep/ .labels_container {
+    margin: 0;
+  }
 }
-.task_info_title {
-  margin: 20px 0;
-  span,
-  .bx {
-    font-weight: 400;
-    color: #999;
-  }
-  span {
-    margin-left: 10px;
-  }
+
+.description {
+  min-height: 300px;
+  max-height: 300px;
+  overflow-x: hidden;
+  padding: 10px;
+  background: rgb(250, 250, 250);
+  border-radius: 10px;
 }
 .inner_wrapper {
   padding: 0 50px;
+  height: 100%;
 }
 .information_wrapper {
   p {
@@ -370,5 +395,15 @@ export default {
 }
 .inner_container {
   padding: 10px;
+  height: 100%;
+}
+.task_info_title {
+  margin: 20px 0;
+  display: flex;
+  color: #999;
+  align-items: center;
+  .bx {
+    margin-right: 20px;
+  }
 }
 </style>

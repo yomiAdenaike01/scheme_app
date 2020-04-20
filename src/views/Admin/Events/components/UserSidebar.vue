@@ -4,7 +4,7 @@
 
     <div v-if="getFilteredTeam.length > 0" class="users_container">
       <div
-        v-for="(member, index) in teamInformation"
+        v-for="(member, index) in team"
         :key="index"
         class="team_member_container"
       >
@@ -12,7 +12,7 @@
           :items="items"
           position="left"
           :icon="false"
-          @click.native="hoveredTeamMember = member"
+          @click.native="selectedUser = member"
           @method="handleEvents"
         >
           <el-badge
@@ -20,7 +20,7 @@
             :type="member.isOnline ? 'success' : 'danger'"
             class="item"
           >
-            <Avatar :name="member.name" />
+            <Avatar :name="member.name" :size="40" />
           </el-badge>
         </Dropdown>
       </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import InformationDisplay from "@/components/InformationDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
@@ -62,31 +62,30 @@ export default {
 
   data() {
     return {
-      hoveredTeamMember: null,
+      selectedUser: null,
       loaderTimeout: null,
       loadingTeam: true
     };
   },
   computed: {
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {
-      let items = [
-        // {
-        //   name: "Message Team Member",
-        //   command: "message"
-        // },
+      return [
         {
-          name: "View Team Member",
+          name: "Message",
+          command: "message"
+        },
+        {
+          name: "View",
           command: "view_team_member"
         }
       ];
-
-      return items;
     }
   },
   methods: {
+    ...mapActions("Comms", ["createStubChat"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     handleEvents(event) {
@@ -94,15 +93,21 @@ export default {
         case "message": {
           this.$router.push({
             name: "comms",
-            params: { id: this.hoveredTeamMember }
+            params: {
+              userToMessage: {
+                name: this.selectedUser?.name,
+                _id: this.selectedUser?._id
+              }
+            }
           });
+          this.createStubChat();
           break;
         }
         case "view_team_member": {
           this.UPDATE_DIALOG_INDEX({
             dialog: "profile",
             view: true,
-            data: this.hoveredTeamMember
+            data: this.selectedUser
           });
           break;
         }

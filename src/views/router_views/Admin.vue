@@ -56,10 +56,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation", "requestIntervals"]),
-    ...mapState("Admin", ["eventsInformation"]),
-    hasEventsToday() {
-      return this.eventsInformation.today.length > 0;
-    }
+    ...mapState("Admin", ["events"])
   },
   methods: {
     ...mapActions("Admin", [
@@ -86,6 +83,5 @@ export default {
 .admin_container {
   display: flex;
   flex: 1;
-  height: 100%;
 }
 </style>

@@ -28,8 +28,7 @@ export default {
     return new Promise((resolve, reject) => {
       const payload = {
         method: "GET",
-        url: "events/all",
-        params
+        url: "events/all"
       };
       dispatch("request", payload, { root: true })
         .then(response => {
@@ -42,21 +41,27 @@ export default {
     });
   },
 
-  createEvent({ dispatch }, payload) {
+  createEvent(context, payload) {
     return new Promise((resolve, reject) => {
-      dispatch(
-        "request",
-        {
-          method: "POST",
-          url: "events/create",
-          data: payload
-        },
-        { root: true }
-      )
+      context.commit("CREATE_EVENT", {
+        clientEventGroups: context.rootState.clientInformation.eventGroups,
+        ...payload
+      });
+      context
+        .dispatch(
+          "request",
+          {
+            method: "POST",
+            url: "events/create",
+            data: payload
+          },
+          { root: true }
+        )
         .then(() => {
           resolve();
         })
         .catch(() => {
+          context.commit("DELETE_EVENT");
           reject();
         });
     });

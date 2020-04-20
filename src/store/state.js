@@ -1,4 +1,6 @@
 import vars from "@/assets/Styles/defaults.scss";
+const genUUID = require("uuid-by-string");
+
 export default {
   runningIntervals: {},
   requestIntervals: {
@@ -23,6 +25,7 @@ export default {
   userNotifications: [],
   viewMobileMenu: false,
 
+  lastDialog: {},
   dialogIndex: {
     profile: { view: false, data: null, tabIndex: 0 },
     viewEvent: { view: false, data: null, tabIndex: 0 },
@@ -70,6 +73,17 @@ export default {
     {
       label: "Sundays",
       value: 7
+    }
+  ],
+  rootGroupRef: "",
+  persmissions: [
+    {
+      _id: genUUID(
+        Math.random()
+          .toString(16)
+          .slice(2)
+      ),
+      name: ""
     }
   ]
 };

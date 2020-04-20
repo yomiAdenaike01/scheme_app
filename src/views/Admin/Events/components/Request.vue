@@ -86,7 +86,7 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", [
       "getGroupName",
-      "getEnabledEvents",
+      "getValidEventTypes",
       "getUserInformation"
     ]),
     approved() {
@@ -108,7 +108,7 @@ export default {
         {
           "component-type": "select",
           placeholder: "Select event type",
-          options: this.getEnabledEvents,
+          options: this.getValidEventTypes,
           model: "type",
           validType: "number",
           optional: true

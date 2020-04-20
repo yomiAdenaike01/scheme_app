@@ -54,28 +54,21 @@
     </div>
 
     <!-- Create template -->
-    <el-collapse-transition>
       <CreateTemplate
         v-if="displayCreateTemplate"
         @toggle="displayCreateTemplate = false"
       />
-    </el-collapse-transition>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
-
-import EventTemplate from "./EventTemplate";
-import CreateTemplate from "./CreateTemplate";
-
-import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "TemplateManagement",
   components: {
-    EventTemplate,
-    CreateTemplate,
-    InformationDisplay
+    EventTemplate: () => import("./EventTemplate"),
+    CreateTemplate: () => import("./CreateTemplate"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
   props: {
     templates: {

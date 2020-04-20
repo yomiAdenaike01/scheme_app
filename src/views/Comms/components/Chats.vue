@@ -8,7 +8,16 @@
           placeholder="Search chats"
         />
       </div>
-      <Chat v-for="chat in chats" :key="chat._id" :chat-information="chat" />
+      <Chat
+        v-for="(chat, index) in chats"
+        :key="
+          `${index}${Math.random()
+            .toString(16)
+            .slice(2)}`
+        "
+        :chat-index="index"
+        :chat-information="chat"
+      />
       <div class="blank_message grey" @click="startNewChat">
         <i class="bx bx-plus"></i>
         <span>Compose</span>
@@ -37,7 +46,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from "vuex";
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 export default {
   name: "Chats",
   components: {
@@ -55,48 +64,23 @@ export default {
     ...mapGetters("Admin", ["getUserInformation"]),
     hasChats() {
       return this.chats.length > 0;
-    },
-
-    queryChats() {
-      let queriedChats = [];
-      let query = this.query.toLowerCase();
-      if (this.chats.length > 0) {
-        this.chats.filter(chat => {
-          return (
-            this.getUserInformation(chat.userTwo)?.name?.toLowerCase() == query
-          );
-        });
-      }
-      return queriedChats.length > 0 ? queriedChats : this.chats;
     }
   },
+
   methods: {
+    ...mapActions("Comms", ["createStubChat"]),
     ...mapMutations("Comms", ["UPDATE_CHATS", "UPDATE_ACTIVE_CHAT"]),
     startNewChat() {
-      let isoDate = new Date().toISOString();
-      // Check if there is a fake chat
-      const createChat = () => {
-        this.UPDATE_CHATS({
-          userOne: this.userInformation._id,
-          userTwo: Math.random()
-            .toString(16)
-            .slice(2),
-          dateCreated: isoDate,
-          dateUpdated: isoDate,
-          initChat: true,
-          _id: Math.random()
-            .toString(16)
-            .slice(2)
-        });
-      };
       if (this.chats.length == 0) {
-        createChat();
+        this.createStubChat();
       } else {
         var chatIndex = this.chats.findIndex(chat => {
           return chat?.initChat;
         });
         if (chatIndex == -1) {
-          createChat();
+          this.createStubChat();
+        } else {
+          this.UPDATE_ACTIVE_CHAT(this.chats[chatIndex]);
         }
       }
     }

@@ -8,11 +8,23 @@
       <Avatar
         v-for="(user, index) in users"
         :key="user._id ? user._id : index"
-        :name="user.name ? user.name : 'no one'"
-      />
+        class="avatar_wrapper"
+        :name="user.name"
+        :size="size"
+        multiple
+      >
+        <div
+          v-if="removeUser"
+          class="remove_avatar_wrapper"
+          @click="emitRemoveUser(user._id)"
+        >
+          <i class="bx bx-x"></i>
+        </div>
+      </Avatar>
     </div>
+
     <el-popover trigger="click">
-      <ActionIcon slot="reference" />
+      <ActionIcon v-if="addNew" slot="reference" />
       <Form
         :submit-button="{ text: 'Assign user' }"
         :config="assignUserConfig"
@@ -36,14 +48,26 @@ export default {
       type: Array,
       default: () => [],
       required: true
+    },
+    addNew: {
+      type: Boolean,
+      default: false
+    },
+    removeUser: {
+      type: Boolean,
+      default: false
+    },
+    size: {
+      type: Number,
+      default: 40
     }
   },
   computed: {
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     teamMembers() {
       let members = [];
-      for (let i = 0, len = this.teamInformation?.length; i < len; i++) {
-        let teamMember = this.teamInformation[i];
+      for (let i = 0, len = this.team?.length; i < len; i++) {
+        let teamMember = this.team[i];
         if (this.users.indexOf(teamMember._id) == -1) {
           members.push({ label: teamMember.name, value: teamMember._id });
         }
@@ -60,20 +84,48 @@ export default {
         }
       ];
     }
+  },
+  methods: {
+    emitRemoveUser(id) {
+      let filteredUsers = [...this.users].filter(x => {
+        return x._id != id;
+      });
+      this.$emit("removeUsers", { update: filteredUsers });
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
 .users {
   &/deep/ .el-avatar {
-    width: 35px;
-    height: 35px;
-    border-top-left-radius: 20%;
     margin-right: 5px;
   }
+  &.multi_users {
+    display: flex;
+  }
 }
-.assigned_users {
+.users_wrapper {
   display: flex;
   align-items: center;
+}
+.avatar_wrapper:hover .remove_avatar_wrapper {
+  opacity: 1;
+}
+.remove_avatar_wrapper {
+  position: absolute;
+  top: -2px;
+  bottom: 35px;
+  right: -2px;
+  left: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  background: rgb(235, 235, 235);
+  border-radius: 50%;
+  color: #333;
+  transition: $default_transition opacity;
+  opacity: 0;
+  cursor: pointer;
 }
 </style>

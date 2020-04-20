@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["eventsInformation", "viewTeamMember"]),
+    ...mapState("Admin", ["events", "viewTeamMember"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     infoDisplayText() {
       let heading = "No events to display",

@@ -13,16 +13,31 @@
       <div slot="header">
         <InformationDisplay :display-text="informationDisplay" />
       </div>
+      <div
+        v-if="
+          tabXref.name == 'create_event' && hasEntries(events) && getIsAdmin
+        "
+        slot="body"
+        class="body_container"
+      >
+        <div class="qr_container">
+          <qrcode-vue :value="qrCode" />
+        </div>
+        <p>
+          This is QR code for users to clock in with
+        </p>
+      </div>
     </Tabs>
   </el-dialog>
 </template>
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+import QrcodeVue from "qrcode.vue";
 
 import TemplateManagement from "./TemplateManagement";
 import RequestManagement from "./RequestManagement";
-import EventGroupManagement from "./EventGroupManagement";
+import UpdateGroups from "./UpdateGroups";
 
 import InformationDisplay from "@/components/InformationDisplay";
 import Tabs from "@/components/Tabs";
@@ -34,14 +49,16 @@ export default {
     InformationDisplay,
     Tabs,
     ColourUnit,
-    RequestManagement
+    RequestManagement,
+    QrcodeVue
   },
   data() {
     return {
-      eventsInformation: {},
-      templatesInformation: {},
+      events: {},
+      templates: {},
       loading: false,
-      currentTab: 0
+      currentTab: 0,
+      qrCode: {}
     };
   },
 
@@ -50,7 +67,7 @@ export default {
     ...mapGetters(["getIsAdmin", "getActiveDialog", "getCurrentTabXref"]),
     ...mapGetters("Admin", [
       "getDropdownTeamMembers",
-      "getEnabledEvents",
+      "getValidEventTypes",
       "getUserGroups",
       "getUserInformation",
       "getUsersInUserGroup"
@@ -58,52 +75,56 @@ export default {
 
     eventContent() {
       // this.loading = true;
-      let eventsInformation = { ...this.eventsInformation };
-      let date = eventsInformation?.date;
+      let events = { ...this.events };
+      let date = events?.date;
 
       let startDate = this.initMoment(date[0]).toISOString();
       let endDate = this.initMoment(date[1]).toISOString();
-      eventsInformation.startDate = startDate;
-      eventsInformation.endDate = endDate;
-      eventsInformation.until = this.initMoment(
-        eventsInformation?.until ?? new Date()
-      ).toISOString();
+      events.startDate = startDate;
+      events.endDate = endDate;
+      events.until = this.initMoment(events?.until ?? new Date()).toISOString();
 
       if (this.activeDialogInformation?.length > 0) {
-        eventsInformation.assignedTo = eventsInformation.assignedTo.concat(
+        events.assignedTo = events.assignedTo.concat(
           this.activeDialogInformation
         );
       }
 
-      eventsInformation = {
-        ...eventsInformation,
+      events.isApproved = [
+        this.userInformation._id,
+        ...events.assignedTo.filter(assignee => {
+          return (
+            this.getUserInformation(assignee).userGroup.enableEventRejection ==
+            true
+          );
+        })
+      ];
+
+      events = {
+        ...events,
         repeat: {
-          until: eventsInformation.until,
-          weekdays: eventsInformation?.weekdays ?? 0
+          until: events.until,
+          weekdays: events?.weekdays ?? 0
         }
       };
 
       if (!this.getIsAdmin) {
-        eventsInformation.assignedTo = [this.userInformation._id];
+        events.assignedTo = [this.userInformation._id];
       }
-      let templatesInformation = {
-        content: {
-          ...eventsInformation
-        }
+      let templates = {
+        content: events
       };
 
-      if (eventsInformation?.userGroups?.length > 0) {
+      if (events?.userGroups?.length > 0) {
         // Changed the assigned to to all of the user groups
-        let uGroups = eventsInformation.userGroups;
-        eventsInformation.assignedTo = [];
+        let uGroups = events.userGroups;
+        events.assignedTo = [];
 
         for (let i = 0, len = uGroups.length; i < len; i++) {
-          eventsInformation.assignedTo.push(
-            ...this.getUsersInUserGroup(uGroups[i])
-          );
+          events.assignedTo.push(...this.getUsersInUserGroup(uGroups[i]));
         }
       }
-      return { templatesInformation, eventsInformation };
+      return { templates, events };
     },
 
     informationDisplay() {
@@ -136,7 +157,7 @@ export default {
       return this.getActiveDialog()?.data;
     },
     isNotShiftOrHoliday() {
-      return !this.getIsAdmin && this.eventsInformation.type > 3;
+      return !this.getIsAdmin && this.events.type > 3;
     },
 
     tabXref() {
@@ -166,7 +187,7 @@ export default {
         tabs.unshift({
           label: "Manage event groups",
           view: {
-            component: EventGroupManagement
+            component: UpdateGroups
           }
         });
 
@@ -186,9 +207,8 @@ export default {
         {
           "component-type": "select",
           placeholder: "Select event type",
-          options: this.getEnabledEvents,
-          model: "type",
-          validType: "number"
+          options: this.getValidEventTypes,
+          model: "type"
         },
         {
           "component-type": "date-picker",
@@ -264,7 +284,8 @@ export default {
     ...mapActions("Admin", ["createEvent", "createEventTemplate"]),
 
     eventsCtrl(information) {
-      this.eventsInformation = information;
+      this.events = information;
+      this.qrCode = information;
 
       switch (this.tabXref.name) {
         case "create_event_group": {
@@ -285,9 +306,9 @@ export default {
     },
     genRequest() {
       this.loading = true;
-      let eventInfo = this.eventContent.eventsInformation;
+      let eventInfo = this.eventContent.events;
       let requestInformation = {
-        type: this.eventContent.eventsInformation.type,
+        type: this.eventContent.events.type,
         endDate: eventInfo.endDate,
         startDate: eventInfo.startDate
       };
@@ -296,28 +317,17 @@ export default {
         method: "POST",
         url: "events/requests/create",
         data: requestInformation
-      })
-        .then(() => {
-          this.loading = false;
-          this.getRequests();
-        })
-        .catch(() => {
-          this.loading = false;
-        });
+      });
     },
     // Submit one event
     genEvent() {
-      this.createEvent(this.eventContent.eventsInformation)
-        .then(() => {
-          this.loading = false;
+      this.createEvent(this.eventContent.events).then(() => {
+        if (this.getIsAdmin) {
+          this.initSaveTemplate();
+        } else {
           this.view = false;
-          if (this.getIsAdmin) {
-            this.initSaveTemplate();
-          }
-        })
-        .catch(() => {
-          this.loading = false;
-        });
+        }
+      });
     },
 
     initSaveTemplate() {
@@ -329,6 +339,7 @@ export default {
         type: "info"
       }).then(({ value }) => {
         this.resolveSaveTemplate(value);
+        this.view = false;
       });
     },
 
@@ -343,14 +354,14 @@ export default {
     },
 
     createEventGroup() {
-      let eventsInformation = {
-        ...this.eventsInformation,
+      let events = {
+        ...this.events,
         value: this.clientInformation.eventGroups.length + 1
       };
       this.request({
         method: "POST",
         url: "clients/group",
-        data: { name: "eventGroups", value: eventsInformation }
+        data: { name: "eventGroups", value: events }
       })
         .then(() => {
           this.loading = false;
@@ -373,5 +384,18 @@ export default {
 }
 .colour_unit_label {
   margin-left: 10px;
+}
+.body_container {
+  display: flex;
+  justify-content: center;
+}
+.qr_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  flex-direction: column;
+  border: 2px solid whitesmoke;
+  max-height: fit-content;
 }
 </style>

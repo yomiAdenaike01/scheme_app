@@ -47,7 +47,7 @@ export default {
   },
 
   computed: {
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["eventFilters"]),
     ...mapGetters("Admin", ["getUserGroups"]),

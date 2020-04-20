@@ -7,12 +7,17 @@
       :disabled="disableForm"
       :rules="form.validate"
       :model="formContent"
+      label-position="top"
     >
       <el-form-item
         v-for="(input, index) in form.formData"
         :key="`${index}${input.name}`"
         :prop="input.name"
-        :label="input.label || ''"
+        :label="
+          input.optional || allOptional
+            ? `(Optional) ${input.placeholder}`
+            : input.placeholder
+        "
       >
         <component
           :is="
@@ -55,11 +60,6 @@
               : null
           "
           v-bind="input"
-          :placeholder="
-            input.optional || allOptional
-              ? `(Optional) ${input.placeholder}`
-              : input.placeholder
-          "
           :active-text="
             input.optional || allOptional
               ? `(Optional) ${input.placeholder}`
@@ -90,10 +90,8 @@
 
       <!-- Submit button -->
       <div v-if="!disable" class="button_container">
-        <el-button v-if="displayReset" :size="size" @click="resetForm"
-          >Clear Form</el-button
-        >
         <el-button
+          round
           :size="submitButton.size ? submitButton.size : 'mini'"
           :plain="submitButton.plain ? submitButton.plain : false"
           :type="submitButton.type ? submitButton.type : 'primary'"
@@ -253,16 +251,15 @@ export default {
       });
     },
     completeForm() {
-      try {
-        this.$emit("val", this.formContent);
-        if (this.customMethod) {
-          this.customMethod();
-        }
+      this.$emit("val", this.formContent);
+      this.formContent = {};
+      if (this.customMethod) {
+        this.customMethod();
+      }
 
-        if (this.nextTab) {
-          this.$emit("changeTab");
-        }
-      } catch (error) {}
+      if (this.nextTab) {
+        this.$emit("changeTab");
+      }
     },
     submitForm() {
       this.runValidation()
@@ -278,6 +275,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-form {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  max-height: 500px;
+}
 .form_wrapper {
   &.full_width {
     width: 100%;

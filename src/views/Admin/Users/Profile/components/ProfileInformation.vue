@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="user_info_container">
+  <div class="user_info_container">
     <el-collapse
       v-if="getIsAdmin || localUserInformation._id == userInformation._id"
       class="collapse_container"
@@ -43,7 +43,7 @@
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
 
-      <p class="member_name">{{ group }}</p>
+      <p class="member_name">{{ localUserInformation.userGroup.label }}</p>
     </div>
   </div>
 </template>
@@ -57,20 +57,23 @@ export default {
   },
   data() {
     return {
-      selectedGroup: "",
-      loading: false
+      selectedGroup: ""
     };
   },
   computed: {
-    ...mapState(["userInformation"]),
-    ...mapGetters("Admin", ["getGroupName", "getUserGroups"]),
-    ...mapGetters([
-      "getIsAdmin",
-      "getPreviousDeviceInformation",
-      "getActiveDialog"
-    ]),
+    ...mapState(["userInformation", "clientInformation"]),
+    ...mapState("Admin", ["team"]),
+    ...mapGetters(["getIsAdmin", "getActiveDialog"]),
+    ...mapGetters("Admin", ["getUserGroups", "teamRef"]),
+
     localUserInformation() {
       return this.getActiveDialog()?.data;
+    },
+
+    selectedGroupData() {
+      return this.clientInformation.userGroups.find(group => {
+        return group._id == this.selectedGroup;
+      });
     },
 
     updateUserForm() {
@@ -107,22 +110,24 @@ export default {
     date() {
       return this.formatDate(this.localUserInformation.dateCreated);
     },
-    group() {
-      return this.getGroupName("user", this.localUserInformation.groupID)
-        ?.label;
-    },
-    removeUnwantedProperties() {
-      let cleanedProperties = {};
-      for (let property in this.localUserInformation) {
-        cleanedProperties[property] = this.localUserInformation[property];
-      }
-      return cleanedProperties;
+
+    teamMemberIndex() {
+      return this.team.findIndex(x => {
+        return x._id == this.localUserInformation._id;
+      });
     }
   },
   methods: {
-    ...mapActions(["genEmail", "request", "closeDialog", "genPromptBox"]),
+    ...mapActions([
+      "genEmail",
+      "request",
+      "closeDialog",
+      "genPromptBox",
+      "restoreDialog"
+    ]),
     ...mapActions("Admin", ["getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations("Admin", ["UPDATE_ONE_TEAM_MEMBER", "DELETE_TEAM_MEMBER"]),
     updateUser(e) {
       if (!this.hasEntries(e)) {
         this.UPDATE_NOTIFICATIONS({
@@ -131,37 +136,38 @@ export default {
         });
       } else {
         e.dateOfBirth = this.initMoment(e?.dateOfBirth).toISOString();
+        this.UPDATE_ONE_TEAM_MEMBER({
+          index: this.teamMemberIndex,
+          payload: e
+        });
+        this.closeDialog();
+
         this.request({
           method: "PUT",
           url: "users/update",
-          data: { update: { ...e }, _id: this.localUserInformation._id }
-        })
-          .then(() => {
-            this.reset();
-          })
-          .catch(() => {
-            this.reset();
-          });
+          data: { update: e, _id: this.localUserInformation?._id }
+        }).catch(() => {
+          this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);
+        });
       }
     },
     assignUserToGroup() {
-      this.loading = true;
+      this.UPDATE_ONE_TEAM_MEMBER({
+        index: this.teamMemberIndex,
+        payload: { userGroup: this.selectedGroupData }
+      });
+
       this.request({
         method: "PUT",
         url: "users/update",
         data: {
           _id: this.localUserInformation._id,
-          update: { groupID: this.selectedGroup }
+          update: { userGroup: this.selectedGroup }
         }
-      })
-        .then(() => {
-          this.loading = false;
-          this.reset();
-        })
-        .catch(() => {
-          this.loading = false;
-          this.reset();
-        });
+      }).catch(() => {
+        this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);
+      });
+      this.closeDialog();
     },
     removeUser() {
       this.genPromptBox({
@@ -170,26 +176,22 @@ export default {
         text: "Are you sure you want to delete this user ?",
         confirm: "Yes"
       }).then(() => {
-        this.loading = true;
+        this.DELETE_TEAM_MEMBER(this.teamMemberIndex);
         this.request({
           method: "DELETE",
           url: "users/remove",
           data: { _id: this.localUserInformation._id }
         })
           .then(() => {
-            this.loading = false;
-            this.reset();
+            this.closeDialog();
           })
           .catch(() => {
-            this.loading = false;
-            this.reset();
+            this.ADD_TEAM_MEMBER(this.teamRef);
+            this.restoreDialog();
           });
       });
     },
-    reset() {
-      this.getTeam();
-      this.closeDialog();
-    },
+
     requestgenEmail() {
       let emailContent = {
         to: "adenaikeyomi@gmail.com",

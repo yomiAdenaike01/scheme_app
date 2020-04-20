@@ -4,6 +4,7 @@
     <el-button
       v-for="(button, key) in buttons"
       :key="key"
+      round
       size="mini"
       :type="button.type ? button.type : 'primary'"
       :plain="button.plain"
@@ -20,33 +21,24 @@ import { mapGetters, mapState, mapMutations } from "vuex";
 
 export default {
   name: "Toolbar",
-
-  methods: {
-    ...mapMutations(["UPDATE_DIALOG_INDEX"])
-  },
   computed: {
     ...mapGetters(["getIsAdmin"]),
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["eventsInformation"]),
-    hasGcal() {
-      return "gcalToken" in this.userInformation;
-    },
-    renderCreateEventButton() {
-      let render = {
-        text: "Request Management"
-      };
+    ...mapState("Admin", ["events"]),
+    buttonText() {
+      let text = "Request management";
 
       if (this.getIsAdmin) {
-        render.text = "Event management";
+        text = "Event management";
       }
 
-      return render;
+      return text;
     },
 
     buttons() {
       let buttons = [
         {
-          label: this.renderCreateEventButton.text,
+          label: this.buttonText,
           round: true,
           plain: true,
           type: "primary",
@@ -55,25 +47,15 @@ export default {
               dialog: "eventModule",
               view: true
             });
-          },
-          icon: this.renderCreateEventButton.icon
+          }
         }
       ];
-      // if (this.eventsInformation.previous.length > 0) {
-      //   buttons.push({
-      //     label: "View previous events",
-      //     round: true,
-      //     plain: true,
-      //     method: () => {
-      //       this.UPDATE_DIALOG_INDEX({
-      //         dialog: "prevEvents",
-      //         view: true
-      //       });
-      //     }
-      //   });
-      // }
+
       return buttons;
     }
+  },
+  methods: {
+    ...mapMutations(["UPDATE_DIALOG_INDEX"])
   }
 };
 </script>

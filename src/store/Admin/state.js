@@ -1,23 +1,17 @@
 export default {
   eventFilters: {},
   boards: [],
+  // References
   boardRef: "",
   taskRef: "",
   eventRef: "",
   commentRef: "",
+  teamRef: "",
+  groupRef: "",
 
-  teamInformation: [],
+  team: [],
 
-  eventsInformation: {
-    all: [],
-    upcoming: [],
-    today: [],
-    previous: []
-  },
+  events: [],
   requestsInformation: [],
-  eventTemplates: [],
-  featureRequests: {
-    all: [],
-    user: []
-  }
+  eventTemplates: []
 };

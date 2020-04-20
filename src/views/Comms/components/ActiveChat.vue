@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="current_chat_container">
+  <div class="current_chat_container">
     <div class="active_chat_container">
       <div class="current_chat_header">
         <el-autocomplete
@@ -12,7 +12,7 @@
         ></el-autocomplete>
       </div>
 
-      <div class="chat_messages_container">
+      <div ref="chatMessages" class="chat_messages_container">
         <ChatMessage
           v-for="message in chatMessages"
           :key="message._id"
@@ -31,7 +31,7 @@
           <el-input
             v-model="chat.content"
             placeholder="Send a message..."
-            @keypress.enter="sendChatMessage"
+            @keyup.enter.native="sendChatMessage"
           />
           <el-button type="text" @click="sendChatMessage">Send</el-button>
         </div>
@@ -42,6 +42,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import scrollToBottom from "@/mixins/scrollToBottom";
 export default {
   name: "ActiveChat",
   components: {
@@ -49,33 +50,47 @@ export default {
     ChatActions: () => import("./ChatActions"),
     ChatMessage: () => import("./ChatMessage")
   },
+  mixins: [scrollToBottom],
+  props: {
+    userToMessage: {
+      type: Object,
+      default: () => {
+        return {
+          name: "",
+          _id: ""
+        };
+      }
+    }
+  },
   data() {
     return {
       intervalID: null,
       loading: true,
-      teamQuery: "",
+      teamQuery: this.userToMessage?.name,
       chat: {
         content: "",
         attachements: [],
         sentAt: new Date().toISOString(),
         isRead: false,
         editted: false,
-        recieverID: ""
+        reciever: this.userToMessage?._id
       }
     };
   },
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "messages"]),
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+
     chatMessages() {
-      return [...this.messages].map(message => {
+      return [...this.activeChat?.messages].map(message => {
         return Object.assign(
           {
             id: message._id,
-            sentAt: this.formatDate(message.sentAt),
-            isSentByUser: message.senderID == this.userInformation._id
+            sentAt: this.initMoment(message.sentAt).calendar(),
+            sentBy: message.sender?.name,
+            isSentByUser: message.sender._id == this.userInformation._id
           },
           message
         );
@@ -87,32 +102,18 @@ export default {
     activeChatEntries() {
       return this.hasEntries(this.activeChat);
     },
-    queryTeamList() {
-      return this.teamInformation.map(member => {
+    autoCompleteTeam() {
+      let team = this.team.map(member => {
         return {
           value: member.name,
           link: member._id
         };
       });
-    }
-  },
-  watch: {
-    activeChat() {
-      this.clearMessageInterval().then(() => {
-        this.initGetChats();
-      });
+
+      return team;
     }
   },
 
-  mounted() {
-    this.initGetChats();
-  },
-  destroyed() {
-    this.clearMessageInterval();
-  },
-  beforeDestory() {
-    this.clearMessageInterval();
-  },
   methods: {
     ...mapMutations([
       "UPDATE_NOTIFICATIONS",
@@ -121,55 +122,14 @@ export default {
     ]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
     ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
+
     editMessage(messageID) {
       console.log(messageID);
     },
     deleteMessage(messageID) {
       console.log(messageID);
     },
-    initGetChats() {
-      this.loading = true;
-      this.getChatMessages()
-        .then(() => {
-          this.loading = false;
-          this.beginMessageInterval();
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-    beginMessageInterval() {
-      if (!this.activeChat?.initChat && this.hasEntries(this.activeChat)) {
-        this.intervalID = "getChatMessages";
-        this.CREATE_GLOBAL_INTERVAL({
-          id: this.intervalID,
-          duration: this.requestIntervals.chatMessages,
-          method: () => {
-            return new Promise((resolve, reject) => {
-              this.getChatMessages()
-                .then(() => {
-                  resolve();
-                })
-                .catch(() => {
-                  reject();
-                });
-            });
-          }
-        });
-      }
-    },
-    clearMessageInterval() {
-      return new Promise((resolve, reject) => {
-        try {
-          if (this.intervalID) {
-            this.CLEAR_GLOBAL_INTERVAL(this.intervalID);
-            resolve();
-          }
-        } catch (error) {
-          reject(error);
-        }
-      });
-    },
+
     includeEmoji(emoji) {
       console.log(emoji);
     },
@@ -177,21 +137,20 @@ export default {
       console.log(attachment);
     },
     setReciever({ link }) {
-      this.chat.recieverID = link;
+      this.chat.reciever = link;
     },
 
     queryTeam(name, cb) {
       let queriedTeam = [];
-      if (this.queryTeamList.length > 0) {
-        name = name?.toLowerCase() ?? this.teamQuery?.toLowerCase();
-        queriedTeam = this.queryTeamList.filter(x => {
-          return x?.value?.toLowerCase() == name;
-        });
-      }
-      cb(queriedTeam.length > 0 ? queriedTeam : this.queryTeamList);
+      name = name.toLowerCase();
+      queriedTeam = this.autoCompleteTeam.filter(x => {
+        return x.value.toLowerCase() == name;
+      });
+      cb(queriedTeam.length > 0 ? queriedTeam : this.autoCompleteTeam);
     },
     sendChatMessage() {
-      let userName = this.getUserInformation(this.chat.recieverID)?.name;
+      let userName = this.getUserInformation(this.chat.reciever)?.name;
+
       const createError = message => {
         this.UPDATE_NOTIFICATIONS({
           title: "Failed to send message",
@@ -199,8 +158,12 @@ export default {
           type: "error"
         });
       };
+
       if (!this.chat.content) {
         return createError("No message content found.");
+      }
+      if (!this.chat.reciever && this.activeChat?.initChat) {
+        return createError("No chat reciever found.");
       }
 
       if (!this.activeChat._id) {
@@ -208,17 +171,22 @@ export default {
       }
 
       if (!this.isNewChat) {
-        this.chat.recieverID = this.activeChat.userTwo;
-        userName = this.getUserInformation(this.chat.recieverID)?.name;
+        this.chat.reciever = this.activeChat.userTwo;
+        userName = this.getUserInformation(this.chat.reciever)?.name;
       }
-
-      this.sendMessage({
+      let sendMessage = {
         ...this.chat,
         chatID: this.activeChat._id,
         isRead: false,
         editted: false,
-        userName
-      });
+        sender: {
+          _id: this.userInformation._id,
+          name: this.userInformation.name
+        }
+      };
+      this.sendMessage(sendMessage);
+      this.chat.content = "";
+      this.scrollToBottom(this.$refs.chatMessages);
     }
   }
 };
@@ -228,7 +196,6 @@ export default {
 .current_chat_container {
   display: flex;
   flex: 1;
-  flex-direction: column;
   height: 100%;
   width: 100%;
 }
@@ -251,33 +218,44 @@ export default {
   }
 }
 .chat_messages_container {
-  height: 90vh;
   overflow-x: hidden;
-  width: 100%;
+  flex: 1;
+  padding: 0 28px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100% - 130px);
 }
 .active_chat_container {
-  height: 100%;
+  max-height: fit-content;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 .current_chat_interaction {
+  border-top: 2px solid rgb(240, 240, 240);
   align-items: center;
-  flex: 1;
   background: white;
   padding: 10px 20px;
   height: 100px;
-  .send_message_container {
-    display: flex;
-    flex: 1;
-    &/deep/ {
-      .el-input__inner {
-        padding: 20px;
-        border: none;
-        background: rgb(250, 250, 250);
-        border-radius: 30px;
-      }
-      .el-input {
-        padding: 10px;
-        font-size: 1em;
-      }
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.send_message_container {
+  display: flex;
+  flex: 1;
+  &/deep/ {
+    .el-input__inner {
+      padding: 20px;
+      border: none;
+      background: rgb(250, 250, 250);
+      border-radius: 30px;
+    }
+    .el-input {
+      padding: 10px;
+      font-size: 1em;
     }
   }
 }

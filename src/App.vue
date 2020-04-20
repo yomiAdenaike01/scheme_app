@@ -21,7 +21,8 @@ export default {
   mixins: [refactorLocation],
   data() {
     return {
-      loading: true
+      loading: true,
+      dialogShowing: false
     };
   },
   computed: {
@@ -31,7 +32,7 @@ export default {
       "defaultSize",
       "clientInformation"
     ]),
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters(["getIsIE"]),
 
     isValidClient() {
@@ -72,15 +73,19 @@ export default {
             })
             .catch(() => {
               this.loading = false;
-              this.genPromptBox({
-                boxType: "prompt",
-                title: "No client found",
-                text:
-                  "Please enter your client subdomain to go to your scheme cloud instance",
-                type: "info"
-              }).then(({ value }) => {
-                this.refactorWindowLocation(value);
-              });
+              this.REMOVE_USER();
+              if (this.dialogShowing == false) {
+                this.genPromptBox({
+                  boxType: "prompt",
+                  title: "No client found",
+                  text:
+                    "Please enter your client subdomain to go to your scheme cloud instance",
+                  type: "info"
+                }).then(({ value }) => {
+                  this.refactorWindowLocation(value);
+                });
+                this.dialogShowing = true;
+              }
               reject();
             });
         });
@@ -113,7 +118,7 @@ Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Sen:300,400&display=swap");
 /*
 
  Default
@@ -121,7 +126,13 @@ Fonts
 
 */
 * {
-  font-family: "Lato", sans-serif;
+  font-family: "Sen", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+  :before,
+  :after {
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
 body,
@@ -131,6 +142,7 @@ html,
   width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
 #app {
@@ -139,10 +151,20 @@ html,
   width: 100%;
   height: 100%;
 }
+.no_content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  &.center {
+    justify-content: center;
+    align-items: center;
+  }
+}
 
 .grey {
   color: #999;
 }
+
 .capitalise {
   text-transform: capitalize;
 }
@@ -203,12 +225,32 @@ html,
 .no_events {
   pointer-events: none;
 }
+.hover_indicator {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  border-radius: 50%;
+  background: #efefef;
+  padding: 0px 10px;
+  z-index: 999;
+  color: #888;
+  cursor: pointer;
+  &:hover {
+    background: darken(#efefef, 4);
+  }
+}
 /*
 
  Element UI Configuration
 
 
 */
+.el-drawer {
+  height: 100%;
+}
+.el-drawer__body {
+  height: calc(100% - 39px);
+}
 .long {
   width: 100%;
 }
@@ -263,20 +305,11 @@ textarea {
 .el-textarea,
 .el-textarea__inner,
 .el-input__inner {
-  border-radius: 10px !important;
-  border-color: rgb(240, 240, 240) !important;
-}
-.el-textarea__inner {
-  padding: 10px !important;
-  min-height: 100px !important;
-}
-.el-textarea__inner:focus,
-.el-textarea__inner:hover,
-.el-input__inner:focus,
-.el-input__inner:hover {
   border-color: rgb(200, 200, 200) !important;
 }
-
+.el-form--label-top {
+  padding: 0 !important;
+}
 /*
 
  Notifications

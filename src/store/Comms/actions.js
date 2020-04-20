@@ -1,4 +1,31 @@
 export default {
+  createStubChat(context) {
+    let isoDate = new Date().toISOString();
+    context.commit("UPDATE_CHATS", {
+      mutedNotifications: [],
+      userOne: {
+        name: context.rootState.userInformation.name,
+        _id: context.rootState.userInformation._id
+      },
+      userTwo: {
+        name: "New message",
+        _id: Math.random()
+          .toString(16)
+          .slice(2)
+      },
+      dateCreated: isoDate,
+      dateUpdated: isoDate,
+      initChat: true,
+      _id: Math.random()
+        .toString(16)
+        .slice(2),
+      messages: []
+    });
+    context.commit(
+      "UPDATE_ACTIVE_CHAT",
+      context.state.chats[context.state.chats.length - 1]
+    );
+  },
   deleteChat({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
       dispatch(
@@ -35,21 +62,14 @@ export default {
           data: payload
         },
         { root: true }
-      )
-        .then(() => {
-          dispatch("getChatMessages")
-            .then(() => {
-              resolve();
-            })
-            .catch(() => {
-              reject();
-            });
-        })
-        .catch(() => reject());
+      ).catch(() => reject());
     });
   },
   getChatMessages({ state: { activeChat }, dispatch, commit }) {
-    let chatID = Object.keys(activeChat).length > 0 ? activeChat._id : "";
+    let chatID =
+      Object.keys(activeChat).length > 0 && !activeChat?.initChat
+        ? activeChat._id
+        : "";
 
     return new Promise((resolve, reject) => {
       if (chatID.length > 0) {
@@ -74,7 +94,7 @@ export default {
       }
     });
   },
-  startChat({ dispatch, commit }, payload) {
+  startChat({ dispatch, commit, state: { chats } }, payload) {
     return new Promise((resolve, reject) => {
       dispatch(
         "request",
@@ -82,8 +102,8 @@ export default {
         { root: true }
       )
         .then(response => {
+          commit("DELETE_CHAT", chats.length - 1);
           commit("UPDATE_CHATS", response);
-          dispatch("getChats");
           resolve();
         })
         .catch(error => {

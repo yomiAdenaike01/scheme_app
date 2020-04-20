@@ -12,7 +12,6 @@
         >
       </div>
     </div>
-    <el-collapse-transition>
       <div v-if="displayDetails" class="mt-3">
         <h3><strong>Details</strong></h3>
         {{ getEventAssignedTo(data.content.assignedTo).text }}
@@ -33,7 +32,6 @@
           >Apply</el-button
         >
       </div>
-    </el-collapse-transition>
   </div>
 </template>
 
@@ -59,7 +57,7 @@ export default {
       "getGroupName",
       "getDropdownTeamMembers",
       "getEventAssignedTo",
-      "getEnabledEvents"
+      "getValidEventTypes"
     ]),
     ...mapState(["daysOfWeek"]),
     updateTemplateConfig() {
@@ -82,7 +80,7 @@ export default {
         {
           "component-type": "select",
           placeholder: "Event type",
-          options: this.getEnabledEvents,
+          options: this.getValidEventTypes,
           model: "type",
           optional: true
         },

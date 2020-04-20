@@ -4,7 +4,7 @@
       <i class="bx bx-message-rounded grey"></i>
       <small class="grey">{{ commentCount }}</small>
     </div>
-    <div v-if="mode != 'overview'">
+    <div v-if="mode != 'overview'" class="full_mode_container">
       <div
         v-if="comments.length > 0"
         ref="comments_wrapper"
@@ -26,24 +26,46 @@
           <div class="comment_message" @click="editMessage = true">
             <p>{{ comment.message }}</p>
           </div>
+          <el-button
+            v-show="canInteract"
+            class="delete_comment"
+            icon="el-icon-close"
+            type="danger"
+            circle
+            @click="
+              $emit('deleteComment', {
+                commentIndex: index,
+                _id: comment._id
+              })
+            "
+          ></el-button>
         </div>
       </div>
 
-      <div v-if="canInteract" class="empty_comment_wrapper">
+      <div v-else class="no_comments_wrapper">
+        <InformationDisplay
+          :display-text="{
+            hasIcon: true,
+
+            content: 'Be the first to comment on this task'
+          }"
+        >
+          <i slot="header" class="grey large_icon bx bx-comment-detail"></i>
+        </InformationDisplay>
+      </div>
+
+      <div v-if="canInteract" class="create_comment_wrapper">
         <Avatar class="comment_avatar" :name="userInformation.name" />
         <el-input
           v-model="newMessage"
           class="input_comment"
           placeholder="Write a comment..."
-          @keyup.enter="$emit('createComment', newMessage), reset()"
+          @keyup.enter.native="createComment"
         ></el-input>
         <el-button
           type="text"
           :disabled="newMessage.length == 0"
-          @click="
-            $emit('createComment', newMessage);
-            reset();
-          "
+          @click="createComment"
           >Post</el-button
         >
       </div>
@@ -57,7 +79,8 @@ export default {
   name: "Comments",
   components: {
     ActionIcon: () => import("@/components/ActionIcon"),
-    Avatar: () => import("@/components/Avatar")
+    Avatar: () => import("@/components/Avatar"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
   props: {
     mode: {
@@ -91,13 +114,17 @@ export default {
   },
 
   methods: {
+    createComment() {
+      this.$emit("createComment", {
+        ref: this.$refs.comments_wrapper,
+        message: this.newMessage
+      }),
+        this.reset();
+    },
     reset() {
       this.newMessage = "";
       this.commentMessage = "";
       this.editMessage = false;
-      let { comments_wrapper } = this.$refs;
-      comments_wrapper.scrollTop =
-        comments_wrapper.scrollHeight - comments_wrapper.clientHeight;
     },
     handleDisplayActions(userID) {
       if (this.getIsAdmin || userID == this.userInformation._id) {
@@ -127,17 +154,29 @@ export default {
     margin-right: 10px;
   }
 }
+.full_mode_container {
+  height: 100%;
+}
+.comments_container {
+  height: 100%;
+}
 .comments_wrapper {
-  max-height: 450px;
-  overflow: auto;
+  max-height: calc(100% - 700px);
+  overflow-x: hidden;
 }
 .comment {
   display: flex;
+  position: relative;
   flex-direction: column;
   background: rgb(250, 250, 250);
   margin-bottom: 10px;
   max-height: fit-content;
   border-radius: 10px;
+  &:hover {
+    .comment_footer {
+      display: initial;
+    }
+  }
 }
 .input_comment {
   margin-right: 10px;
@@ -166,12 +205,30 @@ export default {
   padding: 10px;
 }
 
-.empty_comment_wrapper {
+.create_comment_wrapper {
   display: flex;
   align-items: center;
   padding: 20px;
 }
 .comment_avatar {
   margin-right: 10px;
+}
+.no_comments_wrapper {
+  background: rgb(250, 250, 250);
+}
+
+.delete_comment {
+  border: none;
+  color: #444;
+  position: absolute;
+  right: 0;
+  top: 0px;
+  background: rgb(240, 240, 240);
+  &:hover {
+    background: rgb(230, 230, 230);
+  }
+}
+.large_icon {
+  font-size: 3em;
 }
 </style>

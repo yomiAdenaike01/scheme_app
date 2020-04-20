@@ -1,6 +1,7 @@
 import sounds from "@/mixins/playSound";
 import Vue from "vue";
 import VueRouter from "../router";
+import updateBreadCrumbs from "./helpers";
 
 const clearStateInterval = (state, intervalID) => {
   if (!intervalID) {
@@ -16,11 +17,46 @@ const clearStateInterval = (state, intervalID) => {
 
 export default {
   UPDATE_DIALOG_INDEX(
-    { dialogIndex },
+    state,
     { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
   ) {
-    Vue.set(dialogIndex, dialog, { view, id, data, tabIndex });
+    Vue.set(state.dialogIndex, dialog, { view, id, data, tabIndex });
+    state.lastDialog = { dialog, view, id, data, tabIndex };
   },
+
+  // Groups
+  CREATE_GROUP(state, { groupType, payload }) {
+    /**
+     * {
+     *  label,_id,enableEventRejection
+     * }
+     */
+    let group = state.clientInformation[groupType];
+    let groupExists =
+      state.clientInformation[groupType].findIndex(group => {
+        return group?.label?.toLowerCase() == payload?.label?.toLowerCase();
+      }) > -1;
+    if (!groupExists) {
+      group.push(payload);
+      updateBreadCrumbs(state, "rootGroupRef", { groupType, payload });
+    }
+  },
+  DELETE_GROUP(state, { groupType, groupIndex }) {
+    Vue.delete(state.clientInformation[groupType], groupIndex);
+  },
+  UPDATE_GROUP(state, { groupType, groupIndex, payload }) {
+    updateBreadCrumbs(state, "rootGroupRef", {
+      groupType,
+      groupIndex,
+      payload
+    });
+    Vue.set(
+      state.clientInformation[groupType][groupIndex],
+      "label",
+      payload.label
+    );
+  },
+
   CREATE_GLOBAL_INTERVAL(state, { duration = 3000, method, id, immediate }) {
     if (immediate) {
       method();
@@ -83,10 +119,8 @@ export default {
     localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {
-    Vue.set(state, "token", token);
-    Vue.set(state, "userInformation", user);
-    console.log(state.userInformation);
-
+    state.token = token;
+    state.userInformation = user;
     localStorage.setItem("token", token);
     localStorage.setItem("userInformation", JSON.stringify(user));
   },

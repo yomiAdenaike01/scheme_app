@@ -1,54 +1,50 @@
 <template>
-  <el-avatar :style="{ background: randColour() }">{{ initials }}</el-avatar>
+  <div class="avatar_container" :title="name" :class="{ multiple }">
+    <custom-avatar
+      :username="name"
+      :lighten="100"
+      :size="size"
+      class="avatar"
+    />
+    <slot />
+  </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
 export default {
   name: "Avatar",
+  components: {
+    customAvatar: () => import("vue-avatar")
+  },
   props: {
-    name: String,
-    default: null
-  },
-  computed: {
-    ...mapState(["defaultCustomColours", "userInformation"]),
-    ...mapState("Admin", ["teamInformation"]),
-
-    isNameTheSame() {
-      return (
-        this.userInformation?.name.trim().toLowerCase() ==
-        this?.name?.trim().toLowerCase()
-      );
+    name: {
+      type: String,
+      default: "U"
     },
-
-    initials() {
-      let initials,
-        username = this.name ? this.name : "User";
-      let parts = username.split(/[ -]/);
-      initials = "";
-      for (var i = 0; i < parts.length; i++) {
-        initials += parts[i].charAt(0);
-      }
-      if (initials.length > 3 && initials.search(/[A-Z]/) !== -1) {
-        initials = initials.replace(/[a-z]+/g, "");
-      }
-      initials = initials.substr(0, 3).toUpperCase();
-      return initials;
-    }
-  },
-  methods: {
-    randColour() {
-      return this.defaultCustomColours[
-        Math.round(Math.random() * this.defaultCustomColours.length)
-      ];
+    size: {
+      type: Number,
+      default: 50
+    },
+    multiple: {
+      type: Boolean,
+      default: false
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-.el-avatar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.avatar_container {
+  position: relative;
+  &.multiple {
+    transition: $default_transition margin;
+    margin: 0 -15px;
+    cursor: pointer;
+    &:hover {
+      margin: 0 -10px;
+    }
+  }
+}
+.avatar {
+  margin: 5px;
 }
 </style>

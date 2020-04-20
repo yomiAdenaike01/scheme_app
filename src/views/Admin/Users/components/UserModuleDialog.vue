@@ -4,9 +4,6 @@
       v-model.number="currentTab"
       v-loading="loading"
       :tabs="tabs"
-      :disable-form="fileContent != null"
-      @fileContent="fileContent = $event"
-      @deleteContent="fileContent = $event"
       @val="userModuleController"
     >
       <div slot="header">
@@ -25,17 +22,16 @@
 <script>
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 
-import ManageUserGroups from "./ManageUserGroups";
-
 import Tabs from "@/components/Tabs";
 import InformationDisplay from "@/components/InformationDisplay";
+import UpdateGroups from "../../Events/components/UpdateGroups.vue";
 
 export default {
   name: "UserModuleDialog",
   components: {
     InformationDisplay,
     Tabs,
-    ManageUserGroups
+    UpdateGroups
   },
 
   props: {
@@ -46,14 +42,13 @@ export default {
     return {
       currentTab: 0,
       loading: false,
-      fileContent: null,
-      fileError: null,
       convertedData: {},
       createUserForm: {}
     };
   },
   computed: {
     ...mapState(["clientInformation"]),
+    ...mapState("Admin", ["teamRef"]),
     ...mapGetters("Admin", ["getUserGroups"]),
 
     genPwd() {
@@ -68,8 +63,8 @@ export default {
         {
           label: "Manage user groups",
           view: {
-            component: ManageUserGroups,
-            props: ""
+            component: UpdateGroups,
+            props: { groupType: "userGroups" }
           }
         },
         {
@@ -125,9 +120,8 @@ export default {
         },
         {
           placeholder: "Group",
-          model: "groupID",
+          model: "userGroup",
           "component-type": "select",
-          validType: "number",
           clearable: true,
           options: this.getUserGroups
         }
@@ -147,16 +141,12 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
+    ...mapMutations("Admin", ["CREATE_USER", "REMOVE_USER"]),
 
     userModuleController(val) {
       switch (this.currentTab) {
         case 1: {
-          if (!this.fileContent) {
-            this.createOneUser(val);
-          } else {
-            console.log("Creating multiple users");
-            // this.createUsers()
-          }
+          this.createOneUser(val);
           break;
         }
         default: {
@@ -166,7 +156,11 @@ export default {
     },
 
     createOneUser(employee) {
-      this.loading = true;
+      let uGroup = this.clientInformation.userGroups.find(group => {
+        return group._id == employee.userGroup;
+      });
+      let _employee = { ...employee, userGroup: uGroup };
+      this.CREATE_USER(_employee);
       this.request({
         method: "POST",
         url: "users/register/one",
@@ -176,60 +170,15 @@ export default {
           adminGen: true
         }
       })
-        .then(response => {
+        .then(() => {
           this.loading = false;
           this.view = false;
         })
         .catch(error => {
           this.loading = false;
-          console.error(error);
+          this.REMOVE_USER(this.teamRef?.index);
           return error;
         });
-    },
-
-    async cleanData(JSONData) {
-      let JSONContent = await csvtojson().fromString(JSONData);
-
-      let schema = {
-        name: null,
-        email: "",
-        gender: "",
-        phoneNumber: "",
-        password: ""
-      };
-
-      const len = JSONContent.length;
-
-      for (let i = 0; i < len; i++) {
-        let employee = JSONContent[i];
-        employee.clientID = this.clientInformation._id;
-
-        for (let property in schema) {
-          property = property.toLowerCase().trim();
-
-          if (!employee[property]) {
-            this.fileError = true;
-            return Promise.reject("Missing parameters for employee timesheet");
-            break;
-          }
-        }
-      }
-      this.fileError = false;
-      return Promise.resolve(JSONContent);
-    },
-
-    createUsers(employees) {
-      return new Promise((resolve, reject) => {
-        let url = "users/register/multiple";
-
-        this.request({
-          method: "POST",
-          url,
-          data: { employees }
-        })
-          .then(response => resolve(response))
-          .catch(error => reject(error));
-      });
     }
   }
 };

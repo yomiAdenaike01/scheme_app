@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation", "userInformation"]),
-    ...mapState("Admin", ["teamInformation"]),
+    ...mapState("Admin", ["team"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getDropdownTeamMembers"]),
     view: {

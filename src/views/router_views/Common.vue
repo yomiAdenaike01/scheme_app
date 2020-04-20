@@ -42,6 +42,96 @@ export default {
       displaySearch: false
     };
   },
+  computed: {
+    ...mapState([
+      "userInformation",
+      "userNotifications",
+      "viewMobileMenu",
+      "weeklyTimesheetUploaded",
+      "requestIntervals"
+    ]),
+    ...mapState("Admin", ["team"]),
+    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
+    keymap() {
+      return {
+        "ctrl+shift+space": this.toggleDisplaySearch
+      };
+    },
+    returnIsStartOfWeek() {
+      return this.initMoment().get("day") <= 1;
+    },
+    hasRequestOrNotifications() {
+      return this.userNotifications.length > 0;
+    },
+    hasReminder() {
+      return (
+        this.userNotifications.findIndex(({ type, status }) => {
+          return type == "reminder" && status == "unread";
+        }) > -1
+      );
+    },
+    hasAnnoucement() {
+      return (
+        this.userNotifications.findIndex(({ type, status }) => {
+          return type == "attention" && status == "unread";
+        }) > -1
+      );
+    }
+  },
+  watch: {
+    hasAnnoucement: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          let notificationTitle =
+            "A notification requires your attention, press the bell icon to view them";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Attention",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "A notification requires your attention",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
+        }
+      }
+    },
+    hasRequestOrNotifications: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          let userNoty = this.userNotifications;
+          for (let i = 0, len = userNoty.length; i < len; i++) {
+            this.UPDATE_NOTIFICATIONS(userNoty[i]);
+          }
+        }
+      }
+    },
+    hasReminder: {
+      immediate: true,
+
+      handler(val) {
+        if (val) {
+          let notificationTitle =
+            "You have a reminder scheduled, close the notification to complete the reminder";
+          this.UPDATE_NOTIFICATIONS({
+            title: "Reminder",
+            message: notificationTitle,
+            type: "info",
+            desktop: {
+              title: "You have reminder",
+              content: {
+                body: notificationTitle
+              }
+            }
+          });
+        }
+      }
+    }
+  },
   activated() {
     this.checkDevice();
     this.CREATE_GLOBAL_INTERVAL({
@@ -77,42 +167,6 @@ export default {
     }
 
     this.displayWeeklyNotification();
-  },
-  computed: {
-    ...mapState([
-      "userInformation",
-      "userNotifications",
-      "viewMobileMenu",
-      "weeklyTimesheetUploaded",
-      "requestIntervals"
-    ]),
-    ...mapState("Admin", ["teamInformation"]),
-    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
-    keymap() {
-      return {
-        "ctrl+shift+space": this.toggleDisplaySearch
-      };
-    },
-    returnIsStartOfWeek() {
-      return this.initMoment().get("day") <= 1;
-    },
-    hasRequestOrNotifications() {
-      return this.userNotifications.length > 0;
-    },
-    hasReminder() {
-      return (
-        this.userNotifications.findIndex(({ type, status }) => {
-          return type == "reminder" && status == "unread";
-        }) > -1
-      );
-    },
-    hasAnnoucement() {
-      return (
-        this.userNotifications.findIndex(({ type, status }) => {
-          return type == "attention" && status == "unread";
-        }) > -1
-      );
-    }
   },
 
   methods: {
@@ -170,61 +224,6 @@ export default {
           title: "Upload Timesheet"
         });
     }
-  },
-
-  watch: {
-    hasAnnoucement: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          let notificationTitle =
-            "A notification requires your attention, press the bell icon to view them";
-          this.UPDATE_NOTIFICATIONS({
-            title: "Attention",
-            message: notificationTitle,
-            type: "info",
-            desktop: {
-              title: "A notification requires your attention",
-              content: {
-                body: notificationTitle
-              }
-            }
-          });
-        }
-      }
-    },
-    hasRequestOrNotifications: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          let userNoty = this.userNotifications;
-          for (let i = 0, len = userNoty.length; i < len; i++) {
-            this.UPDATE_NOTIFICATIONS(userNoty[i]);
-          }
-        }
-      }
-    },
-    hasReminder: {
-      immediate: true,
-
-      handler(val) {
-        if (val) {
-          let notificationTitle =
-            "You have a reminder scheduled, close the notification to complete the reminder";
-          this.UPDATE_NOTIFICATIONS({
-            title: "Reminder",
-            message: notificationTitle,
-            type: "info",
-            desktop: {
-              title: "You have reminder",
-              content: {
-                body: notificationTitle
-              }
-            }
-          });
-        }
-      }
-    }
   }
 };
 </script>
@@ -239,7 +238,7 @@ export default {
 .inner_app_container {
   display: flex;
   flex: 1;
-  height: 100%;
+  height: calc(100% - 130px);
   background: rgb(251, 251, 251);
 }
 </style>
