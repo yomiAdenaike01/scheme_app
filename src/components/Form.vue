@@ -91,6 +91,7 @@
       <!-- Submit button -->
       <div v-if="!disable" class="button_container">
         <el-button
+          round
           :size="submitButton.size ? submitButton.size : 'mini'"
           :plain="submitButton.plain ? submitButton.plain : false"
           :type="submitButton.type ? submitButton.type : 'primary'"

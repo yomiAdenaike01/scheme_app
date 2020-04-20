@@ -3,7 +3,7 @@
     v-if="getActiveDialog('viewEvent').view"
     :visible.sync="computeDisplay"
   >
-    <div class="view_event_dialog ">
+    <div class="view_event_dialog">
       <InformationDisplay
         :display-text="{
           heading: 'View event',
@@ -12,19 +12,10 @@
       ></InformationDisplay>
       <div class="info_button_container">
         <el-button
-          :circle="$mq != 'lg'"
-          :round="$mq == 'lg'"
-          class="no_events"
-          :icon="approval.icon"
+          v-bind="approvalButtonConfig"
           size="small"
-          :type="approval.type"
-          >{{
-            approval.type == "success" && $mq == "lg"
-              ? "Approved"
-              : $mq == "lg" && approval.type != "success"
-              ? "Not approved"
-              : null
-          }}</el-button
+          @click="approvalController"
+          >{{ approvalButtonConfig.content }}</el-button
         >
 
         <el-button
@@ -32,6 +23,7 @@
           size="small"
           plain
           round
+          title="Remind users of this event"
           @click="sendReminderToUser"
         >
           {{
@@ -50,6 +42,22 @@
           >Delete Event</el-button
         >
       </div>
+      <!-- Required actions -->
+      <div class="view_dialog_information_container">
+        <h3>Actions</h3>
+        <!-- Reject event -->
+        <div class="info_unit">
+          <el-button
+            :disabled="noticePeriodExceeded"
+            round
+            class="full_width"
+            plain
+            @click="rejectEvent"
+            >Reject event</el-button
+          >
+        </div>
+      </div>
+
       <div class="view_dialog_information_container">
         <!-- Assigned users -->
 
@@ -65,7 +73,13 @@
               ref="user"
               :key="index"
             >
-              <Avatar :size="70" :name="member.name" multiple>
+              <Avatar
+                :size="70"
+                class="assigned_user"
+                :name="member.name"
+                multiple
+                @click="viewUser(member)"
+              >
                 <div class="hover_indicator" @click="removeUser(member)">x</div>
               </Avatar>
             </div>
@@ -170,6 +184,33 @@ export default {
     ...mapState(["userInformation", "dialogIndex"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     ...mapGetters("Admin", ["getFilteredTeam", "getValidEventTypes"]),
+    noticePeriodExceeded() {
+      return this.initMoment(
+        this.event?.noticePeriod ??
+          this.initMoment(this.event.start).subtract(1, "days")
+      ).isSame(this.initMoment(), "day");
+    },
+    approvalButtonConfig() {
+      let buttonConfig = {
+        type: "danger",
+        content: "Not approved",
+        circle: this.$mq != "lg",
+        round: this.$mq == "lg"
+      };
+      if (this.approval) {
+        buttonConfig.type = "success";
+        buttonConfig.content = "Approved";
+      }
+      if (!this.getIsAdmin && this.noticePeriodExceeded) {
+        buttonConfig.disabled = true;
+        buttonConfig.content =
+          "You cannot disapprove this event as it is past the notice period";
+      }
+      return buttonConfig;
+    },
+    canRejectEvent() {
+      return this.userInformation.userGroup.enableEventRejection;
+    },
     currentEventIndex() {
       return this.events.findIndex(event => {
         return event._id == this.event._id;
@@ -219,33 +260,39 @@ export default {
     event() {
       return this.dialogIndex.viewEvent.data;
     },
-    isEventToday() {
-      return (
-        this.initMoment(this.event.startDate).diff(this.initMoment(), "hours") <
-        24
-      );
-    },
 
-    eventType() {
-      return this.event.type;
-    },
     duration() {
       return Math.round(this.event.endTimeMinutes / 60);
     },
+    canReject() {
+      return (
+        this.event.assignedTo.findIndex(assignee => {
+          return assignee.userGroup.enableEventRejection == true;
+        }) == -1
+      );
+    },
+
     approval() {
-      let approval = {
-        icon: "el-icon-check",
-        type: "success"
-      };
-
-      if (this.event.isApproved.admin != 1) {
-        approval = {
-          icon: "el-icon-cross",
-          type: "danger"
-        };
+      // How many users can reject the event
+      let canRejectCount = 0,
+        hasApprovedCount = 0,
+        isCreatorAdmin =
+          this.event.createdBy.userGroup.label.toLowerCase() ===
+          "system administrator";
+      for (let i = 0, len = this.event.assignedTo; i < len; i++) {
+        let assignee = this.event.assignedTo[i];
+        if (assignee.userGroup.enabledEventRejection) {
+          canRejectCount++;
+        }
       }
-
-      return approval;
+      for (let i = 0, len = this.event.isApproved; i < len; i++) {
+        let assignee = this.event.isApproved[i];
+        if (assignee.userGroup.enableEventRejection) {
+          hasApprovedCount++;
+        }
+      }
+      // If there is a user that can reject an event
+      return canRejectCount === hasApprovedCount && isCreatorAdmin;
     },
 
     dates() {
@@ -286,20 +333,70 @@ export default {
       "UPDATE_EVENT",
       "ADD_USER_TO_EVENT",
       "REMOVE_USER_FROM_EVENT",
-      "DELETE_EVENT"
+      "DELETE_EVENT",
+      "CREATE_EVENT",
+      "UPDATE_APPROVE_EVENT",
+      "UPDATE_REJECT_EVENT"
     ]),
     ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
-
-    updateEvent(updateInformation) {
-      if (Object.values(updateInformation).length > 0) {
-        this.loading = true;
-        this.updateEvents({ update: updateInformation, id: this.event.id })
-          .then(() => {
-            this.loading = false;
-          })
-          .catch(() => {
-            this.loading = false;
-          });
+    viewUser(user) {
+      this.UPDATE_DIALOG_INDEX({
+        dialog: "profile",
+        data: user
+      });
+    },
+    hasAdminApproved() {
+      return this.event.isApproved.find(approvee => {
+        return (
+          approvee.userGroup.label.toLowerCase().trim() ==
+          "system administrator"
+        );
+      });
+    },
+    approvalController() {
+      // only disapprove if you have approved and have
+      let canMakeAction = this.canRejectEvent;
+    },
+    approveEvent() {
+      this.UPDATE_APPROVE_EVENT({
+        eventIndex: this.currentEventIndex,
+        userID: this.userInformation._id
+      });
+      this.request({
+        method: "PUT",
+        url: "events/users/approve",
+        data: { eventID: this.event._id }
+      }).catch(() => {
+        this.UPDATE_REJECT_EVENT(this.eventRef);
+      });
+    },
+    rejectEvent() {
+      // remove from isApproved array
+      this.UPDATE_REJECT_EVENT({
+        eventIndex: this.currentEventIndex,
+        userID: this.userInformation._id
+      });
+      this.request({
+        method: "DELETE",
+        url: "events/user/approve",
+        data: { eventID: this.event._id }
+      }).catch(() => {
+        this.UPDATE_APPROVE_EVENT(this.eventRef);
+      });
+    },
+    updateEvent(update) {
+      if (Object.values(update).length > 0) {
+        this.UPDATE_EVENT({
+          eventIndex: this.currentEventIndex,
+          payload: update
+        });
+        this.request({
+          method: "PUT",
+          url: "events/update",
+          data: { update, _id: this.event._id }
+        }).catch(() => {
+          this.UPDATE_EVENT(this.eventRef);
+        });
       } else {
         return this.UPDATE_NOTIFICATIONS({
           type: "error",
@@ -307,7 +404,9 @@ export default {
         });
       }
     },
-
+    approvalController() {
+      let approval = this.event.isApproved;
+    },
     getOneEmail(id) {
       return this.getEmail.findIndex(assignee => {
         return assignee.id == id;
@@ -352,16 +451,21 @@ export default {
         confirm: "Yes"
       }).then(() => {
         // Delete event
+        this.DELETE_EVENT(this.currentEventIndex);
         this.request({
           method: "DELETE",
           url: "events/delete",
           data: {
-            _id: this.event.id
+            _id: this.event._id
           }
-        }).then(() => {
-          this.closeDialog("viewEvent");
-          this.notifyAssignees();
-        });
+        })
+          .then(() => {
+            this.notifyAssignees();
+          })
+          .catch(() => {
+            this.CREATE_EVENT({ restore: true, ...this.eventRef });
+          });
+        this.closeDialog("viewEvent");
       });
     },
     notifyAssignees() {
@@ -504,6 +608,25 @@ h3 {
   padding: 10px;
   &:hover {
     border-color: darken($color: whitesmoke, $amount: 10);
+  }
+}
+.assigned_user {
+  .member_name {
+    opacity: 0;
+    transition: $default_transition opacity;
+    will-change: opacity;
+    text-align: center;
+  }
+  .hover_indicator {
+    opacity: 0;
+    transition: $default_transition opacity;
+    will-change: opacity;
+  }
+  &:hover {
+    .hover_indicator,
+    .member_name {
+      opacity: 1;
+    }
   }
 }
 </style>

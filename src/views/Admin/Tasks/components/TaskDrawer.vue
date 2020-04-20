@@ -8,11 +8,13 @@
             v-if="canInteract"
             type="success"
             plain
+            round
             @click="handleUpdate({ state: 1 })"
             >Mark as complete</el-button
           >
           <el-button
             type="danger"
+            round
             plain
             @click="
               deleteTask(defaultPayload);

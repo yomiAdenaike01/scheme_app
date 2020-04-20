@@ -5,7 +5,7 @@
     :class="{ active: isActive }"
     @click="updateActiveChat"
   >
-    <Avatar :name="chatInformation.userTwo.name" />
+    <Avatar :name="oppositeUser" />
     <div class="text_container">
       <p v-if="!isNewChat">
         {{ lastMessage.content }}
@@ -46,8 +46,16 @@ export default {
     }
   },
   computed: {
+    ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat"]),
     ...mapGetters("Admin", ["getUserInformation"]),
+    oppositeUser() {
+      if (this.chatInformation.userTwo._id == this.userInformation._id) {
+        return this.chatInformation.userOne.name;
+      } else {
+        return this.chatInformation.userTwo.name;
+      }
+    },
     lastMessage() {
       return this.chatInformation.messages[
         this.chatInformation.messages.length - 1

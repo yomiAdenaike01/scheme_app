@@ -1,5 +1,5 @@
 <template>
-  <div class="avatar_container" :class="{ multiple }">
+  <div class="avatar_container" :title="name" :class="{ multiple }">
     <custom-avatar
       :username="name"
       :lighten="100"
@@ -36,8 +36,12 @@ export default {
 .avatar_container {
   position: relative;
   &.multiple {
-    margin: 0 -10px;
+    transition: $default_transition margin;
+    margin: 0 -15px;
     cursor: pointer;
+    &:hover {
+      margin: 0 -10px;
+    }
   }
 }
 .avatar {

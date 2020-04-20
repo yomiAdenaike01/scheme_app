@@ -13,12 +13,27 @@
       <div slot="header">
         <InformationDisplay :display-text="informationDisplay" />
       </div>
+      <div
+        v-if="
+          tabXref.name == 'create_event' && hasEntries(events) && getIsAdmin
+        "
+        slot="body"
+        class="body_container"
+      >
+        <div class="qr_container">
+          <qrcode-vue :value="qrCode" />
+        </div>
+        <p>
+          This is QR code for users to clock in with
+        </p>
+      </div>
     </Tabs>
   </el-dialog>
 </template>
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+import QrcodeVue from "qrcode.vue";
 
 import TemplateManagement from "./TemplateManagement";
 import RequestManagement from "./RequestManagement";
@@ -34,14 +49,16 @@ export default {
     InformationDisplay,
     Tabs,
     ColourUnit,
-    RequestManagement
+    RequestManagement,
+    QrcodeVue
   },
   data() {
     return {
       events: {},
       templates: {},
       loading: false,
-      currentTab: 0
+      currentTab: 0,
+      qrCode: {}
     };
   },
 
@@ -72,6 +89,16 @@ export default {
           this.activeDialogInformation
         );
       }
+
+      events.isApproved = [
+        this.userInformation._id,
+        ...events.assignedTo.filter(assignee => {
+          return (
+            this.getUserInformation(assignee).userGroup.enableEventRejection ==
+            true
+          );
+        })
+      ];
 
       events = {
         ...events,
@@ -258,6 +285,7 @@ export default {
 
     eventsCtrl(information) {
       this.events = information;
+      this.qrCode = information;
 
       switch (this.tabXref.name) {
         case "create_event_group": {
@@ -294,9 +322,10 @@ export default {
     // Submit one event
     genEvent() {
       this.createEvent(this.eventContent.events).then(() => {
-        this.view = false;
         if (this.getIsAdmin) {
           this.initSaveTemplate();
+        } else {
+          this.view = false;
         }
       });
     },
@@ -310,6 +339,7 @@ export default {
         type: "info"
       }).then(({ value }) => {
         this.resolveSaveTemplate(value);
+        this.view = false;
       });
     },
 
@@ -354,5 +384,18 @@ export default {
 }
 .colour_unit_label {
   margin-left: 10px;
+}
+.body_container {
+  display: flex;
+  justify-content: center;
+}
+.qr_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  flex-direction: column;
+  border: 2px solid whitesmoke;
+  max-height: fit-content;
 }
 </style>

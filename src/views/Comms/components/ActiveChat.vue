@@ -102,25 +102,15 @@ export default {
     activeChatEntries() {
       return this.hasEntries(this.activeChat);
     },
-    queryTeamList() {
-      let query = [];
-      let userToMessage = this.userToMessage;
-      if (!userToMessage) {
-        query = this.team.map(member => {
-          return {
-            value: member.name,
-            link: member._id
-          };
-        });
-      } else {
-        query = [
-          {
-            value: userToMessage.name,
-            link: userToMessage._id
-          }
-        ];
-      }
-      return query;
+    autoCompleteTeam() {
+      let team = this.team.map(member => {
+        return {
+          value: member.name,
+          link: member._id
+        };
+      });
+
+      return team;
     }
   },
 
@@ -152,29 +142,28 @@ export default {
 
     queryTeam(name, cb) {
       let queriedTeam = [];
-      if (Array.isArray(this.queryTeamList) && this.queryTeamList.length > 0) {
-        name = name?.toLowerCase() ?? this.teamQuery?.toLowerCase();
-        queriedTeam = this.queryTeamList.filter(x => {
-          return x?.value?.toLowerCase() == name;
-        });
-      } else {
-        queriedTeam = this.queryTeamList;
-      }
-      cb(queriedTeam.length > 0 ? queriedTeam : this.queryTeamList);
+      name = name.toLowerCase();
+      queriedTeam = this.autoCompleteTeam.filter(x => {
+        return x.value.toLowerCase() == name;
+      });
+      cb(queriedTeam.length > 0 ? queriedTeam : this.autoCompleteTeam);
     },
     sendChatMessage() {
       let userName = this.getUserInformation(this.chat.reciever)?.name;
 
-      function createError(message) {
+      const createError = message => {
         this.UPDATE_NOTIFICATIONS({
           title: "Failed to send message",
           message,
           type: "error"
         });
-      }
+      };
 
       if (!this.chat.content) {
         return createError("No message content found.");
+      }
+      if (!this.chat.reciever && this.activeChat?.initChat) {
+        return createError("No chat reciever found.");
       }
 
       if (!this.activeChat._id) {

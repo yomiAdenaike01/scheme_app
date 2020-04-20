@@ -24,14 +24,39 @@ export default {
           });
           if (!foundChat) {
             state.chats.push(payload[i]);
+          } else {
+            // check the messages
+            let payloadMessages = payload[i].messages;
+            let stateMessages = state.chats[i].messages;
+            // check whether the payload has more messages
+            payloadMessages.map(sMessage => {
+              let foundPMessage = stateMessages.find(pMessage => {
+                return pMessage._id == sMessage._id;
+              });
+
+              if (!foundPMessage) {
+                state.chats[i].messages.push(sMessage);
+              }
+            });
           }
         }
       }
     }
-    setActiveChat(state, state.chats[state.chats.length - 1]);
+    if (Object.values(state.activeChat).length == 0) {
+      setActiveChat(state, {
+        index: state.chats.length - 1,
+        ...state.chats[state.chats.length - 1]
+      });
+    }
   },
   UPDATE_MESSAGES(state, payload) {
-    state.chats[state.activeChat?.index]?.messages?.push(payload);
+    let chatIndex = state.activeChat.index;
+
+    state.chats[chatIndex].messages.push(payload);
+    updateBreadCrumbs(state, "messageRef", {
+      messageIndex: state.chats[chatIndex].messages.length - 1,
+      chatIndex
+    });
   },
 
   UPDATE_ACTIVE_CHAT(state, payload) {
@@ -42,7 +67,7 @@ export default {
     updateBreadCrumbs(state, "chatRef", { index, chat: state.chats[index] });
     state.messages = [];
     if (index > 0) {
-      setActiveChat(state, state.chats[index - 1]);
+      setActiveChat(state, { index: index - 1, ...state.chats[index - 1] });
     } else {
       Vue.set(state, "activeChat", {});
     }

@@ -66,9 +66,6 @@ export default {
       return this.chats.length > 0;
     }
   },
-  created() {
-    this.UPDATE_ACTIVE_CHAT(this.chats[0]);
-  },
 
   methods: {
     ...mapActions("Comms", ["createStubChat"]),

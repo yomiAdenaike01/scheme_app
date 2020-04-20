@@ -7,7 +7,6 @@
       :on-event-click="viewEvent"
       events-on-month-view="short"
       :cell-click-hold="false"
-      editable-events
     />
   </div>
 </template>
@@ -32,28 +31,38 @@ export default {
     ...mapGetters(["getIsAdmin"]),
 
     calEvents() {
-      let dateFormat = "YYYY-MM-DD hh:mm";
-      return [...this.events].map(event => {
-        let firstAssignee = event.assignedTo[0];
-        let content = `${firstAssignee.name}'s ${event.type.label} event`;
-        if (event.assignedTo.length - 1 > 0) {
-          content = `${content} +${parseInt(
-            event.assignedTo.length - 1
-          )} others`;
-        }
+      if (this.events.length > 0) {
+        let dateFormat = "YYYY-MM-DD hh:mm";
+        return [...this.events].map(event => {
+          if (event) {
+            let firstAssignee = event.assignedTo[0];
+            let content = `${firstAssignee.name}'s ${event.type.label} event`;
+            if (event.assignedTo.length - 1 > 0) {
+              content = `${content} +${parseInt(
+                event.assignedTo.length - 1
+              )} others`;
+            }
 
-        return {
-          title: `${event.type.label} event`,
-          content,
-          start: this.formatDate(event.startDate, dateFormat),
-          end: this.formatDate(event.endDate, dateFormat),
-          class: `${event.type.label}`,
-          isApproved: event.isApproved,
-          assignedTo: event.assignedTo,
-          type: event.type,
-          _id: event._id
-        };
-      });
+            return {
+              title: `${event.type.label} event`,
+              content,
+              start: this.formatDate(event.startDate, dateFormat),
+              end: this.formatDate(event.endDate, dateFormat),
+              class: `${event.type.label}`,
+              isApproved: event.isApproved,
+              assignedTo: event.assignedTo,
+              type: event.type,
+              _id: event._id,
+              noticePeriod: event.noticePeriod,
+              createdBy: event.createdBy
+            };
+          } else {
+            return {};
+          }
+        });
+      } else {
+        return [];
+      }
     }
   },
   methods: {

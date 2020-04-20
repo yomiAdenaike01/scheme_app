@@ -4,6 +4,7 @@
     <el-button
       v-for="(button, key) in buttons"
       :key="key"
+      round
       size="mini"
       :type="button.type ? button.type : 'primary'"
       :plain="button.plain"
@@ -12,9 +13,6 @@
     >
       {{ button.label }}
     </el-button>
-    <el-button type="text" @click="$emit('createEvent')"
-      >Create event <i class="bx bx-right-arrow-alt"></i
-    ></el-button>
   </div>
 </template>
 

@@ -25,9 +25,7 @@ export default {
     });
     Vue.delete(state.team, index);
   },
-  UPDATE_EVENT_TEMPLATES(state, payload) {
-    state.eventTemplates = payload;
-  },
+
   CREATE_EVENT_TEMPLATE(state, payload) {
     if (payload.index) {
       let eventTemplate = state.eventTemplates[payload.index];
@@ -43,10 +41,17 @@ export default {
   },
   UPDATE_EVENT_TEMPLATE(state, { index, payload }) {
     updateBreadCrumbs(state, { index, payload: state.eventTemplates[index] });
-    let template = state.eventTemplates[index];
+    for (let i = 0, len = payload.length; i < len; i++) {
+      let template = payload[i];
+      let templateIndex = state.eventTemplates.findIndex(stateTemplate => {
+        return stateTemplate._id == template._id;
+      });
+      if (templateIndex > -1) {
+        state.eventTemplates.push(template);
+      }
+    }
   },
 
-  // Reports
   UPDATE_EVENT_FILTERS(state, payload) {
     Vue.set(state, "eventFilters", payload);
   },
@@ -64,15 +69,17 @@ export default {
   },
   CREATE_EVENT(state, payload) {
     // Get the data
-    payload.assignedTo = payload?.assignedTo.map(assignee => {
-      return state.team.find(member => {
-        return member._id == assignee;
+    if (!payload?.restore) {
+      payload.assignedTo = payload?.assignedTo.map(assignee => {
+        return state.team.find(member => {
+          return member._id == assignee;
+        });
       });
-    });
 
-    payload.type = payload.clientEventGroups.find(eventGroup => {
-      return eventGroup._id == payload.type;
-    });
+      payload.type = payload.clientEventGroups.find(eventGroup => {
+        return eventGroup._id == payload.type;
+      });
+    }
     let { clientEventGroups, ...eventData } = payload;
     // Push to upcoming
     state.events.push(eventData);
@@ -93,13 +100,12 @@ export default {
     };
   },
   DELETE_EVENT(state, { eventIndex = state.events.length - 1 }) {
-    let eventAtIndex = state.events[eventIndex],
-      events = state.events;
+    let eventAtIndex = state.events[eventIndex];
     updateBreadCrumbs(state, "eventRef", {
       eventIndex,
       payload: eventAtIndex
     });
-    Vue.delete(events, eventAtIndex);
+    Vue.delete(state.events, eventIndex);
   },
   UPDATE_REQUESTS(state, payload) {
     state.requestsInformation = payload;
@@ -309,5 +315,23 @@ export default {
       payload: user
     });
     Vue.delete(state.events[eventIndex].assignedTo, userIndex);
+  },
+
+  UPDATE_APPROVE_EVENT(state, { eventIndex, userID }) {
+    updateBreadCrumbs(state, "eventRef", {
+      eventIndex,
+      userID
+    });
+    state.events[eventIndex].isApproved.push(userID);
+  },
+  UPDATE_REJECT_EVENT(state, { eventIndex, userID }) {
+    let userIndex = state.events[eventIndex].isApproved.findIndex(index => {
+      return index._id == userID;
+    });
+    updateBreadCrumbs(state, "eventRef", {
+      eventIndex,
+      userID
+    });
+    Vue.delete(state.events[eventIndex].isApproved, userIndex);
   }
 };

@@ -23,8 +23,6 @@ import {
   Switch,
   Select,
   Divider,
-  Option,
-  OptionGroup,
   Button,
   ButtonGroup,
   DatePicker,
@@ -42,15 +40,13 @@ import {
   Spinner,
   Badge,
   Rate,
+  Option,
   Carousel,
   CarouselItem,
   Collapse,
   CollapseItem,
   Cascader,
   ColorPicker,
-  Transfer,
-  Container,
-  Header,
   Link,
   Loading,
   MessageBox,
@@ -75,7 +71,6 @@ Vue.use(CheckboxGroup);
 Vue.use(Switch);
 Vue.use(Select);
 Vue.use(Option);
-Vue.use(OptionGroup);
 Vue.use(Button);
 Vue.use(ButtonGroup);
 Vue.use(DatePicker);
@@ -100,9 +95,6 @@ Vue.use(Collapse);
 Vue.use(CollapseItem);
 Vue.use(Cascader);
 Vue.use(ColorPicker);
-Vue.use(Transfer);
-Vue.use(Container);
-Vue.use(Header);
 Vue.use(Link);
 Vue.use(Drawer);
 

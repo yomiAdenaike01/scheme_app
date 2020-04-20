@@ -4,6 +4,7 @@
       <el-button
         v-for="(button, index) in config"
         :key="index"
+        round
         :type="selectedConfig == button ? 'primary' : 'plain'"
         @click="changeContent(button)"
       >
@@ -168,10 +169,7 @@ export default {
             } else {
               payload.enabledFor = this.getUserGroups;
             }
-            return console.log({
-              label: this.groupData.label,
-              _id: this.genRandomID
-            });
+
             this.CREATE_GROUP({
               groupType: this.groupType,
               payload: { label: this.groupData.label, _id: this.genRandomID }

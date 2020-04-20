@@ -6,7 +6,6 @@
         {{ props.content }}
       </p>
     </div>
-    <small class="grey">{{ props.sentAt }}</small>
     <div v-if="props.isSentByUser" class="actions_container">
       <el-button
         icon="el-icon-edit-outline"
