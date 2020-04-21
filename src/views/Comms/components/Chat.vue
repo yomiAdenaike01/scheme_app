@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Comms", ["activeChat"]),
+    ...mapState("Comms", ["activeChat", "chats"]),
     ...mapGetters("Admin", ["getUserInformation"]),
     oppositeUser() {
       if (this.chatInformation.userTwo._id == this.userInformation._id) {
@@ -93,14 +93,7 @@ export default {
           method: "DELETE",
           url: "messenger/chat",
           data: { _id: this.chatInformation._id }
-        })
-          .then(() => {
-            this.loading = false;
-            this.getChats();
-          })
-          .catch(() => {
-            this.loading = false;
-          });
+        });
       }
     }
   }

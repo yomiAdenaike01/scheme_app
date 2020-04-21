@@ -74,6 +74,7 @@ export default {
     state.messages = [];
     if (index > 0) {
       setActiveChat(state, { index: index - 1, ...state.chats[index - 1] });
+      console.log(state.activeChat);
     } else {
       state.activeChat = {};
     }
