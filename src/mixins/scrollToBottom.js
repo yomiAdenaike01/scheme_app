@@ -1,3 +1,4 @@
+// Source https://gist.github.com/thetutlage/950ed7c8f94e425c165a475a02ebd594
 export default {
   methods: {
     scrollToBottom(element, duration = 1000) {

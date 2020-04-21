@@ -77,6 +77,13 @@ export default {
       }
     };
   },
+  watch: {
+    activeChat(val) {
+      if (val) {
+        this.scrollToBottom(this.$refs.chatMessages);
+      }
+    }
+  },
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "messages"]),

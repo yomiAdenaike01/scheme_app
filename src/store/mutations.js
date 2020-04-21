@@ -16,6 +16,7 @@ const clearStateInterval = (state, intervalID) => {
 };
 
 export default {
+  ADD_TOUR_STEP() {},
   UPDATE_DIALOG_INDEX(
     state,
     { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
@@ -136,6 +137,7 @@ export default {
     ];
     notification.showClose = true;
     notification.dangerouslyUseHTMLString = true;
+    console.log(notification);
 
     if (notificationTypes.indexOf(notification.type) == -1) {
       notification.type = "info";

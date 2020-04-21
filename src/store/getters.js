@@ -58,7 +58,11 @@ export default {
   },
 
   getIsAdmin({ userInformation: { userGroup } }) {
-    return userGroup.label.toLowerCase() == "system administrator";
+    if (userGroup) {
+      return userGroup.label.toLowerCase() == "system administrator";
+    } else {
+      return false;
+    }
   },
 
   getGuide() {

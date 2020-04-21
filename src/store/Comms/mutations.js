@@ -19,7 +19,10 @@ export default {
       // check whether the payload has more messages
       payloadMessages.map(sMessage => {
         let foundPMessage = stateMessages.find(pMessage => {
-          return pMessage._id == sMessage._id;
+          return (
+            pMessage.content.toLowerCase().trim() ==
+            sMessage.content.toLowerCase().trim()
+          );
         });
 
         if (!foundPMessage) {

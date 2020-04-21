@@ -16,7 +16,7 @@ import Toolbar from "./components/Toolbar";
 import EventsCalendar from "./components/EventsCalendar";
 import UserSidebar from "./components/UserSidebar";
 import ViewEventDialog from "./components/ViewEventDialog";
-
+import eventsTour from "../tours/eventsTour";
 export default {
   name: "EventsModule",
   components: {
@@ -25,7 +25,8 @@ export default {
     Toolbar,
     UserSidebar,
     ViewEventDialog
-  }
+  },
+  extends: eventsTour
 };
 </script>
 <style lang="scss" scoped>

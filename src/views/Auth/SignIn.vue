@@ -177,7 +177,7 @@ export default {
           if (response.user.adminGen == true) {
             this.UPDATE_NOTIFICATIONS({
               type: "warning",
-              title: "Insecure Password Detected",
+              title: "Insecure password detected",
               message:
                 "Use the forgot password functionality to reset you password."
             });
@@ -190,8 +190,9 @@ export default {
           this.loading = false;
           // this.changeTab("login");
         })
-        .catch(() => {
+        .catch(err => {
           this.loading = false;
+          console.log(err);
         });
     }
   }

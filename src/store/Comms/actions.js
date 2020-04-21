@@ -26,25 +26,6 @@ export default {
       context.state.chats[context.state.chats.length - 1]
     );
   },
-  deleteChat({ dispatch }, payload) {
-    return new Promise((resolve, reject) => {
-      dispatch(
-        "request",
-        {
-          method: "DELETE",
-          url: "messenger/chats",
-          data: payload
-        },
-        { root: true }
-      )
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => {
-          reject(error);
-        });
-    });
-  },
 
   sendMessage({ state, dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {

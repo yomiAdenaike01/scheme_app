@@ -161,7 +161,7 @@ export default {
   height: 100%;
 }
 .comments_wrapper {
-  max-height: calc(100% - 700px);
+  max-height: calc(100% - 750px);
   overflow-x: hidden;
 }
 .comment {
@@ -209,6 +209,10 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 .comment_avatar {
   margin-right: 10px;
