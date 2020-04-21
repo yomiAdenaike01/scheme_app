@@ -1,7 +1,6 @@
 <template>
-  <fade-transtiion
+  <div
     v-loading="loading"
-    tag="div"
     element-loading-text="Loading events and team members...."
     class="common_container"
   >
@@ -20,14 +19,13 @@
         <router-view></router-view>
       </keep-alive>
     </div>
-  </fade-transtiion>
+  </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
-import { FadeTransition } from "vue2-transitions";
 
 export default {
   name: "Common",
@@ -36,8 +34,7 @@ export default {
     AppBar: () => import("@/components/AppBar"),
     InstanceCheck: () => import("@/components/InstanceCheck"),
     GlobalSearch: () => import("@/components/GlobalSearch"),
-    NprogressContainer,
-    FadeTransition
+    NprogressContainer
   },
   data() {
     return {

@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "../router";
 import updateBreadCrumbs from "./helpers";
+import notificationsLogic from "@/mixins/notificationsLogic";
 
 const clearStateInterval = (state, intervalID) => {
   if (!intervalID) {
@@ -24,13 +25,7 @@ export default {
     state.lastDialog = { dialog, view, id, data, tabIndex };
   },
 
-  // Groups
   CREATE_GROUP(state, { groupType, payload }) {
-    /**
-     * {
-     *  label,_id,enableEventRejection
-     * }
-     */
     let group = state.clientInformation[groupType];
     let groupExists =
       state.clientInformation[groupType].findIndex(group => {
@@ -99,12 +94,49 @@ export default {
       );
     }
   },
-
+  UPDATE_ALL_NOTIFICATIONS(state, payload) {
+    updateBreadCrumbs(state, payload);
+    for (let i = 0, len = state.userNotifications.length; i < len; i++) {
+      state.userNotifications[i] = {
+        ...state.userNotifications[i],
+        ...payload
+      };
+    }
+  },
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
     Vue.set(state, "viewMobileMenu", payload);
   },
+  DELETE_NOTIFICATION(state, notificationIndex) {
+    if (!notificationIndex) {
+      state.userNotifications.pop();
+    } else {
+      updateBreadCrumbs(state, {
+        notificationIndex,
+        notification: state.userNotifications[notificationIndex]
+      });
+      Vue.delete(state.userNotifications, notificationIndex);
+    }
+  },
+  UPDATE_NOTIFICATION(state, { notificationIndex, update }) {
+    updateBreadCrumbs(state, {
+      notificationIndex,
+      update: state.userNotifications[notificationIndex]
+    });
+    state.userNotifications.splice(notificationIndex, 0, {
+      ...state.userNotifications[notificationIndex],
+      ...update
+    });
+  },
   UPDATE_USER_NOTIFICATIONS(state, payload) {
-    state.userNotifications = payload;
+    for (let i = 0, len = payload.length; i < len; i++) {
+      let payloadNotification = payload[i];
+      let stateNotification = state.userNotifications.find(notification => {
+        return notification._id == payloadNotification._id;
+      });
+      if (!stateNotification) {
+        state.userNotifications.push(payloadNotification);
+      }
+    }
   },
 
   UPDATE_NETWORK_ERROR(state, payload) {
@@ -140,39 +172,8 @@ export default {
     if (notificationTypes.indexOf(notification.type) == -1) {
       notification.type = "info";
     }
-    switch (notification.type) {
-      case "message": {
-        notification.icon = "message-rounded";
-        notification.title = `${notification.sentFrom.name} says....`;
-        let routerPayload = {
-          name: "comms",
-          params: { chatID: notification?.data?.chatID }
-        };
-        if (!routerPayload.params.chatID) {
-          delete routerPayload.params;
-        }
-        notification.onclick = () => {
-          VueRouter.push(routerPayload);
-        };
-        break;
-      }
-      case "announcement": {
-        notification.icon = "bx-user-voice";
-        notification.title = "Announcement";
-        break;
-      }
-      case "request": {
-        notification.title = Vue.prototype.truncate(
-          `New request from ${notification.sentFrom.name}`
-        );
-        notification.icon = "bx-question-mark";
-        break;
-      }
+    notification = notificationsLogic.methods.sortNotification(notification);
 
-      default: {
-        break;
-      }
-    }
     if (notification?.icon) {
       notification.iconClass = `custom_notification_icon bx bx-${notification.icon} bx-tada`;
       delete notification.type;

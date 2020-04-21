@@ -3,6 +3,7 @@ const genUUID = require("uuid-by-string");
 
 export default {
   runningIntervals: {},
+  notificationRef: "",
   requestIntervals: {
     admin: 60000,
     client: 20000,

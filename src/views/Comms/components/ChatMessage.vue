@@ -78,7 +78,8 @@ export default {
   text-transform: capitalize;
   padding: 0;
   margin: 0;
-  font-size: 0.9em;
+  font-size: 0.8em;
+  margin-bottom: 10px;
 }
 .message {
   background: whitesmoke;

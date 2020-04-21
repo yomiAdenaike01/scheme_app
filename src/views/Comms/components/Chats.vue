@@ -8,7 +8,7 @@
           placeholder="Search chats"
         />
       </div>
-      <FadeTransition group>
+      <fade-transition group>
         <Chat
           v-for="(chat, index) in chats"
           :key="
@@ -19,7 +19,7 @@
           :chat-index="index"
           :chat-information="chat"
         />
-      </FadeTransition>
+      </fade-transition>
       <div class="blank_message grey" @click="startNewChat">
         <i class="bx bx-plus"></i>
         <span>Compose</span>

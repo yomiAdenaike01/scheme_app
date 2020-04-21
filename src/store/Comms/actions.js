@@ -22,10 +22,8 @@ export default {
       messages: [],
       index: context.state.chats.length
     });
-    context.commit(
-      "UPDATE_ACTIVE_CHAT",
-      context.state.chats[context.state.chats.length]
-    );
+    let lastChatIndex = context.state.chats.length - 1;
+    context.commit("UPDATE_ACTIVE_CHAT", context.state.chats[lastChatIndex]);
   },
 
   sendMessage({ state, dispatch, commit }, payload) {

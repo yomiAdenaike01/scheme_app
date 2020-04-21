@@ -3,14 +3,15 @@
     <div class="title_switch_container ">
       <h3 class="bold">Notifications</h3>
     </div>
-    <div v-if="hasEntries(userNotifications)" class="notification_wrapper">
+    <div v-if="userNotifications.length > 0" class="notification_wrapper">
       <UserNotification
-        v-for="notification in userNotifications"
+        v-for="(notification, index) in userNotifications"
         :key="notification._id"
         :notification="notification"
+        @click="notificationController(notification, index)"
       />
       <div v-if="userNotifications.length > 0" class="mark_all_wrapper">
-        <el-button class="block_button m-0" size="small" @click="readAll"
+        <el-button class="block_button" size="small" @click="readAll"
           >Mark all as read</el-button
         >
       </div>
@@ -24,34 +25,57 @@
         content: 'Your notifications will appear here once they have come in.'
       }"
     >
-      <i slot="header" class="bx bx-bell flex_center mt-4 mb-4"></i>
+      <i slot="header" class="bx bx-bell"></i>
     </InformationDisplay>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-
-import UserNotification from "./UserNotification";
-import InformationDisplay from "@/components/InformationDisplay";
+import { mapState, mapActions, mapMutations } from "vuex";
+import notificationLogic from "@/mixins/notificationsLogic";
 export default {
   name: "NotificationModule",
   components: {
-    UserNotification,
-    InformationDisplay
+    UserNotification: () => import("./UserNotification"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
+  mixins: [notificationLogic],
   data() {
     return {
       loading: false
     };
   },
   computed: {
-    ...mapState(["userNotifications", "userInformation"])
+    ...mapState(["userNotifications", "userInformation", "notificationRef"]),
+    formattedNotifications() {
+      return [...this.userNotifications].map(notification => {
+        return this.notificationLogic(notification);
+      });
+    }
   },
 
   methods: {
     ...mapActions(["request"]),
     ...mapActions("Admin", ["getNotifications"]),
+    ...mapMutations([
+      "UPDATE_ALL_NOTIFICATIONS",
+      "UDPATE_NOTIFICATION",
+      "DELETE_NOTIFICATION"
+    ]),
+    notificationController(notification, notificationIndex) {
+      // Read notification
+      this.UPDATE_NOTIFICATION({
+        notificationIndex,
+        update: { ...notification, status: "read" }
+      });
+      this.request({
+        method: "POST",
+        data: { _id: notification._id, update: { status: "read" } },
+        url: "notifications/update"
+      }).catch(() => {
+        this.UPDATE_NOTIFICATION(this.notificationRef);
+      });
+    },
     deleteReadNotifications() {
       this.loading = true;
       this.request({
@@ -66,7 +90,7 @@ export default {
         });
     },
     readAll() {
-      this.loading = true;
+      this.UPDATE_ALL_NOTIFICATIONS({ status: "read" });
       this.request({
         method: "POST",
         url: "/notifications/read/all"
@@ -77,8 +101,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-popover .el-popper {
+  padding: 0;
+}
 .notifications_container {
-  height: 400px;
+  min-height: 200px;
+  max-height: 500px;
   position: relative;
 }
 .notification_wrapper {
