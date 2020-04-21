@@ -1,7 +1,7 @@
 <template functional>
   <div class="message_container" :class="{ is_user: props.isSentByUser }">
     <p class="user">{{ props.sentBy }}</p>
-    <div class="message">
+    <div class="message" :class="{ not_user: !props.isSentByUser }">
       <p>
         {{ props.content }}
       </p>
@@ -63,13 +63,14 @@ export default {
   align-items: flex-start;
   max-height: 150px;
   margin: 5px;
-  font-size: 1.1em;
+  padding: 10px;
 
   &.is_user {
     align-items: flex-end;
     .message {
-      background: whitesmoke;
-      color: #555;
+      color: white;
+
+      background: lighten($color: $default_colour, $amount: 30);
       border-bottom-right-radius: 0px;
     }
   }
@@ -81,13 +82,19 @@ export default {
   font-size: 0.9em;
 }
 .message {
-  background: lighten($color: $default_colour, $amount: 30);
-  color: white;
+  background: whitesmoke;
   padding: 15px;
+  color: #555;
+
   display: flex;
   border-radius: 30px;
   transition: $default_transition transform;
   will-change: transform;
+  margin-left: 20px;
+  &.not_user {
+    margin-right: 20px;
+    border-bottom-left-radius: 0px;
+  }
 }
 .message_container:hover .actions_container {
   opacity: 1;

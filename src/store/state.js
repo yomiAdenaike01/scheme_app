@@ -22,11 +22,7 @@ export default {
   localNotifications: [],
   networkError: false,
   weeklyTimesheetUploaded: false,
-  userNotifications: {
-    attention: [],
-    message: [],
-    info: []
-  },
+  userNotifications: [],
   viewMobileMenu: false,
 
   lastDialog: {},
@@ -80,6 +76,7 @@ export default {
     }
   ],
   rootGroupRef: "",
+  // Expermimental
   persmissions: [
     {
       _id: genUUID(

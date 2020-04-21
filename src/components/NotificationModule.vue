@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="notifications_container ">
+  <div v-loading="loading" class="notifications_container">
     <div class="title_switch_container ">
       <h3 class="bold">Notifications</h3>
     </div>
@@ -17,7 +17,6 @@
     </div>
     <InformationDisplay
       v-else
-      class="mt-5"
       :display-text="{
         tag: 'h3',
         hasIcon: true,

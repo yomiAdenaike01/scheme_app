@@ -227,7 +227,6 @@ export default {
 .chat_messages_container {
   overflow-x: hidden;
   flex: 1;
-  padding: 0 28px;
   display: flex;
   flex-direction: column;
   max-height: calc(100% - 130px);
