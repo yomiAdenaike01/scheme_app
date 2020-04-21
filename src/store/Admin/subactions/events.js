@@ -53,7 +53,8 @@ export default {
           {
             method: "POST",
             url: "events/create",
-            data: payload
+            data: payload,
+            disableNotifications: true
           },
           { root: true }
         )

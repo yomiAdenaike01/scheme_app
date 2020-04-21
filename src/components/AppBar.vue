@@ -11,7 +11,7 @@
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-badge :value="getUserNotificationsLength" class="item primary">
+      <el-badge :value="userNotifications.length" class="item primary">
         <el-popover width="350" trigger="click">
           <div class="notifications_center">
             <NotificationModule />
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
   name: "AppBar",
@@ -46,9 +46,7 @@ export default {
     NotificationModule: () => import("@/components/NotificationModule")
   },
   computed: {
-    ...mapState(["userInformation", "viewMobileMenu"]),
-
-    ...mapGetters(["getUserNotificationsLength"]),
+    ...mapState(["userInformation", "viewMobileMenu", "userNotifications"]),
 
     items() {
       return [

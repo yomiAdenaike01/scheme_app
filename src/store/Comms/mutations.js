@@ -58,7 +58,6 @@ export default {
   },
   UPDATE_MESSAGES(state, payload) {
     let chatIndex = state.activeChat.index;
-
     state.chats[chatIndex].messages.push(payload);
     updateBreadCrumbs(state, "messageRef", {
       messageIndex: state.chats[chatIndex].messages.length - 1,

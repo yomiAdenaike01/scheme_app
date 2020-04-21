@@ -69,10 +69,10 @@ export default {
   width: 100%;
 
   &.healthy {
-    background: #99b898;
+    background: $success_colour;
     box-shadow: inset 5px 0px 10px rgba(0, 0, 0, 0.1);
     .button_display {
-      background: darken($color: #99b898, $amount: 18);
+      background: darken($color: $success_colour, $amount: 18);
     }
   }
   &.unhealthy {

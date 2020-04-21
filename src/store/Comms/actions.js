@@ -19,11 +19,12 @@ export default {
       _id: Math.random()
         .toString(16)
         .slice(2),
-      messages: []
+      messages: [],
+      index: context.state.chats.length
     });
     context.commit(
       "UPDATE_ACTIVE_CHAT",
-      context.state.chats[context.state.chats.length - 1]
+      context.state.chats[context.state.chats.length]
     );
   },
 

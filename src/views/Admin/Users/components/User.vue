@@ -9,15 +9,9 @@
       })
     "
   >
-    <el-badge
-      v-if="displayPrescence"
-      is-dot
-      :type="userInformation.isOnline ? 'success' : 'danger'"
-      class="item"
-    >
-      <Avatar :name="name" />
-    </el-badge>
-    <Avatar v-else :name="name" />
+    <Avatar :name="name">
+      <OnlineIndicator :is-online="userInformation.isOnline" />
+    </Avatar>
 
     <div class="text_content">
       <p class="member_name">{{ name }}</p>
@@ -32,7 +26,8 @@ import { mapState, mapMutations } from "vuex";
 export default {
   name: "User",
   components: {
-    Avatar: () => import("@/components/Avatar")
+    Avatar: () => import("@/components/Avatar"),
+    OnlineIndicator: () => import("@/components/OnlineIndicator")
   },
   props: {
     displayPrescence: {

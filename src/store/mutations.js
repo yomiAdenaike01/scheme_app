@@ -105,7 +105,7 @@ export default {
     Vue.set(state, "viewMobileMenu", payload);
   },
   UPDATE_USER_NOTIFICATIONS(state, payload) {
-    Vue.set(state, "userNotifications", payload);
+    state.userNotifications = payload;
   },
 
   UPDATE_NETWORK_ERROR(state, payload) {
@@ -137,7 +137,6 @@ export default {
     ];
     notification.showClose = true;
     notification.dangerouslyUseHTMLString = true;
-    console.log(notification);
 
     if (notificationTypes.indexOf(notification.type) == -1) {
       notification.type = "info";

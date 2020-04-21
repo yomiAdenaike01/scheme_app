@@ -22,7 +22,11 @@ export default {
   localNotifications: [],
   networkError: false,
   weeklyTimesheetUploaded: false,
-  userNotifications: [],
+  userNotifications: {
+    attention: [],
+    message: [],
+    info: []
+  },
   viewMobileMenu: false,
 
   lastDialog: {},

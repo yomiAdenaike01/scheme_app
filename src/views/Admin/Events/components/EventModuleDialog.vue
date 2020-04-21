@@ -15,7 +15,10 @@
       </div>
       <div
         v-if="
-          tabXref.name == 'create_event' && hasEntries(events) && getIsAdmin
+          tabXref.name == 'create_event' &&
+            hasEntries(events) &&
+            qrCode.length > 0 &&
+            getIsAdmin
         "
         slot="body"
         class="body_container"
@@ -36,20 +39,14 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import QrcodeVue from "qrcode.vue";
 
 import TemplateManagement from "./TemplateManagement";
-import RequestManagement from "./RequestManagement";
-import UpdateGroups from "./UpdateGroups";
-
-import InformationDisplay from "@/components/InformationDisplay";
-import Tabs from "@/components/Tabs";
-import ColourUnit from "@/components/ColourUnit";
 
 export default {
   name: "EventModuleDialog",
   components: {
-    InformationDisplay,
-    Tabs,
-    ColourUnit,
-    RequestManagement,
+    InformationDisplay: () => import("@/components/InformationDisplay"),
+    Tabs: () => import("@/components/Tabs"),
+    ColourUnit: () => import("@/components/ColourUnit"),
+    RequestManagement: () => import("./RequestManagement"),
     QrcodeVue
   },
   data() {
@@ -58,7 +55,7 @@ export default {
       templates: {},
       loading: false,
       currentTab: 0,
-      qrCode: {}
+      qrCode: ""
     };
   },
 
@@ -94,8 +91,8 @@ export default {
         this.userInformation._id,
         ...events.assignedTo.filter(assignee => {
           return (
-            this.getUserInformation(assignee).userGroup.enableEventRejection ==
-            true
+            this.getUserInformation(assignee)?.userGroup
+              ?.enableEventRejection == true
           );
         })
       ];
@@ -178,7 +175,7 @@ export default {
         {
           label: "Manage Requests",
           view: {
-            component: RequestManagement
+            component: () => import("./RequestManagement")
           }
         }
       ];
@@ -187,7 +184,7 @@ export default {
         tabs.unshift({
           label: "Manage event groups",
           view: {
-            component: UpdateGroups
+            component: () => import("./UpdateGroups")
           }
         });
 
@@ -285,7 +282,6 @@ export default {
 
     eventsCtrl(information) {
       this.events = information;
-      this.qrCode = information;
 
       switch (this.tabXref.name) {
         case "create_event_group": {
@@ -321,13 +317,16 @@ export default {
     },
     // Submit one event
     genEvent() {
-      this.createEvent(this.eventContent.events).then(() => {
-        if (this.getIsAdmin) {
-          this.initSaveTemplate();
-        } else {
-          this.view = false;
-        }
-      });
+      this.createEvent(this.eventContent.events)
+        .then(response => {
+          this.qrCode = response ? response : "";
+          if (this.getIsAdmin) {
+            this.initSaveTemplate();
+          } else {
+            this.view = false;
+          }
+        })
+        .catch(() => {});
     },
 
     initSaveTemplate() {

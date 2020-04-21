@@ -6,58 +6,57 @@
       :events="calEvents"
       :on-event-click="viewEvent"
       events-on-month-view="short"
-      :cell-click-hold="false"
+      :on-event-dblclick="deleteEvent"
     />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 export default {
   name: "EventsCalendar",
+  components: {
+    VueCal
+  },
   data() {
     return {
       view: false,
-      loading: false,
-      event: {}
+      loading: false
     };
   },
-
   computed: {
-    ...mapState("Admin", ["events", "team", "eventFilters"]),
-    ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapState("Admin", ["events"]),
 
     calEvents() {
       if (this.events.length > 0) {
         let dateFormat = "YYYY-MM-DD hh:mm";
         return [...this.events].map(event => {
-          if (event) {
-            let firstAssignee = event.assignedTo[0];
-            let content = `${firstAssignee.name}'s ${event.type.label} event`;
-            if (event.assignedTo.length - 1 > 0) {
+          if (Object.values(event).length > 0) {
+            let firstAssignee = event?.assignedTo?.[0];
+            let content = `${firstAssignee?.name}'s ${event?.type?.label} event`;
+            if (event?.assignedTo?.length - 1 > 0) {
               content = `${content} +${parseInt(
-                event.assignedTo.length - 1
+                event?.assignedTo?.length - 1
               )} others`;
             }
 
             return {
-              title: `${event.type.label} event`,
+              title: `${event?.type?.label} event`,
               content,
-              start: this.formatDate(event.startDate, dateFormat),
-              end: this.formatDate(event.endDate, dateFormat),
-              class: `${event.type.label}`,
-              isApproved: event.isApproved,
-              assignedTo: event.assignedTo,
-              type: event.type,
-              _id: event._id,
-              noticePeriod: event.noticePeriod,
-              createdBy: event.createdBy
+              start: this.formatDate(event?.startDate, dateFormat),
+              end: this.formatDate(event?.endDate, dateFormat),
+              class: `${event?.type?.label}`,
+              isApproved: event?.isApproved,
+              assignedTo: event?.assignedTo,
+              type: event?.type,
+              _id: event?._id,
+              noticePeriod: event?.noticePeriod,
+              createdBy: event?.createdBy
             };
           } else {
-            return {};
+            return;
           }
         });
       } else {
@@ -75,10 +74,10 @@ export default {
         dialog: "viewEvent",
         data: event
       });
+    },
+    deleteEvent() {
+      console.log("deleting event");
     }
-  },
-  components: {
-    VueCal
   }
 };
 </script>

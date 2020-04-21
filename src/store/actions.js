@@ -183,7 +183,7 @@ export default {
           if (status === 401) {
             exitApplication(context, false, true);
           }
-
+          console.error(error);
           if (error?.data) {
             error = error.data.content;
           }

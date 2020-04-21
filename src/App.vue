@@ -225,7 +225,7 @@ html,
 .no_events {
   pointer-events: none;
 }
-.hover_indicator {
+.floating_item {
   position: absolute;
   top: -10px;
   right: 0;

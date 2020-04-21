@@ -2,7 +2,7 @@
   <div>
     <div v-if="hasEntries(data)">
       <h5 class="mb-2">All Events</h5>
-      <Event v-for="event in data" :key="event._id" :event="event" />
+      {{ data }}
     </div>
     <InformationDisplay v-else :display-text="infoDisplayText">
       <i slot="header" class="bx bxs-no-entry"></i>
@@ -13,13 +13,12 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
-import Event from "@/views/Admin/Events/components/Event";
-import InformationDisplay from "@/components/InformationDisplay";
 export default {
   name: "UserEvents",
   components: {
-    Event,
-    InformationDisplay
+    FunctionalEvent: () =>
+      import("./../../../Events/components/FunctionalEvent"),
+    InformationDisplay: () => import("@/components/InformationDisplay")
   },
   props: {
     data: {
@@ -29,7 +28,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["events", "viewTeamMember"]),
+    ...mapState("Admin", ["events"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     infoDisplayText() {
       let heading = "No events to display",

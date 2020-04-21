@@ -15,13 +15,9 @@
           @click.native="selectedUser = member"
           @method="handleEvents"
         >
-          <el-badge
-            is-dot
-            :type="member.isOnline ? 'success' : 'danger'"
-            class="item"
-          >
-            <Avatar :name="member.name" :size="40" />
-          </el-badge>
+          <Avatar :name="member.name" :size="40">
+            <OnlineIndicator :is-online="member.isOnline" />
+          </Avatar>
         </Dropdown>
       </div>
     </div>
@@ -57,7 +53,8 @@ export default {
   components: {
     Dropdown,
     Avatar,
-    InformationDisplay
+    InformationDisplay,
+    OnlineIndicator: () => import("@/components/OnlineIndicator")
   },
 
   data() {

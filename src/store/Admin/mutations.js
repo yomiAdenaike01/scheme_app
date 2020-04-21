@@ -99,13 +99,19 @@ export default {
       ...payload
     };
   },
-  DELETE_EVENT(state, { eventIndex = state.events.length - 1 }) {
-    let eventAtIndex = state.events[eventIndex];
-    updateBreadCrumbs(state, "eventRef", {
-      eventIndex,
-      payload: eventAtIndex
-    });
-    Vue.delete(state.events, eventIndex);
+  DELETE_EVENT(state, payload) {
+    let eventIndex = payload?.eventIndex ?? state.events.length - 1;
+    if (!eventIndex) {
+      state.events.pop();
+    }
+    if (state.events[eventIndex]) {
+      let eventAtIndex = state.events[eventIndex];
+      updateBreadCrumbs(state, "eventRef", {
+        eventIndex,
+        payload: eventAtIndex
+      });
+      Vue.delete(state.events, eventIndex);
+    }
   },
   UPDATE_REQUESTS(state, payload) {
     state.requestsInformation = payload;

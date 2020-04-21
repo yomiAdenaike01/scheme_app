@@ -1,5 +1,5 @@
 $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-$success_colour: #67c23a;
+$success_colour: #99b898;
 $error_colour: #f56c6c;
 $border_radius: 10px;
 $border: 0.3px solid #ebeef5;
@@ -40,6 +40,20 @@ $app_bar_height:64px;
   cursor: pointer;
 }
 
+@mixin floating_item {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  border-radius: 50%;
+  background: #efefef;
+  padding: 0px 10px;
+  z-index: 999;
+  color: #888;
+  cursor: pointer;
+  &:hover {
+    background: darken(#efefef, 4);
+  }
+}
 :export {
   default: $default_colour;
 }

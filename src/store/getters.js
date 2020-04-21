@@ -35,13 +35,7 @@ export default {
     }
     return foundDialog;
   },
-  getUserNotificationsLength({ userNotifications }) {
-    return userNotifications.filter(notification => {
-      return (
-        notification.status != "is_read" && notification.status != "is_complete"
-      );
-    }).length;
-  },
+
   getDeviceInformation(state, { getUA }) {
     return {
       system: getUA.getOS(),

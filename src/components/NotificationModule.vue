@@ -3,19 +3,17 @@
     <div class="title_switch_container ">
       <h3 class="bold">Notifications</h3>
     </div>
-    <div v-if="hasEntries(userNotifications)">
+    <div v-if="hasEntries(userNotifications)" class="notification_wrapper">
       <UserNotification
         v-for="notification in userNotifications"
         :key="notification._id"
         :notification="notification"
       />
-      <el-button
-        v-if="getUserNotificationsLength > 0"
-        class="block_button m-0"
-        size="small"
-        @click="readAll"
-        >Mark all as read</el-button
-      >
+      <div v-if="userNotifications.length > 0" class="mark_all_wrapper">
+        <el-button class="block_button m-0" size="small" @click="readAll"
+          >Mark all as read</el-button
+        >
+      </div>
     </div>
     <InformationDisplay
       v-else
@@ -33,7 +31,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 import UserNotification from "./UserNotification";
 import InformationDisplay from "@/components/InformationDisplay";
@@ -48,8 +46,11 @@ export default {
       loading: false
     };
   },
+  computed: {
+    ...mapState(["userNotifications", "userInformation"])
+  },
   activated() {
-    this.getNotifications()
+    this.readAll()
       .then(() => {
         this.loading = false;
       })
@@ -57,10 +58,7 @@ export default {
         this.loading = false;
       });
   },
-  computed: {
-    ...mapState(["userNotifications", "userInformation"]),
-    ...mapGetters(["getUserNotificationsLength"])
-  },
+
   methods: {
     ...mapActions(["request"]),
     ...mapActions("Admin", ["getNotifications"]),
@@ -70,10 +68,10 @@ export default {
         method: "DELETE",
         url: "notifications/delete/read"
       })
-        .then(response => {
+        .then(() => {
           this.loading = false;
         })
-        .catch(err => {
+        .catch(() => {
           this.loading = false;
         });
     },
@@ -92,6 +90,16 @@ export default {
 .notifications_container {
   height: 400px;
   position: relative;
+}
+.notification_wrapper {
+  max-height: calc(100% - 110px);
+  overflow-x: hidden;
+}
+.mark_all_wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 .title_switch_container {
   border-bottom: $border;

@@ -84,7 +84,7 @@
                 multiple
                 @click="viewUser(member)"
               >
-                <div class="hover_indicator" @click="removeUser(member)">x</div>
+                <div class="floating_item" @click="removeUser(member)">x</div>
               </Avatar>
             </div>
           </div>
@@ -281,17 +281,17 @@ export default {
       let canRejectCount = 0,
         hasApprovedCount = 0,
         isCreatorAdmin =
-          this.event.createdBy.userGroup.label.toLowerCase() ===
+          this.event?.createdBy?.userGroup?.label.toLowerCase() ===
           "system administrator";
       for (let i = 0, len = this.event.assignedTo; i < len; i++) {
-        let assignee = this.event.assignedTo[i];
-        if (assignee.userGroup.enabledEventRejection) {
+        let assignee = this?.event?.assignedTo[i];
+        if (assignee?.userGroup?.enabledEventRejection) {
           canRejectCount++;
         }
       }
       for (let i = 0, len = this.event.isApproved; i < len; i++) {
         let assignee = this.event.isApproved[i];
-        if (assignee.userGroup.enableEventRejection) {
+        if (assignee?.userGroup?.enableEventRejection) {
           hasApprovedCount++;
         }
       }
@@ -408,9 +408,7 @@ export default {
         });
       }
     },
-    approvalController() {
-      let approval = this.event.isApproved;
-    },
+
     getOneEmail(id) {
       return this.getEmail.findIndex(assignee => {
         return assignee.id == id;
@@ -422,17 +420,23 @@ export default {
       let userIndex = this.event.assignedTo.findIndex(assignee => {
         return assignee._id == user._id;
       });
-      this.REMOVE_USER_FROM_EVENT({
-        eventIndex: this.currentEventIndex,
-        userIndex
-      });
-      this.request({
-        method: "DELETE",
-        url: "events/user",
-        data: { eventID: this.event._id, userID: user._id }
-      }).catch(() => {
-        this.ADD_USER_TO_EVENT(this.eventRef);
-      });
+      if (this.event.assignedTo.length - 1 == 0) {
+        this.deleteEvent(
+          "This is the last user on the event, if you delete this user it will delete the event. Are you sure you want to delete this event ? "
+        );
+      } else {
+        this.REMOVE_USER_FROM_EVENT({
+          eventIndex: this.currentEventIndex,
+          userIndex
+        });
+        this.request({
+          method: "DELETE",
+          url: "events/user",
+          data: { eventID: this.event._id, userID: user._id }
+        }).catch(() => {
+          this.ADD_USER_TO_EVENT(this.eventRef);
+        });
+      }
     },
     assignNewUser(user) {
       this.ADD_USER_TO_EVENT({
@@ -447,11 +451,11 @@ export default {
         this.REMOVE_USER_FROM_EVENT(this.eventRef);
       });
     },
-    deleteEvent() {
+    deleteEvent(msg = "Are you sure you want to delete this event ?") {
       this.genPromptBox({
         boxType: "confirm",
         title: "Confirm",
-        text: "Are you sure you want to delete this event ?",
+        text: msg,
         confirm: "Yes"
       }).then(() => {
         // Delete event
@@ -621,13 +625,14 @@ h3 {
     will-change: opacity;
     text-align: center;
   }
-  .hover_indicator {
+  .floating_item {
+    @include floating_item;
     opacity: 0;
     transition: $default_transition opacity;
     will-change: opacity;
   }
   &:hover {
-    .hover_indicator,
+    .floating_item,
     .member_name {
       opacity: 1;
     }
