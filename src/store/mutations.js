@@ -1,4 +1,3 @@
-import sounds from "@/mixins/playSound";
 import Vue from "vue";
 import VueRouter from "../router";
 import updateBreadCrumbs from "./helpers";
@@ -142,24 +141,40 @@ export default {
       notification.type = "info";
     }
     switch (notification.type) {
-      case "message":
+      case "message": {
         notification.icon = "message-rounded";
-        notification.title = "New Message";
-        if (document.visibilityState == "visible") {
-          sounds.methods.playSuccessSound();
+        notification.title = `${notification.sentFrom.name} says....`;
+        let routerPayload = {
+          name: "comms",
+          params: { chatID: notification?.data?.chatID }
+        };
+        if (!routerPayload.params.chatID) {
+          delete routerPayload.params;
         }
+        notification.onclick = () => {
+          VueRouter.push(routerPayload);
+        };
         break;
+      }
       case "announcement": {
-        (notification.icon = "bx-user-voice"),
-          (notification.title = "Announcement");
+        notification.icon = "bx-user-voice";
+        notification.title = "Announcement";
+        break;
+      }
+      case "request": {
+        notification.title = Vue.prototype.truncate(
+          `New request from ${notification.sentFrom.name}`
+        );
+        notification.icon = "bx-question-mark";
         break;
       }
 
-      default:
+      default: {
         break;
+      }
     }
     if (notification?.icon) {
-      notification.iconClass = `custom_notification_icon bx bx-${notification?.icon} bx-tada`;
+      notification.iconClass = `custom_notification_icon bx bx-${notification.icon} bx-tada`;
       delete notification.type;
     }
 

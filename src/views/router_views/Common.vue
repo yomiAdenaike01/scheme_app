@@ -1,6 +1,7 @@
 <template>
-  <div
+  <fade-transtiion
     v-loading="loading"
+    tag="div"
     element-loading-text="Loading events and team members...."
     class="common_container"
   >
@@ -19,13 +20,14 @@
         <router-view></router-view>
       </keep-alive>
     </div>
-  </div>
+  </fade-transtiion>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
+import { FadeTransition } from "vue2-transitions";
 
 export default {
   name: "Common",
@@ -34,7 +36,8 @@ export default {
     AppBar: () => import("@/components/AppBar"),
     InstanceCheck: () => import("@/components/InstanceCheck"),
     GlobalSearch: () => import("@/components/GlobalSearch"),
-    NprogressContainer
+    NprogressContainer,
+    FadeTransition
   },
   data() {
     return {
@@ -63,8 +66,10 @@ export default {
   },
 
   watch: {
-    userNotifications(notification) {
-      this.displayNotification(notification);
+    userNotifications(notifications) {
+      for (let i = 0, len = notifications.length; i < len; i++) {
+        this.UPDATE_NOTIFICATIONS(notifications[i]);
+      }
     }
   },
   activated() {
@@ -108,9 +113,7 @@ export default {
     ...mapActions(["updateDevices"]),
     ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
-    displayNotification(notification) {
-      console.log(notification);
-    },
+
     toggleDisplaySearch() {
       this.displaySearch = !this.displaySearch;
     },

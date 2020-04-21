@@ -1,7 +1,9 @@
 <template>
   <div class="admin_container">
     <keep-alive>
-      <router-view></router-view>
+      <slide-x-left-transition mode="out-in">
+        <router-view></router-view>
+      </slide-x-left-transition>
     </keep-alive>
     <ProfileDialog />
   </div>
@@ -10,15 +12,22 @@
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
 import ProfileDialog from "@/views/Admin/Users/Profile/ProfileDialog";
+import { SlideXLeftTransition } from "vue2-transitions";
+
 export default {
   name: "Admin",
   components: {
-    ProfileDialog
+    ProfileDialog,
+    SlideXLeftTransition
   },
-
+  computed: {
+    ...mapState(["userInformation", "requestIntervals"]),
+    ...mapState("Admin", ["events"])
+  },
   deactivated() {
     this.CLEAR_GLOBAL_INTERVAL("adminIntervals");
   },
+
   activated() {
     if (this.hasEventsToday) {
       this.UPDATE_NOTIFICATIONS({
@@ -54,10 +63,7 @@ export default {
       }
     });
   },
-  computed: {
-    ...mapState(["userInformation", "requestIntervals"]),
-    ...mapState("Admin", ["events"])
-  },
+
   methods: {
     ...mapActions("Admin", [
       "getTeam",
@@ -66,15 +72,7 @@ export default {
       "getRequests",
       "getBoards"
     ]),
-    ...mapMutations(["CREATE_GLOBAL_INTERVAL", "CLEAR_GLOBAL_INTERVAL"]),
-    displayNewNotification() {
-      let newNotification = this.userNotifications[0];
-      this.UPDATE_NOTIFICATIONS({
-        message: newNotification.message,
-        type: "info",
-        title: "New Request"
-      });
-    }
+    ...mapMutations(["CREATE_GLOBAL_INTERVAL", "CLEAR_GLOBAL_INTERVAL"])
   }
 };
 </script>

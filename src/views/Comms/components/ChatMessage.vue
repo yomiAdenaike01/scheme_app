@@ -69,7 +69,6 @@ export default {
     align-items: flex-end;
     .message {
       color: white;
-
       background: lighten($color: $default_colour, $amount: 30);
       border-bottom-right-radius: 0px;
     }

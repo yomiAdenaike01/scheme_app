@@ -48,15 +48,6 @@ export default {
   computed: {
     ...mapState(["userNotifications", "userInformation"])
   },
-  activated() {
-    this.readAll()
-      .then(() => {
-        this.loading = false;
-      })
-      .catch(() => {
-        this.loading = false;
-      });
-  },
 
   methods: {
     ...mapActions(["request"]),
