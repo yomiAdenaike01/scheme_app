@@ -1,7 +1,7 @@
 <template>
   <div class="request_container">
     <div class="request_header">
-      <h4>{{ request.type.label }} request</h4>
+      <p>{{ request.type.label }} request</p>
       <div class="requestee_container">
         <Avatar :size="size" :name="request.requestedBy.name" />
         <p class="grey">
@@ -15,11 +15,16 @@
     </div>
     <!-- Duration container -->
     <div class="duration_container">
-      <p>{{ duration }}</p>
+      <span>{{ duration }} days</span>
+      <p>
+        {{ formatDate(request.startDate, "MMMM DD") }} -
+        {{ formatDate(request.endDate, "MMMM DD") }}
+      </p>
     </div>
     <p>Notes</p>
-    <p>{{ request.notes }}</p>
+    <p class="grey">{{ request.notes }}</p>
     <!-- Apporval -->
+    <p>Approval</p>
     <div class="steps_container">
       <div
         v-for="(step, index) in stepXref"
@@ -37,11 +42,8 @@
       </div>
     </div>
     <div class="approval_wrapper">
-      <Avatar :size="size" :name="userInformation.name" />
-      <div class="buttons_wrapper">
-        <el-button type="success">Approve</el-button>
-        <el-button type="info">Reject</el-button>
-      </div>
+      <el-button plain type="success">Approve</el-button>
+      <el-button plain type="danger">Reject</el-button>
     </div>
   </div>
 </template>
@@ -72,7 +74,6 @@ export default {
     },
     duration() {
       let endDate = moment(this.request.endDate);
-
       let duration = moment.duration(endDate.diff(this.request.startDate));
       return Math.round(
         duration.asHours() > 24 ? duration.asDays() : duration.asHours()
@@ -97,6 +98,9 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 20px;
+  > * {
+    flex: 1;
+  }
 }
 .request_header {
   padding: 10px;
@@ -119,16 +123,24 @@ export default {
   flex-direction: column;
   background: rgb(240, 240, 240);
   color: #888;
+  span {
+    margin-top: 10px;
+  }
+  p {
+    text-transform: uppercase;
+    font-weight: 300;
+  }
 }
 .steps_container {
   display: flex;
   align-items: center;
-  margin: 40px 0;
+  margin: 0 0 40px 0;
   justify-content: center;
 }
 .step {
   border-radius: 60px;
-  border: 2px solid #ccc;
+  border: 1px solid #fff;
+  background: #f4f4f5;
   border-right: none;
   padding: 8px 30px;
   font-size: 0.8em;
@@ -138,15 +150,15 @@ export default {
   border-bottom-right-radius: 0px;
   position: relative;
   margin-right: -10px;
-  color: #ccc;
+  color: #999;
   &.exceeded {
-    background: #27941d;
-    color: white;
-    border-color: white;
+    background: darken(#f0f9eb, 3);
+    border-color: #fff;
+    color: #67c23a;
   }
   &.active_step {
-    background: orange;
-    color: white;
+    background: darken(#fdf6ec, 3);
+    color: #e6a23c;
     border-color: white;
   }
   &:last-of-type {
