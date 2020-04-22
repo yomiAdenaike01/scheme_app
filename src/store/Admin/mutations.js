@@ -9,6 +9,38 @@ import updateBreadCrumbs from "../helpers";
  */
 
 export default {
+  DELETE_REQUEST(state, index) {
+    updateBreadCrumbs(state, "requestRef", {
+      index,
+      request: state.requests[index]
+    });
+    Vue.delete(state.requests, index);
+  },
+  UPDATE_REQUEST(state, { request, index }) {
+    updateBreadCrumbs(state, "requestRef", {
+      index,
+      request
+    });
+    state.requests.splice(index, 0, {
+      ...state.requests[index],
+      ...request
+    });
+  },
+  UPDATE_REQUESTS(state, payload) {
+    if (!Array.isArray(payload)) {
+      payload = [payload];
+    }
+
+    for (let i = 0, len = payload.length; i < len; i++) {
+      let payloadRequest = payload[i];
+      let stateRequest = state.requests.find(request => {
+        return request._id == payloadRequest._id;
+      });
+      if (!stateRequest) {
+        state.requests.push(payloadRequest);
+      }
+    }
+  },
   // create user
   CREATE_USER(state, payload) {
     updateBreadCrumbs(state, "teamRef", {
@@ -112,9 +144,6 @@ export default {
       });
       Vue.delete(state.events, eventIndex);
     }
-  },
-  UPDATE_REQUESTS(state, payload) {
-    state.requestsInformation = payload;
   },
 
   REASSIGN_ELEMENTS(state, { assignment = "team", group }) {

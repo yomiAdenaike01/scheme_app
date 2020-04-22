@@ -1,10 +1,13 @@
 <template>
   <div class="events_container">
     <div class="events_inner_container">
-      <Toolbar />
-      <EventsCalendar />
-      <EventModuleDialog />
-      <ViewEventDialog />
+      <Toolbar :current-view="view" @changeView="view = $event" />
+      <div v-if="view != 'requests'">
+        <EventsCalendar />
+        <EventModuleDialog />
+        <ViewEventDialog />
+      </div>
+      <Requests v-if="view == 'requests'" />
     </div>
     <UserSidebar />
   </div>
@@ -17,6 +20,7 @@ import EventsCalendar from "./components/EventsCalendar";
 import UserSidebar from "./components/UserSidebar";
 import ViewEventDialog from "./components/ViewEventDialog";
 import eventsTour from "../tours/eventsTour";
+import Requests from "./components/Requests";
 export default {
   name: "EventsModule",
   components: {
@@ -24,9 +28,15 @@ export default {
     EventModuleDialog,
     Toolbar,
     UserSidebar,
-    ViewEventDialog
+    ViewEventDialog,
+    Requests
   },
-  extends: eventsTour
+  extends: eventsTour,
+  data() {
+    return {
+      view: "requests"
+    };
+  }
 };
 </script>
 <style lang="scss" scoped>

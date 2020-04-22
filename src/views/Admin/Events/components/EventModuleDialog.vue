@@ -46,7 +46,6 @@ export default {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     Tabs: () => import("@/components/Tabs"),
     ColourUnit: () => import("@/components/ColourUnit"),
-    RequestManagement: () => import("./RequestManagement"),
     QrcodeVue
   },
   data() {
@@ -171,12 +170,6 @@ export default {
           formContent: this.createEventForm,
           displayReset: true,
           emitOnChange: true
-        },
-        {
-          label: "Manage Requests",
-          view: {
-            component: () => import("./RequestManagement")
-          }
         }
       ];
 

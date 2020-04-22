@@ -78,13 +78,6 @@ export default {
       }
     };
   },
-  watch: {
-    activeChat(val) {
-      if (val) {
-        this.scrollToBottom(this.$refs.chatMessages);
-      }
-    }
-  },
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "messages"]),
@@ -120,6 +113,16 @@ export default {
 
       return team;
     }
+  },
+  watch: {
+    activeChat(val) {
+      if (val) {
+        this.scrollToBottom(this.$refs.chatMessages);
+      }
+    }
+  },
+  activated() {
+    this.scrollToBottom(this.$refs.chatMessages);
   },
 
   methods: {

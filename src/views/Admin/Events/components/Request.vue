@@ -1,170 +1,82 @@
 <template>
-  <div class="request_container" :class="{ disabled: approved }">
-    <div class="request_details_wrapper">
-      <div v-for="(value, key) in request" :key="key">
-        <p v-if="keyXref[key] && keyXref[key].display(value)">
-          {{ keyXref[key].label }}
-          <span v-html="keyXref[key].value(value)"></span>
+  <div class="request_container">
+    <div class="request_header">
+      <h4>{{ request.type.label }} request</h4>
+      <div class="requestee_container">
+        <Avatar :size="size" :name="request.requestedBy.name" />
+        <p class="grey">
+          <span class="request_user_name">{{ request.requestedBy.name }}</span>
+          requested
+          <span class="date">{{
+            initMoment(request.dateCreated).calendar()
+          }}</span>
         </p>
       </div>
-      <el-tag v-if="!approved" class="request_status_tag" size="mini">{{
-        makePretty(request.status)
-      }}</el-tag>
     </div>
-    <div
-      v-if="request.requestedBy == userInformation._id || getIsAdmin"
-      class="buttons_container"
-    >
-      <el-button
-        v-if="approved"
-        class="disabled"
-        type="success"
-        icon="el-icon-check"
-        circle
-      />
-      <el-button
-        v-if="getIsAdmin && !approved"
-        type="primary"
-        @click="
-          $emit('updateRequest', {
-            update: { status: 'approved' },
-            _id: request._id
-          })
-        "
-        >Approve Request</el-button
+    <!-- Duration container -->
+    <div class="duration_container">
+      <p>{{ duration }}</p>
+    </div>
+    <p>Notes</p>
+    <p>{{ request.notes }}</p>
+    <!-- Apporval -->
+    <div class="steps_container">
+      <div
+        v-for="(step, index) in stepXref"
+        :key="index"
+        class="step"
+        :class="[
+          step.toLowerCase(),
+          {
+            exceeded: stepXref.indexOf(request.status.capitalize()) > index,
+            active_step: stepXref.indexOf(request.status.capitalize()) == index
+          }
+        ]"
       >
-      <el-button
-        v-if="getIsAdmin && !approved"
-        type="danger"
-        plain
-        @click="
-          $emit('updateRequest', {
-            update: { status: 'declined' },
-            _id: request._id
-          })
-        "
-        >Decline Request</el-button
-      >
-      <el-popover v-if="!approved" trigger="click">
-        <el-button slot="reference" size="mini" round>Update Request</el-button>
-        <Form
-          submit-text="Update request"
-          size="mini"
-          :config="requestUpdateConfig"
-          @val="$emit('updateRequest', { update: $event, _id: request._id })"
-        />
-      </el-popover>
-      <el-button
-        plain
-        type="danger"
-        size="mini"
-        @click="$emit('deleteRequest', request._id)"
-        >Delete Request</el-button
-      >
+        <span>{{ step }}</span>
+      </div>
+    </div>
+    <div class="approval_wrapper">
+      <Avatar :size="size" :name="userInformation.name" />
+      <div class="buttons_wrapper">
+        <el-button type="success">Approve</el-button>
+        <el-button type="info">Reject</el-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import Form from "@/components/Form";
-
+import { mapState } from "vuex";
+import moment from "moment";
 export default {
   name: "Request",
   components: {
-    Form: () => import("@/components/Form")
+    Avatar: () => import("@/components/Avatar")
   },
   props: {
     request: {
       type: Object,
-      required: true
+      default: () => {}
     }
+  },
+  data() {
+    return {
+      size: 35
+    };
   },
   computed: {
     ...mapState(["userInformation"]),
-
-    ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", [
-      "getGroupName",
-      "getValidEventTypes",
-      "getUserInformation"
-    ]),
-    approved() {
-      return this.request.status == "approved";
+    stepXref() {
+      return ["Sent", "Seen", "Approved", "Rejected"];
     },
-    requestUpdateConfig() {
-      // Change the date
-      // Add notes
-      let config = [
-        {
-          "component-type": "date-picker",
-          "input-type": "date-time-range",
-          placeholder: "Timings",
-          start_placeholder: "Start date & time",
-          end_placeholder: "End date & time",
-          model: "date",
-          optional: true
-        },
-        {
-          "component-type": "select",
-          placeholder: "Select event type",
-          options: this.getValidEventTypes,
-          model: "type",
-          validType: "number",
-          optional: true
-        },
-        {
-          "component-type": "text",
-          "input-type": "textarea",
-          placeholder: "Notes",
-          model: "notes",
-          optional: true
-        }
-      ];
+    duration() {
+      let endDate = moment(this.request.endDate);
 
-      return config;
-    },
-    keyXref() {
-      const self = this;
-      return {
-        type: {
-          label: "",
-          display() {
-            return true;
-          },
-          value(params) {
-            return `<h2>${self.getGroupName("eventGroup", params)?.name}</h2>`;
-          }
-        },
-        requestedBy: {
-          label: "Requested by :",
-
-          display() {
-            return self.getIsAdmin;
-          },
-          value(params) {
-            return self.getUserInformation(params)?.name;
-          }
-        },
-        startDate: {
-          label: "Start Date :",
-          display() {
-            return true;
-          },
-          value(params) {
-            return self.formatDate(params);
-          }
-        },
-        endDate: {
-          label: "End Date :",
-          display() {
-            return true;
-          },
-          value(params) {
-            return self.formatDate(params);
-          }
-        }
-      };
+      let duration = moment.duration(endDate.diff(this.request.startDate));
+      return Math.round(
+        duration.asHours() > 24 ? duration.asDays() : duration.asHours()
+      );
     }
   }
 };
@@ -173,30 +85,74 @@ export default {
 <style lang="scss" scoped>
 .request_container {
   display: flex;
+  flex-direction: column;
   flex: 1;
-  justify-content: space-between;
-  margin: 10px;
-  padding: 25px;
-  border: $border;
-  text-transform: capitalize;
-  line-height: 1.3em;
+  border-radius: 10px;
+  border: 2px solid rgb(235, 235, 235);
+  margin: 40px;
+  padding: 20px;
 }
-
-.request_details_wrapper {
-  display: block;
-  & > * {
-    margin-bottom: 10px;
-  }
-}
-.request_status_tag {
-  margin: 10px 0;
-}
-.buttons_container {
+.approval_wrapper {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  &/deep/ > * {
-    margin: 0 5px;
+  justify-content: space-between;
+  padding: 20px;
+}
+.request_header {
+  padding: 10px;
+}
+.requestee_container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+.request_user_name {
+  text-transform: capitalize;
+}
+.date {
+  text-transform: lowercase;
+}
+.duration_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: rgb(240, 240, 240);
+  color: #888;
+}
+.steps_container {
+  display: flex;
+  align-items: center;
+  margin: 40px 0;
+  justify-content: center;
+}
+.step {
+  border-radius: 60px;
+  border: 2px solid #ccc;
+  border-right: none;
+  padding: 8px 30px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  border-radius: 60px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  position: relative;
+  margin-right: -10px;
+  color: #ccc;
+  &.exceeded {
+    background: #27941d;
+    color: white;
+    border-color: white;
+  }
+  &.active_step {
+    background: orange;
+    color: white;
+    border-color: white;
+  }
+  &:last-of-type {
+    border-right: 2px solid inherit;
+    border-top-right-radius: 60px;
+    border-bottom-right-radius: 60px;
   }
 }
 </style>

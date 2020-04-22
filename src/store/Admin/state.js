@@ -12,6 +12,6 @@ export default {
   team: [],
 
   events: [],
-  requestsInformation: [],
+  requests: [],
   eventTemplates: []
 };

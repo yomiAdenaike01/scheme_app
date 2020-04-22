@@ -21,6 +21,12 @@ import { mapGetters, mapState, mapMutations } from "vuex";
 
 export default {
   name: "Toolbar",
+  props: {
+    currentView: {
+      type: String,
+      default: ""
+    }
+  },
   computed: {
     ...mapGetters(["getIsAdmin"]),
     ...mapState(["userInformation"]),
@@ -48,6 +54,18 @@ export default {
               view: true
             });
           }
+        },
+        {
+          label: "View requests",
+          round: true,
+          plain: true,
+          type: "text",
+          method: () => {
+            console.log(this.currentView);
+            if (this.currentView == "requests") {
+              this.$emit("changeView", "requests");
+            }
+          }
         }
       ];
 
@@ -63,7 +81,6 @@ export default {
 <style lang="scss" scoped>
 .toolbar_container {
   display: flex;
-  height: 30px;
   padding: 10px;
 }
 </style>

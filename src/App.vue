@@ -126,6 +126,7 @@ Fonts
 * {
   font-family: "Sen", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
 
   :before,
   :after {

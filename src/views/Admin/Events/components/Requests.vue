@@ -1,0 +1,87 @@
+<template>
+  <div class="requests_container">
+    <div v-if="requests.length > 0" class="requests_wrapper">
+      <Request
+        v-for="request in requests"
+        :key="request._id"
+        :request="request"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapState, mapMutations } from "vuex";
+import { SlideXLeftTransition } from "vue2-transitions";
+import InformationDisplay from "@/components/InformationDisplay";
+import Request from "./Request";
+export default {
+  name: "Requests",
+  components: {
+    SlideXLeftTransition,
+    Request,
+    InformationDisplay
+  },
+
+  data() {
+    return {
+      requestSearch: ""
+    };
+  },
+
+  computed: {
+    ...mapState(["userInformation", "clientInformation"]),
+    ...mapState("Admin", ["requests", "team"]),
+    randStatus() {
+      let statuses = ["Sent", "Seen", "Approved", "Rejected"];
+      return statuses[Math.random() * statuses.length];
+    },
+    filteredRequests() {
+      return this.requests.filter(request => {
+        return request.status == this.requestFilter;
+      });
+    },
+    teamMembers() {
+      return this.team;
+    }
+  },
+
+  methods: {
+    ...mapMutations("Admin", ["UPDATE_REQUESTS"])
+  },
+  watch: {
+    team(val) {
+      if (val) {
+        let date = new Date().toISOString();
+        for (let i = 0, len = 5; i < len; i++) {
+          this.UPDATE_REQUESTS({
+            _id: Math.random()
+              .toString(16)
+              .slice(2),
+            assignedTo: [{ ...this.userInformation }],
+            startDate: date,
+            endDate: this.initMoment().add(2, "days"),
+            status: "Approved",
+            requestedBy: this.teamMembers[2],
+            type: this.clientInformation.eventGroups[0],
+            notes:
+              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley"
+          });
+        }
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.requests_container {
+  display: flex;
+  justify-content: center;
+}
+.requests_wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+</style>
