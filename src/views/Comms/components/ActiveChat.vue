@@ -13,15 +13,13 @@
       </div>
 
       <div ref="chatMessages" class="chat_messages_container">
-        <slide-x-left-transition group>
-          <ChatMessage
-            v-for="message in chatMessages"
-            :key="message._id"
-            v-bind="message"
-            @editMessage="editMessage"
-            @deleteMessage="deleteMessage"
-          />
-        </slide-x-left-transition>
+        <ChatMessage
+          v-for="(message, index) in chatMessages"
+          :key="`${message._id}${index}`"
+          v-bind="message"
+          @editMessage="editMessage"
+          @deleteMessage="deleteMessage"
+        />
       </div>
 
       <div class="current_chat_interaction">
@@ -45,15 +43,13 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import scrollToBottom from "@/mixins/scrollToBottom";
-import { SlideXLeftTransition } from "vue2-transitions";
 import ChatMessage from "./ChatMessage";
 export default {
   name: "ActiveChat",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     ChatActions: () => import("./ChatActions"),
-    ChatMessage,
-    SlideXLeftTransition
+    ChatMessage
   },
   mixins: [scrollToBottom],
   props: {
@@ -183,7 +179,7 @@ export default {
       }
 
       if (!this.isNewChat) {
-        this.chat.reciever = this.activeChat.userTwo;
+        this.chat.reciever = this.activeChat.userTwo._id;
         userName = this.getUserInformation(this.chat.reciever)?.name;
       }
       let sendMessage = {

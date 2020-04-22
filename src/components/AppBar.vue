@@ -13,9 +13,7 @@
       </Dropdown>
       <el-badge :value="userNotifications.length" class="item primary">
         <el-popover popper-class="no_padding" width="350" trigger="click">
-          <div class="notifications_center">
-            <NotificationModule />
-          </div>
+          <NotificationModule />
           <el-button
             slot="reference"
             size="small"

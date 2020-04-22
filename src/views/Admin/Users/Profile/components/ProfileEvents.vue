@@ -1,8 +1,12 @@
 <template>
   <div>
-    <div v-if="hasEntries(data)">
+    <div v-if="events.length > 0">
       <h5 class="mb-2">All Events</h5>
-      {{ data }}
+      <FunctionalEvent
+        v-for="event in events"
+        :key="event._id"
+        :event="event"
+      />
     </div>
     <InformationDisplay v-else :display-text="infoDisplayText">
       <i slot="header" class="bx bxs-no-entry"></i>
@@ -21,7 +25,7 @@ export default {
     InformationDisplay: () => import("@/components/InformationDisplay")
   },
   props: {
-    data: {
+    events: {
       type: Object | Array,
       default: () => {}
     }

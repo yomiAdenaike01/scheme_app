@@ -20,16 +20,24 @@
           >
             <div
               v-for="(group, index) in count"
-              :key="index"
+              :key="`${group.groupID}${index}`"
               class="user_group_col"
             >
-              <div class="user_group_container">
+              <div
+                :key="
+                  `${group.groupID}${Math.random()
+                    .toString(16)
+                    .slice(2)}`
+                "
+                class="user_group_container"
+              >
                 <div class="icon_text_container">
                   <div class="flex_center">
                     <i class="bx bx-user user_group_icon"></i>
                     <span class="capitalize">{{ group.label }}</span>
                   </div>
                 </div>
+
                 <User
                   v-for="member in group.teamMembers"
                   :key="member._id"

@@ -29,14 +29,6 @@ export default {
     });
   },
 
-  getUsersEvents: ({ events }) => id => {
-    return events.all.filter(event => {
-      return event.assignedTo.some(a => {
-        return a == id;
-      });
-    });
-  },
-
   getValidEventTypes(
     state,
     getters,

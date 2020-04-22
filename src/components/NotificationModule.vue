@@ -59,7 +59,7 @@ export default {
     ...mapActions("Admin", ["getNotifications"]),
     ...mapMutations([
       "UPDATE_ALL_NOTIFICATIONS",
-      "UDPATE_NOTIFICATION",
+      "UPDATE_NOTIFICATION",
       "DELETE_NOTIFICATION"
     ]),
     notificationController(notification, notificationIndex) {
@@ -105,12 +105,11 @@ export default {
   padding: 0;
 }
 .notifications_container {
-  min-height: 200px;
-  max-height: 500px;
   position: relative;
+  height: 400px;
 }
 .notification_wrapper {
-  max-height: calc(100% - 110px);
+  max-height: calc(100% - 75px);
   overflow-x: hidden;
 }
 .mark_all_wrapper {

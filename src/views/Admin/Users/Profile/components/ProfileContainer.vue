@@ -22,7 +22,6 @@
     <el-tabs
       v-model="selectedTab"
       tab-position="top"
-      type="card"
       stretch
       class="tab_container"
     >

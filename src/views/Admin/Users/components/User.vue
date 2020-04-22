@@ -68,7 +68,7 @@ export default {
   flex: 1;
   align-items: center;
   min-height: 50px;
-  max-height: 50px;
+  max-height: fit-content;
   border: 1px solid #ebeef5;
   padding: 20px;
   margin: 10px;

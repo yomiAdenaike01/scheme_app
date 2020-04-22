@@ -82,17 +82,7 @@ export default {
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    let action = payload.action ? payload.action : (payload.action = "assign");
-    if (action == "assign") {
-      state.clientInformation = payload;
-      localStorage.setItem("clientInformation", JSON.stringify(payload));
-    } else {
-      state.clientInformation[payload.key] = payload.value;
-      localStorage.setItem(
-        "clientInformation",
-        JSON.stringify(state.clientInformation)
-      );
-    }
+    state.clientInformation = payload;
   },
   UPDATE_ALL_NOTIFICATIONS(state, payload) {
     updateBreadCrumbs(state, payload);
@@ -148,13 +138,10 @@ export default {
     if (VueRouter.currentRoute.name != "signIn") {
       VueRouter.push({ name: "signIn" });
     }
-    localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {
     state.token = token;
     state.userInformation = user;
-    localStorage.setItem("token", token);
-    localStorage.setItem("userInformation", JSON.stringify(user));
   },
 
   UPDATE_NOTIFICATIONS(state, notification) {

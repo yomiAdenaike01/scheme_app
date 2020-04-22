@@ -28,7 +28,7 @@ export default {
 
 <style lang="scss" scoped>
 .notification {
-  padding: 10px;
+  padding: 15px;
   cursor: pointer;
   border-bottom: 1px solid whitesmoke;
   max-height: fit-content;
