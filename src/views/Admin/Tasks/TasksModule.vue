@@ -13,6 +13,7 @@
         @createTask="toggleCreateTask"
         @viewTask="viewTask"
       />
+
       <TaskBoard
         v-for="(board, index) in calcBoardsLeft"
         :key="index"
@@ -31,10 +32,11 @@
 
 <script>
 import { mapState } from "vuex";
+import TaskBoard from "./components/TaskBoard";
 export default {
   name: "TasksModule",
   components: {
-    TaskBoard: () => import("./components/TaskBoard"),
+    TaskBoard,
     CreateTask: () => import("./components/CreateTask"),
     TaskDrawer: () => import("./components/TaskDrawer")
   },

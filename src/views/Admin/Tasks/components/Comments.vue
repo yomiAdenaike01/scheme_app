@@ -10,36 +10,38 @@
         ref="comments_wrapper"
         class="comments_wrapper"
       >
-        <div
-          v-for="(comment, index) in comments"
-          :key="comment._id"
-          class="comment"
-        >
-          <div class="comment_header">
-            <Avatar :name="comment.assignedTo.name" />
-            <small class="username">{{ comment.assignedTo.name }}</small>
-            <small class="timestamp">{{
-              initMoment(comment.dateCreated).calendar()
-            }}</small>
-          </div>
+        <slide-x-left-transition group>
+          <div
+            v-for="(comment, index) in comments"
+            :key="`${comment._id}${index}`"
+            class="comment"
+          >
+            <div class="comment_header">
+              <Avatar :name="comment.assignedTo.name" />
+              <small class="username">{{ comment.assignedTo.name }}</small>
+              <small class="timestamp">{{
+                initMoment(comment.dateCreated).calendar()
+              }}</small>
+            </div>
 
-          <div class="comment_message" @click="editMessage = true">
-            <p>{{ comment.message }}</p>
+            <div class="comment_message" @click="editMessage = true">
+              <p>{{ comment.message }}</p>
+            </div>
+            <el-button
+              v-show="canInteract"
+              class="delete_comment"
+              icon="el-icon-close"
+              type="danger"
+              circle
+              @click="
+                $emit('deleteComment', {
+                  commentIndex: index,
+                  _id: comment._id
+                })
+              "
+            ></el-button>
           </div>
-          <el-button
-            v-show="canInteract"
-            class="delete_comment"
-            icon="el-icon-close"
-            type="danger"
-            circle
-            @click="
-              $emit('deleteComment', {
-                commentIndex: index,
-                _id: comment._id
-              })
-            "
-          ></el-button>
-        </div>
+        </slide-x-left-transition>
       </div>
 
       <div v-else class="no_comments_wrapper">
@@ -75,12 +77,14 @@
 
 <script>
 import { mapGetters, mapState } from "vuex";
+import { SlideXLeftTransition } from "vue2-transitions";
 export default {
   name: "Comments",
   components: {
     ActionIcon: () => import("@/components/ActionIcon"),
     Avatar: () => import("@/components/Avatar"),
-    InformationDisplay: () => import("@/components/InformationDisplay")
+    InformationDisplay: () => import("@/components/InformationDisplay"),
+    SlideXLeftTransition
   },
   props: {
     mode: {

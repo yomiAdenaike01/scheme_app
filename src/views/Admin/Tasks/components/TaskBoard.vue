@@ -52,14 +52,17 @@
           <el-button circle icon="el-icon-plus" @click="createTask" />
         </InformationDisplay>
       </div>
-      <TaskItem
-        v-for="(task, index) in boardData.tasks"
-        :key="`${task._id}${index}`"
-        :task-information="task"
-        :task-index="index"
-        :board-index="boardIndex"
-        @viewTask="$emit('viewTask', $event)"
-      />
+      <slide-x-left-transition group>
+        <TaskItem
+          v-for="(task, index) in boardData.tasks"
+          :key="`${task._id}${index}`"
+          :task-information="task"
+          :task-index="index"
+          :board-index="boardIndex"
+          @viewTask="$emit('viewTask', $event)"
+        />
+      </slide-x-left-transition>
+
       <div
         class="create_new_task_wrapper grey"
         @click="$emit('createTask', { boardData, boardIndex, display: true })"
@@ -97,13 +100,17 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { SlideXLeftTransition } from "vue2-transitions";
+import TaskItem from "./TaskItem";
 export default {
   name: "TaskBoard",
   components: {
     Form: () => import("@/components/Form"),
     InformationDisplay: () => import("@/components/InformationDisplay"),
-    TaskItem: () => import("./TaskItem")
+    TaskItem,
+    SlideXLeftTransition
   },
+
   props: {
     newBoard: {
       type: Boolean,
