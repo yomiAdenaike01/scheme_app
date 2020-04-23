@@ -3,9 +3,9 @@
     <div class="request_header">
       <p>{{ request.type.label }} request</p>
       <div class="requestee_container">
-        <Avatar :size="size" :name="request.requestedBy.name" />
+        <Avatar :size="size" :name="requestedName" />
         <p class="grey">
-          <span class="request_user_name">{{ request.requestedBy.name }}</span>
+          <span class="request_user_name">{{ requestedName }}</span>
           requested
           <span class="date">{{
             initMoment(request.dateCreated).calendar()
@@ -22,34 +22,53 @@
       </p>
     </div>
     <p>Notes</p>
-    <p class="grey">{{ request.notes }}</p>
+    <p class="grey request_notes">
+      {{ request.notes ? request.notes : "No notes found" }}
+    </p>
     <!-- Apporval -->
     <p>Approval</p>
-    <div class="steps_container">
+    <div class="statuses_container">
       <div
-        v-for="(step, index) in stepXref"
+        v-for="(status, index) in statusXref"
         :key="index"
-        class="step"
+        class="status"
         :class="[
-          step.toLowerCase(),
+          status,
           {
-            exceeded: stepXref.indexOf(request.status.capitalize()) > index,
-            active_step: stepXref.indexOf(request.status.capitalize()) == index
+            exceeded: statusXref.indexOf(request.status) > index,
+            active_status: statusXref.indexOf(request.status) == index
           }
         ]"
       >
-        <span>{{ step }}</span>
+        <span>{{ status }}</span>
       </div>
     </div>
     <div class="approval_wrapper">
-      <el-button plain type="success">Approve</el-button>
-      <el-button plain type="danger">Reject</el-button>
+      <Avatar :name="userInformation.name" />
+      <el-button
+        plain
+        type="success"
+        @click="updateRequest({ status: 'approved' })"
+        >Approve</el-button
+      >
+      <el-button
+        plain
+        type="danger"
+        @click="updateRequest({ status: 'rejected' })"
+        >Reject</el-button
+      >
+      <el-button
+        icon="el-icon-close"
+        type="text"
+        circle
+        @click="deleteRequest"
+      ></el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import moment from "moment";
 export default {
   name: "Request",
@@ -57,6 +76,10 @@ export default {
     Avatar: () => import("@/components/Avatar")
   },
   props: {
+    requestIndex: {
+      type: Number,
+      default: 0
+    },
     request: {
       type: Object,
       default: () => {}
@@ -69,8 +92,11 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    stepXref() {
-      return ["Sent", "Seen", "Approved", "Rejected"];
+    statusXref() {
+      return ["sent", "seen", "approved", "rejected"];
+    },
+    requestedName() {
+      return this.request?.requestedBy?.name ?? "Username";
     },
     duration() {
       let endDate = moment(this.request.endDate);
@@ -78,6 +104,15 @@ export default {
       return Math.round(
         duration.asHours() > 24 ? duration.asDays() : duration.asHours()
       );
+    }
+  },
+  methods: {
+    ...mapMutations("Admin", ["UPDATE_REQUEST", "DELETE_REQUEST"]),
+    updateRequest(payload) {
+      this.UPDATE_REQUEST({ request: payload, index: this.requestIndex });
+    },
+    deleteRequest() {
+      this.DELETE_REQUEST(this.requestIndex);
     }
   }
 };
@@ -89,9 +124,10 @@ export default {
   flex-direction: column;
   flex: 1;
   border-radius: 10px;
-  border: 2px solid rgb(235, 235, 235);
-  margin: 40px;
-  padding: 20px;
+  border: 1px solid rgb(235, 235, 235);
+  margin: 20px;
+  max-width: 25%;
+  min-width: 25%;
 }
 .approval_wrapper {
   display: flex;
@@ -109,6 +145,9 @@ export default {
   display: flex;
   align-items: center;
   padding: 10px;
+  .avatar_container {
+    margin-right: 5px;
+  }
 }
 .request_user_name {
   text-transform: capitalize;
@@ -131,13 +170,13 @@ export default {
     font-weight: 300;
   }
 }
-.steps_container {
+.statuses_container {
   display: flex;
   align-items: center;
   margin: 0 0 40px 0;
   justify-content: center;
 }
-.step {
+.status {
   border-radius: 60px;
   border: 1px solid #fff;
   background: #f4f4f5;
@@ -156,7 +195,7 @@ export default {
     border-color: #fff;
     color: #67c23a;
   }
-  &.active_step {
+  &.active_status {
     background: darken(#fdf6ec, 3);
     color: #e6a23c;
     border-color: white;
@@ -166,5 +205,8 @@ export default {
     border-top-right-radius: 60px;
     border-bottom-right-radius: 60px;
   }
+}
+.request_notes {
+  line-height: 1.7em;
 }
 </style>

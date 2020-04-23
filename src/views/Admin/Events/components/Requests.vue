@@ -2,9 +2,10 @@
   <div class="requests_container">
     <div v-if="requests.length > 0" class="requests_wrapper">
       <Request
-        v-for="request in requests"
+        v-for="(request, index) in requests"
         :key="request._id"
         :request="request"
+        :request-index="index"
       />
     </div>
   </div>
@@ -33,8 +34,8 @@ export default {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState("Admin", ["requests", "team"]),
     randStatus() {
-      let statuses = ["Sent", "Seen", "Approved", "Rejected"];
-      return statuses[Math.random() * statuses.length];
+      let statuses = ["sent", "seen", "approved", "rejected"];
+      return statuses[Math.floor(Math.random() * statuses.length)];
     },
     filteredRequests() {
       return this.requests.filter(request => {
@@ -51,7 +52,7 @@ export default {
   },
   watch: {
     team(val) {
-      if (val) {
+      if (val.length > 0) {
         let date = new Date().toISOString();
         for (let i = 0, len = 5; i < len; i++) {
           this.UPDATE_REQUESTS({
@@ -61,8 +62,8 @@ export default {
             assignedTo: [{ ...this.userInformation }],
             startDate: date,
             endDate: this.initMoment().add(2, "days"),
-            status: "Approved",
-            requestedBy: this.teamMembers[2],
+            status: this.randStatus,
+            requestedBy: val[1],
             type: this.clientInformation.eventGroups[0],
             notes:
               "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley"
@@ -78,10 +79,11 @@ export default {
 .requests_container {
   display: flex;
   justify-content: center;
+  max-height: calc(100% - 40px);
+  overflow-x: hidden;
 }
 .requests_wrapper {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
 }
 </style>

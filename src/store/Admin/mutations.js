@@ -17,14 +17,14 @@ export default {
     Vue.delete(state.requests, index);
   },
   UPDATE_REQUEST(state, { request, index }) {
+    console.log(state.requests);
     updateBreadCrumbs(state, "requestRef", {
       index,
       request
     });
-    state.requests.splice(index, 0, {
-      ...state.requests[index],
-      ...request
-    });
+    let updatedRequest = { ...request, ...state.requests[index] };
+    state.requests.splice(index, 1, updatedRequest);
+    console.log(state.requests);
   },
   UPDATE_REQUESTS(state, payload) {
     if (!Array.isArray(payload)) {
