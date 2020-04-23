@@ -16,7 +16,7 @@
           @method="handleEvents"
         >
           <Avatar :name="member.name" :size="40">
-            <OnlineIndicator :is-online="member.isOnline" />
+            <OnlineIndicator :is-online="member.is_online" />
           </Avatar>
         </Dropdown>
       </div>

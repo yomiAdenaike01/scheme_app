@@ -51,9 +51,9 @@ export default {
     }
   },
 
-  getIsAdmin({ userInformation: { userGroup } }) {
-    if (userGroup) {
-      return userGroup.label.toLowerCase() == "system administrator";
+  getIsAdmin({ userInformation: { user_group } }) {
+    if (user_group) {
+      return user_group.is_admin == true;
     } else {
       return false;
     }

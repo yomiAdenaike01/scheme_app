@@ -69,7 +69,7 @@ export default {
               this.loading = false;
               resolve();
             })
-            .catch(() => {
+            .catch(err => {
               this.loading = false;
               this.REMOVE_USER();
               if (this.dialogShowing == false) {
@@ -84,7 +84,7 @@ export default {
                 });
                 this.dialogShowing = true;
               }
-              reject();
+              reject(err);
             });
         });
       },

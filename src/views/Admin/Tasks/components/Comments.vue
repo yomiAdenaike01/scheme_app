@@ -17,10 +17,10 @@
             class="comment"
           >
             <div class="comment_header">
-              <Avatar :name="comment.assignedTo.name" />
-              <small class="username">{{ comment.assignedTo.name }}</small>
+              <Avatar :name="comment.assigned_to.name" />
+              <small class="username">{{ comment.assigned_to.name }}</small>
               <small class="timestamp">{{
-                initMoment(comment.dateCreated).calendar()
+                initMoment(comment.date_created).calendar()
               }}</small>
             </div>
 

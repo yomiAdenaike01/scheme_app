@@ -79,7 +79,7 @@ export default {
         {
           "component-type": "select",
           options: this.teamMembers,
-          model: "assignedTo",
+          model: "assigned_to",
           multiple: true
         }
       ];

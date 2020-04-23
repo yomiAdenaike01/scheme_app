@@ -2,19 +2,19 @@ export default {
   createStubChat(context) {
     let isoDate = new Date().toISOString();
     context.commit("UPDATE_CHATS", {
-      mutedNotifications: [],
-      userOne: {
+      muted_notifications: [],
+      user_one: {
         name: context.rootState.userInformation.name,
         _id: context.rootState.userInformation._id
       },
-      userTwo: {
+      user_two: {
         name: "New message",
         _id: Math.random()
           .toString(16)
           .slice(2)
       },
-      dateCreated: isoDate,
-      dateUpdated: isoDate,
+      date_created: isoDate,
+      date_updated: isoDate,
       initChat: true,
       _id: Math.random()
         .toString(16)

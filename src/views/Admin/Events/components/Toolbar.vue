@@ -11,7 +11,7 @@
       :disabled="button.disabled"
       @click="button.method"
     >
-      {{ button.label }}
+      <span v-html="button.label"></span>
     </el-button>
   </div>
 </template>
@@ -56,14 +56,18 @@ export default {
           }
         },
         {
-          label: "View requests",
+          label:
+            this.currentView == ""
+              ? 'View requests <i class="el-icon-arrow-right"></i> '
+              : '<i class="el-icon-arrow-left"></i> View events',
           round: true,
           plain: true,
           type: "text",
           method: () => {
-            console.log(this.currentView);
             if (this.currentView == "requests") {
               this.$emit("changeView", "requests");
+            } else {
+              this.$emit("changeView", "events");
             }
           }
         }

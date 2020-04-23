@@ -1,6 +1,6 @@
 <template functional>
   <div class="floating_item">
-    <div class="online_container" :class="{ online: props.isOnline }"></div>
+    <div class="online_container" :class="{ online: props.is_online }"></div>
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 export default {
   name: "OnlineIndicator",
   props: {
-    isOnline: {
+    is_online: {
       type: Boolean,
       default: false
     }

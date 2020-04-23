@@ -45,11 +45,13 @@ export default {
       groupIndex,
       payload
     });
-    Vue.set(
-      state.clientInformation[groupType][groupIndex],
-      "label",
-      payload.label
-    );
+    for (let property in payload) {
+      Vue.set(
+        state.clientInformation[groupType][groupIndex],
+        property,
+        payload[property]
+      );
+    }
   },
 
   CREATE_GLOBAL_INTERVAL(state, { duration = 3000, method, id, immediate }) {

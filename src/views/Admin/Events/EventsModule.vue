@@ -2,12 +2,12 @@
   <div class="events_container">
     <div class="events_inner_container">
       <Toolbar :current-view="view" @changeView="view = $event" />
-      <div v-if="view != 'requests'">
+      <div v-if="view == 'events'">
         <EventsCalendar />
         <EventModuleDialog />
         <ViewEventDialog />
       </div>
-      <Requests v-if="view == 'requests'" />
+      <Requests v-else />
     </div>
     <UserSidebar />
   </div>
@@ -34,7 +34,7 @@ export default {
   extends: eventsTour,
   data() {
     return {
-      view: "requests"
+      view: "events"
     };
   }
 };

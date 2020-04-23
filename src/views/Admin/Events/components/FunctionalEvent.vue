@@ -2,9 +2,9 @@
   <div class="event_container">
     {{ props.event }}
     <p>{{ props.event.timeState }}</p>
-    <p>{{ props.event.startDate }}</p>
-    <p>{{ props.event.endDate }}</p>
-    <p>{{ props.event.dateCreated }}</p>
+    <p>{{ props.event.start_date }}</p>
+    <p>{{ props.event.end_date }}</p>
+    <p>{{ props.event.date_created }}</p>
   </div>
 </template>
 

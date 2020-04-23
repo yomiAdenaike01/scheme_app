@@ -34,26 +34,26 @@ export default {
         let dateFormat = "YYYY-MM-DD hh:mm";
         return [...this.events].map(event => {
           if (Object.values(event).length > 0) {
-            let firstAssignee = event?.assignedTo?.[0];
+            let firstAssignee = event?.assigned_to?.[0];
             let content = `${firstAssignee?.name}'s ${event?.type?.label} event`;
-            if (event?.assignedTo?.length - 1 > 0) {
+            if (event?.assigned_to?.length - 1 > 0) {
               content = `${content} +${parseInt(
-                event?.assignedTo?.length - 1
+                event?.assigned_to?.length - 1
               )} others`;
             }
 
             return {
               title: `${event?.type?.label} event`,
               content,
-              start: this.formatDate(event?.startDate, dateFormat),
-              end: this.formatDate(event?.endDate, dateFormat),
+              start: this.formatDate(event?.start_date, dateFormat),
+              end: this.formatDate(event?.end_date, dateFormat),
               class: `${event?.type?.label}`,
-              isApproved: event?.isApproved,
-              assignedTo: event?.assignedTo,
+              is_approved: event?.is_approved,
+              assigned_to: event?.assigned_to,
               type: event?.type,
               _id: event?._id,
-              noticePeriod: event?.noticePeriod,
-              createdBy: event?.createdBy
+              notice_period: event?.notice_period,
+              created_by: event?.created_by
             };
           } else {
             return;

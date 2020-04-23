@@ -127,7 +127,7 @@ export default {
     },
 
     checkDevice() {
-      if (this.userInformation?.devicesInformation?.length === 0) {
+      if (this.userInformation?.devices_information?.length === 0) {
         this.triggerDeviceNotification();
       } else {
         // Find in array

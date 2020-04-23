@@ -33,7 +33,7 @@ export default {
   props: {
     groupType: {
       type: String,
-      default: "eventGroups"
+      default: "event_groups"
     }
   },
   data() {
@@ -46,14 +46,13 @@ export default {
   computed: {
     ...mapState(["clientInformation", "rootGroupRef"]),
     ...mapState("Admin", ["team", "groupRef"]),
-    ...mapGetters(["genRandomID"]),
     ...mapGetters("Admin", ["getUserGroups"]),
     langXref() {
       let lang = {
-        eventGroups: {
+        event_groups: {
           label: "event"
         },
-        userGroups: {
+        user_groups: {
           label: "user"
         }
       };
@@ -77,10 +76,10 @@ export default {
         i++
       ) {
         let group = this.clientInformation?.[this.groupType][i];
-        if (this.groupType == "userGroups" && group?.groupID == 0) {
+        if (this.groupType == "user_groups" && group?.groupID == 0) {
           continue;
         } else {
-          arr.push({ label: group.label, value: group.groupID });
+          arr.push({ label: group.label, value: group._id });
         }
       }
       return arr;
@@ -99,7 +98,7 @@ export default {
     enabledFor() {
       return this.clientInformation[this.groupType].find(group => {
         return this.groupData.groupID == group.groupID;
-      })?.enabledFor;
+      })?.enabled_for;
     },
     usersInGroup() {
       let users = [];
@@ -147,64 +146,22 @@ export default {
     groupLen() {
       return this.clientInformation[this.groupType].length;
     },
-    groupConfig() {
-      let url = "clients/group",
-        data = { ...this.groupData, groupType: this.groupType },
-        mutationData = {
-          ...this.defaultMutationPayload,
-          payload: this.mutationPayloads[true]
-        };
-      let payloadXref = {
-        Create: {
-          request: {
-            method: "POST",
-            data: this.groupLen
-          },
-          mutation: () => {
-            let payload = {
-              label: this.groupData.label
-            };
-            if (this.groupType == "userGroups") {
-              payload.groupID = this.groupLen;
-            } else {
-              payload.enabledFor = this.getUserGroups;
-            }
-
-            this.CREATE_GROUP({
-              groupType: this.groupType,
-              payload: { label: this.groupData.label, _id: this.genRandomID }
-            });
-          },
-          form: (function(vm) {
-            let createForm = [];
-            let newGroupName = {
-              "component-type": "text",
-              placeholder: `${vm.langXref.capitalize()} group name`,
-              required: true,
-              model: "label"
-            };
-            if (vm.groupType == "userGroups") {
-              createForm.push(newGroupName);
-            } else {
-              createForm.push(newGroupName, {
-                "component-type": "select",
-                placeholder: `Enable group for user groups`,
-                required: true,
-                options: vm.getUserGroups,
-                model: "enabledFor",
-                multiple: true
-              });
-            }
-
-            return createForm;
-          })(this)
-        },
+    isAdminFormItem() {
+      return {
+        "component-type": "switch",
+        model: "is_admin",
+        placeholder: "Has admin privilages",
+        noLabel: true
+      };
+    },
+    editGroup() {
+      return {
         Edit: {
           request: {
             method: "PUT"
           },
           mutation: () => {
-            this.UPDATE_GROUP(mutationData);
+            this.UPDATE_GROUP(this.mutationData);
           },
           catch: () => {
             this.UPDATE_GROUP(this.rootGroupRef);
@@ -220,18 +177,18 @@ export default {
               }
             ];
             if (vm.groupData?.groupID) {
-              form.push({
+              form.push(vm.isAdminFormItem, {
                 "component-type": "text",
                 placeholder: "Name",
                 model: "label"
               });
-              if (vm.groupType == "eventGroups") {
+              if (vm.groupType == "event_groups") {
                 form.push({
                   "component-type": "select",
                   placeholder: "Enable group for",
                   options: vm.modGroups,
                   multiple: true,
-                  model: "enabledFor",
+                  model: "enabled_for",
                   hint: `Already enabled for the following ${vm.langXref.pluralize()} <strong>${
                     vm.usersText
                   }</strong>`
@@ -240,14 +197,72 @@ export default {
             }
             return form;
           })(this)
-        },
+        }
+      };
+    },
+
+    createGroup() {
+      return {
+        Create: {
+          request: {
+            method: "POST",
+            data: this.groupLen
+          },
+          mutation: () => {
+            let payload = {
+              label: this.groupData.label
+            };
+            if (this.groupType == "user_groups") {
+              payload.groupID = this.groupLen;
+            } else {
+              payload.enabled_for = this.getUserGroups;
+            }
+
+            this.CREATE_GROUP({
+              groupType: this.groupType,
+              payload: {
+                ...this.groupData,
+                _id: Math.random()
+                  .toString(16)
+                  .slice(2)
+              }
+            });
+          },
+          form: (function(vm) {
+            let createForm = [];
+            let newGroupName = {
+              "component-type": "text",
+              placeholder: `${vm.langXref.capitalize()} group name`,
+              required: true,
+              model: "label"
+            };
+            if (vm.groupType == "user_groups") {
+              createForm.push(newGroupName, vm.isAdminFormItem);
+            } else {
+              createForm.push(newGroupName, {
+                "component-type": "select",
+                placeholder: `Enable group for user groups`,
+                required: true,
+                options: vm.getUserGroups,
+                model: "enabled_for",
+                multiple: true
+              });
+            }
+
+            return createForm;
+          })(this)
+        }
+      };
+    },
+    deleteGroup() {
+      return {
         Delete: {
           request: {
             method: "DELETE"
           },
           catch: () => {
             this.CREATE_GROUP(this.rootGroupRef);
-            if (this.groupType == "userGroups") {
+            if (this.groupType == "user_groups") {
               this.REASSIGN_ELEMENTS(this.rootGroupRef);
             } else {
               this.REASSIGN_ELEMENTS({
@@ -268,7 +283,7 @@ export default {
               payload.group = this.clientInformation[payload.groupType][
                 payload.groupIndex
               ];
-              if (this.groupType == "userGroups") {
+              if (this.groupType == "user_groups") {
                 this.REASSIGN_ELEMENTS(payload);
               } else {
                 this.REASSIGN_ELEMENTS({
@@ -289,6 +304,22 @@ export default {
             }
           ]
         }
+      };
+    },
+    mutationData() {
+      return {
+        ...this.defaultMutationPayload,
+        payload: this.mutationPayloads[true]
+      };
+    },
+    groupConfig() {
+      let url = "clients/group",
+        data = { ...this.groupData, groupType: this.groupType };
+
+      let payloadXref = {
+        ...this.createGroup,
+        ...this.editGroup,
+        ...this.deleteGroup
       };
 
       payloadXref[this.selectedConfig].request = {
@@ -339,7 +370,14 @@ export default {
       this.groupData = e;
       this.groupConfig?.mutation();
       this.request(this.payload)
-        .then(() => {
+        .then(response => {
+          if (this.selectedConfig.toLowerCase() == "create") {
+            this.UPDATE_GROUP({
+              groupIndex: this.clientInformation[this.groupType].length - 1,
+              groupType: this.groupType,
+              payload: response
+            });
+          }
           this.loading = false;
         })
         .catch(() => {

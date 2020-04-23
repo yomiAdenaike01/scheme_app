@@ -148,7 +148,7 @@ export default {
           method: "POST",
           url: "users/password",
           data: {
-            clientID: this.clientInformation._id,
+            client_id: this.clientInformation._id,
             email: this.credentials.fp_email,
             password: this.credentials.fp_password
           }
@@ -165,7 +165,7 @@ export default {
       this.request({
         method: "POST",
         data: {
-          clientID: this.clientInformation._id,
+          client_id: this.clientInformation._id,
           ...this.credentials,
           deviceInformation: this.getDeviceInformation
         },
@@ -174,7 +174,7 @@ export default {
         .then(response => {
           this.UPDATE_USER(response);
 
-          if (response.user.adminGen == true) {
+          if (response.user.admin_gen == true) {
             this.UPDATE_NOTIFICATIONS({
               type: "warning",
               title: "Insecure password detected",

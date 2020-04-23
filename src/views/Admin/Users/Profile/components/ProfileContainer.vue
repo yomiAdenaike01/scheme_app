@@ -15,7 +15,13 @@
         </Avatar>
         <div class="profile_info_text">
           <h3 class="capitalize">{{ returnUsername }}</h3>
-          <p class="grey">{{ userData.userGroup.label }}</p>
+          <p class="grey">
+            {{
+              userData.user_group.label
+                ? userData.user_group.label
+                : "No group found"
+            }}
+          </p>
         </div>
       </div>
     </div>
@@ -61,10 +67,10 @@ export default {
   computed: {
     ...mapGetters(["getDefaultColour", "getActiveDialog"]),
     userData() {
-      return this.getActiveDialog("profile")?.data;
+      return this.getActiveDialog("profile")?.data ?? {};
     },
     online() {
-      return this.userData?.isOnline ?? false;
+      return this.userData?.is_online ?? false;
     },
     returnUsername() {
       return this.userData?.name ?? "Username";

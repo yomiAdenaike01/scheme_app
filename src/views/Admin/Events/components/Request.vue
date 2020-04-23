@@ -8,7 +8,7 @@
           <span class="request_user_name">{{ requestedName }}</span>
           requested
           <span class="date">{{
-            initMoment(request.dateCreated).calendar()
+            initMoment(request.date_created).calendar()
           }}</span>
         </p>
       </div>
@@ -17,8 +17,8 @@
     <div class="duration_container">
       <span>{{ duration }} days</span>
       <p>
-        {{ formatDate(request.startDate, "MMMM DD") }} -
-        {{ formatDate(request.endDate, "MMMM DD") }}
+        {{ formatDate(request.start_date, "MMMM DD") }} -
+        {{ formatDate(request.end_date, "MMMM DD") }}
       </p>
     </div>
     <p>Notes</p>
@@ -58,6 +58,7 @@
         >Reject</el-button
       >
       <el-button
+        v-if="getIsAdmin || request.requested_by._id == userInformation._id"
         icon="el-icon-close"
         type="text"
         circle
@@ -68,7 +69,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 import moment from "moment";
 export default {
   name: "Request",
@@ -92,15 +93,16 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
+    ...mapGetters(["getIsAdmin"]),
     statusXref() {
       return ["sent", "seen", "approved", "rejected"];
     },
     requestedName() {
-      return this.request?.requestedBy?.name ?? "Username";
+      return this.request?.requested_by?.name ?? "Username";
     },
     duration() {
-      let endDate = moment(this.request.endDate);
-      let duration = moment.duration(endDate.diff(this.request.startDate));
+      let end_date = moment(this.request.end_date);
+      let duration = moment.duration(end_date.diff(this.request.start_date));
       return Math.round(
         duration.asHours() > 24 ? duration.asDays() : duration.asHours()
       );

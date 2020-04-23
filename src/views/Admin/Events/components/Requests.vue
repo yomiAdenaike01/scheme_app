@@ -59,12 +59,12 @@ export default {
             _id: Math.random()
               .toString(16)
               .slice(2),
-            assignedTo: [{ ...this.userInformation }],
-            startDate: date,
-            endDate: this.initMoment().add(2, "days"),
+            assigned_to: [{ ...this.userInformation }],
+            start_date: date,
+            end_date: this.initMoment().add(2, "days"),
             status: this.randStatus,
-            requestedBy: val[1],
-            type: this.clientInformation.eventGroups[0],
+            requested_by: val[1],
+            type: this.clientInformation.event_groups[0],
             notes:
               "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley"
           });

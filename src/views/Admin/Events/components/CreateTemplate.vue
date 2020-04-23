@@ -38,7 +38,7 @@ export default {
   },
   data() {
     return {
-      configDisplay: ["disableRepeatFor", "individualUserGroups"],
+      configDisplay: ["disableRepeatFor", "individualuser_groups"],
       loading: false
     };
   },
@@ -49,7 +49,7 @@ export default {
       "getUserGroups",
       "getDropdownTeamMembers",
       "team",
-      "getUsersInUserGroup"
+      "getUsersInuser_group"
     ]),
     ...mapState(["clientInformation", "daysOfWeek"]),
 
@@ -65,13 +65,13 @@ export default {
         },
         {
           text: "Assign to user groups",
-          model: "individualUserGroups"
+          model: "individualuser_groups"
         },
         {
           text: "Assign to all users",
           model: "allUsers",
           disable:
-            this.contains("individualUserGroups") ||
+            this.contains("individualuser_groups") ||
             this.contains("individualUsers")
         }
       ];
@@ -93,7 +93,7 @@ export default {
           model: "type",
           "component-type": "select",
           placeholder: "Select event type",
-          options: [...this.clientInformation.eventGroups].map(group => {
+          options: [...this.clientInformation.event_groups].map(group => {
             return { label: group.label, value: group.groupID };
           }),
           optional: true,
@@ -120,17 +120,17 @@ export default {
       if (this.getIsAdmin && this.contains("individualUsers")) {
         templateConfig.unshift({
           placeholder: "Select team members",
-          id: "assignedTo",
+          id: "assigned_to",
           "component-type": "select",
-          model: "assignedTo",
+          model: "assigned_to",
           clearable: true,
           options: this.getDropdownTeamMembers,
           multiple: true
         });
       }
-      if (this.getIsAdmin && this.contains("individualUserGroups")) {
+      if (this.getIsAdmin && this.contains("individualuser_groups")) {
         templateConfig.unshift({
-          model: "userGroup",
+          model: "user_group",
           "component-type": "select",
           placeholder: "Select user group",
           options: this.getUserGroups,
@@ -173,10 +173,10 @@ export default {
         name: form.name,
         content: {
           type: form.type,
-          assignedTo: [],
+          assigned_to: [],
           repeat: { weekdays: form.weekdays, until: nextWeek },
-          startDate: form.timeRange[0].toISOString(),
-          endDate: form.timeRange[1].toISOString()
+          start_date: form.timeRange[0].toISOString(),
+          end_date: form.timeRange[1].toISOString()
         }
       };
 
@@ -185,10 +185,10 @@ export default {
           ?.workingDays ?? [1, 2, 3, 4, 5];
       }
 
-      if (this.contains("individualUserGroups")) {
-        let selectedUserGroup = form.userGroup;
-        templateForm.content.assignedTo = this.getUsersInUserGroup(
-          selectedUserGroup
+      if (this.contains("individualuser_groups")) {
+        let selecteduser_group = form.user_group;
+        templateForm.content.assigned_to = this.getUsersInuser_group(
+          selecteduser_group
         );
       }
       this.createEventTemplate({ ...templateForm })

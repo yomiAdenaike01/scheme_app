@@ -102,21 +102,21 @@ export default {
       let eventsArray = [];
       for (let i = 0, len = this.events.length; i < len; i++) {
         let event = this.events[i];
-        let assignedTo = event.assignedTo;
-        let startDate = this.initMoment(event.startDate);
+        let assigned_to = event.assigned_to;
+        let start_date = this.initMoment(event.start_date);
 
-        if (startDate.isBefore(this.initMoment(), "day")) {
+        if (start_date.isBefore(this.initMoment(), "day")) {
           event.timeState = "previous";
         }
-        if (startDate.isSame(this.initMoment(), "day")) {
+        if (start_date.isSame(this.initMoment(), "day")) {
           event.timeState = "today";
         }
-        if (startDate.isAfter(this.initMoment(), "day")) {
+        if (start_date.isAfter(this.initMoment(), "day")) {
           event.timeState = "upcoming";
         }
 
-        for (let j = 0, jlen = assignedTo.length; j < jlen; j++) {
-          let assignee = assignedTo[j];
+        for (let j = 0, jlen = assigned_to.length; j < jlen; j++) {
+          let assignee = assigned_to[j];
           if (assignee._id == this.userInformation._id) {
             eventsArray.push(event);
           }

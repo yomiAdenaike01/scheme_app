@@ -93,16 +93,16 @@ export default {
     },
 
     groupsWithUsers() {
-      let { userGroups } = { ...this.clientInformation };
+      let { user_groups } = { ...this.clientInformation };
       let userGroupArr = [];
       let team = [...this.team];
 
-      for (let j = 0, len = userGroups.length; j < len; j++) {
-        let userGroup = { ...userGroups[j], teamMembers: [] };
+      for (let j = 0, len = user_groups.length; j < len; j++) {
+        let userGroup = { ...user_groups[j], teamMembers: [] };
         let clientGroupID = userGroup?._id;
 
         team.map(member => {
-          if (clientGroupID == member.userGroup._id) {
+          if (clientGroupID == member.user_group._id) {
             userGroup.teamMembers.push(member);
           }
         });

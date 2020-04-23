@@ -182,7 +182,7 @@ export default {
       }
 
       if (!this.isNewChat) {
-        this.chat.reciever = this.activeChat.userTwo._id;
+        this.chat.reciever = this.activeChat.user_two._id;
         userName = this.getUserInformation(this.chat.reciever)?.name;
       }
       let sendMessage = {

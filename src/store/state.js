@@ -25,7 +25,6 @@ export default {
   weeklyTimesheetUploaded: false,
   userNotifications: [],
   viewMobileMenu: false,
-
   lastDialog: {},
   dialogIndex: {
     profile: { view: false, data: null, tabIndex: 0 },
@@ -35,7 +34,6 @@ export default {
     prevEvents: { view: false, data: null, tabIndex: 0 },
     task: { view: false, data: null, tabIndex: 0 }
   },
-
   defaultCustomColours: [
     vars.default,
     "#5e72e4",

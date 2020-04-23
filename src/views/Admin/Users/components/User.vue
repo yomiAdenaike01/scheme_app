@@ -10,7 +10,7 @@
     "
   >
     <Avatar :name="name">
-      <OnlineIndicator :is-online="userInformation.isOnline" />
+      <OnlineIndicator :is-online="userInformation.is_online" />
     </Avatar>
 
     <div class="text_content">
@@ -46,7 +46,7 @@ export default {
       return this.userInformation.name;
     },
     groupName() {
-      return this.userInformation?.userGroup?.label;
+      return this.userInformation?.user_group?.label;
     },
     group() {
       let name = "Group not found";

@@ -102,17 +102,17 @@ export default {
   CREATE_EVENT(state, payload) {
     // Get the data
     if (!payload?.restore) {
-      payload.assignedTo = payload?.assignedTo.map(assignee => {
+      payload.assigned_to = payload?.assigned_to.map(assignee => {
         return state.team.find(member => {
           return member._id == assignee;
         });
       });
 
-      payload.type = payload.clientEventGroups.find(eventGroup => {
+      payload.type = payload.clientevent_groups.find(eventGroup => {
         return eventGroup._id == payload.type;
       });
     }
-    let { clientEventGroups, ...eventData } = payload;
+    let { clientevent_groups, ...eventData } = payload;
     // Push to upcoming
     state.events.push(eventData);
     updateBreadCrumbs(state, "eventRef", {
@@ -337,19 +337,19 @@ export default {
     labels.splice(labelIndex, 1);
   },
   ADD_USER_TO_EVENT(state, { eventIndex, payload }) {
-    state.events[eventIndex].assignedTo.push(payload);
+    state.events[eventIndex].assigned_to.push(payload);
     updateBreadCrumbs(state, "eventRef", {
-      userIndex: state.events[eventIndex].assignedTo.length - 1,
+      userIndex: state.events[eventIndex].assigned_to.length - 1,
       eventIndex
     });
   },
   REMOVE_USER_FROM_EVENT(state, { eventIndex, userIndex }) {
-    let user = state.events[eventIndex].assignedTo[userIndex];
+    let user = state.events[eventIndex].assigned_to[userIndex];
     updateBreadCrumbs(state, "eventRef", {
       eventIndex,
       payload: user
     });
-    Vue.delete(state.events[eventIndex].assignedTo, userIndex);
+    Vue.delete(state.events[eventIndex].assigned_to, userIndex);
   },
 
   UPDATE_APPROVE_EVENT(state, { eventIndex, userID }) {
@@ -357,16 +357,16 @@ export default {
       eventIndex,
       userID
     });
-    state.events[eventIndex].isApproved.push(userID);
+    state.events[eventIndex].is_approved.push(userID);
   },
   UPDATE_REJECT_EVENT(state, { eventIndex, userID }) {
-    let userIndex = state.events[eventIndex].isApproved.findIndex(index => {
+    let userIndex = state.events[eventIndex].is_approved.findIndex(index => {
       return index._id == userID;
     });
     updateBreadCrumbs(state, "eventRef", {
       eventIndex,
       userID
     });
-    Vue.delete(state.events[eventIndex].isApproved, userIndex);
+    Vue.delete(state.events[eventIndex].is_approved, userIndex);
   }
 };

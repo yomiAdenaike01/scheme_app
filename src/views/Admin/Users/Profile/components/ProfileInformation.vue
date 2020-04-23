@@ -43,7 +43,7 @@
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
 
-      <p class="member_name">{{ localUserInformation.userGroup.label }}</p>
+      <p class="member_name">{{ localUserInformation.user_group.label }}</p>
     </div>
   </div>
 </template>
@@ -71,7 +71,7 @@ export default {
     },
 
     selectedGroupData() {
-      return this.clientInformation.userGroups.find(group => {
+      return this.clientInformation.user_groups.find(group => {
         return group._id == this.selectedGroup;
       });
     },
@@ -95,20 +95,20 @@ export default {
           placeholder: "User groups",
           options: this.getUserGroups,
           validType: "number",
-          model: "userGroup",
+          model: "user_group",
           optional: true
         },
         {
           "component-type": "date-picker",
           placeholder: "Date Of Birth",
           "input-type": "date",
-          model: "dateOfBirth",
+          model: "date_of_birth",
           optional: true
         }
       ];
     },
     date() {
-      return this.formatDate(this.localUserInformation.dateCreated);
+      return this.formatDate(this.localUserInformation.date_created);
     },
 
     teamMemberIndex() {
@@ -135,7 +135,7 @@ export default {
           message: "Error updating user, params are missing"
         });
       } else {
-        e.dateOfBirth = this.initMoment(e?.dateOfBirth).toISOString();
+        e.date_of_birth = this.initMoment(e?.date_of_birth).toISOString();
         this.UPDATE_ONE_TEAM_MEMBER({
           index: this.teamMemberIndex,
           payload: e
@@ -154,7 +154,7 @@ export default {
     assignUserToGroup() {
       this.UPDATE_ONE_TEAM_MEMBER({
         index: this.teamMemberIndex,
-        payload: { userGroup: this.selectedGroupData }
+        payload: { user_group: this.selectedGroupData }
       });
 
       this.request({
@@ -162,7 +162,7 @@ export default {
         url: "users/update",
         data: {
           _id: this.localUserInformation._id,
-          update: { userGroup: this.selectedGroup }
+          update: { user_group: this.selectedGroup }
         }
       }).catch(() => {
         this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);

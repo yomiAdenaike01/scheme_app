@@ -14,7 +14,9 @@
         :key="`${index}${input.name}`"
         :prop="input.name"
         :label="
-          input.optional || allOptional
+          input.noLabel
+            ? ''
+            : input.optional || (allOptional && !input.noLabel)
             ? `(Optional) ${input.placeholder}`
             : input.placeholder
         "
