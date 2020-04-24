@@ -12,7 +12,7 @@
       </p>
       <p v-else>New Message</p>
       <small class="grey">{{
-        initMoment(chatInformation.dateUpdated).calendar()
+        initMoment(chatInformation.date_updated).calendar()
       }}</small>
     </div>
     <div class="chat_extension_container">
@@ -47,13 +47,13 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Comms", ["activeChat"]),
+    ...mapState("Comms", ["activeChat", "chats"]),
     ...mapGetters("Admin", ["getUserInformation"]),
     oppositeUser() {
-      if (this.chatInformation.userTwo._id == this.userInformation._id) {
-        return this.chatInformation.userOne.name;
+      if (this.chatInformation.user_two._id == this.userInformation._id) {
+        return this.chatInformation.user_one.name;
       } else {
-        return this.chatInformation.userTwo.name;
+        return this.chatInformation.user_two.name;
       }
     },
     lastMessage() {
@@ -93,14 +93,7 @@ export default {
           method: "DELETE",
           url: "messenger/chat",
           data: { _id: this.chatInformation._id }
-        })
-          .then(() => {
-            this.loading = false;
-            this.getChats();
-          })
-          .catch(() => {
-            this.loading = false;
-          });
+        });
       }
     }
   }

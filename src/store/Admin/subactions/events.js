@@ -44,7 +44,7 @@ export default {
   createEvent(context, payload) {
     return new Promise((resolve, reject) => {
       context.commit("CREATE_EVENT", {
-        clientEventGroups: context.rootState.clientInformation.eventGroups,
+        clientevent_groups: context.rootState.clientInformation.event_groups,
         ...payload
       });
       context
@@ -53,7 +53,8 @@ export default {
           {
             method: "POST",
             url: "events/create",
-            data: payload
+            data: payload,
+            disableNotifications: true
           },
           { root: true }
         )

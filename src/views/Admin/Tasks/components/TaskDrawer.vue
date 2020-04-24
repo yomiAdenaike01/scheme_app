@@ -30,7 +30,7 @@
             <AssignedUsers
               remove-user
               add-new
-              :users="taskInformation.assignedTo"
+              :users="taskInformation.assigned_to"
               @assignUser="handleUpdate"
               @removeUser="handleUpdate"
             />
@@ -165,7 +165,7 @@ export default {
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getUserInformation", "getGroupName"]),
     users() {
-      return this.taskInformation.assignedTo.map(assignee => {
+      return this.taskInformation.assigned_to.map(assignee => {
         return this.getUserInformation(assignee);
       });
     },
@@ -246,9 +246,9 @@ export default {
                   data: {
                     message,
                     updated: false,
-                    dateCreated: new Date().toISOString(),
-                    taskID: defaultPayload._id,
-                    assignedTo: {
+                    date_created: new Date().toISOString(),
+                    task_id: defaultPayload._id,
+                    assigned_to: {
                       name: vm.userInformation.name,
                       _id: vm.userInformation._id
                     }
@@ -261,7 +261,7 @@ export default {
             vm.request({
               method: this.method,
               url: this.url,
-              data: { message, taskID: defaultPayload._id }
+              data: { message, task_id: defaultPayload._id }
             }).catch(() => {
               vm.DELETE_COMMENT();
             });
@@ -290,7 +290,7 @@ export default {
     },
     canInteract() {
       return (
-        this.taskInformation.assignedTo.indexOf(this.userInformation._id) >
+        this.taskInformation.assigned_to.indexOf(this.userInformation._id) >
           -1 || this.getIsAdmin
       );
     },
@@ -339,7 +339,7 @@ export default {
     },
     handleDescriptions() {
       // admin or assigned to
-      if (this.taskInformation.createdBy._id == this.userInformation._id) {
+      if (this.taskInformation.created_by._id == this.userInformation._id) {
         this.editDescription = true;
       }
     }

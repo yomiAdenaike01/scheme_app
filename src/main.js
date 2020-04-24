@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import NProgress from "vue-nprogress";
+
 // Plugins
 import "./plugins/mobile";
 import "./plugins/resizeText";

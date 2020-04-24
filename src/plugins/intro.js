@@ -1,3 +1,5 @@
+import VueTour from "vue-tour";
 import Vue from "vue";
-import VueShepherd from "vue-shepherd";
-Vue.use(VueShepherd);
+require("vue-tour/dist/vue-tour.css");
+
+Vue.use(VueTour);

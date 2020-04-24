@@ -2,47 +2,30 @@ export default {
   createStubChat(context) {
     let isoDate = new Date().toISOString();
     context.commit("UPDATE_CHATS", {
-      mutedNotifications: [],
-      userOne: {
+      muted_notifications: [],
+      user_one: {
         name: context.rootState.userInformation.name,
         _id: context.rootState.userInformation._id
       },
-      userTwo: {
+      user_two: {
         name: "New message",
         _id: Math.random()
           .toString(16)
           .slice(2)
       },
-      dateCreated: isoDate,
-      dateUpdated: isoDate,
+      date_created: isoDate,
+      date_updated: isoDate,
       initChat: true,
       _id: Math.random()
         .toString(16)
         .slice(2),
-      messages: []
+      messages: [],
+      index: context.state.chats.length
     });
-    context.commit(
-      "UPDATE_ACTIVE_CHAT",
-      context.state.chats[context.state.chats.length - 1]
-    );
-  },
-  deleteChat({ dispatch }, payload) {
-    return new Promise((resolve, reject) => {
-      dispatch(
-        "request",
-        {
-          method: "DELETE",
-          url: "messenger/chats",
-          data: payload
-        },
-        { root: true }
-      )
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => {
-          reject(error);
-        });
+    let lastChatIndex = context.state.chats.length - 1;
+    context.commit("UPDATE_ACTIVE_CHAT", {
+      index: lastChatIndex,
+      ...context.state.chats[lastChatIndex]
     });
   },
 
@@ -54,6 +37,7 @@ export default {
       }
       // Add fake message
       commit("UPDATE_MESSAGES", payload);
+      console.log(payload);
       dispatch(
         "request",
         {

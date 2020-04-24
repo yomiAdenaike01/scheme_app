@@ -35,13 +35,7 @@ export default {
     }
     return foundDialog;
   },
-  getUserNotificationsLength({ userNotifications }) {
-    return userNotifications.filter(notification => {
-      return (
-        notification.status != "is_read" && notification.status != "is_complete"
-      );
-    }).length;
-  },
+
   getDeviceInformation(state, { getUA }) {
     return {
       system: getUA.getOS(),
@@ -57,8 +51,12 @@ export default {
     }
   },
 
-  getIsAdmin({ userInformation: { userGroup } }) {
-    return userGroup.label.toLowerCase() == "system administrator";
+  getIsAdmin({ userInformation: { user_group } }) {
+    if (user_group) {
+      return user_group.is_admin == true;
+    } else {
+      return false;
+    }
   },
 
   getGuide() {

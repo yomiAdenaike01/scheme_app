@@ -40,14 +40,6 @@ export default {
       selectedForm: "login"
     };
   },
-
-  activated() {
-    this.CLEAR_GLOBAL_INTERVAL();
-    if (this.hasEntries(this.$route.params)) {
-      this.login(this.$route.params);
-    }
-  },
-
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters(["getDeviceInformation"]),
@@ -101,6 +93,19 @@ export default {
       };
     }
   },
+  created() {
+    this.CLEAR_GLOBAL_INTERVAL();
+  },
+  mounted() {
+    this.CLEAR_GLOBAL_INTERVAL();
+  },
+  activated() {
+    this.CLEAR_GLOBAL_INTERVAL();
+    if (this.hasEntries(this.$route.params)) {
+      this.login(this.$route.params);
+    }
+  },
+
   methods: {
     ...mapActions(["request", "getClient"]),
     ...mapMutations([
@@ -148,7 +153,7 @@ export default {
           method: "POST",
           url: "users/password",
           data: {
-            clientID: this.clientInformation._id,
+            client_id: this.clientInformation._id,
             email: this.credentials.fp_email,
             password: this.credentials.fp_password
           }
@@ -165,19 +170,18 @@ export default {
       this.request({
         method: "POST",
         data: {
-          clientID: this.clientInformation._id,
-          ...this.credentials,
-          deviceInformation: this.getDeviceInformation
+          client_id: this.clientInformation._id,
+          ...this.credentials
         },
         url: "/users/login"
       })
         .then(response => {
           this.UPDATE_USER(response);
 
-          if (response.user.adminGen == true) {
+          if (response.user.admin_gen == true) {
             this.UPDATE_NOTIFICATIONS({
               type: "warning",
-              title: "Insecure Password Detected",
+              title: "Insecure password detected",
               message:
                 "Use the forgot password functionality to reset you password."
             });
@@ -190,8 +194,9 @@ export default {
           this.loading = false;
           // this.changeTab("login");
         })
-        .catch(() => {
+        .catch(err => {
           this.loading = false;
+          console.log(err);
         });
     }
   }

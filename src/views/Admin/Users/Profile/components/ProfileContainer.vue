@@ -10,23 +10,24 @@
     />
     <div class="profile_info_wrapper">
       <div class="avatar_info_container">
-        <el-badge is-dot :type="badgeType" class="dot_container">
-          <Avatar
-            :size="100"
-            class="sidebar_avatar full"
-            :name="returnUsername"
-          />
-        </el-badge>
+        <Avatar :size="100" class="sidebar_avatar full" :name="returnUsername">
+          <OnlineIndicator :is-online="online" />
+        </Avatar>
         <div class="profile_info_text">
           <h3 class="capitalize">{{ returnUsername }}</h3>
-          <h4 class="grey">{{ userData.userGroup.label }}</h4>
+          <p class="grey">
+            {{
+              userData.user_group.label
+                ? userData.user_group.label
+                : "No group found"
+            }}
+          </p>
         </div>
       </div>
     </div>
     <el-tabs
       v-model="selectedTab"
       tab-position="top"
-      type="card"
       stretch
       class="tab_container"
     >
@@ -49,7 +50,8 @@ export default {
   name: "ProfileContainer",
   components: {
     Avatar: () => import("@/components/Avatar"),
-    InformationDisplay: () => import("@/components/InformationDisplay")
+    InformationDisplay: () => import("@/components/InformationDisplay"),
+    OnlineIndicator: () => import("@/components/OnlineIndicator")
   },
   props: {
     tabItems: {
@@ -65,10 +67,10 @@ export default {
   computed: {
     ...mapGetters(["getDefaultColour", "getActiveDialog"]),
     userData() {
-      return this.getActiveDialog("profile")?.data;
+      return this.getActiveDialog("profile")?.data ?? {};
     },
-    badgeType() {
-      return this.userData?.isOnline ? "success" : "danger";
+    online() {
+      return this.userData?.is_online ?? false;
     },
     returnUsername() {
       return this.userData?.name ?? "Username";
@@ -97,6 +99,7 @@ export default {
 }
 .profile_info_text {
   margin-top: 20px;
+  text-align: center;
 }
 .avatar_info_container {
   display: flex;
@@ -133,5 +136,21 @@ export default {
       width: 60px;
     }
   }
+}
+.floating_item {
+  @include floating_item;
+  background: white;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  top: 10px;
+  right: 10px;
+  padding: 2px;
+}
+.online_container {
+  background: rgb(1, 175, 1);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 </style>

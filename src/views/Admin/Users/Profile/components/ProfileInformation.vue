@@ -43,7 +43,7 @@
       <p>{{ localUserInformation.name }}</p>
       <p>{{ localUserInformation.email }}</p>
 
-      <p class="member_name">{{ localUserInformation.userGroup.label }}</p>
+      <p class="member_name">{{ localUserInformation.user_group.label }}</p>
     </div>
   </div>
 </template>
@@ -71,7 +71,7 @@ export default {
     },
 
     selectedGroupData() {
-      return this.clientInformation.userGroups.find(group => {
+      return this.clientInformation.user_groups.find(group => {
         return group._id == this.selectedGroup;
       });
     },
@@ -91,24 +91,33 @@ export default {
           optional: true
         },
         {
+          "component-type": "text",
+          model: "phone_number",
+          placeholder: "Phone number",
+          optional: true
+        },
+        {
           "component-type": "select",
           placeholder: "User groups",
           options: this.getUserGroups,
           validType: "number",
-          model: "userGroup",
+          model: "user_group",
           optional: true
         },
         {
           "component-type": "date-picker",
           placeholder: "Date Of Birth",
           "input-type": "date",
-          model: "dateOfBirth",
+          model: "date_of_birth",
           optional: true
         }
       ];
     },
     date() {
-      return this.formatDate(this.localUserInformation.dateCreated);
+      return this.formatDate(this.localUserInformation.date_created);
+    },
+    id() {
+      return this.localUserInformation._id;
     },
 
     teamMemberIndex() {
@@ -128,33 +137,35 @@ export default {
     ...mapActions("Admin", ["getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     ...mapMutations("Admin", ["UPDATE_ONE_TEAM_MEMBER", "DELETE_TEAM_MEMBER"]),
-    updateUser(e) {
-      if (!this.hasEntries(e)) {
+    updateUser(userData) {
+      if (!this.hasEntries(userData)) {
         this.UPDATE_NOTIFICATIONS({
           type: "error",
           message: "Error updating user, params are missing"
         });
       } else {
-        e.dateOfBirth = this.initMoment(e?.dateOfBirth).toISOString();
+        userData.date_of_birth = this.initMoment(
+          userData?.date_of_birth
+        ).toISOString();
         this.UPDATE_ONE_TEAM_MEMBER({
           index: this.teamMemberIndex,
-          payload: e
+          payload: userData
         });
-        this.closeDialog();
 
         this.request({
           method: "PUT",
           url: "users/update",
-          data: { update: e, _id: this.localUserInformation?._id }
+          data: { update: userData, _id: this.localUserInformation._id }
         }).catch(() => {
           this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);
         });
+        this.closeDialog();
       }
     },
     assignUserToGroup() {
       this.UPDATE_ONE_TEAM_MEMBER({
         index: this.teamMemberIndex,
-        payload: { userGroup: this.selectedGroupData }
+        payload: { user_group: this.selectedGroupData }
       });
 
       this.request({
@@ -162,7 +173,7 @@ export default {
         url: "users/update",
         data: {
           _id: this.localUserInformation._id,
-          update: { userGroup: this.selectedGroup }
+          update: { user_group: this.selectedGroup }
         }
       }).catch(() => {
         this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);

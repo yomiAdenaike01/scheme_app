@@ -2,7 +2,7 @@
   <div class="user_module_container">
     <UserGroup add-new @createUserGroup="displayDialog = $event" />
 
-    <UserGroup v-if="hasEntries(team)">
+    <UserGroup v-if="team.length > 0">
       <div class="user_groups_table_container">
         <InformationDisplay
           :display-text="{
@@ -20,16 +20,24 @@
           >
             <div
               v-for="(group, index) in count"
-              :key="index"
+              :key="`${group.groupID}${index}`"
               class="user_group_col"
             >
-              <div class="user_group_container">
+              <div
+                :key="
+                  `${group.groupID}${Math.random()
+                    .toString(16)
+                    .slice(2)}`
+                "
+                class="user_group_container"
+              >
                 <div class="icon_text_container">
                   <div class="flex_center">
                     <i class="bx bx-user user_group_icon"></i>
                     <span class="capitalize">{{ group.label }}</span>
                   </div>
                 </div>
+
                 <User
                   v-for="member in group.teamMembers"
                   :key="member._id"
@@ -85,16 +93,16 @@ export default {
     },
 
     groupsWithUsers() {
-      let { userGroups } = { ...this.clientInformation };
+      let { user_groups } = { ...this.clientInformation };
       let userGroupArr = [];
       let team = [...this.team];
 
-      for (let j = 0, len = userGroups.length; j < len; j++) {
-        let userGroup = { ...userGroups[j], teamMembers: [] };
+      for (let j = 0, len = user_groups.length; j < len; j++) {
+        let userGroup = { ...user_groups[j], teamMembers: [] };
         let clientGroupID = userGroup?._id;
 
         team.map(member => {
-          if (clientGroupID == member.userGroup._id) {
+          if (clientGroupID == member.user_group._id) {
             userGroup.teamMembers.push(member);
           }
         });

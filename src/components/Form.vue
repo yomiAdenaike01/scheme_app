@@ -14,7 +14,9 @@
         :key="`${index}${input.name}`"
         :prop="input.name"
         :label="
-          input.optional || allOptional
+          input.noLabel
+            ? ''
+            : input.optional || (allOptional && !input.noLabel)
             ? `(Optional) ${input.placeholder}`
             : input.placeholder
         "
@@ -275,12 +277,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-form {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  max-height: 500px;
-}
 .form_wrapper {
   &.full_width {
     width: 100%;

@@ -56,7 +56,7 @@ export default {
      */
     placeholders() {
       return {
-        userGroup: {
+        user_group: {
           name: "user group"
         },
         eventGroup: {
@@ -67,13 +67,13 @@ export default {
 
     groups() {
       let groups = {
-        userGroup: {},
+        user_group: {},
         eventGroup: {}
       };
 
       if (this.hasEntries(this.clientInformation)) {
-        groups.userGroup = this.getUserGroups;
-        groups.eventGroup = this.clientInformation.eventGroups;
+        groups.user_group = this.getUserGroups;
+        groups.eventGroup = this.clientInformation.event_groups;
       }
       return groups;
     }
@@ -82,7 +82,7 @@ export default {
     ...mapActions("Admin", ["getEvents"])
   },
   watch: {
-    localFilters(val = { userGroup: 0, eventGroup: 0 }) {
+    localFilters(val = { user_group: 0, eventGroup: 0 }) {
       console.log(val);
       this.getEvents(val);
     }

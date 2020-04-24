@@ -1,170 +1,120 @@
 <template>
-  <div class="request_container" :class="{ disabled: approved }">
-    <div class="request_details_wrapper">
-      <div v-for="(value, key) in request" :key="key">
-        <p v-if="keyXref[key] && keyXref[key].display(value)">
-          {{ keyXref[key].label }}
-          <span v-html="keyXref[key].value(value)"></span>
+  <div class="request_container">
+    <div class="request_header">
+      <p>{{ request.type.label }} request</p>
+      <div class="requestee_container">
+        <Avatar :size="size" :name="requestedName" />
+        <p class="grey">
+          <span class="request_user_name">{{ requestedName }}</span>
+          requested
+          <span class="date">{{
+            initMoment(request.date_created).calendar()
+          }}</span>
         </p>
       </div>
-      <el-tag v-if="!approved" class="request_status_tag" size="mini">{{
-        makePretty(request.status)
-      }}</el-tag>
     </div>
-    <div
-      v-if="request.requestedBy == userInformation._id || getIsAdmin"
-      class="buttons_container"
-    >
+    <!-- Duration container -->
+    <div class="duration_container">
+      <span>{{ duration }} days</span>
+      <p>
+        {{ formatDate(request.start_date, "MMMM DD") }} -
+        {{ formatDate(request.end_date, "MMMM DD") }}
+      </p>
+    </div>
+    <p>Notes</p>
+    <p class="grey request_notes">
+      {{ request.notes ? request.notes : "No notes found" }}
+    </p>
+    <!-- Apporval -->
+    <p>Approval</p>
+    <div class="statuses_container">
+      <div
+        v-for="(status, index) in statusXref"
+        :key="index"
+        class="status"
+        :class="[
+          status,
+          {
+            exceeded: statusXref.indexOf(request.status) > index,
+            active_status: statusXref.indexOf(request.status) == index
+          }
+        ]"
+      >
+        <span>{{ status }}</span>
+      </div>
+    </div>
+    <div class="approval_wrapper">
+      <Avatar :name="userInformation.name" />
       <el-button
-        v-if="approved"
-        class="disabled"
+        plain
         type="success"
-        icon="el-icon-check"
+        @click="updateRequest({ status: 'approved' })"
+        >Approve</el-button
+      >
+      <el-button
+        plain
+        type="danger"
+        @click="updateRequest({ status: 'rejected' })"
+        >Reject</el-button
+      >
+      <el-button
+        v-if="getIsAdmin || request.requested_by._id == userInformation._id"
+        icon="el-icon-close"
+        type="text"
         circle
-      />
-      <el-button
-        v-if="getIsAdmin && !approved"
-        type="primary"
-        @click="
-          $emit('updateRequest', {
-            update: { status: 'approved' },
-            _id: request._id
-          })
-        "
-        >Approve Request</el-button
-      >
-      <el-button
-        v-if="getIsAdmin && !approved"
-        type="danger"
-        plain
-        @click="
-          $emit('updateRequest', {
-            update: { status: 'declined' },
-            _id: request._id
-          })
-        "
-        >Decline Request</el-button
-      >
-      <el-popover v-if="!approved" trigger="click">
-        <el-button slot="reference" size="mini" round>Update Request</el-button>
-        <Form
-          submit-text="Update request"
-          size="mini"
-          :config="requestUpdateConfig"
-          @val="$emit('updateRequest', { update: $event, _id: request._id })"
-        />
-      </el-popover>
-      <el-button
-        plain
-        type="danger"
-        size="mini"
-        @click="$emit('deleteRequest', request._id)"
-        >Delete Request</el-button
-      >
+        @click="deleteRequest"
+      ></el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import Form from "@/components/Form";
-
+import { mapState, mapMutations, mapGetters } from "vuex";
+import moment from "moment";
 export default {
   name: "Request",
   components: {
-    Form: () => import("@/components/Form")
+    Avatar: () => import("@/components/Avatar")
   },
   props: {
+    requestIndex: {
+      type: Number,
+      default: 0
+    },
     request: {
       type: Object,
-      required: true
+      default: () => {}
     }
+  },
+  data() {
+    return {
+      size: 35
+    };
   },
   computed: {
     ...mapState(["userInformation"]),
-
     ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", [
-      "getGroupName",
-      "getValidEventTypes",
-      "getUserInformation"
-    ]),
-    approved() {
-      return this.request.status == "approved";
+    statusXref() {
+      return ["sent", "seen", "approved", "rejected"];
     },
-    requestUpdateConfig() {
-      // Change the date
-      // Add notes
-      let config = [
-        {
-          "component-type": "date-picker",
-          "input-type": "date-time-range",
-          placeholder: "Timings",
-          start_placeholder: "Start date & time",
-          end_placeholder: "End date & time",
-          model: "date",
-          optional: true
-        },
-        {
-          "component-type": "select",
-          placeholder: "Select event type",
-          options: this.getValidEventTypes,
-          model: "type",
-          validType: "number",
-          optional: true
-        },
-        {
-          "component-type": "text",
-          "input-type": "textarea",
-          placeholder: "Notes",
-          model: "notes",
-          optional: true
-        }
-      ];
-
-      return config;
+    requestedName() {
+      return this.request?.requested_by?.name ?? "Username";
     },
-    keyXref() {
-      const self = this;
-      return {
-        type: {
-          label: "",
-          display() {
-            return true;
-          },
-          value(params) {
-            return `<h2>${self.getGroupName("eventGroup", params)?.name}</h2>`;
-          }
-        },
-        requestedBy: {
-          label: "Requested by :",
-
-          display() {
-            return self.getIsAdmin;
-          },
-          value(params) {
-            return self.getUserInformation(params)?.name;
-          }
-        },
-        startDate: {
-          label: "Start Date :",
-          display() {
-            return true;
-          },
-          value(params) {
-            return self.formatDate(params);
-          }
-        },
-        endDate: {
-          label: "End Date :",
-          display() {
-            return true;
-          },
-          value(params) {
-            return self.formatDate(params);
-          }
-        }
-      };
+    duration() {
+      let end_date = moment(this.request.end_date);
+      let duration = moment.duration(end_date.diff(this.request.start_date));
+      return Math.round(
+        duration.asHours() > 24 ? duration.asDays() : duration.asHours()
+      );
+    }
+  },
+  methods: {
+    ...mapMutations("Admin", ["UPDATE_REQUEST", "DELETE_REQUEST"]),
+    updateRequest(payload) {
+      this.UPDATE_REQUEST({ request: payload, index: this.requestIndex });
+    },
+    deleteRequest() {
+      this.DELETE_REQUEST(this.requestIndex);
     }
   }
 };
@@ -173,30 +123,92 @@ export default {
 <style lang="scss" scoped>
 .request_container {
   display: flex;
+  flex-direction: column;
   flex: 1;
-  justify-content: space-between;
-  margin: 10px;
-  padding: 25px;
-  border: $border;
-  text-transform: capitalize;
-  line-height: 1.3em;
+  border-radius: 10px;
+  border: 1px solid rgb(235, 235, 235);
+  margin: 20px;
+  max-width: 25%;
+  min-width: 25%;
 }
-
-.request_details_wrapper {
-  display: block;
-  & > * {
-    margin-bottom: 10px;
-  }
-}
-.request_status_tag {
-  margin: 10px 0;
-}
-.buttons_container {
+.approval_wrapper {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  &/deep/ > * {
-    margin: 0 5px;
+  justify-content: space-between;
+  padding: 20px;
+  > * {
+    flex: 1;
   }
+}
+.request_header {
+  padding: 10px;
+}
+.requestee_container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  .avatar_container {
+    margin-right: 5px;
+  }
+}
+.request_user_name {
+  text-transform: capitalize;
+}
+.date {
+  text-transform: lowercase;
+}
+.duration_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: rgb(240, 240, 240);
+  color: #888;
+  span {
+    margin-top: 10px;
+  }
+  p {
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+}
+.statuses_container {
+  display: flex;
+  align-items: center;
+  margin: 0 0 40px 0;
+  justify-content: center;
+}
+.status {
+  border-radius: 60px;
+  border: 1px solid #fff;
+  background: #f4f4f5;
+  border-right: none;
+  padding: 8px 30px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  border-radius: 60px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  position: relative;
+  margin-right: -10px;
+  color: #999;
+  &.exceeded {
+    background: darken(#f0f9eb, 3);
+    border-color: #fff;
+    color: #67c23a;
+  }
+  &.active_status {
+    background: darken(#fdf6ec, 3);
+    color: #e6a23c;
+    border-color: white;
+  }
+  &:last-of-type {
+    border-right: 2px solid inherit;
+    border-top-right-radius: 60px;
+    border-bottom-right-radius: 60px;
+  }
+}
+.request_notes {
+  line-height: 1.7em;
 }
 </style>

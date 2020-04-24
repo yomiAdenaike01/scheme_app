@@ -14,8 +14,8 @@
 
       <div ref="chatMessages" class="chat_messages_container">
         <ChatMessage
-          v-for="message in chatMessages"
-          :key="message._id"
+          v-for="(message, index) in chatMessages"
+          :key="`${message._id}${index}`"
           v-bind="message"
           @editMessage="editMessage"
           @deleteMessage="deleteMessage"
@@ -43,12 +43,13 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import scrollToBottom from "@/mixins/scrollToBottom";
+import ChatMessage from "./ChatMessage";
 export default {
   name: "ActiveChat",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     ChatActions: () => import("./ChatActions"),
-    ChatMessage: () => import("./ChatMessage")
+    ChatMessage
   },
   mixins: [scrollToBottom],
   props: {
@@ -113,6 +114,16 @@ export default {
       return team;
     }
   },
+  watch: {
+    activeChat(val) {
+      if (val) {
+        this.scrollToBottom(this.$refs.chatMessages);
+      }
+    }
+  },
+  activated() {
+    this.scrollToBottom(this.$refs.chatMessages);
+  },
 
   methods: {
     ...mapMutations([
@@ -171,7 +182,7 @@ export default {
       }
 
       if (!this.isNewChat) {
-        this.chat.reciever = this.activeChat.userTwo;
+        this.chat.reciever = this.activeChat.user_two._id;
         userName = this.getUserInformation(this.chat.reciever)?.name;
       }
       let sendMessage = {
@@ -220,7 +231,6 @@ export default {
 .chat_messages_container {
   overflow-x: hidden;
   flex: 1;
-  padding: 0 28px;
   display: flex;
   flex-direction: column;
   max-height: calc(100% - 130px);

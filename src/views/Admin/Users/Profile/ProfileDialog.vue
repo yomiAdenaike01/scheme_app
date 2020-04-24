@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from "vuex";
+import { mapGetters, mapActions, mapMutations, mapState } from "vuex";
 import ProfileInformation from "./components/ProfileInformation";
 import ProfileEvents from "./components/ProfileEvents";
 import ProfileContainer from "./components/ProfileContainer";
@@ -40,8 +40,9 @@ export default {
   },
 
   computed: {
+    ...mapState(["userInformation"]),
+    ...mapState("Admin", ["events"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
-    ...mapGetters("Admin", ["getUsersEvents"]),
     activeDialogData() {
       return this.activeDialog.data;
     },
@@ -98,7 +99,30 @@ export default {
     },
 
     associatedProfileEvents() {
-      return this.getUsersEvents(this.activeDialogData?._id);
+      let eventsArray = [];
+      for (let i = 0, len = this.events.length; i < len; i++) {
+        let event = this.events[i];
+        let assigned_to = event.assigned_to;
+        let start_date = this.initMoment(event.start_date);
+
+        if (start_date.isBefore(this.initMoment(), "day")) {
+          event.timeState = "previous";
+        }
+        if (start_date.isSame(this.initMoment(), "day")) {
+          event.timeState = "today";
+        }
+        if (start_date.isAfter(this.initMoment(), "day")) {
+          event.timeState = "upcoming";
+        }
+
+        for (let j = 0, jlen = assigned_to.length; j < jlen; j++) {
+          let assignee = assigned_to[j];
+          if (assignee._id == this.userInformation._id) {
+            eventsArray.push(event);
+          }
+        }
+      }
+      return eventsArray;
     }
   },
   methods: {

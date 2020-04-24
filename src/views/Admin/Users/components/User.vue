@@ -9,15 +9,9 @@
       })
     "
   >
-    <el-badge
-      v-if="displayPrescence"
-      is-dot
-      :type="userInformation.isOnline ? 'success' : 'danger'"
-      class="item"
-    >
-      <Avatar :name="name" />
-    </el-badge>
-    <Avatar v-else :name="name" />
+    <Avatar :name="name">
+      <OnlineIndicator :is-online="userInformation.is_online" />
+    </Avatar>
 
     <div class="text_content">
       <p class="member_name">{{ name }}</p>
@@ -32,7 +26,8 @@ import { mapState, mapMutations } from "vuex";
 export default {
   name: "User",
   components: {
-    Avatar: () => import("@/components/Avatar")
+    Avatar: () => import("@/components/Avatar"),
+    OnlineIndicator: () => import("@/components/OnlineIndicator")
   },
   props: {
     displayPrescence: {
@@ -51,7 +46,7 @@ export default {
       return this.userInformation.name;
     },
     groupName() {
-      return this.userInformation?.userGroup?.label;
+      return this.userInformation?.user_group?.label;
     },
     group() {
       let name = "Group not found";
@@ -73,7 +68,7 @@ export default {
   flex: 1;
   align-items: center;
   min-height: 50px;
-  max-height: 50px;
+  max-height: fit-content;
   border: 1px solid #ebeef5;
   padding: 20px;
   margin: 10px;

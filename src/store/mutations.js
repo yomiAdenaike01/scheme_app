@@ -1,7 +1,7 @@
-import sounds from "@/mixins/playSound";
 import Vue from "vue";
 import VueRouter from "../router";
 import updateBreadCrumbs from "./helpers";
+import notificationsLogic from "@/mixins/notificationsLogic";
 
 const clearStateInterval = (state, intervalID) => {
   if (!intervalID) {
@@ -16,6 +16,7 @@ const clearStateInterval = (state, intervalID) => {
 };
 
 export default {
+  ADD_TOUR_STEP() {},
   UPDATE_DIALOG_INDEX(
     state,
     { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
@@ -24,13 +25,7 @@ export default {
     state.lastDialog = { dialog, view, id, data, tabIndex };
   },
 
-  // Groups
   CREATE_GROUP(state, { groupType, payload }) {
-    /**
-     * {
-     *  label,_id,enableEventRejection
-     * }
-     */
     let group = state.clientInformation[groupType];
     let groupExists =
       state.clientInformation[groupType].findIndex(group => {
@@ -50,11 +45,13 @@ export default {
       groupIndex,
       payload
     });
-    Vue.set(
-      state.clientInformation[groupType][groupIndex],
-      "label",
-      payload.label
-    );
+    for (let property in payload) {
+      Vue.set(
+        state.clientInformation[groupType][groupIndex],
+        property,
+        payload[property]
+      );
+    }
   },
 
   CREATE_GLOBAL_INTERVAL(state, { duration = 3000, method, id, immediate }) {
@@ -87,24 +84,51 @@ export default {
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    let action = payload.action ? payload.action : (payload.action = "assign");
-    if (action == "assign") {
-      state.clientInformation = payload;
-      localStorage.setItem("clientInformation", JSON.stringify(payload));
-    } else {
-      state.clientInformation[payload.key] = payload.value;
-      localStorage.setItem(
-        "clientInformation",
-        JSON.stringify(state.clientInformation)
-      );
+    state.clientInformation = payload;
+  },
+  UPDATE_ALL_NOTIFICATIONS(state, payload) {
+    updateBreadCrumbs(state, payload);
+    for (let i = 0, len = state.userNotifications.length; i < len; i++) {
+      state.userNotifications[i] = {
+        ...state.userNotifications[i],
+        ...payload
+      };
     }
   },
-
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
     Vue.set(state, "viewMobileMenu", payload);
   },
+  DELETE_NOTIFICATION(state, notificationIndex) {
+    if (!notificationIndex) {
+      state.userNotifications.pop();
+    } else {
+      updateBreadCrumbs(state, {
+        notificationIndex,
+        notification: state.userNotifications[notificationIndex]
+      });
+      Vue.delete(state.userNotifications, notificationIndex);
+    }
+  },
+  UPDATE_NOTIFICATION(state, { notificationIndex, update }) {
+    updateBreadCrumbs(state, {
+      notificationIndex,
+      update: state.userNotifications[notificationIndex]
+    });
+    state.userNotifications.splice(notificationIndex, 0, {
+      ...state.userNotifications[notificationIndex],
+      ...update
+    });
+  },
   UPDATE_USER_NOTIFICATIONS(state, payload) {
-    Vue.set(state, "userNotifications", payload);
+    for (let i = 0, len = payload.length; i < len; i++) {
+      let payloadNotification = payload[i];
+      let stateNotification = state.userNotifications.find(notification => {
+        return notification._id == payloadNotification._id;
+      });
+      if (!stateNotification) {
+        state.userNotifications.push(payloadNotification);
+      }
+    }
   },
 
   UPDATE_NETWORK_ERROR(state, payload) {
@@ -116,13 +140,10 @@ export default {
     if (VueRouter.currentRoute.name != "signIn") {
       VueRouter.push({ name: "signIn" });
     }
-    localStorage.clear();
   },
   UPDATE_USER(state, { user, token }) {
     state.token = token;
     state.userInformation = user;
-    localStorage.setItem("token", token);
-    localStorage.setItem("userInformation", JSON.stringify(user));
   },
 
   UPDATE_NOTIFICATIONS(state, notification) {
@@ -140,25 +161,10 @@ export default {
     if (notificationTypes.indexOf(notification.type) == -1) {
       notification.type = "info";
     }
-    switch (notification.type) {
-      case "message":
-        notification.icon = "message-rounded";
-        notification.title = "New Message";
-        if (document.visibilityState == "visible") {
-          sounds.methods.playSuccessSound();
-        }
-        break;
-      case "announcement": {
-        (notification.icon = "bx-user-voice"),
-          (notification.title = "Announcement");
-        break;
-      }
+    notification = notificationsLogic.methods.sortNotification(notification);
 
-      default:
-        break;
-    }
     if (notification?.icon) {
-      notification.iconClass = `custom_notification_icon bx bx-${notification?.icon} bx-tada`;
+      notification.iconClass = `custom_notification_icon bx bx-${notification.icon} bx-tada`;
       delete notification.type;
     }
 

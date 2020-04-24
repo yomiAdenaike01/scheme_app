@@ -12,26 +12,22 @@
         >
       </div>
     </div>
-      <div v-if="displayDetails" class="mt-3">
-        <h3><strong>Details</strong></h3>
-        {{ getEventAssignedTo(data.content.assignedTo).text }}
-        <p>Event Type: {{ getGroupName("event", data.content.type).name }}</p>
-        <span>Start Date: </span>{{ formatDate(data.content.startDate) }}
-        <br />
-        <span>End Date: </span>{{ formatDate(data.content.endDate) }}
-        <br />
-        <br />
-        <h3><strong>Repeat on</strong></h3>
-        {{ formattedWeekdays }}
-        <br />
-        <el-button
-          class="w-100 mt-3"
-          plain
-          type="primary"
-          @click="applyTemplate"
-          >Apply</el-button
-        >
-      </div>
+    <div v-if="displayDetails" class="mt-3">
+      <h3><strong>Details</strong></h3>
+      {{ getEventassigned_to(data.content.assigned_to).text }}
+      <p>Event Type: {{ getGroupName("event", data.content.type).name }}</p>
+      <span>Start Date: </span>{{ formatDate(data.content.start_date) }}
+      <br />
+      <span>End Date: </span>{{ formatDate(data.content.end_date) }}
+      <br />
+      <br />
+      <h3><strong>Repeat on</strong></h3>
+      {{ formattedWeekdays }}
+      <br />
+      <el-button class="w-100 mt-3" plain type="primary" @click="applyTemplate"
+        >Apply</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -56,7 +52,7 @@ export default {
     ...mapGetters("Admin", [
       "getGroupName",
       "getDropdownTeamMembers",
-      "getEventAssignedTo",
+      "getEventassigned_to",
       "getValidEventTypes"
     ]),
     ...mapState(["daysOfWeek"]),

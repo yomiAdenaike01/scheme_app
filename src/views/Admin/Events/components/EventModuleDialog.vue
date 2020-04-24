@@ -15,7 +15,10 @@
       </div>
       <div
         v-if="
-          tabXref.name == 'create_event' && hasEntries(events) && getIsAdmin
+          tabXref.name == 'create_event' &&
+            hasEntries(events) &&
+            qrCode.length > 0 &&
+            getIsAdmin
         "
         slot="body"
         class="body_container"
@@ -36,20 +39,13 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import QrcodeVue from "qrcode.vue";
 
 import TemplateManagement from "./TemplateManagement";
-import RequestManagement from "./RequestManagement";
-import UpdateGroups from "./UpdateGroups";
-
-import InformationDisplay from "@/components/InformationDisplay";
-import Tabs from "@/components/Tabs";
-import ColourUnit from "@/components/ColourUnit";
 
 export default {
   name: "EventModuleDialog",
   components: {
-    InformationDisplay,
-    Tabs,
-    ColourUnit,
-    RequestManagement,
+    InformationDisplay: () => import("@/components/InformationDisplay"),
+    Tabs: () => import("@/components/Tabs"),
+    ColourUnit: () => import("@/components/ColourUnit"),
     QrcodeVue
   },
   data() {
@@ -58,7 +54,7 @@ export default {
       templates: {},
       loading: false,
       currentTab: 0,
-      qrCode: {}
+      qrCode: ""
     };
   },
 
@@ -70,7 +66,7 @@ export default {
       "getValidEventTypes",
       "getUserGroups",
       "getUserInformation",
-      "getUsersInUserGroup"
+      "getUsersInuser_group"
     ]),
 
     eventContent() {
@@ -78,24 +74,24 @@ export default {
       let events = { ...this.events };
       let date = events?.date;
 
-      let startDate = this.initMoment(date[0]).toISOString();
-      let endDate = this.initMoment(date[1]).toISOString();
-      events.startDate = startDate;
-      events.endDate = endDate;
+      let start_date = this.initMoment(date[0]).toISOString();
+      let end_date = this.initMoment(date[1]).toISOString();
+      events.start_date = start_date;
+      events.end_date = end_date;
       events.until = this.initMoment(events?.until ?? new Date()).toISOString();
 
       if (this.activeDialogInformation?.length > 0) {
-        events.assignedTo = events.assignedTo.concat(
+        events.assigned_to = events.assigned_to.concat(
           this.activeDialogInformation
         );
       }
 
-      events.isApproved = [
+      events.is_approved = [
         this.userInformation._id,
-        ...events.assignedTo.filter(assignee => {
+        ...events.assigned_to.filter(assignee => {
           return (
-            this.getUserInformation(assignee).userGroup.enableEventRejection ==
-            true
+            this.getUserInformation(assignee)?.user_group
+              ?.enable_event_rejection == true
           );
         })
       ];
@@ -109,19 +105,19 @@ export default {
       };
 
       if (!this.getIsAdmin) {
-        events.assignedTo = [this.userInformation._id];
+        events.assigned_to = [this.userInformation._id];
       }
       let templates = {
         content: events
       };
 
-      if (events?.userGroups?.length > 0) {
+      if (events?.user_groups?.length > 0) {
         // Changed the assigned to to all of the user groups
-        let uGroups = events.userGroups;
-        events.assignedTo = [];
+        let uGroups = events.user_groups;
+        events.assigned_to = [];
 
         for (let i = 0, len = uGroups.length; i < len; i++) {
-          events.assignedTo.push(...this.getUsersInUserGroup(uGroups[i]));
+          events.assigned_to.push(...this.getUsersInuser_group(uGroups[i]));
         }
       }
       return { templates, events };
@@ -144,8 +140,8 @@ export default {
 
     assignToUsernames() {
       let usernames = "";
-      if (this.activeDialogInformation?.assignedTo) {
-        let assignToUsernames = [...this.activeDialogInformation?.assignedTo];
+      if (this.activeDialogInformation?.assigned_to) {
+        let assignToUsernames = [...this.activeDialogInformation?.assigned_to];
         usernames = assignToUsernames.map(assignee => {
           return this.getUserInformation(assignee)?.name;
         });
@@ -174,12 +170,6 @@ export default {
           formContent: this.createEventForm,
           displayReset: true,
           emitOnChange: true
-        },
-        {
-          label: "Manage Requests",
-          view: {
-            component: RequestManagement
-          }
         }
       ];
 
@@ -187,7 +177,7 @@ export default {
         tabs.unshift({
           label: "Manage event groups",
           view: {
-            component: UpdateGroups
+            component: () => import("./UpdateGroups")
           }
         });
 
@@ -230,18 +220,18 @@ export default {
         createEventConfig.unshift(
           {
             placeholder: teamMemberPlaceholder,
-            disabled: this.eventInformation?.userGroups?.length > 0,
+            disabled: this.eventInformation?.user_groups?.length > 0,
             "component-type": "select",
-            model: "assignedTo",
+            model: "assigned_to",
             options: this.getDropdownTeamMembers,
             multiple: true
           },
           {
             "component-type": "select",
             options: this.getUserGroups,
-            disabled: this.eventInformation?.assignedTo?.length > 0,
+            disabled: this.eventInformation?.assigned_to?.length > 0,
             multiple: true,
-            model: "userGroups",
+            model: "user_groups",
             placeholder: "Assign to a user group",
             optional: true
           },
@@ -285,7 +275,6 @@ export default {
 
     eventsCtrl(information) {
       this.events = information;
-      this.qrCode = information;
 
       switch (this.tabXref.name) {
         case "create_event_group": {
@@ -309,8 +298,8 @@ export default {
       let eventInfo = this.eventContent.events;
       let requestInformation = {
         type: this.eventContent.events.type,
-        endDate: eventInfo.endDate,
-        startDate: eventInfo.startDate
+        end_date: eventInfo.end_date,
+        start_date: eventInfo.start_date
       };
 
       this.request({
@@ -321,13 +310,16 @@ export default {
     },
     // Submit one event
     genEvent() {
-      this.createEvent(this.eventContent.events).then(() => {
-        if (this.getIsAdmin) {
-          this.initSaveTemplate();
-        } else {
-          this.view = false;
-        }
-      });
+      this.createEvent(this.eventContent.events)
+        .then(response => {
+          this.qrCode = response ? response : "";
+          if (this.getIsAdmin) {
+            this.initSaveTemplate();
+          } else {
+            this.view = false;
+          }
+        })
+        .catch(() => {});
     },
 
     initSaveTemplate() {
@@ -356,12 +348,12 @@ export default {
     createEventGroup() {
       let events = {
         ...this.events,
-        value: this.clientInformation.eventGroups.length + 1
+        value: this.clientInformation.event_groups.length + 1
       };
       this.request({
         method: "POST",
         url: "clients/group",
-        data: { name: "eventGroups", value: events }
+        data: { name: "event_groups", value: events }
       })
         .then(() => {
           this.loading = false;

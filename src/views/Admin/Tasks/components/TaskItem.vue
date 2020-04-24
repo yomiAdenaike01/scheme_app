@@ -3,7 +3,7 @@
     v-loading="loading"
     class="task_container"
     :class="{
-      disabled: !isAssignedTo,
+      disabled: !isassigned_to,
       completed: hasEntries(taskInformation) && currState == 'complete'
     }"
     @click="viewTaskController"
@@ -24,7 +24,7 @@
             <Comments mode="overview" :comment-count="comments.length" />
             <AssignedUsers
               class="user_wrapper"
-              :users="taskInformation.assignedTo"
+              :users="taskInformation.assigned_to"
               @assignUser="assignToTask"
             />
             <el-tag v-if="taskInformation.dueDate">{{
@@ -159,9 +159,9 @@ export default {
       }
       return buttonConfig;
     },
-    isAssignedTo() {
+    isassigned_to() {
       return (
-        this.taskInformation?.assignedTo?.indexOf(this.userInformation._id) >
+        this.taskInformation?.assigned_to?.indexOf(this.userInformation._id) >
           -1 || this.getIsAdmin
       );
     }

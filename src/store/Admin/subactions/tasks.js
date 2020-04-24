@@ -1,13 +1,13 @@
-function updateBoardQuota(commit, state, action = "minus") {
-  let value = state.clientInformation.boardQuota + 1;
+function updateboard_quota(commit, state, action = "minus") {
+  let value = state.clientInformation.board_quota + 1;
   if (action == "minus") {
-    state.clientInformation.boardQuota - 1;
+    state.clientInformation.board_quota - 1;
   }
   commit(
     "UPDATE_CLIENT_INFORMATION",
     {
       action: "update",
-      key: "boardQuota",
+      key: "board_quota",
       value
     },
     { root: true }
@@ -55,7 +55,7 @@ export default {
         { root: true }
       ).then(() => {
         commit("DELETE_BOARD", payload.boardIndex);
-        updateBoardQuota(commit, rootState, "plus");
+        updateboard_quota(commit, rootState, "plus");
         dispatch(
           "request",
           {
@@ -71,7 +71,7 @@ export default {
           .catch(() => {
             commit("UPDATE_BOARDS", { data: payload, action: "create" });
             commit("DELETE_BOARD", payload.boardID);
-            updateBoardQuota(commit, rootState, "minus");
+            updateboard_quota(commit, rootState, "minus");
             reject();
           });
       });
@@ -85,7 +85,7 @@ export default {
   createBoard({ dispatch, commit, rootState }, payload) {
     return new Promise((resolve, reject) => {
       commit("UPDATE_BOARDS", { data: payload, action: "create" });
-      updateBoardQuota(commit, rootState, "minus");
+      updateboard_quota(commit, rootState, "minus");
       let { _id, ...data } = payload;
 
       payload = {
@@ -100,7 +100,7 @@ export default {
         })
         .catch(() => {
           commit("DELETE_BOARD", payload.boardID);
-          updateBoardQuota(commit, rootState, "plus");
+          updateboard_quota(commit, rootState, "plus");
           reject();
         });
     });
@@ -132,7 +132,7 @@ export default {
 
   /**
    * @param {object} { dispatch, commit }
-   * @param {object} payload {boardIndex, name, description, date_time, labels, comments, completedDate (optional), assignedTo (optional)}
+   * @param {object} payload {boardIndex, name, description, date_time, labels, comments, completedDate (optional), assigned_to (optional)}
    */
   createTask({ state, dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {

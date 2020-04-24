@@ -27,7 +27,7 @@
           @click="sendReminderToUser"
         >
           {{
-            event.assignedTo.length > 0
+            event.assigned_to.length > 0
               ? truncate("Remind users of this event", 14)
               : truncate("Remind user of this event")
           }}
@@ -45,14 +45,14 @@
       <!-- Required actions -->
 
       <div
-        v-if="userInformation.userGroup.enableEventRejection"
+        v-if="userInformation.user_group.enable_event_rejection"
         class="view_dialog_information_container"
       >
         <h3>Actions</h3>
         <!-- Reject event -->
         <div class="info_unit">
           <el-button
-            :disabled="noticePeriodExceeded"
+            :disabled="notice_periodExceeded"
             round
             class="full_width"
             plain
@@ -68,12 +68,12 @@
         <h3>Assigned users</h3>
 
         <div
-          v-if="hasEntries(event.assignedTo)"
+          v-if="hasEntries(event.assigned_to)"
           class="info_unit avatar_wrapper"
         >
           <div class="assigned_users_container">
             <div
-              v-for="(member, index) in event.assignedTo"
+              v-for="(member, index) in event.assigned_to"
               ref="user"
               :key="index"
             >
@@ -84,7 +84,7 @@
                 multiple
                 @click="viewUser(member)"
               >
-                <div class="hover_indicator" @click="removeUser(member)">x</div>
+                <div class="floating_item" @click="removeUser(member)">x</div>
               </Avatar>
             </div>
           </div>
@@ -97,7 +97,7 @@
                 class="users_container trigger"
                 :class="{
                   disabled:
-                    event.assignedTo.findIndex(assignee => {
+                    event.assigned_to.findIndex(assignee => {
                       return assignee._id == option._id;
                     }) > -1
                 }"
@@ -188,9 +188,9 @@ export default {
     ...mapState(["userInformation", "dialogIndex"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     ...mapGetters("Admin", ["getFilteredTeam", "getValidEventTypes"]),
-    noticePeriodExceeded() {
+    notice_periodExceeded() {
       return this.initMoment(
-        this.event?.noticePeriod ??
+        this.event?.notice_period ??
           this.initMoment(this.event.start).subtract(1, "days")
       ).isSame(this.initMoment(), "day");
     },
@@ -205,7 +205,7 @@ export default {
         buttonConfig.type = "success";
         buttonConfig.content = "Approved";
       }
-      if (!this.getIsAdmin && this.noticePeriodExceeded) {
+      if (!this.getIsAdmin && this.notice_periodExceeded) {
         buttonConfig.disabled = true;
         buttonConfig.content =
           "You cannot disapprove this event as it is past the notice period";
@@ -213,7 +213,7 @@ export default {
       return buttonConfig;
     },
     canRejectEvent() {
-      return this.userInformation.userGroup.enableEventRejection;
+      return this.userInformation.user_group.enable_event_rejection;
     },
     currentEventIndex() {
       return this.events.findIndex(event => {
@@ -226,7 +226,7 @@ export default {
           "component-type": "date-picker",
           "input-type": "date-time",
           placeholder: "Start date time",
-          model: "startDate",
+          model: "start_date",
           optional: true,
           hint: "",
           tag: "date"
@@ -235,7 +235,7 @@ export default {
           "component-type": "date-picker",
           "input-type": "date-time",
           placeholder: "End date time",
-          model: "endDate",
+          model: "end_date",
           optional: true,
           hint: "",
           tag: "date"
@@ -258,7 +258,7 @@ export default {
     },
 
     canAddMoreUsers() {
-      return this.event.assignedTo.length < this.team.length;
+      return this.event.assigned_to.length < this.team.length;
     },
 
     event() {
@@ -270,8 +270,8 @@ export default {
     },
     canReject() {
       return (
-        this.event.assignedTo.findIndex(assignee => {
-          return assignee.userGroup.enableEventRejection == true;
+        this.event.assigned_to.findIndex(assignee => {
+          return assignee.user_group.enable_event_rejection == true;
         }) == -1
       );
     },
@@ -281,17 +281,17 @@ export default {
       let canRejectCount = 0,
         hasApprovedCount = 0,
         isCreatorAdmin =
-          this.event.createdBy.userGroup.label.toLowerCase() ===
+          this.event?.created_by?.user_group?.label.toLowerCase() ===
           "system administrator";
-      for (let i = 0, len = this.event.assignedTo; i < len; i++) {
-        let assignee = this.event.assignedTo[i];
-        if (assignee.userGroup.enabledEventRejection) {
+      for (let i = 0, len = this.event.assigned_to; i < len; i++) {
+        let assignee = this?.event?.assigned_to[i];
+        if (assignee?.user_group?.enabledEventRejection) {
           canRejectCount++;
         }
       }
-      for (let i = 0, len = this.event.isApproved; i < len; i++) {
-        let assignee = this.event.isApproved[i];
-        if (assignee.userGroup.enableEventRejection) {
+      for (let i = 0, len = this.event.is_approved; i < len; i++) {
+        let assignee = this.event.is_approved[i];
+        if (assignee?.user_group?.enable_event_rejection) {
           hasApprovedCount++;
         }
       }
@@ -300,15 +300,15 @@ export default {
     },
 
     dates() {
-      let start = this.formatDate(this.event.startDate);
-      let end = this.formatDate(this.event.endDate);
+      let start = this.formatDate(this.event.start_date);
+      let end = this.formatDate(this.event.end_date);
       return {
         start,
         end
       };
     },
     isEventMine() {
-      return this.event?.assignedTo?.some(() => {
+      return this.event?.assigned_to?.some(() => {
         return this.userInformation._id;
       });
     },
@@ -350,9 +350,9 @@ export default {
       });
     },
     hasAdminApproved() {
-      return this.event.isApproved.find(approvee => {
+      return this.event.is_approved.find(approvee => {
         return (
-          approvee.userGroup.label.toLowerCase().trim() ==
+          approvee.user_group.label.toLowerCase().trim() ==
           "system administrator"
         );
       });
@@ -375,7 +375,7 @@ export default {
       });
     },
     rejectEvent() {
-      // remove from isApproved array
+      // remove from is_approved array
       this.UPDATE_REJECT_EVENT({
         eventIndex: this.currentEventIndex,
         userID: this.userInformation._id
@@ -408,9 +408,7 @@ export default {
         });
       }
     },
-    approvalController() {
-      let approval = this.event.isApproved;
-    },
+
     getOneEmail(id) {
       return this.getEmail.findIndex(assignee => {
         return assignee.id == id;
@@ -419,20 +417,26 @@ export default {
 
     // Currently locks database still keeping function for later rework button is hidden
     removeUser(user) {
-      let userIndex = this.event.assignedTo.findIndex(assignee => {
+      let userIndex = this.event.assigned_to.findIndex(assignee => {
         return assignee._id == user._id;
       });
-      this.REMOVE_USER_FROM_EVENT({
-        eventIndex: this.currentEventIndex,
-        userIndex
-      });
-      this.request({
-        method: "DELETE",
-        url: "events/user",
-        data: { eventID: this.event._id, userID: user._id }
-      }).catch(() => {
-        this.ADD_USER_TO_EVENT(this.eventRef);
-      });
+      if (this.event.assigned_to.length - 1 == 0) {
+        this.deleteEvent(
+          "This is the last user on the event, if you delete this user it will delete the event. Are you sure you want to delete this event ? "
+        );
+      } else {
+        this.REMOVE_USER_FROM_EVENT({
+          eventIndex: this.currentEventIndex,
+          userIndex
+        });
+        this.request({
+          method: "DELETE",
+          url: "events/user",
+          data: { eventID: this.event._id, userID: user._id }
+        }).catch(() => {
+          this.ADD_USER_TO_EVENT(this.eventRef);
+        });
+      }
     },
     assignNewUser(user) {
       this.ADD_USER_TO_EVENT({
@@ -447,11 +451,11 @@ export default {
         this.REMOVE_USER_FROM_EVENT(this.eventRef);
       });
     },
-    deleteEvent() {
+    deleteEvent(msg = "Are you sure you want to delete this event ?") {
       this.genPromptBox({
         boxType: "confirm",
         title: "Confirm",
-        text: "Are you sure you want to delete this event ?",
+        text: msg,
         confirm: "Yes"
       }).then(() => {
         // Delete event
@@ -473,7 +477,7 @@ export default {
       });
     },
     notifyAssignees() {
-      let assignedTo = this.event.assignedTo;
+      let assigned_to = this.event.assigned_to;
       let removalMessage = `You have an event on ${this.dates.start} to ${this.dates.end} has been deleted by ${this.userInformation.name}`;
       this.genEmail({
         subject: "Event removal",
@@ -484,11 +488,11 @@ export default {
       });
 
       for (
-        let index = 0, len = assignedTo.length;
-        index < assignedTo.length;
+        let index = 0, len = assigned_to.length;
+        index < assigned_to.length;
         index++
       ) {
-        let assignee = assignedTo[i];
+        let assignee = assigned_to[i];
         this.getApiNotification({
           type: "attention",
           title: "Event removal",
@@ -499,7 +503,7 @@ export default {
     },
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
-      let assignedTo = [...this.event.assignedTo, this.userInformation._id];
+      let assigned_to = [...this.event.assigned_to, this.userInformation._id];
       this.genEmail({
         subject: "Reminder",
         to: this.getEmail,
@@ -509,7 +513,7 @@ export default {
         notification: {
           type: "reminder",
           title: contentMessage,
-          for: assignedTo,
+          for: assigned_to,
           message: contentMessage
         }
       });
@@ -621,13 +625,14 @@ h3 {
     will-change: opacity;
     text-align: center;
   }
-  .hover_indicator {
+  .floating_item {
+    @include floating_item;
     opacity: 0;
     transition: $default_transition opacity;
     will-change: opacity;
   }
   &:hover {
-    .hover_indicator,
+    .floating_item,
     .member_name {
       opacity: 1;
     }

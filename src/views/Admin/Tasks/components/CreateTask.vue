@@ -89,7 +89,7 @@ export default {
           "component-type": "select",
           options: this.getDropDownTeamMembers,
           placeholder: "Assign task to team member",
-          model: "assignedTo",
+          model: "assigned_to",
           optional: true,
           hint:
             "If this is not assigned to someone this will be done for yourself"
@@ -102,7 +102,7 @@ export default {
     ...mapActions("Admin", ["createTask"]),
     createAction(taskInformation) {
       taskInformation = Object.assign(
-        { assignedTo: [this.userInformation._id] },
+        { assigned_to: [this.userInformation._id] },
         taskInformation
       );
       this.createTask({
@@ -113,10 +113,10 @@ export default {
         mutationData: {
           ...taskInformation,
           state: 0,
-          completeDate: null,
+          complete_date: null,
           labels: [],
           comments: [],
-          dateCreated: new Date().toISOString(),
+          date_created: new Date().toISOString(),
           boardIndex: this.boardData.index
         }
       })

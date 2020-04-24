@@ -8,16 +8,18 @@
           placeholder="Search chats"
         />
       </div>
-      <Chat
-        v-for="(chat, index) in chats"
-        :key="
-          `${index}${Math.random()
-            .toString(16)
-            .slice(2)}`
-        "
-        :chat-index="index"
-        :chat-information="chat"
-      />
+      <fade-transition group>
+        <Chat
+          v-for="(chat, index) in chats"
+          :key="
+            `${index}${Math.random()
+              .toString(16)
+              .slice(2)}`
+          "
+          :chat-index="index"
+          :chat-information="chat"
+        />
+      </fade-transition>
       <div class="blank_message grey" @click="startNewChat">
         <i class="bx bx-plus"></i>
         <span>Compose</span>
@@ -47,11 +49,13 @@
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
+import { FadeTransition } from "vue2-transitions";
 export default {
   name: "Chats",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
-    Chat: () => import("./Chat")
+    Chat: () => import("./Chat"),
+    FadeTransition
   },
   data() {
     return {

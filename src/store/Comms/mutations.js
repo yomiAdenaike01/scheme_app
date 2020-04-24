@@ -19,7 +19,10 @@ export default {
       // check whether the payload has more messages
       payloadMessages.map(sMessage => {
         let foundPMessage = stateMessages.find(pMessage => {
-          return pMessage._id == sMessage._id;
+          return (
+            pMessage.content.toLowerCase().trim() ==
+            sMessage.content.toLowerCase().trim()
+          );
         });
 
         if (!foundPMessage) {
@@ -55,7 +58,6 @@ export default {
   },
   UPDATE_MESSAGES(state, payload) {
     let chatIndex = state.activeChat.index;
-
     state.chats[chatIndex].messages.push(payload);
     updateBreadCrumbs(state, "messageRef", {
       messageIndex: state.chats[chatIndex].messages.length - 1,
@@ -72,6 +74,7 @@ export default {
     state.messages = [];
     if (index > 0) {
       setActiveChat(state, { index: index - 1, ...state.chats[index - 1] });
+      console.log(state.activeChat);
     } else {
       state.activeChat = {};
     }

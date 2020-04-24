@@ -1,11 +1,18 @@
 <template>
   <div class="events_container">
-    <div class="events_inner_container">
-      <Toolbar />
-      <EventsCalendar />
-      <EventModuleDialog />
-      <ViewEventDialog />
-    </div>
+    <slide-x-right-transition mode="out-in">
+      <div class="events_inner_container">
+        <Toolbar :current-view="view" @changeView="view = $event" />
+        <div v-if="view == 'events'">
+          <EventsCalendar />
+          <EventModuleDialog />
+          <ViewEventDialog />
+        </div>
+
+        <Requests v-if="view == 'requests'" />
+      </div>
+    </slide-x-right-transition>
+
     <UserSidebar />
   </div>
 </template>
@@ -16,6 +23,9 @@ import Toolbar from "./components/Toolbar";
 import EventsCalendar from "./components/EventsCalendar";
 import UserSidebar from "./components/UserSidebar";
 import ViewEventDialog from "./components/ViewEventDialog";
+import eventsTour from "../tours/eventsTour";
+import Requests from "./components/Requests";
+import { SlideXRightTransition } from "vue2-transitions";
 
 export default {
   name: "EventsModule",
@@ -24,7 +34,15 @@ export default {
     EventModuleDialog,
     Toolbar,
     UserSidebar,
-    ViewEventDialog
+    ViewEventDialog,
+    Requests,
+    SlideXRightTransition
+  },
+  extends: eventsTour,
+  data() {
+    return {
+      view: "events"
+    };
   }
 };
 </script>

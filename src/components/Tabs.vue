@@ -7,7 +7,7 @@
       v-loading="loading"
       :closable="false"
       stretch
-      :type="tabType"
+      type="card"
       :addable="false"
       :tab-position="position"
     >
@@ -79,10 +79,6 @@ export default {
       default: "Submit"
     },
 
-    tabType: {
-      type: String,
-      default: "card"
-    },
     tabs: {
       type: Array,
       required: true

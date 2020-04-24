@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapState("Admin", ["teamRef"]),
+    ...mapState("Admin", ["teamRef", "team"]),
     ...mapGetters("Admin", ["getUserGroups"]),
 
     genPwd() {
@@ -64,7 +64,7 @@ export default {
           label: "Manage user groups",
           view: {
             component: UpdateGroups,
-            props: { groupType: "userGroups" }
+            props: { groupType: "user_groups" }
           }
         },
         {
@@ -112,15 +112,15 @@ export default {
           placeholder: "Email"
         },
         {
-          name: "phoneNumber",
+          name: "phone_number",
           "component-type": "text",
-          model: "phoneNumber",
+          model: "phone_number",
           clearable: true,
           placeholder: "Phone Number"
         },
         {
           placeholder: "Group",
-          model: "userGroup",
+          model: "user_group",
           "component-type": "select",
           clearable: true,
           options: this.getUserGroups
@@ -141,8 +141,19 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
-    ...mapMutations("Admin", ["CREATE_USER", "REMOVE_USER"]),
-
+    ...mapMutations("Admin", [
+      "ADD_TEAM_MEMBER",
+      "UPDATE_ONE_TEAM_MEMBER",
+      "REMOVE_USER"
+    ]),
+    updateNewUser(response) {
+      this.UPDATE_ONE_TEAM_MEMBER({
+        index: this.team.length - 1,
+        payload: response
+      });
+      this.loading = false;
+      this.view = false;
+    },
     userModuleController(val) {
       switch (this.currentTab) {
         case 1: {
@@ -156,23 +167,23 @@ export default {
     },
 
     createOneUser(employee) {
-      let uGroup = this.clientInformation.userGroups.find(group => {
-        return group._id == employee.userGroup;
+      let uGroup = this.clientInformation.user_groups.find(group => {
+        return group._id == employee.user_group;
       });
-      let _employee = { ...employee, userGroup: uGroup };
-      this.CREATE_USER(_employee);
+      let _employee = { ...employee, user_group: uGroup };
+
+      this.ADD_TEAM_MEMBER(_employee);
       this.request({
         method: "POST",
         url: "users/register/one",
         data: {
           ...employee,
-          clientID: this.clientInformation._id,
-          adminGen: true
+          client_id: this.clientInformation._id,
+          admin_gen: true
         }
       })
-        .then(() => {
-          this.loading = false;
-          this.view = false;
+        .then(response => {
+          this.updateNewUser(response);
         })
         .catch(error => {
           this.loading = false;

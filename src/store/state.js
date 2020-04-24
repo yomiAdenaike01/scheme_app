@@ -3,6 +3,7 @@ const genUUID = require("uuid-by-string");
 
 export default {
   runningIntervals: {},
+  notificationRef: "",
   requestIntervals: {
     admin: 60000,
     client: 20000,
@@ -24,7 +25,6 @@ export default {
   weeklyTimesheetUploaded: false,
   userNotifications: [],
   viewMobileMenu: false,
-
   lastDialog: {},
   dialogIndex: {
     profile: { view: false, data: null, tabIndex: 0 },
@@ -34,7 +34,6 @@ export default {
     prevEvents: { view: false, data: null, tabIndex: 0 },
     task: { view: false, data: null, tabIndex: 0 }
   },
-
   defaultCustomColours: [
     vars.default,
     "#5e72e4",
@@ -76,6 +75,7 @@ export default {
     }
   ],
   rootGroupRef: "",
+  // Expermimental
   persmissions: [
     {
       _id: genUUID(

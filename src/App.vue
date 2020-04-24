@@ -5,11 +5,9 @@
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-    <transition name="el-fade-in" mode="out-in">
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
-    </transition>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -71,7 +69,7 @@ export default {
               this.loading = false;
               resolve();
             })
-            .catch(() => {
+            .catch(err => {
               this.loading = false;
               this.REMOVE_USER();
               if (this.dialogShowing == false) {
@@ -86,7 +84,7 @@ export default {
                 });
                 this.dialogShowing = true;
               }
-              reject();
+              reject(err);
             });
         });
       },
@@ -118,7 +116,7 @@ Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Sen:300,400&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
 /*
 
  Default
@@ -126,8 +124,9 @@ Fonts
 
 */
 * {
-  font-family: "Sen", Arial, Helvetica, sans-serif;
+  font-family: "Lato", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
 
   :before,
   :after {
@@ -225,7 +224,7 @@ html,
 .no_events {
   pointer-events: none;
 }
-.hover_indicator {
+.floating_item {
   position: absolute;
   top: -10px;
   right: 0;
@@ -245,6 +244,10 @@ html,
 
 
 */
+.el-popover .el-popper {
+  max-width: fit-content;
+  min-width: fit-content;
+}
 .el-drawer {
   height: 100%;
 }

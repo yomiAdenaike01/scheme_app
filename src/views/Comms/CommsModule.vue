@@ -57,9 +57,19 @@ export default {
       duration: this.requestIntervals.chat
     });
   },
+  activated() {
+    let chatID = this.$route.params?.chatID;
+    if (chatID) {
+      let chatIndex = this.chats.findIndex(chat => {
+        return chat._id == chatID;
+      });
+      this.UPDATE_ACTIVE_CHAT(this.chats[chatIndex]);
+    }
+  },
   methods: {
     ...mapActions("Comms", ["getChats"]),
-    ...mapMutations(["CREATE_GLOBAL_INTERVAL"])
+    ...mapMutations(["CREATE_GLOBAL_INTERVAL"]),
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT"])
   }
 };
 </script>
