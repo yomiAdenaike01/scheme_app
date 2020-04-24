@@ -58,7 +58,7 @@ export default {
           condition: this.team.length == 0,
           click: this.createAnnoucement,
           content:
-            "Create a system wide notification that will notify all users this can be through email or scheme messenger."
+            "Create a system wide notification that will notify all users."
         }
       ];
     }
