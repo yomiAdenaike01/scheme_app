@@ -8,6 +8,7 @@
         :request-index="index"
       />
     </div>
+    <p v-else>No requests</p>
   </div>
 </template>
 
@@ -46,31 +47,26 @@ export default {
       return this.team;
     }
   },
-
+  activated() {
+    let date = new Date().toISOString();
+    for (let i = 0, len = 5; i < len; i++) {
+      this.UPDATE_REQUESTS({
+        _id: Math.random()
+          .toString(16)
+          .slice(2),
+        assigned_to: [{ ...this.userInformation }],
+        start_date: date,
+        end_date: this.initMoment().add(2, "days"),
+        status: this.randStatus,
+        requested_by: this.team[1],
+        type: this.clientInformation.event_groups[0],
+        notes:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley"
+      });
+    }
+  },
   methods: {
     ...mapMutations("Admin", ["UPDATE_REQUESTS"])
-  },
-  watch: {
-    team(val) {
-      if (val.length > 0) {
-        let date = new Date().toISOString();
-        for (let i = 0, len = 5; i < len; i++) {
-          this.UPDATE_REQUESTS({
-            _id: Math.random()
-              .toString(16)
-              .slice(2),
-            assigned_to: [{ ...this.userInformation }],
-            start_date: date,
-            end_date: this.initMoment().add(2, "days"),
-            status: this.randStatus,
-            requested_by: val[1],
-            type: this.clientInformation.event_groups[0],
-            notes:
-              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley"
-          });
-        }
-      }
-    }
   }
 };
 </script>

@@ -91,6 +91,12 @@ export default {
           optional: true
         },
         {
+          "component-type": "text",
+          model: "phone_number",
+          placeholder: "Phone number",
+          optional: true
+        },
+        {
           "component-type": "select",
           placeholder: "User groups",
           options: this.getUserGroups,
@@ -110,6 +116,9 @@ export default {
     date() {
       return this.formatDate(this.localUserInformation.date_created);
     },
+    id() {
+      return this.localUserInformation._id;
+    },
 
     teamMemberIndex() {
       return this.team.findIndex(x => {
@@ -128,27 +137,29 @@ export default {
     ...mapActions("Admin", ["getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
     ...mapMutations("Admin", ["UPDATE_ONE_TEAM_MEMBER", "DELETE_TEAM_MEMBER"]),
-    updateUser(e) {
-      if (!this.hasEntries(e)) {
+    updateUser(userData) {
+      if (!this.hasEntries(userData)) {
         this.UPDATE_NOTIFICATIONS({
           type: "error",
           message: "Error updating user, params are missing"
         });
       } else {
-        e.date_of_birth = this.initMoment(e?.date_of_birth).toISOString();
+        userData.date_of_birth = this.initMoment(
+          userData?.date_of_birth
+        ).toISOString();
         this.UPDATE_ONE_TEAM_MEMBER({
           index: this.teamMemberIndex,
-          payload: e
+          payload: userData
         });
-        this.closeDialog();
 
         this.request({
           method: "PUT",
           url: "users/update",
-          data: { update: e, _id: this.localUserInformation?._id }
+          data: { update: userData, _id: this.localUserInformation._id }
         }).catch(() => {
           this.UPDATE_ONE_TEAM_MEMBER(this.teamRef);
         });
+        this.closeDialog();
       }
     },
     assignUserToGroup() {

@@ -2,7 +2,7 @@
   <div class="user_module_container">
     <UserGroup add-new @createUserGroup="displayDialog = $event" />
 
-    <UserGroup v-if="hasEntries(team)">
+    <UserGroup v-if="team.length > 0">
       <div class="user_groups_table_container">
         <InformationDisplay
           :display-text="{

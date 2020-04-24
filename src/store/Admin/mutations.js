@@ -43,12 +43,16 @@ export default {
   },
   // create user
   CREATE_USER(state, payload) {
+    state.team.push(payload);
     updateBreadCrumbs(state, "teamRef", {
       index: state.team.length
     });
-    state.team.push(payload);
+    console.log(state.team);
   },
   REMOVE_USER(state, index) {
+    if (!index) {
+      index = state.team.length - 1;
+    }
     updateBreadCrumbs(state, "teamRef", {
       payload: {
         index,
@@ -177,15 +181,15 @@ export default {
     }
   },
   ADD_TEAM_MEMBER(state, payload) {
-    let isPresent =
-      state.team.findIndex(x => {
-        return x._id == payload._id || x.name == payload.name;
-      }) > -1;
-    if (!isPresent) {
-      console.log(payload);
+    let teamMemberIndex = state.team.findIndex(x => {
+      return x.email == payload.email;
+    });
+    if (teamMemberIndex == -1) {
       state.team.push(payload);
-      console.log(state.team);
-      updateBreadCrumbs(state, "teamRef", payload);
+      updateBreadCrumbs(state, "teamRef", {
+        payload,
+        index: state.team.length - 1
+      });
     }
   },
   DELETE_TEAM_MEMBER(state, teamMemberIndex) {
@@ -197,10 +201,9 @@ export default {
       index,
       payload: state.team[index]
     });
-    Vue.set(state.team, index, {
-      ...state.team[index],
-      ...payload
-    });
+    for (let property in payload) {
+      Vue.set(state.team[index], property, payload[property]);
+    }
   },
 
   UPDATE_BOARDS(state, { data, action = "update" }) {

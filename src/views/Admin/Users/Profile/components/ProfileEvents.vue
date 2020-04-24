@@ -26,13 +26,12 @@ export default {
   },
   props: {
     events: {
-      type: Object | Array,
-      default: () => {}
+      type: Array,
+      default: () => []
     }
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Admin", ["events"]),
     ...mapGetters(["getIsAdmin", "getActiveDialog"]),
     infoDisplayText() {
       let heading = "No events to display",

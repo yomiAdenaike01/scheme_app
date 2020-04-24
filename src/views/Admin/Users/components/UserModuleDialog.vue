@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapState("Admin", ["teamRef"]),
+    ...mapState("Admin", ["teamRef", "team"]),
     ...mapGetters("Admin", ["getUserGroups"]),
 
     genPwd() {
@@ -141,8 +141,19 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS"]),
-    ...mapMutations("Admin", ["CREATE_USER", "REMOVE_USER"]),
-
+    ...mapMutations("Admin", [
+      "ADD_TEAM_MEMBER",
+      "UPDATE_ONE_TEAM_MEMBER",
+      "REMOVE_USER"
+    ]),
+    updateNewUser(response) {
+      this.UPDATE_ONE_TEAM_MEMBER({
+        index: this.team.length - 1,
+        payload: response
+      });
+      this.loading = false;
+      this.view = false;
+    },
     userModuleController(val) {
       switch (this.currentTab) {
         case 1: {
@@ -160,7 +171,8 @@ export default {
         return group._id == employee.user_group;
       });
       let _employee = { ...employee, user_group: uGroup };
-      this.CREATE_USER(_employee);
+
+      this.ADD_TEAM_MEMBER(_employee);
       this.request({
         method: "POST",
         url: "users/register/one",
@@ -170,9 +182,8 @@ export default {
           admin_gen: true
         }
       })
-        .then(() => {
-          this.loading = false;
-          this.view = false;
+        .then(response => {
+          this.updateNewUser(response);
         })
         .catch(error => {
           this.loading = false;

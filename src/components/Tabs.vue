@@ -7,6 +7,7 @@
       v-loading="loading"
       :closable="false"
       stretch
+      type="card"
       :addable="false"
       :tab-position="position"
     >

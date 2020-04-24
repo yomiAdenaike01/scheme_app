@@ -177,6 +177,7 @@ export default {
               }
             ];
             if (vm.groupData?.groupID) {
+              console.log(vm.groupData);
               form.push(vm.isAdminFormItem, {
                 "component-type": "text",
                 placeholder: "Name",
@@ -237,7 +238,14 @@ export default {
               model: "label"
             };
             if (vm.groupType == "user_groups") {
-              createForm.push(newGroupName, vm.isAdminFormItem);
+              createForm.push(newGroupName, vm.isAdminFormItem, {
+                "component-type": "switch",
+                noLabel: true,
+                placeholder: "Reject event privilages",
+                model: "enable_event_rejection",
+                hint:
+                  "Events that user's assigned to will not be approved until they have approved it also."
+              });
             } else {
               createForm.push(newGroupName, {
                 "component-type": "select",

@@ -244,6 +244,10 @@ html,
 
 
 */
+.el-popover .el-popper {
+  max-width: fit-content;
+  min-width: fit-content;
+}
 .el-drawer {
   height: 100%;
 }

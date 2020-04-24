@@ -40,14 +40,6 @@ export default {
       selectedForm: "login"
     };
   },
-
-  activated() {
-    this.CLEAR_GLOBAL_INTERVAL();
-    if (this.hasEntries(this.$route.params)) {
-      this.login(this.$route.params);
-    }
-  },
-
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters(["getDeviceInformation"]),
@@ -101,6 +93,19 @@ export default {
       };
     }
   },
+  created() {
+    this.CLEAR_GLOBAL_INTERVAL();
+  },
+  mounted() {
+    this.CLEAR_GLOBAL_INTERVAL();
+  },
+  activated() {
+    this.CLEAR_GLOBAL_INTERVAL();
+    if (this.hasEntries(this.$route.params)) {
+      this.login(this.$route.params);
+    }
+  },
+
   methods: {
     ...mapActions(["request", "getClient"]),
     ...mapMutations([
@@ -166,8 +171,7 @@ export default {
         method: "POST",
         data: {
           client_id: this.clientInformation._id,
-          ...this.credentials,
-          deviceInformation: this.getDeviceInformation
+          ...this.credentials
         },
         url: "/users/login"
       })
