@@ -21,10 +21,11 @@ export default {
   display: flex;
   background: white;
   padding: 0;
-  min-width: 25%;
-  min-height: 25%;
-  top: 5px;
-  right: 0px;
+  min-width: 26%;
+  min-height: 26%;
+  bottom: 5px;
+  top: initial;
+  right: 5px;
   padding: 2px;
 }
 .online_container {
