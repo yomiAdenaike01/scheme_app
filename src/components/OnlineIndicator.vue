@@ -8,7 +8,7 @@
 export default {
   name: "OnlineIndicator",
   props: {
-    is_online: {
+    isOnline: {
       type: Boolean,
       default: false
     }
@@ -21,10 +21,10 @@ export default {
   display: flex;
   background: white;
   padding: 0;
-  min-width: 15%;
-  min-height: 15%;
-  top: 10px;
-  right: 5px;
+  min-width: 25%;
+  min-height: 25%;
+  top: 5px;
+  right: 0px;
   padding: 2px;
 }
 .online_container {
