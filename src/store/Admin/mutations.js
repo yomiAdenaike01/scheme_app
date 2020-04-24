@@ -135,9 +135,9 @@ export default {
       ...payload
     };
   },
-  DELETE_EVENT(state, payload) {
-    let eventIndex = payload?.eventIndex ?? state.events.length - 1;
+  DELETE_EVENT(state, eventIndex) {
     if (!eventIndex) {
+      eventIndex = state.team.length - 1;
       state.events.pop();
     }
     if (state.events[eventIndex]) {

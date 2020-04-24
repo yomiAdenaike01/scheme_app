@@ -13,6 +13,7 @@ const clearStateInterval = (state, intervalID) => {
     clearTimeout(state.runningIntervals[intervalID]);
     Vue.set(state.runningIntervals, intervalID, null);
   }
+  console.log(state.runningIntervals);
 };
 
 export default {
@@ -77,6 +78,7 @@ export default {
       runInterval();
       state.runningIntervals[id] = timeout;
     }
+    console.log(state.runningIntervals);
   },
 
   CLEAR_GLOBAL_INTERVAL(state, intervalID = null) {
@@ -137,9 +139,16 @@ export default {
   REMOVE_USER(state) {
     state.userNotifications = [];
     state.localNotifications = [];
+    console.warn(state.runningIntervals);
     if (VueRouter.currentRoute.name != "signIn") {
       VueRouter.push({ name: "signIn" });
     }
+    for (let property in state.runningIntervals) {
+      if (property != "client") {
+        clearStateInterval(state, property);
+      }
+    }
+    console.log(state);
   },
   UPDATE_USER(state, { user, token }) {
     state.token = token;
