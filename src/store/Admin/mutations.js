@@ -196,13 +196,23 @@ export default {
     updateBreadCrumbs(state, "teamRef", state.team[teamMemberIndex]);
     Vue.delete(state.team, teamMemberIndex);
   },
+  UPDATE_TEAM_MEMBER_GROUP(state, { index, groupType, payload }) {
+    updateBreadCrumbs(state, "teamRef", {
+      index,
+      payload: state.team[index]
+    });
+    state.team[index][groupType] = {
+      ...state.team[index][groupType],
+      ...payload
+    };
+  },
   UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
     updateBreadCrumbs(state, "teamRef", {
       index,
       payload: state.team[index]
     });
     for (let property in payload) {
-      Vue.set(state.team[index], property, payload[property]);
+      Vue.set(state.team[index], property, { ...payload[property] });
     }
   },
 
