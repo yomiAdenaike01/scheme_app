@@ -38,7 +38,7 @@
           size="small"
           round
           plain
-          @click="deleteEvent"
+          @click="deleteEvent('Are you sure you want to delete this event ? ')"
           >Delete Event</el-button
         >
       </div>

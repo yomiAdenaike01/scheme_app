@@ -93,14 +93,8 @@ export default {
       };
     }
   },
-  created() {
-    this.CLEAR_GLOBAL_INTERVAL();
-  },
-  mounted() {
-    this.CLEAR_GLOBAL_INTERVAL();
-  },
+
   activated() {
-    this.CLEAR_GLOBAL_INTERVAL();
     if (this.hasEntries(this.$route.params)) {
       this.login(this.$route.params);
     }

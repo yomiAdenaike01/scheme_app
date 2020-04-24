@@ -51,7 +51,7 @@ export default {
               is_approved: event?.is_approved,
               assigned_to: event?.assigned_to,
               type: event?.type,
-              _id: event?._id,
+              _id: event._id,
               notice_period: event?.notice_period,
               created_by: event?.created_by
             };

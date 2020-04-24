@@ -30,10 +30,6 @@ export default {
     OnlineIndicator: () => import("@/components/OnlineIndicator")
   },
   props: {
-    displayPrescence: {
-      type: Boolean,
-      default: true
-    },
     userInformation: {
       type: Object,
       default: () => {},

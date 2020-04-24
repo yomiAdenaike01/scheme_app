@@ -14,8 +14,10 @@
     <div v-if="displayContent" class="group_management_container">
       <Form
         :config="form"
+        emit-on-change
         all-optional
         :submit-button="{ text: `${selectedConfig} group` }"
+        @change="groupData = $event"
         @val="handleRequest"
       />
     </div>
@@ -131,7 +133,7 @@ export default {
     },
     groupIndex() {
       return this.clientInformation[this.groupType].findIndex(index => {
-        return index.groupID == this.groupData.groupID;
+        return index._id == this.groupData.groupID;
       });
     },
     mutationPayloads() {
@@ -155,13 +157,32 @@ export default {
       };
     },
     editGroup() {
+      let { groupID, ...update } = this.groupData;
       return {
         Edit: {
           request: {
-            method: "PUT"
+            method: "PUT",
+            data: { update }
           },
           mutation: () => {
-            this.UPDATE_GROUP(this.mutationData);
+            this.UPDATE_GROUP({
+              groupType: this.groupType,
+              groupIndex: this.groupIndex,
+              payload: this.groupData
+            });
+            let groupLabel =
+              this.groupType == "user_groups" ? "user_group" : "event_group";
+            for (let i = 0, len = this.team.length; i < len; i++) {
+              let member = this.team[i];
+              if (member[groupLabel]._id == this.groupData.groupID) {
+                console.log(member);
+                this.UPDATE_TEAM_MEMBER_GROUP({
+                  index: i,
+                  groupType: groupLabel,
+                  payload: update
+                });
+              }
+            }
           },
           catch: () => {
             this.UPDATE_GROUP(this.rootGroupRef);
@@ -177,12 +198,20 @@ export default {
               }
             ];
             if (vm.groupData?.groupID) {
-              console.log(vm.groupData);
-              form.push(vm.isAdminFormItem, {
-                "component-type": "text",
-                placeholder: "Name",
-                model: "label"
-              });
+              form.push(
+                {
+                  "component-type": "text",
+                  placeholder: "Change name",
+                  model: "label"
+                },
+                vm.isAdminFormItem,
+                {
+                  "component-type": "switch",
+                  model: "enable_event_rejection",
+                  placeholder: "Enable event rejection",
+                  noLabel: true
+                }
+              );
               if (vm.groupType == "event_groups") {
                 form.push({
                   "component-type": "select",
@@ -305,7 +334,7 @@ export default {
           form: [
             {
               "component-type": "select",
-              placeholder: "Select event group",
+              placeholder: `Select ${this.langXref.label} group`,
               required: true,
               options: this.groups,
               model: "groupID"
@@ -321,15 +350,17 @@ export default {
       };
     },
     groupConfig() {
+      let formData = { ...this.groupData };
+      formData._id = formData.groupID;
+      delete formData.groupID;
       let url = "clients/group",
-        data = { ...this.groupData, groupType: this.groupType };
+        data = { ...formData, groupType: this.groupType };
 
       let payloadXref = {
         ...this.createGroup,
         ...this.editGroup,
         ...this.deleteGroup
       };
-
       payloadXref[this.selectedConfig].request = {
         ...payloadXref[this.selectedConfig].request,
         data: { ...data, ...payloadXref[this.selectedConfig].request?.data },
@@ -363,7 +394,11 @@ export default {
   methods: {
     ...mapActions(["request", "genPromptBox"]),
     ...mapMutations(["CREATE_GROUP", "UPDATE_GROUP", "DELETE_GROUP"]),
-    ...mapMutations("Admin", ["CLEAR_BREADCRUMBS", "REASSIGN_ELEMENTS"]),
+    ...mapMutations("Admin", [
+      "CLEAR_BREADCRUMBS",
+      "REASSIGN_ELEMENTS",
+      "UPDATE_TEAM_MEMBER_GROUP"
+    ]),
     changeContent(button) {
       this.selectedConfig = button;
       this.displayContent = true;
@@ -374,8 +409,7 @@ export default {
       this.displayContent = false;
       this.selectedConfig = "";
     },
-    handleRequest(e) {
-      this.groupData = e;
+    handleRequest() {
       this.groupConfig?.mutation();
       this.request(this.payload)
         .then(response => {

@@ -44,6 +44,7 @@
           :show-password="input['component-type'] == 'password'"
           :min="input.min"
           :max="input.max"
+          filterable
           :option="input.options"
           :props="input.cascaderProps"
           :picker-options="input.pickerOptions"
@@ -72,6 +73,7 @@
           :end-placeholder="input.end_placeholder"
           :multiple="input.multiple"
           :clearable="true"
+          @change="input.onChange ? input.onChange : null"
         >
           <el-option
             v-for="option in input.options"

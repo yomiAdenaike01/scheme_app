@@ -17,6 +17,5 @@ export default new Vuex.Store({
   actions,
   getters,
 
-  modules: { Comms, Admin },
-  plugins: [VuexReset({ trigger: "REMOVE_USER" })]
+  modules: { Comms, Admin }
 });
