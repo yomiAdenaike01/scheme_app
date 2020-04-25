@@ -237,7 +237,7 @@ export default {
   flex: 1;
   flex-direction: column;
   margin: 0 10px;
-  border-radius: 5px;
+  border-radius: 16px;
   border: 2px solid whitesmoke;
   height: 100%;
   background: white;

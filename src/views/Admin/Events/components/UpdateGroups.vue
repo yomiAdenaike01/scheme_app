@@ -198,20 +198,11 @@ export default {
               }
             ];
             if (vm.groupData?.groupID) {
-              form.push(
-                {
-                  "component-type": "text",
-                  placeholder: "Change name",
-                  model: "label"
-                },
-                vm.isAdminFormItem,
-                {
-                  "component-type": "switch",
-                  model: "enable_event_rejection",
-                  placeholder: "Enable event rejection",
-                  noLabel: true
-                }
-              );
+              form.push({
+                "component-type": "text",
+                placeholder: "Change name",
+                model: "label"
+              });
               if (vm.groupType == "event_groups") {
                 form.push({
                   "component-type": "select",
@@ -222,6 +213,13 @@ export default {
                   hint: `Already enabled for the following ${vm.langXref.pluralize()} <strong>${
                     vm.usersText
                   }</strong>`
+                });
+              } else {
+                form.push(vm.isAdminFormItem, {
+                  "component-type": "switch",
+                  model: "enable_event_rejection",
+                  placeholder: "Enable event rejection",
+                  noLabel: true
                 });
               }
             }

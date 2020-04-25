@@ -65,12 +65,10 @@ export default {
   justify-content: center;
   align-items: center;
   background: whitesmoke;
-  color: white;
   width: 100%;
 
   &.healthy {
-    background: $success_colour;
-    box-shadow: inset 5px 0px 10px rgba(0, 0, 0, 0.1);
+    background: whitesmoke;
     .button_display {
       background: darken($color: $success_colour, $amount: 18);
     }

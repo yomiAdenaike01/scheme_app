@@ -8,7 +8,7 @@
       :selected-tab="currentTab"
       :submit-text="tabXref.display"
       @val="eventsCtrl"
-      @change="eventInformation = $event"
+      @change="events = $event"
     >
       <div slot="header">
         <InformationDisplay :display-text="informationDisplay" />
@@ -213,6 +213,7 @@ export default {
       // Check if it is an admin or not
 
       if (this.getIsAdmin) {
+        console.log(this.events?.user_groups?.length > 0);
         let teamMemberPlaceholder =
           this.assignToUsernames?.length > 0
             ? `Select team members including (${this.assignToUsernames})`
@@ -220,7 +221,7 @@ export default {
         createEventConfig.unshift(
           {
             placeholder: teamMemberPlaceholder,
-            disabled: this.eventInformation?.user_groups?.length > 0,
+            disabled: this.events?.user_groups?.length > 0,
             "component-type": "select",
             model: "assigned_to",
             options: this.getDropdownTeamMembers,
@@ -229,7 +230,7 @@ export default {
           {
             "component-type": "select",
             options: this.getUserGroups,
-            disabled: this.eventInformation?.assigned_to?.length > 0,
+            disabled: this.events?.assigned_to?.length > 0,
             multiple: true,
             model: "user_groups",
             placeholder: "Assign to a user group",

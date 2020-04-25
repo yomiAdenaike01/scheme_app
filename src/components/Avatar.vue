@@ -1,6 +1,7 @@
 <template>
   <div class="avatar_container" :title="name" :class="{ multiple }">
     <custom-avatar
+      style="border-radius:30%"
       :username="name"
       :lighten="100"
       :size="size"

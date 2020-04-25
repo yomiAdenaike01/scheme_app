@@ -110,6 +110,46 @@ export default {
 };
 </script>
 <style lang="scss">
+:root {
+  // HSL properties
+  --color-h-primary: 219.7;
+  --color-s-primary: 98.4%;
+  --color-l-primary: 50.6%;
+
+  --color-h-secondary: 221;
+  --color-s-secondary: 99%;
+  --color-l-secondary: 62%;
+
+  // Primary colour
+  --colour_primary_text: hsl(220, 98%, 51%);
+
+  --colour_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    var(--color-l-primary)
+  );
+
+  --colour_darker_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    10%
+  );
+
+  // Secondary colour
+  --colour_secondary: hsl(
+    var(--color-h-secondary),
+    var(--color-s-sec--color-h-secondary),
+    var(--color-l-sec--color-h-secondary)
+  );
+
+  --colour_darker_secondary: hsl(
+    var(--color-h-secondary),
+    var(--color-s-secondary),
+    64%
+  );
+
+  --colour_tertiary: hsl(353, 17%, 20%);
+}
 /*
 
 Fonts
