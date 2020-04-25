@@ -7,11 +7,10 @@
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container">
           <el-popover trigger="click">
-            <el-button v-if="getIsAdmin" slot="reference">{{
-              localUserInformation.groupID == 0
-                ? "Assign to group"
-                : "Reassign to group"
-            }}</el-button>
+            <s-button v-if="getIsAdmin" slot="reference" shadow center>
+              Reassign to group
+            </s-button>
+
             <el-select v-model="selectedGroup" @change="assignUserToGroup">
               <el-option
                 v-for="{ label, value } in getUserGroups"
@@ -24,7 +23,9 @@
           </el-popover>
 
           <el-popover trigger="click">
-            <el-button slot="reference">Update Personal Information</el-button>
+            <s-button slot="reference" center
+              >Update Personal Information</s-button
+            >
             <Form
               class="full_width"
               submit-text="Update user"
@@ -32,8 +33,13 @@
               @val="updateUser"
             />
           </el-popover>
-          <el-button v-if="getIsAdmin" plain type="danger" @click="removeUser"
-            >Delete Account</el-button
+          <s-button
+            v-if="getIsAdmin"
+            center
+            colour-scheme="secondary"
+            shadow
+            @click="removeUser"
+            >Delete Account</s-button
           >
         </div>
       </el-collapse-item>
@@ -53,7 +59,8 @@ import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 export default {
   name: "ProfileInformation",
   components: {
-    Form: () => import("@/components/Form")
+    Form: () => import("@/components/Form"),
+    SButton: () => import("@/components/SButton")
   },
   data() {
     return {

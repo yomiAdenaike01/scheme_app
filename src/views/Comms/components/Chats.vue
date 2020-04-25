@@ -128,7 +128,7 @@ export default {
   }
 }
 .chats_header {
-  border-bottom: 2px solid whitesmoke;
+  margin: 10px;
 }
 .query_chats_container /deep/ .el-input__inner {
   border: none;

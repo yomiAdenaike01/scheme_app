@@ -89,12 +89,7 @@
           trigger="click"
         >
           <div slot="reference">
-            <s-button
-              colour-scheme="tertiary"
-              only-icon
-              icon="plus"
-              @click="null"
-            />
+            <s-button colour-scheme="secondary" only-icon icon="plus" shadow />
           </div>
           <Form class="full_width" :config="formConfig" @val="createAction" />
         </el-popover>

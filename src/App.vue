@@ -111,19 +111,19 @@ export default {
 </script>
 <style lang="scss">
 :root {
-  //213,15,24
   // Primary
   --color-h-primary: 213;
   --color-s-primary: 15%;
-  --color-l-primary: 24%;
+  --color-l-primary: 34%;
   // Secondary
-  --color-h-secondary: 221;
-  --color-s-secondary: 99%;
-  --color-l-secondary: 62%;
+  --color-h-secondary: 145;
+  --color-s-secondary: 59%;
+  --color-l-secondary: 59%;
   // Tertiary
   --color-h-tertiary: 130;
   --color-s-tertiary: 62%;
   --color-l-tertiary: 58%;
+  // Danger
 
   // Grey 1
   --color-h-gdark: 210;
@@ -140,11 +140,7 @@ export default {
     var(--color-l-gdark)
   );
 
-  --colour_grey_light: hsl(
-    var(---color-h-glight),
-    var(--color-s-glight),
-    var(--color-l-glight)
-  );
+  --colour_grey_light: hsl(0, 0%, 98%);
 
   // Primary colour (blue)
 
@@ -175,20 +171,31 @@ export default {
     var(--color-s-primary),
     80%
   );
+  // Secondary colour
 
-  // Secondary colour (blue)
   --colour_secondary: hsl(
     var(--color-h-secondary),
     var(--color-s-secondary),
     var(--color-l-secondary)
   );
-  // Secondary colour (green)
+  --colour_secondary_lighter: hsl(
+    var(--color-h-secondary),
+    var(--color-s-secondary),
+    75%
+  );
+  --colour_secondary_darker: hsl(
+    var(--color-h-secondary),
+    var(--color-s-secondary),
+    50%
+  );
+  // tertiary colour (green)
   --colour_tertiary: hsl(
     var(--color-h-tertiary),
     var(--color-s-tertiary),
     var(--color-l-tertiary)
   );
 }
+
 /*
 
 Fonts

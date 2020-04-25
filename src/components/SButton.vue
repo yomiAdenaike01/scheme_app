@@ -3,14 +3,15 @@
     :class="[
       'button_container',
       {
-        primary: colourScheme == 'primary',
-        secondary: colourScheme == 'secondary',
-        teritiary: colourScheme == 'tertiary',
+        primary: props.colourScheme == 'primary',
+        secondary: props.colourScheme == 'secondary',
+        teritiary: props.colourScheme == 'tertiary',
         flat: props.flat,
-        button_shadow: props.shadow
+        button_shadow: props.shadow,
+        center: props.center
       }
     ]"
-    @click="listeners.click"
+    v-on="listeners"
   >
     <div v-if="!props.onlyIcon" class="slot_wrapper">
       <slot />
@@ -47,12 +48,17 @@ export default {
     },
     inverseIcon: {
       type: Boolean
+    },
+    center: {
+      type: Boolean
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
+$shadow: -4px 10px 21px var(--colour_even_lighter_primary);
+
 .button_container {
   font-size: 0.9em;
   background: var(--colour_primary);
@@ -62,13 +68,14 @@ export default {
   align-items: center;
   color: white;
   min-height: 30px;
-
   cursor: pointer;
   position: relative;
   transition: $default_transition;
   will-change: opacity;
-  &:hover {
-    box-shadow: -4px 10px 21px var(--colour_even_lighter_primary);
+  max-width: 500px;
+  &.center {
+    text-align: center;
+    justify-content: center;
   }
   &.flat {
     background: var(--colour_grey);
@@ -78,16 +85,22 @@ export default {
   &.button_shadow {
     box-shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   }
-  .secondary {
+  &.secondary {
     background: var(--colour_secondary);
     .icon_container {
-      background: var(--colour_dark_secondary);
+      background: var(--colour_secondary_darker);
+    }
+    &.button_shadow {
+      box-shadow: -4px 10px 21px var(--colour_secondary_lighter);
     }
   }
-  .teritiary {
+  &.teritiary {
     background: var(--colour_tertiary);
     .icon_container {
       background: var(--colour_dark_tertiary);
+    }
+    &.button_shadow {
+      box-shadow: -4px 10px 21px var(--colour_tertiary);
     }
   }
 }

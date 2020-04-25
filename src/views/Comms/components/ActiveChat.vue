@@ -33,7 +33,13 @@
             placeholder="Send a message..."
             @keyup.enter.native="sendChatMessage"
           />
-          <el-button type="text" @click="sendChatMessage">Send</el-button>
+          <s-button
+            icon="send"
+            shadow
+            colour-scheme="secondary"
+            @click="sendChatMessage"
+            >Send</s-button
+          >
         </div>
       </div>
     </div>
@@ -49,6 +55,7 @@ export default {
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     ChatActions: () => import("./ChatActions"),
+    SButton: () => import("@/components/SButton"),
     ChatMessage
   },
   mixins: [scrollToBottom],
@@ -257,15 +264,12 @@ export default {
   display: flex;
   flex: 1;
   &/deep/ {
-    .el-input__inner {
-      padding: 20px;
-      border: none;
-      background: rgb(250, 250, 250);
-      border-radius: 30px;
-    }
-    .el-input {
+    .el-input .el-input__inner {
       padding: 10px;
       font-size: 1em;
+      border: none;
+      border-radius: 20px;
+      background: rgb(250, 250, 250);
     }
   }
 }

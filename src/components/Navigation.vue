@@ -86,17 +86,11 @@ export default {
   border-bottom-left-radius: 20px;
   border-top-left-radius: 20px;
 
-  &:first-of-type {
-    &:hover {
-      background: var(--colour_lighter_primary);
-    }
-  }
   &.router-link-active {
     background: white;
     color: var(--colour_primary);
   }
   &:hover {
-    opacity: 0.8;
     cursor: pointer;
   }
   i {
