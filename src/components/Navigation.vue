@@ -58,9 +58,7 @@ export default {
 
 <style lang="scss" scoped>
 .nav_sidebar {
-  padding-top: 30px;
   background: var(--colour_primary);
-  display: flex;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,6 +73,17 @@ export default {
 }
 
 .nav_sidebar ul li {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  color: white;
+  padding: 10px 20px;
+  transition: $default_transition background;
+  will-change: background;
+  position: relative;
+  margin: 40px 0;
+
   &:first-of-type {
     border-top-right-radius: 40px;
 
@@ -83,7 +92,6 @@ export default {
       border-top-right-radius: 40px;
     }
   }
-  position: relative;
   &.router-link-active {
     &:after {
       content: "";
@@ -101,14 +109,6 @@ export default {
       color: var(--colour_primary);
     }
   }
-  display: flex;
-  align-items: center;
-  width: 100%;
-  flex: 1;
-  color: white;
-  padding: 20px;
-  transition: $default_transition background;
-  will-change: background;
   &:hover {
     background: var(--colour_lighter_primary);
     cursor: pointer;
