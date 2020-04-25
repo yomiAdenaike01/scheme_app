@@ -83,7 +83,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     color: white;
   }
   &.button_shadow {
-    box-shadow: -4px 10px 21px var(--colour_even_lighter_primary);
+    box-shadow: -2px 11px 21px var(--colour_even_lighter_primary);
   }
   &.secondary {
     background: var(--colour_secondary);
@@ -91,7 +91,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
       background: var(--colour_secondary_darker);
     }
     &.button_shadow {
-      box-shadow: -4px 10px 21px var(--colour_secondary_lighter);
+      box-shadow: -2px 11px 21px var(--colour_secondary_lighter);
     }
   }
   &.tertiary {
@@ -100,7 +100,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
       background: var(--colour_tertiary_darker);
     }
     &.button_shadow {
-      box-shadow: -4px 10px 21px var(--colour_tertiary_lighter);
+      box-shadow: -2px 11px 21px var(--colour_tertiary_lighter);
     }
   }
 }

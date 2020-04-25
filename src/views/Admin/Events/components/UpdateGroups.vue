@@ -1,15 +1,14 @@
 <template>
   <div class="event_group_management_container">
     <div class="buttons_container">
-      <el-button
+      <s-button
         v-for="(button, index) in config"
         :key="index"
-        round
-        :type="selectedConfig == button ? 'primary' : 'plain'"
+        flat
         @click="changeContent(button)"
       >
         {{ `${button} group` }}
-      </el-button>
+      </s-button>
     </div>
     <div v-if="displayContent" class="group_management_container">
       <Form
@@ -30,7 +29,8 @@ import Form from "@/components/Form";
 export default {
   name: "UpdateGroups",
   components: {
-    Form
+    Form,
+    SButton: () => import("@/components/SButton")
   },
   props: {
     groupType: {
@@ -434,8 +434,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  &/deep/ .el-button {
-    font-size: 1.5em;
+  &/deep/ .button_container {
+    margin: 10px;
   }
 }
 .group_management_container {
