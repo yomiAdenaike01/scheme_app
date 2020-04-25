@@ -4,16 +4,9 @@
 
     <div v-for="(button, key) in buttons" :key="key" class="button_wrapper">
       <div v-if="button.display">
-        <el-button
-          round
-          size="mini"
-          :type="button.type ? button.type : 'primary'"
-          :plain="button.plain"
-          :disabled="button.disabled"
-          @click="button.method"
-        >
+        <s-button @click="button.method">
           <span v-html="button.label"></span>
-        </el-button>
+        </s-button>
       </div>
     </div>
   </div>
@@ -24,6 +17,9 @@ import { mapGetters, mapState, mapMutations } from "vuex";
 
 export default {
   name: "Toolbar",
+  components: {
+    SButton: () => import("@/components/SButton")
+  },
   props: {
     currentView: {
       type: String,

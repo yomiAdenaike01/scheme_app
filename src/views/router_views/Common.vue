@@ -7,7 +7,6 @@
     <NprogressContainer />
 
     <AppBar @runSearch="displaySearch = $event" />
-    <InstanceCheck />
     <GlobalSearch
       v-hotkey="keymap"
       :display="displaySearch"
@@ -32,7 +31,6 @@ export default {
   components: {
     Navigation: () => import("@/components/Navigation"),
     AppBar: () => import("@/components/AppBar"),
-    InstanceCheck: () => import("@/components/InstanceCheck"),
     GlobalSearch: () => import("@/components/GlobalSearch"),
     NprogressContainer
   },
@@ -110,7 +108,9 @@ export default {
     ...mapActions(["updateDevices"]),
     ...mapActions("Admin", ["getEvents", "getTeam"]),
     ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
-
+    testClick() {
+      console.log("Test");
+    },
     toggleDisplaySearch() {
       this.displaySearch = !this.displaySearch;
     },
@@ -176,7 +176,7 @@ export default {
 .inner_app_container {
   display: flex;
   flex: 1;
-  height: calc(100% - 130px);
+  height: calc(100% - 100px);
   background: rgb(251, 251, 251);
 }
 </style>

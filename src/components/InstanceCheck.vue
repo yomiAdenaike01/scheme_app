@@ -68,9 +68,11 @@ export default {
   width: 100%;
 
   &.healthy {
-    background: whitesmoke;
+    background: var(--colour_grey_light);
+    color: white;
     .button_display {
-      background: darken($color: $success_colour, $amount: 18);
+      background: var(--colour_tertiary);
+      box-shadow: 1px 1px 20px var(--colour_tertiary);
     }
   }
   &.unhealthy {

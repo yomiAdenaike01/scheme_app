@@ -111,17 +111,41 @@ export default {
 </script>
 <style lang="scss">
 :root {
-  // HSL properties
-  --color-h-primary: 219.7;
-  --color-s-primary: 98.4%;
-  --color-l-primary: 50.6%;
-
+  // Primary
+  --color-h-primary: 218;
+  --color-s-primary: 57%;
+  --color-l-primary: 52%;
+  // Secondary
   --color-h-secondary: 221;
   --color-s-secondary: 99%;
   --color-l-secondary: 62%;
+  // Tertiary
+  --color-h-tertiary: 130;
+  --color-s-tertiary: 62%;
+  --color-l-tertiary: 58%;
 
-  // Primary colour
-  --colour_primary_text: hsl(220, 98%, 51%);
+  // Grey 1
+  --color-h-gdark: 210;
+  --color-s-gdark: 18%;
+  --color-l-gdark: 83%;
+  // Grey 2
+  --color-h-glight: 213;
+  --color-s-glight: 18%;
+  --color-l-glight: 88%;
+
+  --colour_grey: hsl(
+    var(--color-h-gdark),
+    var(--color-s-gdark),
+    var(--color-l-gdark)
+  );
+
+  --colour_grey_light: hsl(
+    var(---color-h-glight),
+    var(--color-s-glight),
+    var(--color-l-glight)
+  );
+
+  // Primary colour (blue)
 
   --colour_primary: hsl(
     var(--color-h-primary),
@@ -132,23 +156,37 @@ export default {
   --colour_darker_primary: hsl(
     var(--color-h-primary),
     var(--color-s-primary),
-    10%
+    56%
+  );
+  --colour_dark_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    40%
   );
 
-  // Secondary colour
+  --colour_lighter_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    55%
+  );
+  --colour_even_lighter_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    80%
+  );
+
+  // Secondary colour (blue)
   --colour_secondary: hsl(
     var(--color-h-secondary),
-    var(--color-s-sec--color-h-secondary),
-    var(--color-l-sec--color-h-secondary)
-  );
-
-  --colour_darker_secondary: hsl(
-    var(--color-h-secondary),
     var(--color-s-secondary),
-    64%
+    var(--color-l-secondary)
   );
-
-  --colour_tertiary: hsl(353, 17%, 20%);
+  // Secondary colour (green)
+  --colour_tertiary: hsl(
+    var(--color-h-tertiary),
+    var(--color-s-tertiary),
+    var(--color-l-tertiary)
+  );
 }
 /*
 
