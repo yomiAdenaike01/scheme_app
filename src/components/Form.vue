@@ -94,7 +94,7 @@
 
       <!-- Submit button -->
       <div v-if="!disable" class="button_container">
-        <s-button :shadow="true" @click="submitForm">
+        <s-button :shadow="true" :icon="submitButton.icon" @click="submitForm">
           {{ submitButton.text }}</s-button
         >
       </div>

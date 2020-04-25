@@ -4,7 +4,7 @@
       class="form_container"
       :config="formConfig"
       :submit-text="submitText"
-      :submit-button="{ text: 'Sign in' }"
+      :submit-button="{ text: 'Sign in', icon: 'right-arrow-alt' }"
       @val="submitController"
     >
       <div slot="footer" class="new_client_button_container">

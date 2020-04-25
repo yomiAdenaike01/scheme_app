@@ -56,6 +56,9 @@ export default {
 
 <style lang="scss" scoped>
 .message_container {
+  &:first-of-type {
+    border: none;
+  }
   border-top: 2px solid whitesmoke;
   display: flex;
   height: inherit;
