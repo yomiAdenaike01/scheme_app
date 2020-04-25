@@ -17,7 +17,8 @@ export default {
   name: "SButton",
   props: {
     icon: {
-      type: String
+      type: String,
+      default: null
     },
     flat: {
       type: Boolean
@@ -28,13 +29,13 @@ export default {
 
 <style scoped lang="scss">
 .button_container {
+  font-size: 0.9em;
   background: var(--colour_primary);
   border-radius: 20px;
-  padding: 10px 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   color: white;
+  min-height: 30px;
   box-shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   cursor: pointer;
   position: relative;
@@ -50,16 +51,16 @@ export default {
   }
 }
 .slot_wrapper {
-  padding: 0 20px;
+  padding: 10px 20px;
 }
 .icon_container {
-  bottom: 0;
   display: flex;
   font-size: 1.2em;
   align-items: center;
-  order: -1;
   padding: 10px;
+  margin: 0;
   border-radius: 50%;
   background: var(--colour_dark_primary);
+  color: white;
 }
 </style>

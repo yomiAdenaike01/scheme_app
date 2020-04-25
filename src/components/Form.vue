@@ -94,15 +94,7 @@
 
       <!-- Submit button -->
       <div v-if="!disable" class="button_container">
-        <el-button
-          round
-          :size="submitButton.size ? submitButton.size : 'mini'"
-          :plain="submitButton.plain ? submitButton.plain : false"
-          :type="submitButton.type ? submitButton.type : 'primary'"
-          class="button_text"
-          @click="submitForm"
-          >{{ submitButton.text }}</el-button
-        >
+        <s-button @click="submitForm"> {{ submitButton.text }}</s-button>
       </div>
     </el-form>
   </div>
@@ -111,7 +103,9 @@
 <script>
 export default {
   name: "Form",
-
+  components: {
+    SButton: () => import("@/components/SButton")
+  },
   props: {
     displayReset: {
       type: Boolean,
@@ -161,10 +155,6 @@ export default {
     size: {
       type: String,
       default: "mini"
-    },
-    predefinedData: {
-      type: Object,
-      required: false
     }
   },
   data() {

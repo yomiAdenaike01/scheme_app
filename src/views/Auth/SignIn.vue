@@ -7,9 +7,6 @@
       :submit-button="{ text: 'Sign in' }"
       @val="submitController"
     >
-      <div slot="header" class="logo_wrapper">
-        <Logo />
-      </div>
       <div slot="footer" class="new_client_button_container">
         <el-button size="small" @click="selectedForm = 'forgotPassword'">
           Forgot password ?

@@ -85,14 +85,12 @@ export default {
   margin: 40px 0;
 
   &:first-of-type {
-    border-top-right-radius: 40px;
-
     &:hover {
       background: var(--colour_lighter_primary);
-      border-top-right-radius: 40px;
     }
   }
   &.router-link-active {
+    background: transparent;
     &:after {
       content: "";
       position: absolute;

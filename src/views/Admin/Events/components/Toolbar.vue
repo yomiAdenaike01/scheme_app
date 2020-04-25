@@ -4,8 +4,8 @@
 
     <div v-for="(button, key) in buttons" :key="key" class="button_wrapper">
       <div v-if="button.display">
-        <s-button @click="button.method">
-          <span v-html="button.label"></span>
+        <s-button :icon="button.icon" @click="button.method">
+          <span>{{ button.label }}</span>
         </s-button>
       </div>
     </div>
@@ -44,10 +44,8 @@ export default {
       let buttons = [
         {
           label: this.buttonText,
-          round: true,
-          plain: true,
           display: this.currentView == "events",
-          type: "primary",
+          icon: "calendar",
           method: () => {
             this.UPDATE_DIALOG_INDEX({
               dialog: "eventModule",
@@ -57,12 +55,9 @@ export default {
         },
         {
           label:
-            this.currentView == "events"
-              ? 'View requests <i class="el-icon-arrow-right"></i> '
-              : '<i class="el-icon-arrow-left"></i> View events',
-          round: true,
+            this.currentView == "events" ? "View requests " : "View events",
+          icon: this.currentView == "events" ? "right-arrow-alt" : "arrow-back",
           display: true,
-          plain: true,
           method: () => {
             if (this.currentView == "events") {
               this.$emit("changeView", "requests");
