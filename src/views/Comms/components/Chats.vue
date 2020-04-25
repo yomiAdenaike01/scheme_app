@@ -4,7 +4,7 @@
       <div class="chats_header">
         <el-input
           v-model="query"
-          class="query_chats_container"
+          class="flat_input query_chats_container"
           placeholder="Search chats"
         />
       </div>

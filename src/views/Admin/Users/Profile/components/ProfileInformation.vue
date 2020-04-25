@@ -36,7 +36,7 @@
           <s-button
             v-if="getIsAdmin"
             center
-            colour-scheme="secondary"
+            colour-scheme="tertiary"
             shadow
             @click="removeUser"
             >Delete Account</s-button

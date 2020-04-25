@@ -110,25 +110,36 @@ export default {
 };
 </script>
 <style lang="scss">
+.flat_input {
+  &/deep/ .el-input__inner {
+    padding: 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 20px;
+    background: rgb(249, 249, 249);
+  }
+}
 :root {
   // Primary
   --color-h-primary: 213;
   --color-s-primary: 15%;
   --color-l-primary: 34%;
+
   // Secondary
   --color-h-secondary: 145;
   --color-s-secondary: 59%;
   --color-l-secondary: 59%;
+
   // Tertiary
-  --color-h-tertiary: 130;
-  --color-s-tertiary: 62%;
-  --color-l-tertiary: 58%;
-  // Danger
+  --color-h-tertiary: 0;
+  --color-s-tertiary: 100%;
+  --color-l-tertiary: 65%;
 
   // Grey 1
   --color-h-gdark: 210;
   --color-s-gdark: 18%;
   --color-l-gdark: 83%;
+
   // Grey 2
   --color-h-glight: 213;
   --color-s-glight: 18%;
@@ -188,11 +199,23 @@ export default {
     var(--color-s-secondary),
     50%
   );
+
   // tertiary colour (green)
   --colour_tertiary: hsl(
     var(--color-h-tertiary),
     var(--color-s-tertiary),
     var(--color-l-tertiary)
+  );
+  --colour_tertiary_darker: hsl(
+    var(--color-h-tertiary),
+    var(--color-s-tertiary),
+    70%
+  );
+
+  --colour_tertiary_lighter: hsl(
+    var(--color-h-tertiary),
+    var(--color-s-tertiary),
+    87%
   );
 }
 

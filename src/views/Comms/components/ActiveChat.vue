@@ -30,6 +30,7 @@
         <div class="send_message_container">
           <el-input
             v-model="chat.content"
+            class="flat_input"
             placeholder="Send a message..."
             @keyup.enter.native="sendChatMessage"
           />
@@ -262,15 +263,7 @@ export default {
 }
 .send_message_container {
   display: flex;
+  align-items: center;
   flex: 1;
-  &/deep/ {
-    .el-input .el-input__inner {
-      padding: 10px;
-      font-size: 1em;
-      border: none;
-      border-radius: 20px;
-      background: rgb(250, 250, 250);
-    }
-  }
 }
 </style>

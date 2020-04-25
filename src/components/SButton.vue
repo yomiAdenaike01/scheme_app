@@ -5,7 +5,7 @@
       {
         primary: props.colourScheme == 'primary',
         secondary: props.colourScheme == 'secondary',
-        teritiary: props.colourScheme == 'tertiary',
+        tertiary: props.colourScheme == 'tertiary',
         flat: props.flat,
         button_shadow: props.shadow,
         center: props.center
@@ -94,13 +94,13 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
       box-shadow: -4px 10px 21px var(--colour_secondary_lighter);
     }
   }
-  &.teritiary {
+  &.tertiary {
     background: var(--colour_tertiary);
     .icon_container {
-      background: var(--colour_dark_tertiary);
+      background: var(--colour_tertiary_darker);
     }
     &.button_shadow {
-      box-shadow: -4px 10px 21px var(--colour_tertiary);
+      box-shadow: -4px 10px 21px var(--colour_tertiary_lighter);
     }
   }
 }
