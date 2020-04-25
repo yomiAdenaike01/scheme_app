@@ -32,7 +32,7 @@ export default {
         {
           name: "events",
           path: "/admin/events",
-          icon: "el-icon-date"
+          icon: "bx bx-calendar"
         },
         {
           name: "tasks",
@@ -40,7 +40,7 @@ export default {
         },
         {
           name: "comms",
-          icon: "bx bx-message"
+          icon: "bx bx-message-rounded"
         }
       ];
       if (this.getIsAdmin) {

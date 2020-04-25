@@ -7,7 +7,7 @@
       <el-collapse-item title="Quick Actions" name="1">
         <div class="quick_actions_container">
           <el-popover trigger="click">
-            <s-button v-if="getIsAdmin" slot="reference" shadow center>
+            <s-button v-if="getIsAdmin" slot="reference" flat center>
               Reassign to group
             </s-button>
 
@@ -23,7 +23,7 @@
           </el-popover>
 
           <el-popover trigger="click">
-            <s-button slot="reference" center
+            <s-button slot="reference" flat center
               >Update Personal Information</s-button
             >
             <Form
@@ -237,12 +237,7 @@ export default {
 .quick_actions_container {
   display: flex;
   align-items: center;
-
-  * {
-    flex: 1;
-    width: 100%;
-    margin: 5px;
-  }
+  justify-content: space-between;
 }
 .info_container {
   border: 2px solid whitesmoke;
