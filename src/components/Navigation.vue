@@ -9,7 +9,6 @@
         :index="route.path"
       >
         <i :class="route.icon" class="home_icon"></i>
-        <span>{{ route.name }}</span>
       </router-link>
     </ul>
   </nav>
@@ -63,6 +62,7 @@ export default {
   flex-direction: column;
   align-items: center;
   z-index: 3;
+  padding: 0 0 0 10px;
   border-top-right-radius: 40px;
 
   ul {
@@ -82,7 +82,9 @@ export default {
   transition: $default_transition background;
   will-change: background;
   position: relative;
-  margin: 40px 0;
+  margin: 25px 0;
+  border-bottom-left-radius: 20px;
+  border-top-left-radius: 20px;
 
   &:first-of-type {
     &:hover {
@@ -90,40 +92,20 @@ export default {
     }
   }
   &.router-link-active {
-    background: transparent;
-    &:after {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 20%;
-      bottom: 0px;
-      width: 2px;
-      border-bottom-right-radius: 50px;
-      border-top-left-radius: 50px;
-      background: white;
-    }
-    i {
-      background: white;
-      color: var(--colour_primary);
-    }
+    background: white;
+    color: var(--colour_primary);
   }
   &:hover {
-    background: var(--colour_lighter_primary);
+    opacity: 0.8;
     cursor: pointer;
-    i {
-      background: white;
-      color: var(--colour_primary);
-    }
   }
   i {
-    background: var(--colour_darker_primary);
-    padding: 20px;
     border-radius: 30%;
     transition: $default_transition;
   }
 }
 .home_icon {
-  font-size: 1.2em;
+  font-size: 1.3em;
 }
 span {
   text-transform: capitalize;

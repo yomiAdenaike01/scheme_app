@@ -88,8 +88,13 @@
           position="top"
           trigger="click"
         >
-          <div slot="reference" class="references_wrapper">
-            <i class="bx bx-plus reference"></i>
+          <div slot="reference">
+            <s-button
+              colour-scheme="tertiary"
+              only-icon
+              icon="plus"
+              @click="null"
+            />
           </div>
           <Form class="full_width" :config="formConfig" @val="createAction" />
         </el-popover>
@@ -108,7 +113,8 @@ export default {
     Form: () => import("@/components/Form"),
     InformationDisplay: () => import("@/components/InformationDisplay"),
     TaskItem,
-    SlideXLeftTransition
+    SlideXLeftTransition,
+    SButton: () => import("@/components/SButton")
   },
 
   props: {

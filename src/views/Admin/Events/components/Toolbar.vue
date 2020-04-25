@@ -4,7 +4,12 @@
 
     <div v-for="(button, key) in buttons" :key="key" class="button_wrapper">
       <div v-if="button.display">
-        <s-button :icon="button.icon" @click="button.method">
+        <s-button
+          :shadow="button.shadow"
+          :icon="button.icon"
+          :inverse-icon="button.inverseIcon"
+          @click="button.method"
+        >
           <span>{{ button.label }}</span>
         </s-button>
       </div>
@@ -45,7 +50,9 @@ export default {
         {
           label: this.buttonText,
           display: this.currentView == "events",
+          shadow: this.currentView == "events",
           icon: "calendar",
+          inverseIcon: false,
           method: () => {
             this.UPDATE_DIALOG_INDEX({
               dialog: "eventModule",
@@ -58,6 +65,8 @@ export default {
             this.currentView == "events" ? "View requests " : "View events",
           icon: this.currentView == "events" ? "right-arrow-alt" : "arrow-back",
           display: true,
+          shadow: this.currentView == "requests",
+          inverseIcon: this.currentView == "requests",
           method: () => {
             if (this.currentView == "events") {
               this.$emit("changeView", "requests");

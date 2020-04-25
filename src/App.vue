@@ -111,10 +111,11 @@ export default {
 </script>
 <style lang="scss">
 :root {
+  //213,15,24
   // Primary
-  --color-h-primary: 218;
-  --color-s-primary: 57%;
-  --color-l-primary: 52%;
+  --color-h-primary: 213;
+  --color-s-primary: 15%;
+  --color-l-primary: 24%;
   // Secondary
   --color-h-secondary: 221;
   --color-s-secondary: 99%;
