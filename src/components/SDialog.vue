@@ -92,11 +92,13 @@ export default {
 }
 .dialog {
   background: white;
-  border-radius: 40px;
+  border-radius: 10px;
   z-index: 11;
   min-width: 40%;
   min-height: 40%;
   padding: 1%;
+  max-height: 60%;
+  overflow-x: hidden;
 }
 section {
   max-height: fit-content;

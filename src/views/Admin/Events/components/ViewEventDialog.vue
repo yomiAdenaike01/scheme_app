@@ -1,7 +1,8 @@
 <template>
-  <el-dialog
+  <s-dialog
     v-if="getActiveDialog('viewEvent').view"
-    :visible.sync="computeDisplay"
+    v-model="computeDisplay"
+    :display="computeDisplay"
   >
     <div class="view_event_dialog">
       <InformationDisplay
@@ -160,7 +161,7 @@
         </div>
       </div>
     </div>
-  </el-dialog>
+  </s-dialog>
 </template>
 
 <script>
@@ -171,7 +172,8 @@ export default {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     Avatar: () => import("@/components/Avatar"),
     Form: () => import("@/components/Form"),
-    SButton: () => import("@/components/SButton")
+    SButton: () => import("@/components/SButton"),
+    SDialog: () => import("@/components/SDialog")
   },
   data() {
     return {
