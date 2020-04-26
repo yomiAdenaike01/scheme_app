@@ -78,13 +78,13 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  -webkit-backdrop-filter: blur(10px);
   z-index: 999999;
   display: flex;
   justify-content: center;
   align-items: center;
   &.light {
-    backdrop-filter: blur(10px);
+    backdrop-filter: saturate(180%) blur(15px);
+    background: rgba(0, 0, 0, 0.1);
   }
   &.dark {
     background: rgba(0, 0, 0, 0.2);
