@@ -4,16 +4,14 @@
 
     <div v-for="(button, key) in buttons" :key="key" class="button_wrapper">
       <div v-if="button.display">
-        <el-button
-          round
-          size="mini"
-          :type="button.type ? button.type : 'primary'"
-          :plain="button.plain"
-          :disabled="button.disabled"
+        <s-button
+          :shadow="button.shadow"
+          :icon="button.icon"
+          :inverse-icon="button.inverseIcon"
           @click="button.method"
         >
-          <span v-html="button.label"></span>
-        </el-button>
+          <span>{{ button.label }}</span>
+        </s-button>
       </div>
     </div>
   </div>
@@ -24,6 +22,9 @@ import { mapGetters, mapState, mapMutations } from "vuex";
 
 export default {
   name: "Toolbar",
+  components: {
+    SButton: () => import("@/components/SButton")
+  },
   props: {
     currentView: {
       type: String,
@@ -48,10 +49,10 @@ export default {
       let buttons = [
         {
           label: this.buttonText,
-          round: true,
-          plain: true,
           display: this.currentView == "events",
-          type: "primary",
+          shadow: this.currentView == "events",
+          icon: "calendar",
+          inverseIcon: false,
           method: () => {
             this.UPDATE_DIALOG_INDEX({
               dialog: "eventModule",
@@ -61,12 +62,11 @@ export default {
         },
         {
           label:
-            this.currentView == "events"
-              ? 'View requests <i class="el-icon-arrow-right"></i> '
-              : '<i class="el-icon-arrow-left"></i> View events',
-          round: true,
+            this.currentView == "events" ? "View requests " : "View events",
+          icon: this.currentView == "events" ? "right-arrow-alt" : "arrow-back",
           display: true,
-          plain: true,
+          shadow: this.currentView == "requests",
+          inverseIcon: this.currentView == "requests",
           method: () => {
             if (this.currentView == "events") {
               this.$emit("changeView", "requests");

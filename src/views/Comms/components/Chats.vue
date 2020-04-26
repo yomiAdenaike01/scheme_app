@@ -4,7 +4,7 @@
       <div class="chats_header">
         <el-input
           v-model="query"
-          class="query_chats_container"
+          class="flat_input query_chats_container"
           placeholder="Search chats"
         />
       </div>
@@ -128,7 +128,7 @@ export default {
   }
 }
 .chats_header {
-  border-bottom: 2px solid whitesmoke;
+  margin: 10px;
 }
 .query_chats_container /deep/ .el-input__inner {
   border: none;

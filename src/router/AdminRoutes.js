@@ -22,7 +22,7 @@ export default [
     }
   },
   {
-    path: "messenger",
+    path: "comms",
     name: "comms",
     component: CommsModule,
     meta: {

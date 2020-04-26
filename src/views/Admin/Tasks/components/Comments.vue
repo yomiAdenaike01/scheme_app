@@ -64,11 +64,13 @@
           placeholder="Write a comment..."
           @keyup.enter.native="createComment"
         ></el-input>
-        <el-button
+        <s-button
           type="text"
+          shadow
+          icon="send"
           :disabled="newMessage.length == 0"
           @click="createComment"
-          >Post</el-button
+          >Post</s-button
         >
       </div>
     </div>
@@ -84,7 +86,8 @@ export default {
     ActionIcon: () => import("@/components/ActionIcon"),
     Avatar: () => import("@/components/Avatar"),
     InformationDisplay: () => import("@/components/InformationDisplay"),
-    SlideXLeftTransition
+    SlideXLeftTransition,
+    SButton: () => import("@/components/SButton")
   },
   props: {
     mode: {

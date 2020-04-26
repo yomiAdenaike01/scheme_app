@@ -22,13 +22,12 @@
               />
               <el-divider></el-divider>
 
-              <el-button
-                type="danger"
-                class="long"
-                size="mini"
-                plain
+              <s-button
+                colour-scheme="tertiary"
+                shadow
+                icon="x"
                 @click="deleteAction"
-                >Delete Board</el-button
+                >Delete Board</s-button
               >
             </div>
           </el-popover>
@@ -88,8 +87,8 @@
           position="top"
           trigger="click"
         >
-          <div slot="reference" class="references_wrapper">
-            <i class="bx bx-plus reference"></i>
+          <div slot="reference">
+            <s-button colour-scheme="secondary" only-icon icon="plus" shadow />
           </div>
           <Form class="full_width" :config="formConfig" @val="createAction" />
         </el-popover>
@@ -108,7 +107,8 @@ export default {
     Form: () => import("@/components/Form"),
     InformationDisplay: () => import("@/components/InformationDisplay"),
     TaskItem,
-    SlideXLeftTransition
+    SlideXLeftTransition,
+    SButton: () => import("@/components/SButton")
   },
 
   props: {
@@ -237,7 +237,7 @@ export default {
   flex: 1;
   flex-direction: column;
   margin: 0 10px;
-  border-radius: 5px;
+  border-radius: 16px;
   border: 2px solid whitesmoke;
   height: 100%;
   background: white;

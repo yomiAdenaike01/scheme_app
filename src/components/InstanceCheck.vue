@@ -65,14 +65,14 @@ export default {
   justify-content: center;
   align-items: center;
   background: whitesmoke;
-  color: white;
   width: 100%;
 
   &.healthy {
-    background: $success_colour;
-    box-shadow: inset 5px 0px 10px rgba(0, 0, 0, 0.1);
+    background: var(--colour_grey_light);
+    color: white;
     .button_display {
-      background: darken($color: $success_colour, $amount: 18);
+      background: var(--colour_tertiary);
+      box-shadow: 1px 1px 20px var(--colour_tertiary);
     }
   }
   &.unhealthy {

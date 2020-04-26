@@ -30,10 +30,17 @@
         <div class="send_message_container">
           <el-input
             v-model="chat.content"
+            class="flat_input"
             placeholder="Send a message..."
             @keyup.enter.native="sendChatMessage"
           />
-          <el-button type="text" @click="sendChatMessage">Send</el-button>
+          <s-button
+            icon="send"
+            shadow
+            colour-scheme="secondary"
+            @click="sendChatMessage"
+            >Send</s-button
+          >
         </div>
       </div>
     </div>
@@ -49,6 +56,7 @@ export default {
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     ChatActions: () => import("./ChatActions"),
+    SButton: () => import("@/components/SButton"),
     ChatMessage
   },
   mixins: [scrollToBottom],
@@ -255,18 +263,7 @@ export default {
 }
 .send_message_container {
   display: flex;
+  align-items: center;
   flex: 1;
-  &/deep/ {
-    .el-input__inner {
-      padding: 20px;
-      border: none;
-      background: rgb(250, 250, 250);
-      border-radius: 30px;
-    }
-    .el-input {
-      padding: 10px;
-      font-size: 1em;
-    }
-  }
 }
 </style>

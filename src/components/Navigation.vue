@@ -1,22 +1,25 @@
 <template>
-  <el-menu
-    class="main_nav"
-    :default-active="$route.path"
-    :router="true"
-    mode="vertical"
-    :collapse="true"
-    :active-text-color="lightColour"
-  >
-    <el-menu-item v-for="route in routes" :key="route.path" :index="route.path">
-      <i :class="route.icon" class="home_icon"></i>
-      <small slot="title" class="m-2">{{ route.name }}</small>
-    </el-menu-item>
-  </el-menu>
+  <nav class="nav_sidebar">
+    <ul>
+      <router-link
+        v-for="route in routes"
+        :key="route.path"
+        :to="route.name"
+        tag="li"
+        :index="route.path"
+      >
+        <i :class="route.icon" class="home_icon"></i>
+      </router-link>
+    </ul>
+    <div class="settings_container">
+      <i class="bx bx-settings"></i>
+      <p>Something</p>
+    </div>
+  </nav>
 </template>
 
 <script>
 import { mapState, mapGetters } from "vuex";
-var tinycolor = require("tinycolor2");
 export default {
   name: "Navigation",
   data() {
@@ -31,61 +34,93 @@ export default {
     routes() {
       let allowedRoutes = [
         {
-          name: "Events management",
+          name: "events",
           path: "/admin/events",
-          icon: "el-icon-date"
+          icon: "bx bx-calendar"
         },
         {
-          name: "Task management",
-          path: "/admin/tasks",
+          name: "tasks",
           icon: "bx bx-task"
         },
         {
-          name: "Messenger",
-          path: "/admin/messenger",
-          icon: "bx bx-message"
+          name: "comms",
+          icon: "bx bx-message-rounded"
         }
       ];
       if (this.getIsAdmin) {
         allowedRoutes.push({
-          name: "User management",
-          path: "/admin/user",
+          name: "user",
           icon: "bx bx-group"
         });
       }
       return allowedRoutes;
-    },
-
-    darken() {
-      let base = tinycolor(this.getDefaultColour);
-      return base.darken(40).toString();
-    },
-
-    lightColour() {
-      let baseColour = tinycolor(this.getDefaultColour);
-      if (baseColour.isLight()) {
-        return baseColour.darken(50).toString();
-      } else {
-        return baseColour.lighten(40).toString();
-      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.home_icon {
-  font-size: 1.5em;
+.nav_sidebar {
+  background: var(--colour_primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+  padding: 0 0 0 10px;
+  border-top-right-radius: 40px;
+  position: relative;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 }
-.el-menu-item {
+
+.nav_sidebar ul li {
+  display: flex;
+  align-items: center;
   width: 100%;
-}
+  flex: 1;
+  color: white;
+  padding: 10px 20px;
+  transition: $default_transition;
+  will-change: background;
+  position: relative;
+  margin: 25px 0;
+  border-bottom-left-radius: 20px;
+  border-top-left-radius: 20px;
 
-.el-menu-item i {
-  color: darken($color: white, $amount: 30);
+  &.router-link-active {
+    background: white;
+    color: var(--colour_primary);
+  }
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  i {
+    border-radius: 30%;
+    transition: $default_transition;
+  }
 }
-
+.home_icon {
+  font-size: 1.3em;
+}
+span {
+  text-transform: capitalize;
+  margin-left: 15px;
+}
 .main_nav {
   height: 100%;
+}
+p {
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: absolute;
+  bottom: -2%;
+  left: 50%;
+  background: var(--colour_primary);
+  color: white;
 }
 </style>

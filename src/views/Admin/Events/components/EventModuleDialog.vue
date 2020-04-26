@@ -1,5 +1,10 @@
 <template>
-  <el-dialog custom-class="event_dialog" :visible.sync="view">
+  <s-dialog
+    v-model="view"
+    backdrop-type="dark"
+    custom-class="event_dialog"
+    :display="view"
+  >
     <Tabs
       v-model="currentTab"
       v-loading="loading"
@@ -8,7 +13,7 @@
       :selected-tab="currentTab"
       :submit-text="tabXref.display"
       @val="eventsCtrl"
-      @change="eventInformation = $event"
+      @change="events = $event"
     >
       <div slot="header">
         <InformationDisplay :display-text="informationDisplay" />
@@ -31,7 +36,7 @@
         </p>
       </div>
     </Tabs>
-  </el-dialog>
+  </s-dialog>
 </template>
 
 <script>
@@ -39,14 +44,15 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import QrcodeVue from "qrcode.vue";
 
 import TemplateManagement from "./TemplateManagement";
-
+import SDialog from "@/components/SDialog";
 export default {
   name: "EventModuleDialog",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     Tabs: () => import("@/components/Tabs"),
     ColourUnit: () => import("@/components/ColourUnit"),
-    QrcodeVue
+    QrcodeVue,
+    SDialog
   },
   data() {
     return {
@@ -213,6 +219,7 @@ export default {
       // Check if it is an admin or not
 
       if (this.getIsAdmin) {
+        console.log(this.events?.user_groups?.length > 0);
         let teamMemberPlaceholder =
           this.assignToUsernames?.length > 0
             ? `Select team members including (${this.assignToUsernames})`
@@ -220,7 +227,7 @@ export default {
         createEventConfig.unshift(
           {
             placeholder: teamMemberPlaceholder,
-            disabled: this.eventInformation?.user_groups?.length > 0,
+            disabled: this.events?.user_groups?.length > 0,
             "component-type": "select",
             model: "assigned_to",
             options: this.getDropdownTeamMembers,
@@ -229,7 +236,7 @@ export default {
           {
             "component-type": "select",
             options: this.getUserGroups,
-            disabled: this.eventInformation?.assigned_to?.length > 0,
+            disabled: this.events?.assigned_to?.length > 0,
             multiple: true,
             model: "user_groups",
             placeholder: "Assign to a user group",

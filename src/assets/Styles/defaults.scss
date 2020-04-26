@@ -1,5 +1,5 @@
 $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-$success_colour: #99b898;
+$success_colour: #53d769;
 $error_colour: #f56c6c;
 $border_radius: 10px;
 $border: 0.3px solid #ebeef5;
@@ -54,6 +54,8 @@ $app_bar_height:64px;
     background: darken(#efefef, 4);
   }
 }
+
+
 
 :export {
   default: $default_colour;

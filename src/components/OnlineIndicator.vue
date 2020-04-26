@@ -21,15 +21,17 @@ export default {
   display: flex;
   background: white;
   padding: 0;
-  min-width: 25%;
-  min-height: 25%;
-  top: 5px;
+  min-width: 26%;
+  min-height: 26%;
+  bottom: 0px;
+  top: initial;
   right: 0px;
-  padding: 2px;
+  padding: 3px;
 }
 .online_container {
   display: flex;
   flex: 1;
+  padding: 5px;
   border-radius: 50%;
   background: $error_colour;
 

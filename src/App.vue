@@ -110,6 +110,115 @@ export default {
 };
 </script>
 <style lang="scss">
+.flat_input {
+  &/deep/ .el-input__inner {
+    padding: 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 20px;
+    background: rgb(249, 249, 249);
+  }
+}
+:root {
+  // Primary
+  --color-h-primary: 213;
+  --color-s-primary: 15%;
+  --color-l-primary: 34%;
+
+  // Secondary
+  --color-h-secondary: 145;
+  --color-s-secondary: 59%;
+  --color-l-secondary: 59%;
+
+  // Tertiary
+  --color-h-tertiary: 0;
+  --color-s-tertiary: 100%;
+  --color-l-tertiary: 65%;
+
+  // Grey 1
+  --color-h-gdark: 210;
+  --color-s-gdark: 18%;
+  --color-l-gdark: 83%;
+
+  // Grey 2
+  --color-h-glight: 213;
+  --color-s-glight: 18%;
+  --color-l-glight: 88%;
+
+  --colour_grey: hsl(
+    var(--color-h-gdark),
+    var(--color-s-gdark),
+    var(--color-l-gdark)
+  );
+
+  --colour_grey_light: hsl(0, 0%, 98%);
+
+  // Primary colour (blue)
+
+  --colour_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    var(--color-l-primary)
+  );
+
+  --colour_darker_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    56%
+  );
+  --colour_dark_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    40%
+  );
+
+  --colour_lighter_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    55%
+  );
+  --colour_even_lighter_primary: hsl(
+    var(--color-h-primary),
+    var(--color-s-primary),
+    80%
+  );
+  // Secondary colour
+
+  --colour_secondary: hsl(
+    var(--color-h-secondary),
+    var(--color-s-secondary),
+    var(--color-l-secondary)
+  );
+  --colour_secondary_lighter: hsl(
+    var(--color-h-secondary),
+    var(--color-s-secondary),
+    75%
+  );
+  --colour_secondary_darker: hsl(
+    var(--color-h-secondary),
+    var(--color-s-secondary),
+    50%
+  );
+
+  // tertiary colour (green)
+  --colour_tertiary: hsl(
+    var(--color-h-tertiary),
+    var(--color-s-tertiary),
+    var(--color-l-tertiary)
+  );
+  --colour_tertiary_darker: hsl(
+    var(--color-h-tertiary),
+    var(--color-s-tertiary),
+    70%
+  );
+
+  --colour_tertiary_lighter: hsl(
+    var(--color-h-tertiary),
+    var(--color-s-tertiary),
+    87%
+  );
+}
+
 /*
 
 Fonts

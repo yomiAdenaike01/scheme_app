@@ -56,6 +56,9 @@ export default {
 
 <style lang="scss" scoped>
 .message_container {
+  &:first-of-type {
+    border: none;
+  }
   border-top: 2px solid whitesmoke;
   display: flex;
   height: inherit;
@@ -69,7 +72,7 @@ export default {
     align-items: flex-end;
     .message {
       color: white;
-      background: lighten($color: $default_colour, $amount: 30);
+      background: var(--colour_secondary);
       border-bottom-right-radius: 0px;
     }
   }

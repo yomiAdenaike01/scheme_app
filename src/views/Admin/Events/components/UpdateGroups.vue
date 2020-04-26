@@ -1,15 +1,14 @@
 <template>
   <div class="event_group_management_container">
     <div class="buttons_container">
-      <el-button
+      <s-button
         v-for="(button, index) in config"
         :key="index"
-        round
-        :type="selectedConfig == button ? 'primary' : 'plain'"
+        flat
         @click="changeContent(button)"
       >
         {{ `${button} group` }}
-      </el-button>
+      </s-button>
     </div>
     <div v-if="displayContent" class="group_management_container">
       <Form
@@ -30,7 +29,8 @@ import Form from "@/components/Form";
 export default {
   name: "UpdateGroups",
   components: {
-    Form
+    Form,
+    SButton: () => import("@/components/SButton")
   },
   props: {
     groupType: {
@@ -198,20 +198,11 @@ export default {
               }
             ];
             if (vm.groupData?.groupID) {
-              form.push(
-                {
-                  "component-type": "text",
-                  placeholder: "Change name",
-                  model: "label"
-                },
-                vm.isAdminFormItem,
-                {
-                  "component-type": "switch",
-                  model: "enable_event_rejection",
-                  placeholder: "Enable event rejection",
-                  noLabel: true
-                }
-              );
+              form.push({
+                "component-type": "text",
+                placeholder: "Change name",
+                model: "label"
+              });
               if (vm.groupType == "event_groups") {
                 form.push({
                   "component-type": "select",
@@ -222,6 +213,13 @@ export default {
                   hint: `Already enabled for the following ${vm.langXref.pluralize()} <strong>${
                     vm.usersText
                   }</strong>`
+                });
+              } else {
+                form.push(vm.isAdminFormItem, {
+                  "component-type": "switch",
+                  model: "enable_event_rejection",
+                  placeholder: "Enable event rejection",
+                  noLabel: true
                 });
               }
             }
@@ -436,8 +434,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  &/deep/ .el-button {
-    font-size: 1.5em;
+  &/deep/ .button_container {
+    margin: 10px;
   }
 }
 .group_management_container {

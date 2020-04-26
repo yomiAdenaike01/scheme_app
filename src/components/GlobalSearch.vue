@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="view">
+  <s-dialog v-model="view" :display="view">
     <!-- Dropdown for filters goes here -->
     <div class="global_search_container">
       <el-input
@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-  </el-dialog>
+  </s-dialog>
 </template>
 
 <script>
@@ -34,6 +34,7 @@ export default {
   name: "GlobalSearch",
 
   components: {
+    SDialog: () => import("@/components/SDialog"),
     InformationDisplay: () => import("@/components/InformationDisplay")
   },
   props: {

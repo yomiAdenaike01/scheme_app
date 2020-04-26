@@ -4,12 +4,9 @@
       class="form_container"
       :config="formConfig"
       :submit-text="submitText"
-      :submit-button="{ text: 'Sign in' }"
+      :submit-button="{ text: 'Sign in', icon: 'right-arrow-alt' }"
       @val="submitController"
     >
-      <div slot="header" class="logo_wrapper">
-        <Logo />
-      </div>
       <div slot="footer" class="new_client_button_container">
         <el-button size="small" @click="selectedForm = 'forgotPassword'">
           Forgot password ?
@@ -22,14 +19,12 @@
 <script>
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
-import Logo from "@/components/Logo";
 
 import validateInput from "@/mixins/validateInput";
 export default {
   name: "SignIn",
   components: {
-    Form,
-    Logo
+    Form
   },
   mixins: [validateInput],
   data() {
