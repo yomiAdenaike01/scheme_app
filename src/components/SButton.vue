@@ -8,7 +8,8 @@
         tertiary: props.colourScheme == 'tertiary',
         flat: props.flat,
         button_shadow: props.shadow,
-        center: props.center
+        center: props.center,
+        only_icon: props.onlyIcon
       }
     ]"
     v-on="listeners"
@@ -73,6 +74,9 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   transition: $default_transition;
   will-change: opacity;
   max-width: 500px;
+  &.only_icon {
+    max-width: fit-content;
+  }
   &.center {
     text-align: center;
     justify-content: center;

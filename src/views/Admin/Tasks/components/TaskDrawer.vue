@@ -4,23 +4,25 @@
       <div class="inner_wrapper">
         <!-- Task actions -->
         <div class="button_container">
-          <el-button
+          <s-button
             v-if="canInteract"
-            type="success"
+            colour-scheme="secondary"
+            shadow
+            icon="check"
             plain
             round
             @click="handleUpdate({ state: 1 })"
-            >Mark as complete</el-button
+            >Mark as complete</s-button
           >
-          <el-button
-            type="danger"
-            round
-            plain
+          <s-button
+            colour-scheme="tertiary"
+            icon="x"
+            shadow
             @click="
               deleteTask(defaultPayload);
               view = false;
             "
-            >Delete Task</el-button
+            >Delete Task</s-button
           >
         </div>
         <!-- Labels, duedate, and assigned users -->
@@ -135,7 +137,8 @@ export default {
     Labels: () => import("./Labels"),
     Comments: () => import("./Comments"),
     AssignedUsers: () => import("./AssignedUsers"),
-    ActionIcon: () => import("@/components/ActionIcon")
+    ActionIcon: () => import("@/components/ActionIcon"),
+    SButton: () => import("@/components/SButton")
   },
   mixins: [scrollToBottom],
 

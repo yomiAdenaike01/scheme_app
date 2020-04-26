@@ -19,14 +19,12 @@
 <script>
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
-import Logo from "@/components/Logo";
 
 import validateInput from "@/mixins/validateInput";
 export default {
   name: "SignIn",
   components: {
-    Form,
-    Logo
+    Form
   },
   mixins: [validateInput],
   data() {

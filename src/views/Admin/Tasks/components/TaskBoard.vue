@@ -22,13 +22,12 @@
               />
               <el-divider></el-divider>
 
-              <el-button
-                type="danger"
-                class="long"
-                size="mini"
-                plain
+              <s-button
+                colour-scheme="tertiary"
+                shadow
+                icon="x"
                 @click="deleteAction"
-                >Delete Board</el-button
+                >Delete Board</s-button
               >
             </div>
           </el-popover>

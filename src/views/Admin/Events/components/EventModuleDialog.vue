@@ -1,5 +1,10 @@
 <template>
-  <el-dialog custom-class="event_dialog" :visible.sync="view">
+  <s-dialog
+    v-model="view"
+    backdrop-type="dark"
+    custom-class="event_dialog"
+    :display="view"
+  >
     <Tabs
       v-model="currentTab"
       v-loading="loading"
@@ -31,7 +36,7 @@
         </p>
       </div>
     </Tabs>
-  </el-dialog>
+  </s-dialog>
 </template>
 
 <script>
@@ -39,14 +44,15 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import QrcodeVue from "qrcode.vue";
 
 import TemplateManagement from "./TemplateManagement";
-
+import SDialog from "@/components/SDialog";
 export default {
   name: "EventModuleDialog",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     Tabs: () => import("@/components/Tabs"),
     ColourUnit: () => import("@/components/ColourUnit"),
-    QrcodeVue
+    QrcodeVue,
+    SDialog
   },
   data() {
     return {

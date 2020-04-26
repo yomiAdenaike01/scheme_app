@@ -22,6 +22,7 @@
     "ua-parser-js": "^0.7.21",
     "uuid": "^7.0.3",
     "uuid-by-string": "^3.0.2",
+    "v-click-outside": "^3.0.1",
     "v-hotkey": "^0.8.0",
     "vue": "^2.6.10",
     "vue-avatar": "^2.2.0",

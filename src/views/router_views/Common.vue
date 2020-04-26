@@ -23,7 +23,6 @@
 
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
-
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 
 export default {
@@ -32,12 +31,14 @@ export default {
     Navigation: () => import("@/components/Navigation"),
     AppBar: () => import("@/components/AppBar"),
     GlobalSearch: () => import("@/components/GlobalSearch"),
-    NprogressContainer
+    NprogressContainer,
+    SButton: () => import("@/components/SButton")
   },
   data() {
     return {
       loading: true,
-      displaySearch: false
+      displaySearch: false,
+      display: true
     };
   },
   computed: {

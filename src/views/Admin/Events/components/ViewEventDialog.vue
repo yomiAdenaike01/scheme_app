@@ -11,12 +11,9 @@
         }"
       ></InformationDisplay>
       <div class="info_button_container">
-        <el-button
-          v-bind="approvalButtonConfig"
-          size="small"
-          @click="approvalController"
-          >{{ approvalButtonConfig.content }}</el-button
-        >
+        <s-button shadow colour-scheme="secondary" icon="check">{{
+          approvalButtonConfig.content
+        }}</s-button>
 
         <el-button
           v-if="hasPermissions"
@@ -32,14 +29,13 @@
               : truncate("Remind user of this event")
           }}
         </el-button>
-        <el-button
+        <s-button
           v-if="hasPermissions"
-          type="danger"
-          size="small"
-          round
-          plain
+          colour-scheme="tertiary"
+          icon="x"
+          shadow
           @click="deleteEvent('Are you sure you want to delete this event ? ')"
-          >Delete Event</el-button
+          >Delete Event</s-button
         >
       </div>
       <!-- Required actions -->
@@ -174,7 +170,8 @@ export default {
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     Avatar: () => import("@/components/Avatar"),
-    Form: () => import("@/components/Form")
+    Form: () => import("@/components/Form"),
+    SButton: () => import("@/components/SButton")
   },
   data() {
     return {
