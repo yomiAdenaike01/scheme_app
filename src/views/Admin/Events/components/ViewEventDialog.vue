@@ -2,6 +2,7 @@
   <s-dialog
     v-if="getActiveDialog('viewEvent').view"
     v-model="computeDisplay"
+    backdrop-type="dark"
     :display="computeDisplay"
   >
     <div class="view_event_dialog">
@@ -12,24 +13,10 @@
         }"
       ></InformationDisplay>
       <div class="info_button_container">
-        <s-button shadow colour-scheme="secondary" icon="check">{{
+        <s-button no-trigger shadow colour-scheme="secondary" icon="check">{{
           approvalButtonConfig.content
         }}</s-button>
 
-        <el-button
-          v-if="hasPermissions"
-          size="small"
-          plain
-          round
-          title="Remind users of this event"
-          @click="sendReminderToUser"
-        >
-          {{
-            event.assigned_to.length > 0
-              ? truncate("Remind users of this event", 14)
-              : truncate("Remind user of this event")
-          }}
-        </el-button>
         <s-button
           v-if="hasPermissions"
           colour-scheme="tertiary"
@@ -64,11 +51,11 @@
 
         <h3>Assigned users</h3>
 
-        <div
-          v-if="hasEntries(event.assigned_to)"
-          class="info_unit avatar_wrapper"
-        >
-          <div class="assigned_users_container">
+        <div class="info_unit avatar_wrapper">
+          <div
+            v-if="event.assigned_to.length > 0"
+            class="assigned_users_container"
+          >
             <div
               v-for="(member, index) in event.assigned_to"
               ref="user"
@@ -86,8 +73,10 @@
             </div>
           </div>
 
+          <p v-else>There are no users assigned to this event.</p>
+
           <div v-if="canAddMoreUsers" class="add_new_user trigger">
-            <el-popover>
+            <el-popover trigger="click">
               <div
                 v-for="option in getFilteredTeam"
                 :key="option._id"
@@ -102,9 +91,9 @@
               >
                 <span>{{ option.name }}</span>
               </div>
-              <span slot="reference">
-                <i class="bx bx-plus"></i> Assign new user
-              </span>
+              <s-button slot="reference" icon="plus">
+                Assign new user
+              </s-button>
             </el-popover>
           </div>
         </div>
@@ -179,7 +168,10 @@ export default {
     return {
       loading: false,
       selectedConfig: "date",
-      updates: {}
+      updates: {},
+      popover: {
+        team: false
+      }
     };
   },
   computed: {
@@ -608,15 +600,7 @@ h3 {
     background: whitesmoke;
   }
 }
-.add_new_user {
-  display: block;
-  border: 2px whitesmoke dashed;
-  border-radius: $border_radius;
-  padding: 10px;
-  &:hover {
-    border-color: darken($color: whitesmoke, $amount: 10);
-  }
-}
+
 .assigned_user {
   .member_name {
     opacity: 0;
@@ -635,6 +619,11 @@ h3 {
     .member_name {
       opacity: 1;
     }
+  }
+}
+.add_new_user {
+  /deep/ .button_container {
+    margin: 12px;
   }
 }
 </style>

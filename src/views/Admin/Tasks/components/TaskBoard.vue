@@ -101,6 +101,7 @@
 import { mapActions, mapGetters } from "vuex";
 import { SlideXLeftTransition } from "vue2-transitions";
 import TaskItem from "./TaskItem";
+
 export default {
   name: "TaskBoard",
   components: {
@@ -284,7 +285,7 @@ export default {
   flex: 1;
 }
 
-.popover_form {
+.el-popover_form {
   &/deep/ .el-form-item__content,
   .dialog_item {
     width: 100%;

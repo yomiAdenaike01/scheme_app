@@ -3,9 +3,7 @@
     :class="[
       'button_container',
       {
-        primary: props.colourScheme == 'primary',
-        secondary: props.colourScheme == 'secondary',
-        tertiary: props.colourScheme == 'tertiary',
+        [props.colourScheme]: props.colourScheme,
         flat: props.flat,
         button_shadow: props.shadow,
         center: props.center,
@@ -52,6 +50,9 @@ export default {
     },
     center: {
       type: Boolean
+    },
+    noTrigger: {
+      type: Boolean
     }
   }
 };
@@ -65,7 +66,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   background: var(--colour_primary);
   border-radius: 20px;
   display: flex;
-  padding: 3px;
+  padding: 2px;
   align-items: center;
   color: white;
   min-height: 30px;
@@ -74,6 +75,9 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   transition: $default_transition;
   will-change: opacity;
   max-width: 500px;
+  &.no_trigger {
+    cursor: initial;
+  }
   &.only_icon {
     max-width: fit-content;
   }
@@ -91,18 +95,14 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   }
   &.secondary {
     background: var(--colour_secondary);
-    .icon_container {
-      background: var(--colour_secondary_darker);
-    }
+
     &.button_shadow {
       box-shadow: -2px 11px 21px var(--colour_secondary_lighter);
     }
   }
   &.tertiary {
     background: var(--colour_tertiary);
-    .icon_container {
-      background: var(--colour_tertiary_darker);
-    }
+
     &.button_shadow {
       box-shadow: -2px 11px 21px var(--colour_tertiary_lighter);
     }
@@ -118,7 +118,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   padding: 10px;
   margin: 0;
   border-radius: 50%;
-  background: var(--colour_dark_primary);
+  background: rgba(0, 0, 0, 0.09);
   color: white;
   &.inverse_icon {
     order: -1;

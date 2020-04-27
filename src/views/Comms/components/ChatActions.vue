@@ -1,6 +1,6 @@
 <template>
   <div class="actions">
-    <el-popover v-bind="popoverConfig">
+    <el-popover v-bind="el - popoverConfig">
       <div slot="reference" class="interaction_container emoji_container">
         <i class="bx bx-wink-smile bx-tada"></i>
       </div>

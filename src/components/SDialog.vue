@@ -2,16 +2,17 @@
   <SlideYUpTransition>
     <div
       v-if="display"
+      ref="dialog"
       :class="[
         'dialog_wrapper',
         { light: backdropType == 'blur', dark: backdropType == 'dark' }
       ]"
     >
       <div v-click-outside="onClickOutside" class="dialog">
+        <div class="close_button" @click="view = false">
+          <i class="bx bx-x"></i>
+        </div>
         <header>
-          <div class="close_button" @click="view = false">
-            <i class="bx bx-x"></i>
-          </div>
           <p class="dialog_header_title">{{ title }}</p>
         </header>
         <section>
@@ -63,9 +64,20 @@ export default {
       }
     }
   },
+  beforeMount() {
+    window.addEventListener("keyup", this.onEscapeKeyUp);
+  },
+  beforeDestroy() {
+    window.removeEventListener("keyup", this.onEscapeKeyUp);
+  },
   methods: {
     onClickOutside() {
       this.view = false;
+    },
+    onEscapeKeyUp(event) {
+      if (event.which === 27) {
+        this.$emit("close");
+      }
     }
   }
 };
@@ -78,7 +90,7 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  z-index: 999999;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -92,6 +104,7 @@ export default {
 }
 .dialog {
   background: white;
+  position: relative;
   border-radius: 10px;
   z-index: 11;
   min-width: 40%;
@@ -105,20 +118,23 @@ section {
   transition: max-height 0.3s ease-out;
 }
 header {
-  position: relative;
   background: rgb(250, 250, 250);
   .dialog_header_title {
     text-transform: capitalize;
   }
-  .bx {
-    position: absolute;
-    top: 0;
-    right: -10px;
-    background: #ccc;
-    border-radius: 20px;
-    color: whitesmoke;
-    padding: 5px;
-    cursor: pointer;
+}
+.close_button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #999;
+  &:hover {
+    color: #555;
   }
 }
 </style>

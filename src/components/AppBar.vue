@@ -12,7 +12,7 @@
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
       <el-badge :value="userNotifications.length" class="item primary">
-        <el-popover popper-class="no_padding" width="350" trigger="click">
+        <el-popover :options="{ placement: 'right' }" trigger="click">
           <NotificationModule />
           <el-button
             slot="reference"

@@ -194,22 +194,12 @@ export default {
     var(--color-s-secondary),
     75%
   );
-  --colour_secondary_darker: hsl(
-    var(--color-h-secondary),
-    var(--color-s-secondary),
-    50%
-  );
 
   // tertiary colour (green)
   --colour_tertiary: hsl(
     var(--color-h-tertiary),
     var(--color-s-tertiary),
     var(--color-l-tertiary)
-  );
-  --colour_tertiary_darker: hsl(
-    var(--color-h-tertiary),
-    var(--color-s-tertiary),
-    70%
   );
 
   --colour_tertiary_lighter: hsl(
@@ -353,10 +343,7 @@ html,
 
 
 */
-.el-popover .el-popper {
-  max-width: fit-content;
-  min-width: fit-content;
-}
+
 .el-drawer {
   height: 100%;
 }
@@ -371,7 +358,7 @@ html,
   border: none !important;
 }
 
-.popover_item {
+.el-popover_item {
   &.no_events {
     opacity: 0.4;
   }

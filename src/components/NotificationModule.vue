@@ -101,9 +101,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-popover .el-popper {
-  padding: 0;
-}
 .notifications_container {
   position: relative;
   height: 400px;

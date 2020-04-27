@@ -3,7 +3,7 @@
     <slide-x-right-transition mode="out-in">
       <div class="events_inner_container">
         <Toolbar :current-view="view" @changeView="view = $event" />
-        <div v-if="view == 'events'">
+        <div v-if="view == 'events'" class="events_wrapper">
           <EventsCalendar />
           <EventModuleDialog />
           <ViewEventDialog />
@@ -49,6 +49,9 @@ export default {
 <style lang="scss" scoped>
 .events_container {
   display: flex;
+  flex: 1;
+}
+.events_wrapper {
   flex: 1;
 }
 .events_inner_container {

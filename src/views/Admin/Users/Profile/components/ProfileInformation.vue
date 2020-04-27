@@ -57,6 +57,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
+
 export default {
   name: "ProfileInformation",
   components: {

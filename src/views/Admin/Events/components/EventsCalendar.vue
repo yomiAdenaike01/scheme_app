@@ -35,7 +35,9 @@ export default {
         return [...this.events].map(event => {
           if (Object.values(event).length > 0) {
             let firstAssignee = event?.assigned_to?.[0];
-            let content = `${firstAssignee?.name}'s ${event?.type?.label} event`;
+            let content = `${firstAssignee?.name ?? "Unassigned"}'s ${
+              event?.type?.label
+            } event`;
             if (event?.assigned_to?.length - 1 > 0) {
               content = `${content} +${parseInt(
                 event?.assigned_to?.length - 1
@@ -47,7 +49,10 @@ export default {
               content,
               start: this.formatDate(event?.start_date, dateFormat),
               end: this.formatDate(event?.end_date, dateFormat),
-              class: `${event?.type?.label}`,
+              class:
+                event.assigned_to.length > 0
+                  ? `${event?.type?.label}`
+                  : "no_assignee",
               is_approved: event?.is_approved,
               assigned_to: event?.assigned_to,
               type: event?.type,
@@ -97,12 +102,13 @@ export default {
     .vuecal__event {
       background: #ecf5ff;
       border-top: 2px solid $element_colour;
+      border-right: 2px solid white;
       color: $element_colour;
       font-size: 0.8em;
       padding: 1em;
       text-transform: capitalize;
 
-      &.holiday {
+      &.no_assignee {
         background: #fef0f0;
         border-top: 2px solid #f56c6c;
         color: #f56c6c;

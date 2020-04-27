@@ -46,41 +46,29 @@ export default {
   data() {
     return {
       backgroundColors: [
-        "#003049",
-        "#d62828",
-        "#f77f00",
-        "#673AB7",
-        "#3F51B5",
-        "#2196F3",
-        "#03A9F4",
-        "#00BCD4",
-        "#009688",
-        "#4CAF50",
-        "#8BC34A",
-        "#CDDC39",
-        /* '#FFEB3B' , */ "#FFC107",
-        "#FF9800",
-        "#FF5722",
-        "#795548",
-        "#eae2b7",
-        "#fcbf49"
+        "#6ca5d8",
+        "#c9249e",
+        "#6f3e9e",
+        "#232323",
+        "#ec305c",
+        "#ff8840",
+        "#f3c43a",
+        "#cccccc",
+        "#44a954"
       ]
     };
   },
   computed: {
     background() {
+      let backgroundColour = "";
       if (!this.isImage) {
-        return (
+        backgroundColour =
           this.backgroundColor ||
-          this.randomBackgroundColor(this.name.length, this.backgroundColors)
-        );
+          this.randomBackgroundColor(this.name.length, this.backgroundColors);
       }
+      return backgroundColour;
     },
-    fontColor() {
-      if (!this.isImage) {
-        return this.color || this.lightenColor(this.background, this.lighten);
-      }
-    },
+
     isImage() {
       return Boolean(this.src);
     },
@@ -89,9 +77,8 @@ export default {
         display: this.inline ? "inline-flex" : "flex",
         width: `${this.size}px`,
         height: `${this.size}px`,
-        borderRadius: this.rounded ? "20%" : 0,
+        borderRadius: this.rounded ? "25%" : 0,
         lineHeight: `${this.size + Math.floor(this.size / 20)}px`,
-        fontWeight: "bold",
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",

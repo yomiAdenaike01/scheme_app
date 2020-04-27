@@ -1,49 +1,5 @@
 <template>
   <div class="information_display_container">
-    <div v-if="mode == 'tutorial' || mode == 'both'">
-      <!-- Tutorial -->
-      <div class="tutorial_wrapper">
-        <el-popover popperclass="no_padding" trigger="click">
-          <i
-            slot="reference"
-            class="bx bx-help-circle tutorial_icon trigger"
-          ></i>
-
-          <div class="tutorial_container">
-            <div class="tutorial_title_bar">
-              <small class="capitalize">{{
-                makePretty(tutorial.feature)
-              }}</small>
-            </div>
-            <div class="tutorial_content_container">
-              <i
-                class="bx bx-chevron-left trigger"
-                @click="slideController('decrease')"
-              ></i>
-              <div class="tutorial_text_container">
-                <h2 v-html="guideXref[slideIndex].heading"></h2>
-                <p v-html="guideXref[slideIndex].content"></p>
-              </div>
-
-              <i
-                class="bx bx-chevron-right trigger"
-                @click="slideController('increase')"
-              ></i>
-            </div>
-            <!-- Indicators -->
-            <div class="indicator_container">
-              <div
-                v-for="(len, index) in guideXref.length"
-                :key="index"
-                class="indicator"
-                :class="{ active: index == slideIndex }"
-                @click="slideIndex = index"
-              ></div>
-            </div>
-          </div>
-        </el-popover>
-      </div>
-    </div>
     <!-- Title display -->
     <div
       v-if="mode == 'title' || mode == 'both'"
@@ -78,7 +34,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 export default {
   name: "InformationDisplay",
   props: {
@@ -86,16 +41,7 @@ export default {
       type: String,
       default: "title"
     },
-    tutorial: {
-      type: Object,
-      default: () => {
-        return {
-          module: "",
-          feature: "",
-          displayType: "hover"
-        };
-      }
-    },
+
     displayText: {
       type: Object,
       default: () => {
@@ -109,57 +55,20 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      slideIndex: 0,
-      slideInTimeout: null
-    };
-  },
-  computed: {
-    ...mapGetters(["getGuide"]),
 
+  computed: {
     displayCenter() {
       return {
         heading: this.displayText?.headingAlign ?? true,
         text: this.displayText?.textAlign ?? true
       };
-    },
-
-    guideXref() {
-      let moduleContent = this.getGuide[this.tutorial.module];
-      let guideContent = [];
-
-      for (let i = 0, len = moduleContent.length; i < len; i++) {
-        let module = this.getGuide[this.tutorial.module][i];
-        guideContent = module[this.tutorial.feature];
-      }
-      return guideContent;
-    }
-  },
-  methods: {
-    slideController(controlMethod) {
-      const slideLength = this.guideXref.length;
-
-      if (controlMethod == "increase") {
-        if (this.slideIndex + 1 >= slideLength) {
-          this.slideIndex = 0;
-        } else {
-          this.slideIndex++;
-        }
-      } else {
-        if (this.slideIndex - 1 <= slideLength) {
-          this.slideIndex = 0;
-        } else {
-          this.slideIndex--;
-        }
-      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.popover_inner_container {
+.el-popover_inner_container {
   display: flex;
   justify-content: space-between;
 }
@@ -183,29 +92,6 @@ export default {
       justify-content: center;
     }
   }
-}
-.tutorial_wrapper {
-  display: flex;
-  justify-content: center;
-}
-.tutorial_title_bar {
-  background: rgb(250, 250, 250);
-  color: #999;
-  font-size: 1.2em;
-  padding: 10px;
-}
-.tutorial_container {
-  display: block;
-}
-.tutorial_content_container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 30px 0;
-}
-.tutorial_text_container {
-  text-align: center;
-  padding: 0 30px;
 }
 
 .indicator_container {

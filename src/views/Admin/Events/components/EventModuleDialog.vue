@@ -1,10 +1,5 @@
 <template>
-  <s-dialog
-    v-model="view"
-    backdrop-type="dark"
-    custom-class="event_dialog"
-    :display="view"
-  >
+  <s-dialog v-model="view" backdrop-type="dark" :display="view">
     <Tabs
       v-model="currentTab"
       v-loading="loading"
