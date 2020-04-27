@@ -2,6 +2,8 @@
   <div
     :class="[
       'button_container',
+      data.staticClass,
+      data.class,
       {
         [props.colourScheme]: props.colourScheme,
         flat: props.flat,
@@ -86,9 +88,15 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     justify-content: center;
   }
   &.flat {
-    background: var(--colour_grey);
-    box-shadow: none;
-    color: white;
+    background: rgba(200, 200, 200, 0.3);
+    color: rgb(150, 150, 150);
+    transition: $default_transition;
+    &:hover,
+    &.active {
+      transform: translateY(-5px);
+      background: rgb(230, 230, 230);
+      color: rgb(10, 10, 10);
+    }
   }
   &.button_shadow {
     box-shadow: -2px 11px 21px var(--colour_even_lighter_primary);

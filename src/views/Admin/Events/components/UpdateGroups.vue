@@ -4,6 +4,9 @@
       <s-button
         v-for="(button, index) in config"
         :key="index"
+        :class="{
+          active: button.toLowerCase() == selectedConfig.toLowerCase()
+        }"
         flat
         @click="changeContent(button)"
       >

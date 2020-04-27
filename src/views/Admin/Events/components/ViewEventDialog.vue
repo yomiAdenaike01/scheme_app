@@ -91,8 +91,8 @@
               >
                 <span>{{ option.name }}</span>
               </div>
-              <s-button slot="reference" icon="plus">
-                Assign new user
+              <s-button slot="reference" flat>
+                <span>Assign new user</span>
               </s-button>
             </el-popover>
           </div>

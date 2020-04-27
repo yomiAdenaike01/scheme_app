@@ -3,17 +3,18 @@
     v-loading="loading"
     class="instance_check_container"
     :class="[
-      { healthy: instanceInformation.healthy },
-      { unhealthy: !instanceInformation.healthy }
+      { healthy: checkResult.healthy },
+      { unhealthy: !checkResult.healthy }
     ]"
   >
-    <el-button
+    <s-button
       v-if="!loading"
-      circle
       class="disabled button_display"
-      :icon="instanceInformation.healthy ? 'el-icon-check' : 'el-icon-close'"
-    ></el-button>
-    <p>{{ displayText }}</p>
+      :colour-scheme="checkResult.healthy ? 'secondary' : 'tertiary'"
+      :icon="checkResult.healthy ? 'check' : 'x'"
+    >
+      {{ displayText }}
+    </s-button>
   </div>
 </template>
 
@@ -21,15 +22,18 @@
 import { mapActions } from "vuex";
 export default {
   name: "InstanceCheck",
+  components: {
+    SButton: () => import("@/components/SButton")
+  },
   data() {
     return {
       loading: true,
-      instanceInformation: {}
+      checkResult: {}
     };
   },
   computed: {
     displayText() {
-      let healthy = this.instanceInformation?.healthy;
+      let healthy = this.checkResult?.healthy;
       if (healthy) {
         return "Your cloud instance is healthy";
       } else {
@@ -49,7 +53,7 @@ export default {
       })
         .then(response => {
           this.loading = false;
-          this.instanceInformation = response;
+          this.checkResult = response;
         })
         .catch(() => {
           this.loading = false;
@@ -64,25 +68,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: whitesmoke;
-  width: 100%;
-
-  &.healthy {
-    background: var(--colour_grey_light);
-    color: white;
-    .button_display {
-      background: var(--colour_tertiary);
-      box-shadow: 1px 1px 20px var(--colour_tertiary);
-    }
-  }
-  &.unhealthy {
-    background: $error_colour;
-    background: darken($color: $error_colour, $amount: 18);
-  }
-}
-.button_display {
-  margin-right: 10px;
-  border: none;
-  color: white;
+  padding: 20px;
 }
 </style>

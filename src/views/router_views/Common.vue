@@ -5,8 +5,8 @@
     class="common_container"
   >
     <NprogressContainer />
-
     <AppBar @runSearch="displaySearch = $event" />
+
     <GlobalSearch
       v-hotkey="keymap"
       :display="displaySearch"
