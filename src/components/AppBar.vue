@@ -11,17 +11,15 @@
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-badge :value="userNotifications.length" class="item primary">
-        <el-popover :options="{ placement: 'right' }" trigger="click">
-          <NotificationModule />
-          <el-button
-            slot="reference"
-            size="small"
-            circle
-            icon="el-icon-bell trigger"
-          ></el-button>
-        </el-popover>
-      </el-badge>
+      <el-popover :options="{ placement: 'right' }" trigger="click">
+        <NotificationModule />
+        <el-button
+          slot="reference"
+          size="small"
+          circle
+          icon="el-icon-bell trigger"
+        ></el-button>
+      </el-popover>
       <el-button
         size="small"
         circle

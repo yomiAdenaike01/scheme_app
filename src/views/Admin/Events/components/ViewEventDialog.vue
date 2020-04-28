@@ -65,10 +65,9 @@
                 :size="70"
                 class="assigned_user"
                 :name="member.name"
-                multiple
+                group
                 @click="viewUser(member)"
               >
-                <div class="floating_item" @click="removeUser(member)">x</div>
               </Avatar>
             </div>
           </div>
@@ -91,7 +90,9 @@
               >
                 <span>{{ option.name }}</span>
               </div>
-              <p slot="reference">Assign to team member</p>
+              <p slot="reference" class="assign_team_member" flat>
+                Assign to team member
+              </p>
             </el-popover>
           </div>
         </div>
@@ -608,6 +609,8 @@ h3 {
   }
   .floating_item {
     @include floating_item;
+    top: 0;
+    max-height: 20px;
     opacity: 0;
     transition: $default_transition opacity;
     will-change: opacity;
@@ -622,6 +625,17 @@ h3 {
 .add_new_user {
   /deep/ .button_container {
     margin: 12px;
+  }
+}
+.assign_team_member {
+  border-radius: 10px;
+  color: #999;
+  padding: 10px 30px;
+  border: 2px dashed #efefef;
+  will-change: transform;
+  transition: $default_transition transform;
+  &:hover {
+    transform: translateY(-5px);
   }
 }
 </style>

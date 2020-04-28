@@ -1,5 +1,9 @@
 <template>
-  <div class="avatar_wrapper" :style="[style, customStyle]" aria-hidden="true">
+  <div
+    :class="['avatar_wrapper', { grouped: group }]"
+    :style="[style, customStyle]"
+    aria-hidden="true"
+  >
     <p v-show="!this.isImage">{{ userInitial }}</p>
     <slot />
   </div>
@@ -9,6 +13,9 @@
 export default {
   name: "Avatar",
   props: {
+    group: {
+      type: Boolean
+    },
     name: {
       type: String
     },
@@ -77,7 +84,7 @@ export default {
         display: this.inline ? "inline-flex" : "flex",
         width: `${this.size}px`,
         height: `${this.size}px`,
-        borderRadius: this.rounded ? "25%" : 0,
+        borderRadius: this.rounded ? "50%" : 0,
         lineHeight: `${this.size + Math.floor(this.size / 20)}px`,
         alignItems: "center",
         justifyContent: "center",
@@ -150,3 +157,14 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.avatar_wrapper.grouped {
+  margin-left: -30px;
+  transition: $default_transition transform;
+  will-change: transform;
+  cursor: pointer;
+  &:hover {
+    transform: translateX(-15px);
+  }
+}
+</style>
