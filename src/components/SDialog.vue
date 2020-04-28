@@ -71,12 +71,14 @@ export default {
     window.removeEventListener("keyup", this.onEscapeKeyUp);
   },
   methods: {
-    onClickOutside() {
-      this.view = false;
+    onClickOutside(e) {
+      if (e.target.classList.value.includes("dialog_wrapper")) {
+        this.view = false;
+      }
     },
     onEscapeKeyUp(event) {
       if (event.which === 27) {
-        this.$emit("close");
+        this.view = false;
       }
     }
   }
