@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS", "UPDATE_DIALOG_INDEX"]),
+    ...mapMutations(["UPDATE_SYSTEM_NOTIFICATIONALOG_INDEX"]),
 
     viewEvent(event) {
       this.UPDATE_DIALOG_INDEX({

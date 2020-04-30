@@ -1,4 +1,4 @@
-import Vue from "vue";
+import Vue from "./node_modules/vue";
 import updateBreadCrumbs from "../helpers";
 
 function setActiveChat(state, chat) {

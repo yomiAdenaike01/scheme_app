@@ -326,19 +326,14 @@ export default {
     ...mapMutations("Admin", [
       "UPDATE_EVENT",
       "ADD_USER_TO_EVENT",
-      "REMOVE_USER_FROM_EVENT",
+      "DELETE_USER_FROM_EVENT",
       "DELETE_EVENT",
       "CREATE_EVENT",
       "UPDATE_APPROVE_EVENT",
       "UPDATE_REJECT_EVENT"
     ]),
-    ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_NOTIFICATIONS"]),
-    viewUser(user) {
-      this.UPDATE_DIALOG_INDEX({
-        dialog: "profile",
-        data: user
-      });
-    },
+    ...mapMutations(["UPDATE_DIALOG_INDEX", "UPDATE_SYSTEM_NOTIFICATION"]),
+
     hasAdminApproved() {
       return this.event.is_approved.find(approvee => {
         return (
@@ -392,8 +387,7 @@ export default {
           this.UPDATE_EVENT(this.eventRef);
         });
       } else {
-        return this.UPDATE_NOTIFICATIONS({
-          type: "error",
+        return this.UPDATE_SYSTEM_NOTIFICATION({
           message: "You must add data to the inputs to make changes to an event"
         });
       }
@@ -415,7 +409,7 @@ export default {
           "This is the last user on the event, if you delete this user it will delete the event. Are you sure you want to delete this event ? "
         );
       } else {
-        this.REMOVE_USER_FROM_EVENT({
+        this.DELETE_USER_FROM_EVENT({
           eventIndex: this.currentEventIndex,
           userIndex
         });
@@ -438,7 +432,7 @@ export default {
         data: { eventID: this.event._id, userID: user._id },
         method: "PUT"
       }).catch(() => {
-        this.REMOVE_USER_FROM_EVENT(this.eventRef);
+        this.DELETE_USER_FROM_EVENT(this.eventRef);
       });
     },
     deleteEvent(msg = "Are you sure you want to delete this event ?") {

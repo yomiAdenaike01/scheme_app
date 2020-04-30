@@ -3,14 +3,14 @@
     <div class="title_switch_container ">
       <h3 class="bold">Notifications</h3>
     </div>
-    <div v-if="userNotifications.length > 0" class="notification_wrapper">
+    <div v-if="apiNotifications.length > 0" class="notification_wrapper">
       <UserNotification
-        v-for="(notification, index) in userNotifications"
+        v-for="(notification, index) in apiNotifications"
         :key="notification._id"
         :notification="notification"
         @click="notificationController(notification, index)"
       />
-      <div v-if="userNotifications.length > 0" class="mark_all_wrapper">
+      <div v-if="apiNotifications.length > 0" class="mark_all_wrapper">
         <el-button class="block_button" size="small" @click="readAll"
           >Mark all as read</el-button
         >
@@ -46,9 +46,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(["userNotifications", "userInformation", "notificationRef"]),
+    ...mapState(["apiNotifications", "userInformation", "notificationRef"]),
     formattedNotifications() {
-      return [...this.userNotifications].map(notification => {
+      return [...this.apiNotifications].map(notification => {
         return this.notificationLogic(notification);
       });
     }
@@ -59,21 +59,18 @@ export default {
     ...mapActions("Admin", ["getNotifications"]),
     ...mapMutations([
       "UPDATE_ALL_NOTIFICATIONS",
-      "UPDATE_NOTIFICATION",
-      "DELETE_NOTIFICATION"
+      "UPDATE_SYSTEM_NOTIFICATION",
+      "UPDATE_API_NOTIFICATION"
     ]),
     notificationController(notification, notificationIndex) {
       // Read notification
-      this.UPDATE_NOTIFICATION({
-        notificationIndex,
+      this.UPDATE_API_NOTIFICATION({
         update: { ...notification, status: "read" }
       });
       this.request({
         method: "POST",
         data: { _id: notification._id, update: { status: "read" } },
         url: "notifications/update"
-      }).catch(() => {
-        this.UPDATE_NOTIFICATION(this.notificationRef);
       });
     },
     deleteReadNotifications() {

@@ -144,12 +144,14 @@ export default {
       "restoreDialog"
     ]),
     ...mapActions("Admin", ["getTeam"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
-    ...mapMutations("Admin", ["UPDATE_ONE_TEAM_MEMBER", "DELETE_TEAM_MEMBER"]),
+    ...mapMutations([
+      "UPDATE_SYSTEM_NOTIFICATION",
+      "UPDATE_ONE_TEAM_MEMBER",
+      "DELETE_TEAM_MEMBER"
+    ]),
     updateUser(userData) {
       if (!this.hasEntries(userData)) {
-        this.UPDATE_NOTIFICATIONS({
-          type: "error",
+        this.UPDATE_SYSTEM_NOTIFICATION({
           message: "Error updating user, params are missing"
         });
       } else {

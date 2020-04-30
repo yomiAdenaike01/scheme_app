@@ -38,21 +38,52 @@ export default {
   },
   data() {
     return {
-      configDisplay: ["disableRepeatFor", "individualuser_groups"],
+      configDisplay: ["disableRepeatFor", "individualUserGroups"],
       loading: false
     };
   },
   computed: {
-    ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", [
+    ...mapState(["clientInformation"]),
+    ...mapGetters([
+      "getIsAdmin",
       "getTeamMember",
       "getUserGroups",
       "getDropdownTeamMembers",
-      "team",
-      "getUsersInuser_group"
+      "getUsersInGroup"
     ]),
-    ...mapState(["clientInformation", "daysOfWeek"]),
 
+    daysOfWeek() {
+      return [
+        {
+          label: "Mondays",
+          value: 1
+        },
+        {
+          label: "Tuesdays",
+          value: 2
+        },
+        {
+          label: "Wednesdays",
+          value: 3
+        },
+        {
+          label: "Thursdays",
+          value: 4
+        },
+        {
+          label: "Fridays",
+          value: 5
+        },
+        {
+          label: "Saturdays",
+          value: 6
+        },
+        {
+          label: "Sundays",
+          value: 7
+        }
+      ];
+    },
     switches() {
       return [
         {
@@ -65,13 +96,13 @@ export default {
         },
         {
           text: "Assign to user groups",
-          model: "individualuser_groups"
+          model: "individualUserGroups"
         },
         {
           text: "Assign to all users",
           model: "allUsers",
           disable:
-            this.contains("individualuser_groups") ||
+            this.contains("individualUserGroups") ||
             this.contains("individualUsers")
         }
       ];
@@ -128,7 +159,7 @@ export default {
           multiple: true
         });
       }
-      if (this.getIsAdmin && this.contains("individualuser_groups")) {
+      if (this.getIsAdmin && this.contains("individualUserGroups")) {
         templateConfig.unshift({
           model: "user_group",
           "component-type": "select",
@@ -185,9 +216,9 @@ export default {
           ?.workingDays ?? [1, 2, 3, 4, 5];
       }
 
-      if (this.contains("individualuser_groups")) {
+      if (this.contains("individualUserGroups")) {
         let selecteduser_group = form.user_group;
-        templateForm.content.assigned_to = this.getUsersInuser_group(
+        templateForm.content.assigned_to = this.getUsersInGroup(
           selecteduser_group
         );
       }

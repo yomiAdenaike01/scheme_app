@@ -1,24 +1,9 @@
 <template functional>
   <div class="message_container" :class="{ is_user: props.isSentByUser }">
-    <p class="user">{{ props.sentBy }}</p>
     <div class="message" :class="{ not_user: !props.isSentByUser }">
       <p>
         {{ props.content }}
       </p>
-    </div>
-    <div v-if="props.isSentByUser" class="actions_container">
-      <el-button
-        icon="el-icon-edit-outline"
-        title="Edit message"
-        circle
-        @click="listeners['editMessage'](props.id)"
-      ></el-button>
-      <el-button
-        title="Delete message"
-        icon="el-icon-delete"
-        circle
-        @click="listeners['deleteMessage'](props.id)"
-      ></el-button>
     </div>
   </div>
 </template>
@@ -98,14 +83,5 @@ export default {
     margin-right: 20px;
     border-bottom-left-radius: 0px;
   }
-}
-.message_container:hover .actions_container {
-  opacity: 1;
-}
-.actions_container {
-  display: flex;
-  opacity: 0;
-  transition: $default_transition opacity;
-  will-change: opacity;
 }
 </style>

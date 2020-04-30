@@ -18,15 +18,11 @@
                 class="full_width"
                 :config="formConfig"
                 :submit-button="{ text: 'Update board' }"
-                @val="updateAction"
+                @val="updateBoard"
               />
               <el-divider></el-divider>
 
-              <s-button
-                colour-scheme="tertiary"
-                shadow
-                icon="x"
-                @click="deleteAction"
+              <s-button colour-scheme="tertiary" shadow icon="x"
                 >Delete Board</s-button
               >
             </div>
@@ -98,7 +94,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { SlideXLeftTransition } from "vue2-transitions";
 import TaskItem from "./TaskItem";
 
@@ -132,6 +128,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(["clientInformation"]),
     ...mapGetters(["getIsAdmin"]),
     description() {
       return this.boardData?.description ?? "";
@@ -196,38 +193,78 @@ export default {
     }
   },
   methods: {
-    ...mapActions("Admin", [
-      "getBoards",
-      "createBoard",
-      "updateBoard",
-      "deleteBoard"
-    ]),
     ...mapActions(["request", "genPromptBox"]),
-    deleteAction() {
-      this.deleteBoard({
-        boardIndex: this.boardIndex,
-        boardID: this.boardData._id
-      });
+    ...mapMutations(["UPDATE_CLIENT_INFORMATION"]),
+    ...mapMutations("Tasks", [
+      "UPDATE_BOARDS",
+      "RESTORE_BOARD",
+      "CREATE_TASK",
+      "DELETE_BOARD"
+    ]),
+    updateBoardQuota(action = "minus") {
+      let value = this.clientInformation.board_quota + 1;
+      if (action == "minus") {
+        value = value - 1;
+      } else {
+        value = value + 1;
+      }
+      this.UPDATE_CLIENT_INFORMATION({ board_quota: value });
     },
-    createAction({ name, description }) {
-      this.createBoard({
-        name,
-        description,
-        _id: Math.random()
-          .toString(16)
-          .slice(2)
-      });
-    },
-    updateAction({ name, description }) {
-      this.updateBoard({ boardID: this.boardData._id, name, description });
-    },
-    createTask() {
-      this.UPDATE_DIALOG_INDEX({
-        dialog: "task",
-        view: true,
-        data: this.boardID
+    deleteBoard(payload) {
+      this.genPromptBox({
+        boxType: "confirm",
+        text: "Are you sure you want to delete this board ?",
+        title: "Delete Board"
+      }).then(() => {
+        this.DELETE_BOARD(payload.boardIndex);
+        this.updateBoardQuota("plus");
+        this.request({
+          method: "DELETE",
+          url: "tasks/boards/delete",
+          data: { _id: payload.boardID }
+        }).catch(() => {
+          this.UPDATE_BOARDS({ data: payload, action: "create" });
+          this.DELETE_BOARD(payload.boardID);
+          this.updateBoardQuota("minus");
+        });
       });
     }
+  },
+  createBoard(payload) {
+    this.UPDATE_BOARDS({ data: payload, action: "create" });
+    this.updateBoardQuota("minus");
+    let { _id, ...data } = payload;
+
+    payload = {
+      data,
+      method: "POST",
+      url: "tasks/boards/create"
+    };
+
+    this.request(payload).catch(() => {
+      this.DELETE_BOARD(payload.boardID);
+      this.updateBoardQuota("plus");
+    });
+  },
+
+  updateBoard(payload) {
+    this.UPDATE_BOARDS({ action: "update", ...payload });
+    payload = {
+      data: { ...payload },
+      method: "PUT",
+      url: "tasks/boards/update"
+    };
+
+    this.request(payload).catch(() => {
+      this.RESTORE_BOARD();
+    });
+  },
+  createTask() {
+    this.UPDATE_DIALOG_INDEX({
+      dialog: "task",
+      view: true,
+      data: this.boardID
+    });
   }
 };
 </script>

@@ -42,10 +42,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(["clientInformation", "userInformation"]),
-    ...mapState("Admin", ["team"]),
-    ...mapGetters(["getIsAdmin"]),
-    ...mapGetters("Admin", ["getDropdownTeamMembers"]),
+    ...mapState(["team", "clientInformation", "userInformation"]),
+    ...mapGetters(["getIsAdmin", "getDropdownTeamMembers"]),
     view: {
       get() {
         return this.display;

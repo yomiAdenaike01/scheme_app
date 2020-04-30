@@ -18,8 +18,8 @@
         @val="$emit('createLabel', $event)"
       >
         <div slot="footer" class="form_footer">
-          <ColourUnit v-model="colourUnitVal" />
-          <span class="grey">{{ colourUnitVal }}</span>
+          <ColourPicker v-model="colourPickerVal" />
+          <span class="grey">{{ colourPickerVal }}</span>
         </div>
       </Form>
     </el-popover>
@@ -43,7 +43,7 @@ export default {
   name: "Labels",
   components: {
     Form: () => import("@/components/Form"),
-    ColourUnit: () => import("@/components/ColourUnit"),
+    ColourPicker: () => import("@/components/ColourPicker"),
     ActionIcon: () => import("@/components/ActionIcon")
   },
   props: {
@@ -70,7 +70,7 @@ export default {
       labelSearch: "",
       displayPopover: false,
       page: 0,
-      colourUnitVal: "#fff"
+      colourPickerVal: "#fff"
     };
   },
   computed: {

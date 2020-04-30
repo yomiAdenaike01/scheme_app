@@ -14,6 +14,7 @@
         </div>
         <header>
           <p class="dialog_header_title">{{ title }}</p>
+          <slot name="header" />
         </header>
         <section>
           <slot />

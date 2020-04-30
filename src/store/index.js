@@ -1,7 +1,10 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import Comms from "./Comms";
+
+import Comms from "./comms";
 import Admin from "./Admin";
+import Tasks from "./tasks";
+
 import state from "./state";
 import actions from "./actions";
 import getters from "./getters";
@@ -17,5 +20,5 @@ export default new Vuex.Store({
   actions,
   getters,
 
-  modules: { Comms, Admin }
+  modules: { Comms, Admin, Tasks }
 });

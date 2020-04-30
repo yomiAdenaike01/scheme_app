@@ -25,7 +25,7 @@ const exitApplication = (context, networkError = false, logout = false) => {
     context.commit("UPDATE_NETWORK_ERROR", true);
   }
   if (logout) {
-    context.commit("REMOVE_USER");
+    context.commit("DELETE_USER");
   }
 };
 
@@ -123,16 +123,9 @@ export default {
           footer (optional) :""
         }
    */
-  genEmail(
-    {
-      admin: {
-        state: { team }
-      }
-    },
-    emailContent
-  ) {
+  genEmail(context, emailContent) {
     emailContent.to == "all"
-      ? (emailContent.to = team.map(member => {
+      ? (emailContent.to = context.state.admin.team.map(member => {
           return member.email;
         }))
       : emailContent.to;
@@ -166,7 +159,7 @@ export default {
           response = response.data;
           if (response?.success) {
             if (typeof response.content == "string" && enableNotifications) {
-              context.commit("UPDATE_NOTIFICATIONS", {
+              context.commit("UPDATE_SYSTEM_NOTIFICATION", {
                 message: response.content,
                 type: "success"
               });
@@ -188,8 +181,8 @@ export default {
             error = error.data.content;
           }
           if (enableNotifications) {
-            context.commit("UPDATE_NOTIFICATIONS", {
-              message: error,
+            context.commit("UPDATE_SYSTEM_NOTIFICATION", {
+              error,
               type: "error"
             });
           }

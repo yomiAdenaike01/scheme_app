@@ -45,9 +45,9 @@
                 text: 'Create label',
                 actionStyle: 'squared'
               }"
-              @createLabel="handleLabels['create'].function"
-              @updateLabel="handleLabels['update'].function"
-              @deleteLabel="handleLabels['delete'].function"
+              @createLabel="handleLabels.create.function"
+              @updateLabel="handleLabels.update.function"
+              @deleteLabel="handleLabels.delete.function"
             />
           </div>
           <div class="information_unit">

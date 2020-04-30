@@ -50,7 +50,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapState("Admin", ["boards"]),
+    ...mapState("Tasks", ["boards"]),
 
     boardCount() {
       return this.boards.length;

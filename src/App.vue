@@ -24,24 +24,12 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      "requestIntervals",
-      "notifications",
-      "defaultSize",
-      "clientInformation"
-    ]),
+    ...mapState(["requestIntervals", "clientInformation"]),
     ...mapState("Admin", ["team"]),
     ...mapGetters(["getIsIE"]),
 
     isValidClient() {
-      return this.hasEntries(this.clientInformation);
-    }
-  },
-  watch: {
-    notifications(val) {
-      if (val?.length > 0) {
-        this.$notify(val[0]);
-      }
+      return Object.values(this.clientInformation).length > 0;
     }
   },
 
@@ -71,7 +59,7 @@ export default {
             })
             .catch(err => {
               this.loading = false;
-              this.REMOVE_USER();
+              this.DELETE_USER_SESSION();
               if (this.dialogShowing == false) {
                 this.genPromptBox({
                   boxType: "prompt",
@@ -94,13 +82,13 @@ export default {
 
   beforeDestroy() {
     this.CLEAR_GLOBAL_INTERVAL();
-    this.REMOVE_USER();
+    this.DELETE_USER_SESSION();
   },
 
   methods: {
     ...mapActions(["request", "genPromptBox"]),
     ...mapMutations([
-      "REMOVE_USER",
+      "DELETE_USER_SESSION",
       "CREATE_GLOBAL_INTERVAL",
       "CLEAR_GLOBAL_INTERVAL",
       "UPDATE_CLIENT_INFORMATION",

@@ -45,7 +45,7 @@ export default {
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     Tabs: () => import("@/components/Tabs"),
-    ColourUnit: () => import("@/components/ColourUnit"),
+    ColourPicker: () => import("@/components/ColourPicker"),
     QrcodeVue,
     SDialog
   },
@@ -67,7 +67,7 @@ export default {
       "getValidEventTypes",
       "getUserGroups",
       "getUserInformation",
-      "getUsersInuser_group"
+      "getUsersInGroup"
     ]),
 
     eventContent() {
@@ -118,7 +118,7 @@ export default {
         events.assigned_to = [];
 
         for (let i = 0, len = uGroups.length; i < len; i++) {
-          events.assigned_to.push(...this.getUsersInuser_group(uGroups[i]));
+          events.assigned_to.push(...this.getUsersInGroup(uGroups[i]));
         }
       }
       return { templates, events };

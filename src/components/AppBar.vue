@@ -42,7 +42,7 @@ export default {
     NotificationModule: () => import("@/components/NotificationModule")
   },
   computed: {
-    ...mapState(["userInformation", "viewMobileMenu", "userNotifications"]),
+    ...mapState(["userInformation", "viewMobileMenu", "apiNotifications"]),
 
     items() {
       return [
@@ -60,7 +60,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["REMOVE_USER", "UPDATE_TOGGLE_MOBILE_MENU"]),
+    ...mapMutations(["DELETE_USER_SESSION", "UPDATE_TOGGLE_MOBILE_MENU"]),
     ...mapMutations(["UPDATE_DIALOG_INDEX"]),
 
     ...mapActions(["request"]),
@@ -80,7 +80,7 @@ export default {
             method: "GET",
             url: "users/logout"
           }).then(() => {
-            this.REMOVE_USER();
+            this.DELETE_USER_SESSION();
           });
           break;
         }

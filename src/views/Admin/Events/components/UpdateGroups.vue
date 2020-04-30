@@ -21,7 +21,14 @@
         :submit-button="{ text: `${selectedConfig} group` }"
         @change="groupData = $event"
         @val="handleRequest"
-      />
+      >
+        <ColourPicker
+          v-if="groupType == 'event_groups'"
+          slot="footer"
+          v-model="groupData.colour"
+          display-details
+        />
+      </Form>
     </div>
   </div>
 </template>
@@ -33,7 +40,8 @@ export default {
   name: "UpdateGroups",
   components: {
     Form,
-    SButton: () => import("@/components/SButton")
+    SButton: () => import("@/components/SButton"),
+    ColourPicker: () => import("@/components/ColourPicker")
   },
   props: {
     groupType: {

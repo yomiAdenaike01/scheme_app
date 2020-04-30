@@ -1,8 +1,6 @@
-import vars from "@/assets/Styles/defaults.scss";
-const genUUID = require("uuid-by-string");
-
 export default {
   runningIntervals: {},
+  team: [],
   notificationRef: "",
   requestIntervals: {
     admin: 60000,
@@ -11,19 +9,13 @@ export default {
     chat: 30000,
     templates: 30000
   },
-  clientInformation: localStorage.getItem("clientInformation")
-    ? JSON.parse(localStorage.getItem("clientInformation"))
-    : {},
-
+  clientInformation: {},
   token: localStorage.getItem("token"),
-  userInformation: localStorage.getItem("userInformation")
-    ? JSON.parse(localStorage.getItem("userInformation"))
-    : {},
+  userInformation: {},
   errorInformation: {},
-  localNotifications: [],
+  systemNotifications: [],
   networkError: false,
-  weeklyTimesheetUploaded: false,
-  userNotifications: [],
+  apiNotifications: [],
   viewMobileMenu: false,
   lastDialog: {},
   dialogIndex: {
@@ -34,56 +26,17 @@ export default {
     prevEvents: { view: false, data: null, tabIndex: 0 },
     task: { view: false, data: null, tabIndex: 0 }
   },
-  defaultCustomColours: [
-    vars.default,
-    "#5e72e4",
-    "#5603ad",
-    "#8965e0",
-    "#f5365c",
-    "#fb6340",
-    "#ffd600",
-    "#2dce89"
+  colours: [
+    "#6ca5d8",
+    "#c9249e",
+    "#6f3e9e",
+    "#232323",
+    "#ec305c",
+    "#ff8840",
+    "#f3c43a",
+    "#cccccc",
+    "#44a954"
   ],
-  daysOfWeek: [
-    {
-      label: "Mondays",
-      value: 1
-    },
-    {
-      label: "Tuesdays",
-      value: 2
-    },
-    {
-      label: "Wednesdays",
-      value: 3
-    },
-    {
-      label: "Thursdays",
-      value: 4
-    },
-    {
-      label: "Fridays",
-      value: 5
-    },
-    {
-      label: "Saturdays",
-      value: 6
-    },
-    {
-      label: "Sundays",
-      value: 7
-    }
-  ],
-  rootGroupRef: "",
-  // Expermimental
-  persmissions: [
-    {
-      _id: genUUID(
-        Math.random()
-          .toString(16)
-          .slice(2)
-      ),
-      name: ""
-    }
-  ]
+
+  rootGroupRef: ""
 };

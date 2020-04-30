@@ -11,10 +11,6 @@
         <i :class="route.icon" class="home_icon"></i>
       </router-link>
     </ul>
-    <div class="settings_container">
-      <i class="bx bx-settings"></i>
-      <p>Something</p>
-    </div>
   </nav>
 </template>
 
@@ -113,14 +109,5 @@ span {
 }
 .main_nav {
   height: 100%;
-}
-p {
-  align-items: flex-end;
-  justify-content: flex-end;
-  position: absolute;
-  bottom: -2%;
-  left: 50%;
-  background: var(--colour_primary);
-  color: white;
 }
 </style>

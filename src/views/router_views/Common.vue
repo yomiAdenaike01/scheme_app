@@ -6,7 +6,13 @@
   >
     <NprogressContainer />
     <AppBar @runSearch="displaySearch = $event" />
-
+    <div v-if="systemNotifications.length > 0" class="notification_container">
+      <s-notification
+        v-for="notification in systemNotifications"
+        :key="notification._id"
+        v-bind="notification"
+      ></s-notification>
+    </div>
     <GlobalSearch
       v-hotkey="keymap"
       :display="displaySearch"
@@ -24,15 +30,19 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
+import { SlideXRightTransition } from "vue2-transitions";
 
 export default {
   name: "Common",
   components: {
+    SNotification: () => import("@/components/SNotification"),
     Navigation: () => import("@/components/Navigation"),
     AppBar: () => import("@/components/AppBar"),
     GlobalSearch: () => import("@/components/GlobalSearch"),
+    SButton: () => import("@/components/SButton"),
+
     NprogressContainer,
-    SButton: () => import("@/components/SButton")
+    SlideXRightTransition
   },
   data() {
     return {
@@ -44,46 +54,40 @@ export default {
   computed: {
     ...mapState([
       "userInformation",
-      "userNotifications",
-      "viewMobileMenu",
-      "weeklyTimesheetUploaded",
+      "apiNotifications",
+      "systemNotifications",
       "requestIntervals"
     ]),
     ...mapState("Admin", ["team"]),
     ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
+
     keymap() {
       return {
         "ctrl+shift+space": this.toggleDisplaySearch
       };
-    },
-    returnIsStartOfWeek() {
-      return this.initMoment().get("day") <= 1;
     }
   },
 
-  watch: {
-    userNotifications(notifications) {
-      for (let i = 0, len = notifications.length; i < len; i++) {
-        this.UPDATE_NOTIFICATIONS(notifications[i]);
-      }
-    }
-  },
   activated() {
     this.checkDevice();
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
       duration: this.requestIntervals.admin,
-      id: "team",
+      id: "adminIntervals",
       method: () => {
         return new Promise((resolve, reject) => {
-          this.getTeam()
+          Promise.all([
+            this.getNotifications(),
+            this.getEvents(),
+            this.getRequests(),
+            this.getBoards(),
+            this.getTeam()
+          ])
             .then(() => {
-              this.loading = false;
               resolve();
             })
-            .catch(() => {
-              this.loading = false;
-              reject();
+            .catch(err => {
+              reject(err);
             });
         });
       }
@@ -91,8 +95,7 @@ export default {
 
     let isVerified = this.userInformation.verified;
     if (!isVerified) {
-      this.UPDATE_NOTIFICATIONS({
-        title: "Activate account",
+      this.CREATE_SYSTEM_NOTIFICATION({
         type: "info",
         message: "Open settings to activate account."
       });
@@ -101,23 +104,87 @@ export default {
     if (Notification.permission != "granted") {
       this.notificationPermission();
     }
-
-    this.displayWeeklyNotification();
   },
 
   methods: {
-    ...mapActions(["updateDevices"]),
-    ...mapActions("Admin", ["getEvents", "getTeam"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS", "CREATE_GLOBAL_INTERVAL"]),
-    testClick() {
-      console.log("Test");
+    ...mapActions(["request", "updateDevices"]),
+    ...mapMutations("Admin", ["UPDATE_BOARDS"]),
+    ...mapMutations([
+      "CREATE_SYSTEM_NOTIFICATION",
+      "CREATE_GLOBAL_INTERVAL",
+      "CLEAR_GLOBAL_INTERVAL",
+      "UPDATE_API_NOTIFICATIONS",
+      "UPDATE_TEAM"
+    ]),
+    getBoards() {
+      return new Promise((resolve, reject) => {
+        this.request({
+          method: "GET",
+          url: "tasks/boards"
+        })
+          .then(response => {
+            this.UPDATE_BOARDS({ data: response, action: "update" });
+            resolve();
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+    getTasks() {
+      return new Promise((resolve, reject) => {
+        this.request({
+          method: "GET",
+          url: "tasks/get"
+        })
+          .then(response => {
+            this.UPDATE_BOARDS(response);
+            resolve();
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
+
+    getNotifications() {
+      return new Promise((resolve, reject) => {
+        const payload = {
+          method: "GET",
+          url: "/notifications/all"
+        };
+        this.request(payload)
+          .then(response => {
+            this.UPDATE_API_NOTIFICATIONS(response);
+            resolve();
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
+    getTeam() {
+      return new Promise((resolve, reject) => {
+        const payload = {
+          method: "GET",
+          url: "/users/all"
+        };
+        this.request(payload)
+          .then(response => {
+            this.UPDATE_TEAM(response);
+            resolve();
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
     },
     toggleDisplaySearch() {
       this.displaySearch = !this.displaySearch;
     },
     triggerDeviceNotification() {
-      this.UPDATE_NOTIFICATIONS({
-        title: "Register new device detected",
+      this.CREATE_SYSTEM_NOTIFICATION({
         message:
           "Would you like this device to be added to your library  (click to confirm) ?",
         click: () => {
@@ -134,34 +201,6 @@ export default {
         // Find in array
         console.log("Find device in array or add a new one");
       }
-    },
-    notificationPermission() {
-      if (!window.Notification) {
-        let {
-          browser: { name, version }
-        } = this.getDeviceInformation;
-        this.UPDATE_NOTIFICATIONS({
-          title: "Browser version error",
-          message: `The current browser doesn't support notifications ${name} ${Math.round(
-            parseInt(version)
-          )}`
-        });
-      } else {
-        Notification.requestPermission();
-      }
-    },
-
-    displayWeeklyNotification() {
-      if (
-        !this.weeklyTimesheetUploaded &&
-        this.returnIsStartOfWeek &&
-        this.getIsAdmin
-      )
-        this.UPDATE_NOTIFICATIONS({
-          type: "info",
-          message: "Start the new week off by uploading a new weekly timesheet",
-          title: "Upload Timesheet"
-        });
     }
   }
 };
@@ -173,6 +212,15 @@ export default {
   flex: 1;
   flex-direction: column;
   height: 100%;
+  position: relative;
+}
+.notification_container {
+  position: fixed;
+  top: 2%;
+  bottom: 0;
+  right: 0;
+  left: 85%;
+  z-index: 15;
 }
 .inner_app_container {
   display: flex;

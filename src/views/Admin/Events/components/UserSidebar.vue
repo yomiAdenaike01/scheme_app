@@ -65,7 +65,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("Admin", ["team"]),
+    ...mapState(["team"]),
     ...mapGetters(["getIsAdmin"]),
     ...mapGetters("Admin", ["getFilteredTeam"]),
     items() {

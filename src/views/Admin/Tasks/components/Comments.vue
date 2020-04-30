@@ -67,6 +67,7 @@
         <s-button
           type="text"
           shadow
+          colour-scheme="secondary"
           icon="send"
           :disabled="newMessage.length == 0"
           @click="createComment"

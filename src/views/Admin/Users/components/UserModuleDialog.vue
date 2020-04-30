@@ -140,11 +140,11 @@ export default {
 
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["UPDATE_NOTIFICATIONS"]),
-    ...mapMutations("Admin", [
+    ...mapMutations([
+      "UPDATE_SYSTEM_NOTIFICATION",
       "ADD_TEAM_MEMBER",
       "UPDATE_ONE_TEAM_MEMBER",
-      "REMOVE_USER"
+      "DELETE_USER"
     ]),
     updateNewUser(response) {
       this.UPDATE_ONE_TEAM_MEMBER({
@@ -187,7 +187,7 @@ export default {
         })
         .catch(error => {
           this.loading = false;
-          this.REMOVE_USER(this.teamRef?.index);
+          this.DELETE_USER(this.teamRef?.index);
           return error;
         });
     }

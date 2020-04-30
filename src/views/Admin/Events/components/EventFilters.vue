@@ -50,7 +50,7 @@ export default {
     ...mapState("Admin", ["team"]),
     ...mapState(["clientInformation"]),
     ...mapState("Admin", ["eventFilters"]),
-    ...mapGetters("Admin", ["getUserGroups"]),
+    ...mapGetters(["getUserGroups"]),
     /**
      * display placeholders based on the group names
      */

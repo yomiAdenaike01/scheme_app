@@ -99,8 +99,7 @@ export default {
     ...mapActions(["request", "getClient"]),
     ...mapMutations([
       "UPDATE_USER",
-      "UPDATE_NOTIFICATIONS",
-      "CLEAR_GLOBAL_INTERVAL"
+      "UPDATE_SYSTEM_NOTIFICATIONEAR_GLOBAL_INTERVAL"
     ]),
 
     submitController(formInformation) {
@@ -132,8 +131,7 @@ export default {
         this.credentials?.fp_password?.toLowerCase()?.trim() ===
         this.credentials?.fp_reentered_password?.toLowerCase()?.trim();
       if (!isValid && !equalPasswords) {
-        this.UPDATE_NOTIFICATIONS({
-          type: "error",
+        this.UPDATE_SYSTEM_NOTIFICATION({
           message:
             "Error processing reset password, please enter your desired password again"
         });
@@ -168,8 +166,7 @@ export default {
           this.UPDATE_USER(response);
 
           if (response.user.admin_gen == true) {
-            this.UPDATE_NOTIFICATIONS({
-              type: "warning",
+            this.UPDATE_SYSTEM_NOTIFICATION({
               title: "Insecure password detected",
               message:
                 "Use the forgot password functionality to reset you password."

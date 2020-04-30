@@ -50,14 +50,14 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import scrollToBottom from "@/mixins/scrollToBottom";
-import ChatMessage from "./ChatMessage";
 export default {
   name: "ActiveChat",
   components: {
     InformationDisplay: () => import("@/components/InformationDisplay"),
     ChatActions: () => import("./ChatActions"),
     SButton: () => import("@/components/SButton"),
-    ChatMessage
+    ChatMessage: () => import("./ChatMessage"),
+    Avatar: () => import("@/components/Avatar")
   },
   mixins: [scrollToBottom],
   props: {
@@ -135,8 +135,7 @@ export default {
 
   methods: {
     ...mapMutations([
-      "UPDATE_NOTIFICATIONS",
-      "CREATE_GLOBAL_INTERVAL",
+      "UPDATE_SYSTEM_NOTIFICATION,CREATE_GLOBAL_INTERVAL",
       "CLEAR_GLOBAL_INTERVAL"
     ]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
@@ -171,8 +170,7 @@ export default {
       let userName = this.getUserInformation(this.chat.reciever)?.name;
 
       const createError = message => {
-        this.UPDATE_NOTIFICATIONS({
-          title: "Failed to send message",
+        this.UPDATE_SYSTEM_NOTIFICATION({
           message,
           type: "error"
         });
