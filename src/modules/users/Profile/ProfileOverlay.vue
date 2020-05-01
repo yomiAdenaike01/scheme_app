@@ -1,5 +1,5 @@
 <template>
-  <Overlay :display="view" class="profile_container">
+  <Overlay :display="view" class="profile_container" backdrop-type="dark">
     <div class="profile_inner_container" type="flex">
       <ProfileContainer
         :user-data="activeDialogData"
