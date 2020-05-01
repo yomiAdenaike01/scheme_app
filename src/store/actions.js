@@ -30,6 +30,9 @@ const exitApplication = (context, networkError = false, logout = false) => {
 };
 
 export default {
+  activateOverlay(context, overlay) {
+    context.commit("UPDATE_OVERLAY_INDEX", { overlay, view: true });
+  },
   restoreOverlay(context) {
     context.commit("UPDATE_OVERLAY_INDEX", context.state.overlayHistory);
   },

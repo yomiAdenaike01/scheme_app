@@ -1,13 +1,11 @@
 <template>
   <div class="user_module_container">
     <ManageUsersOverlay
-      v-if="overlays.manageUsers"
-      :display="overlays.manageUsers"
+      :display="display"
       @close="overlays.manageUsers = false"
     />
 
     <ProfileOverlay
-      v-if="overlays.profile"
       :display="overlays.profile"
       @close="overlays.profile = false"
     />
@@ -68,6 +66,8 @@
 <script>
 import { mapState, mapGetters } from "vuex";
 
+import overlayEvents from "@/mixins/overlayEvents";
+
 import ProfileOverlay from "./Profile/ProfileOverlay";
 import UserGroup from "./components/UserGroup";
 import User from "./components/User";
@@ -82,8 +82,10 @@ export default {
     ManageUsersOverlay,
     TextDisplay: () => import("@/components/TextDisplay")
   },
+  mixins: [overlayEvents],
   data() {
     return {
+      globalOverlayName: "profile",
       overlays: {
         manageUsers: false,
         profile: false
