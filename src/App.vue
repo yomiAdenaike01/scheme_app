@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     ...mapState(["requestIntervals", "clientInformation"]),
-    ...mapState("Admin", ["team"]),
+    ...mapState(["team"]),
     ...mapGetters(["getIsIE"]),
 
     isValidClient() {

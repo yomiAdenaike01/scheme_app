@@ -1,15 +1,15 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import Comms from "./comms";
-import Admin from "./Admin";
-import Tasks from "./tasks";
-
 import state from "./state";
 import actions from "./actions";
 import getters from "./getters";
 import mutations from "./mutations";
-import VuexReset from "@ianwalter/vuex-reset";
+
+import Events from "./events";
+import Tasks from "./tasks";
+import Comms from "./comms";
+import Requests from "./requests";
 
 Vue.use(Vuex);
 
@@ -20,5 +20,5 @@ export default new Vuex.Store({
   actions,
   getters,
 
-  modules: { Comms, Admin, Tasks }
+  modules: { Requests, Comms, Events, Tasks }
 });

@@ -20,7 +20,7 @@ const sortPayload = ({ state, getters }, payload) => {
 
 const exitApplication = (context, networkError = false, logout = false) => {
   context.commit("CLEAR_GLOBAL_INTERVAL");
-  context.dispatch("closeDialog");
+  context.dispatch("closeOverlay");
   if (networkError) {
     context.commit("UPDATE_NETWORK_ERROR", true);
   }
@@ -30,8 +30,8 @@ const exitApplication = (context, networkError = false, logout = false) => {
 };
 
 export default {
-  restoreDialog(context) {
-    context.commit("UPDATE_DIALOG_INDEX", context.state.lastDialog);
+  restoreOverlay(context) {
+    context.commit("UPDATE_OVERLAY_INDEX", context.state.overlayHistory);
   },
   updateDevices(context) {
     return new Promise((resolve, reject) => {
@@ -50,23 +50,30 @@ export default {
     });
   },
 
-  closeDialog({ commit, state: { dialogIndex } }, name = "") {
+  closeOverlay({ getters, commit, state: { overlayIndex } }, name = "") {
     commit(
-      "UPDATE_DIALOG_INDEX",
+      "UPDATE_OVERLAY_INDEX",
       {
         view: false,
-        dialog: name,
+        overlay: name,
         data: null
       },
       { root: true }
     );
 
     if (!name) {
-      for (let property in dialogIndex) {
-        if (dialogIndex[property].view == true) {
-          commit("UPDATE_DIALOG_INDEX", {
+      let activeOverlay = getters.getActiveOverlay()?.name;
+      if (activeOverlay) {
+        commit("UPDATE_OVERLAY_INDEX", {
+          view: false,
+          overlay: activeOverlay
+        });
+      }
+      for (let property in overlayIndex) {
+        if (overlayIndex[property].view == true) {
+          commit("UPDATE_OVERLAY_INDEX", {
             view: false,
-            dialog: property,
+            overlay: property,
             data: null
           });
         }

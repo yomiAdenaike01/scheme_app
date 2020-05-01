@@ -17,54 +17,116 @@ const clearStateInterval = (state, intervalID) => {
 };
 
 export default {
-  // create user
-  CREATE_USER(state, payload) {
-    state.team.push(payload);
-    updateBreadCrumbs(state, "teamRef", {
-      index: state.team.length
+  // Team
+  ADD_TEAM_MEMBER(state, payload) {
+    let teamMemberIndex = state.team.findIndex(x => {
+      return x.email == payload.email;
     });
-  },
-  DELETE_USER(state, index) {
-    if (!index) {
-      index = state.team.length - 1;
+    if (teamMemberIndex == -1) {
+      state.team.push(payload);
+      updateBreadCrumbs(state, "teamRef", {
+        payload,
+        index: state.team.length - 1
+      });
     }
-    updateBreadCrumbs(state, "teamRef", {
-      payload: {
-        index,
-        payload: state.team[index]
+  },
+  REASSIGN_TEAM_MEMBERS(state, { assignment = "team", group }) {
+    let groupedElements = [],
+      groupKey = assignment == "team" ? "groupID" : "type";
+    for (let i = 0, len = state[assignment].length; i < len; i++) {
+      let { groupID } = state[assignment][i];
+      if (groupID == group) {
+        groupedElements.push({ index: i, groupID });
+        Vue.set(state[assignment][i], groupKey, 0);
       }
+    }
+    updateBreadCrumbs(state, "groupRef", { group: group, groupedElements });
+  },
+  DELETE_TEAM_MEMBER(state, teamMemberIndex) {
+    teamMemberIndex = teamMemberIndex ? teamMemberIndex : state.team.length - 1;
+
+    updateBreadCrumbs(state, "teamRef", state.team[teamMemberIndex]);
+
+    Vue.delete(state.team, teamMemberIndex);
+  },
+  UPDATE_TEAM(state, payload) {
+    if (Array.isArray(payload) && state.team.length == 0) {
+      state.team = payload;
+    }
+    if (Array.isArray(payload) && state.team.length > 0) {
+      for (let i = 0, len = state.team.length; i < len; i++) {
+        let teamMember = state.team[i];
+        let member = payload.find(payloadMember => {
+          return payloadMember._id == teamMember._id;
+        });
+        if (!member) {
+          state.team.push(member);
+        }
+      }
+    }
+  },
+  UPDATE_TEAM_MEMBER_GROUP(state, { index, groupType, payload }) {
+    updateBreadCrumbs(state, "teamRef", {
+      index,
+      payload: state.team[index]
     });
-    Vue.delete(state.team, index);
+
+    state.team[index][groupType] = {
+      ...state.team[index][groupType],
+      ...payload
+    };
   },
 
-  UPDATE_DIALOG_INDEX(
-    state,
-    { dialog = "viewUser", view = false, id = null, data = null, tabIndex = 0 }
-  ) {
-    Vue.set(state.dialogIndex, dialog, { view, id, data, tabIndex });
-    state.lastDialog = { dialog, view, id, data, tabIndex };
+  UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
+    updateBreadCrumbs(state, "teamRef", {
+      index,
+      payload: state.team[index]
+    });
+
+    state.team[index] = Object.assign(state.team[index], payload);
+  },
+
+  UPDATE_OVERLAY_INDEX(state, payload) {
+    payload = payload
+      ? payload
+      : { overlay: "viewUser", view: false, id: null, data: null };
+    for (let property in state.overlayIndex[payload.overlay]) {
+      Vue.set(state.overlayIndex[payload.overlay], property, payload[property]);
+    }
+    console.log(state.overlayIndex[payload.overlay]);
+    state.overlayHistory = payload;
   },
 
   CREATE_GROUP(state, { groupType, payload }) {
     let group = state.clientInformation[groupType];
+
     let groupExists =
       state.clientInformation[groupType].findIndex(group => {
         return group?.label?.toLowerCase() == payload?.label?.toLowerCase();
       }) > -1;
+
     if (!groupExists) {
       group.push(payload);
-      updateBreadCrumbs(state, "rootGroupRef", { groupType, payload });
+      updateBreadCrumbs(state, "groupRef", { groupType, payload });
     }
   },
+
   DELETE_GROUP(state, { groupType, groupIndex }) {
+    updateBreadCrumbs(state, "groupRef", {
+      groupType,
+      payload: state.clientInformation[groupType][groupIndex]
+    });
+
     Vue.delete(state.clientInformation[groupType], groupIndex);
   },
+
   UPDATE_GROUP(state, { groupType, groupIndex, payload }) {
-    updateBreadCrumbs(state, "rootGroupRef", {
+    updateBreadCrumbs(state, "groupRef", {
       groupType,
       groupIndex,
       payload
     });
+
     for (let property in payload) {
       Vue.set(
         state.clientInformation[groupType][groupIndex],
@@ -74,30 +136,45 @@ export default {
     }
   },
 
-  CREATE_GLOBAL_INTERVAL(state, { duration = 3000, method, id, immediate }) {
-    if (immediate) {
-      method();
+  CREATE_GLOBAL_INTERVAL(state, payload) {
+    payload = payload
+      ? payload
+      : {
+          duration: 3000,
+          method: () => {},
+          id: Math.random()
+            .toString(16)
+            .slice(2),
+          immediate: false
+        };
+    if (payload.immediate) {
+      payload.method();
+      if (payload.immediateCallback) {
+        payload.immediateCallback();
+      }
     }
+
     let timeout;
+
     if (!state.runningIntervals?.id) {
       var runInterval = () => {
         timeout = setTimeout(() => {
-          method()
+          payload
+            .method()
             .finally(() => {
               runInterval();
             })
             .catch(() => {
-              clearStateInterval(state, id);
+              clearStateInterval(state, payload.id);
             });
-        }, duration);
+        }, payload.duration);
       };
     }
 
-    if (!state.runningIntervals[id]) {
+    if (!state.runningIntervals[payload.id]) {
       runInterval();
-      state.runningIntervals[id] = timeout;
+      state.runningIntervals[payload.id] = timeout;
     }
-    console.log(state.runningIntervals);
   },
 
   CLEAR_GLOBAL_INTERVAL(state, intervalID = null) {
@@ -105,7 +182,7 @@ export default {
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    state.clientInformation = Object.assign(payload, state.clientInformation);
+    state.clientInformation = Object.assign(state.clientInformation, payload);
   },
 
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
@@ -113,25 +190,27 @@ export default {
   },
 
   DELETE_API_NOTIFICATION(state, notificationIndex) {
-    if (!notificationIndex) {
-      state.apiNotifications.pop();
-    } else {
-      updateBreadCrumbs(state, {
-        notificationIndex,
-        notification: state.apiNotifications[notificationIndex]
-      });
-      Vue.delete(state.apiNotifications, notificationIndex);
-    }
+    notificationIndex = notificationIndex
+      ? notificationIndex
+      : state.apiNotifications.length - 1;
+
+    updateBreadCrumbs(state, {
+      notificationIndex,
+      notification: state.apiNotifications[notificationIndex]
+    });
+    Vue.delete(state.apiNotifications, notificationIndex);
   },
 
   UPDATE_API_NOTIFICATIONS(state, payload) {
     updateBreadCrumbs(state, payload);
+
     for (let i = 0, len = state.apiNotifications.length; i < len; i++) {
       for (let property in payload) {
         Vue.set(state.apiNotifications[i], property, payload[property]);
       }
     }
   },
+
   UPDATE_API_NOTIFICATION(state, { notificationIndex, update }) {
     updateBreadCrumbs(state, {
       notificationIndex,
@@ -161,6 +240,7 @@ export default {
   UPDATE_NETWORK_ERROR(state, payload) {
     state.networkError = payload;
   },
+
   DELETE_USER_SESSION(state) {
     state.apiNotifications = [];
     state.systemNotifications = [];
@@ -174,9 +254,10 @@ export default {
       }
     }
   },
+
   UPDATE_USER(state, { user, token }) {
     state.token = token;
-    state.userInformation = user;
+    state.userInformation = Object.assign(state.userInformation, user);
   },
 
   CREATE_SYSTEM_NOTIFICATION(state, notification) {
@@ -200,7 +281,6 @@ export default {
             return _notification._id == notification._id;
           }
         );
-
         Vue.delete(state.systemNotifications, _notificationIndex);
       }
     };

@@ -127,14 +127,16 @@ export default {
     return getUA.getBrowser().name == "IE";
   },
 
-  getActiveDialog: ({ dialogIndex }) => dialogName => {
-    let foundDialog = null;
+  getActiveOverlay: ({ overlayIndex }) => dialogName => {
+    let foundDialog = {};
     if (dialogName) {
-      foundDialog = dialogIndex[dialogName];
+      foundDialog = overlayIndex[dialogName];
     } else {
-      for (let property in dialogIndex) {
-        if (dialogIndex[property].view) {
-          foundDialog = dialogIndex[property];
+      for (let property in overlayIndex) {
+        if (overlayIndex[property].view) {
+          foundDialog = Object.assign(overlayIndex[property], foundDialog, {
+            name: property
+          });
         }
       }
     }
