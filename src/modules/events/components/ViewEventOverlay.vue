@@ -93,11 +93,12 @@
               class="full_width"
               @val="updateEvent"
             />
-            <el-button
+            <s-button
               slot="reference"
               size="mini"
+              plain
               @click="selectedConfig = 'date'"
-              >Update date information</el-button
+              >Update date information</s-button
             >
           </el-popover>
 
@@ -119,11 +120,8 @@
               class="full_width"
               @val="updateEvent"
             />
-            <el-button
-              slot="reference"
-              size="mini"
-              @click="selectedConfig = 'type'"
-              >Update event type information</el-button
+            <s-button slot="reference" plain @click="selectedConfig = 'type'"
+              >Update event type information</s-button
             >
           </el-popover>
 
