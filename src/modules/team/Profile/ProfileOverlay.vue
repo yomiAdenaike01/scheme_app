@@ -1,9 +1,9 @@
 <template>
   <Overlay
-    v-model="overlayController"
+    display
     class="profile_container"
     backdrop-type="dark"
-    @close="$emit('close')"
+    @close="deactivateOverlay"
   >
     <div class="profile_inner_container" type="flex">
       <ProfileContainer

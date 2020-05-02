@@ -11,17 +11,12 @@ export default {
     },
     activeOverlayData() {
       return this.currentOverlay.data;
-    },
-    overlayController: {
-      get() {
-        return this.isActive;
-      },
-      set() {
-        this.closeOverlay(this.overlayName);
-      }
     }
   },
   methods: {
-    ...mapActions(["closeOverlay"])
+    ...mapActions(["closeOverlay"]),
+    deactivateOverlay() {
+      this.closeOverlay(this.overlayName);
+    }
   }
 };

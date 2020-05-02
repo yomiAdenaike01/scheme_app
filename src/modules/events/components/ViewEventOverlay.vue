@@ -1,6 +1,6 @@
 <template>
-  <Overlay v-model="overlayController" @close="$emit('close')">
-    <div class="view_event_dialog">
+  <Overlay display @close="deactivateOverlay">
+    <div class="view_event_container">
       <TextDisplay
         :display-text="{
           heading: 'View event',
@@ -47,15 +47,8 @@
         <h3>Assigned users</h3>
 
         <div class="info_unit avatar_wrapper">
-          <div
-            v-if="event.assigned_to.length > 0"
-            class="assigned_users_container"
-          >
-            <div
-              v-for="(member, index) in event.assigned_to"
-              ref="user"
-              :key="index"
-            >
+          <div v-if="assignedTo.length > 0" class="assigned_users_container">
+            <div v-for="(member, index) in assignedTo" ref="user" :key="index">
               <Avatar
                 :size="70"
                 class="assigned_user"
@@ -77,7 +70,7 @@
                 class="users_container trigger"
                 :class="{
                   disabled:
-                    event.assigned_to.findIndex(assignee => {
+                    assignedTo.findIndex(assignee => {
                       return assignee._id == option._id;
                     }) > -1
                 }"
@@ -186,6 +179,10 @@ export default {
     ...mapState(["team", "userInformation", "overlayIndex"]),
     ...mapState("Events", ["events", "eventRef"]),
     ...mapGetters(["getFilteredTeam", "getValidEventTypes", "getIsAdmin"]),
+
+    assignedTo() {
+      return this.event?.assigned_to ?? [];
+    },
     noticePeriodExceeded() {
       return this.initMoment(
         this.event?.notice_period ??
@@ -256,7 +253,7 @@ export default {
     },
 
     canAddMoreUsers() {
-      return this.event?.assigned_to.length < this.team.length;
+      return this.assignedTo.length < this.team.length;
     },
 
     event() {
@@ -268,7 +265,7 @@ export default {
     },
     canReject() {
       return (
-        this.event?.assigned_to.findIndex(assignee => {
+        this.assignedTo.findIndex(assignee => {
           return assignee.user_group.enable_event_rejection == true;
         }) == -1
       );
@@ -279,10 +276,10 @@ export default {
       let canRejectCount = 0,
         hasApprovedCount = 0,
         isCreatorAdmin =
-          this.event?.created_by?.user_group?.label.toLowerCase() ===
+          this.event?.created_by?.user_group?.label?.toLowerCase() ===
           "system administrator";
-      for (let i = 0, len = this.event?.assigned_to?.length; i < len; i++) {
-        let assignee = this?.event?.assigned_to[i];
+      for (let i = 0, len = this.assignedTo?.length; i < len; i++) {
+        let assignee = this.assignedTo[i];
         if (assignee?.user_group?.enabledEventRejection) {
           canRejectCount++;
         }
@@ -306,7 +303,7 @@ export default {
       };
     },
     isEventMine() {
-      return this.event?.assigned_to?.some(() => {
+      return this.assignedTo?.some(() => {
         return this.userInformation._id;
       });
     },
@@ -401,10 +398,10 @@ export default {
 
     // Currently locks database still keeping function for later rework button is hidden
     removeUser(user) {
-      let userIndex = this.event?.assigned_to.findIndex(assignee => {
+      let userIndex = this.assignedTo.findIndex(assignee => {
         return assignee._id == user._id;
       });
-      if (this.event?.assigned_to.length - 1 == 0) {
+      if (this.assignedTo.length - 1 == 0) {
         this.deleteEvent(
           "This is the last user on the event, if you delete this user it will delete the event. Are you sure you want to delete this event ? "
         );
@@ -461,7 +458,7 @@ export default {
       });
     },
     notifyAssignees() {
-      let assigned_to = this.event?.assigned_to;
+      let assigned_to = this.assignedTo;
       let removalMessage = `You have an event on ${this.dates.start} to ${this.dates.end} has been deleted by ${this.userInformation.name}`;
       this.genEmail({
         subject: "Event removal",
@@ -487,7 +484,7 @@ export default {
     },
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
-      let assigned_to = [...this.event?.assigned_to, this.userInformation._id];
+      let assigned_to = [...this.assignedTo, this.userInformation._id];
       this.genEmail({
         subject: "Reminder",
         to: this.getEmail,
@@ -534,7 +531,7 @@ export default {
   line-height: 2em;
   padding: 20px;
 }
-.view_event_dialog_item {
+.view_event_container_item {
   border: 1.2px solid whitesmoke;
   border-radius: 5px;
   margin: 1em;

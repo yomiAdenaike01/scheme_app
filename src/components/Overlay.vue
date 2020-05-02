@@ -2,7 +2,6 @@
   <SlideYUpTransition>
     <div
       v-if="display"
-      ref="overlay"
       :class="[
         'overlay_wrapper',
         { light: backdropType == 'blur', dark: backdropType == 'dark' }

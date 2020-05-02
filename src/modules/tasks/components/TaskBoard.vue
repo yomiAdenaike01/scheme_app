@@ -20,7 +20,7 @@
                 :submit-button="{ text: 'Update board' }"
                 @val="updateBoard"
               />
-              <el-divider></el-divider>
+              <hr />
 
               <s-button colour-scheme="tertiary" shadow icon="x"
                 >Delete Board</s-button
@@ -86,7 +86,7 @@
           <div slot="reference">
             <s-button colour-scheme="secondary" only-icon icon="plus" shadow />
           </div>
-          <Form class="full_width" :config="formConfig" @val="createAction" />
+          <Form class="full_width" :config="formConfig" @val="createBoard" />
         </el-popover>
       </TextDisplay>
     </div>
@@ -228,43 +228,43 @@ export default {
           this.updateBoardQuota("minus");
         });
       });
+    },
+    createBoard(payload) {
+      this.UPDATE_BOARDS({ data: payload, action: "create" });
+      this.updateBoardQuota("minus");
+      let { _id, ...data } = payload;
+
+      payload = {
+        data,
+        method: "POST",
+        url: "tasks/boards/create"
+      };
+
+      this.request(payload).catch(() => {
+        this.DELETE_BOARD(payload.boardID);
+        this.updateBoardQuota("plus");
+      });
+    },
+
+    updateBoard(payload) {
+      this.UPDATE_BOARDS({ action: "update", ...payload });
+      payload = {
+        data: { ...payload },
+        method: "PUT",
+        url: "tasks/boards/update"
+      };
+
+      this.request(payload).catch(() => {
+        this.RESTORE_BOARD();
+      });
+    },
+    createTask() {
+      this.UPDATE_OVERLAY_INDEX({
+        overlay: "task",
+        view: true,
+        data: this.boardID
+      });
     }
-  },
-  createBoard(payload) {
-    this.UPDATE_BOARDS({ data: payload, action: "create" });
-    this.updateBoardQuota("minus");
-    let { _id, ...data } = payload;
-
-    payload = {
-      data,
-      method: "POST",
-      url: "tasks/boards/create"
-    };
-
-    this.request(payload).catch(() => {
-      this.DELETE_BOARD(payload.boardID);
-      this.updateBoardQuota("plus");
-    });
-  },
-
-  updateBoard(payload) {
-    this.UPDATE_BOARDS({ action: "update", ...payload });
-    payload = {
-      data: { ...payload },
-      method: "PUT",
-      url: "tasks/boards/update"
-    };
-
-    this.request(payload).catch(() => {
-      this.RESTORE_BOARD();
-    });
-  },
-  createTask() {
-    this.UPDATE_OVERLAY_INDEX({
-      overlay: "task",
-      view: true,
-      data: this.boardID
-    });
   }
 };
 </script>

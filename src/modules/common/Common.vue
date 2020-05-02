@@ -7,8 +7,8 @@
     <NprogressContainer />
     <CommonBar @search="displaySearch = $event" />
 
-    <ProfileOverlay />
-    <ViewEventOverlay />
+    <ProfileOverlay v-if="overlayIndex.profile.view" />
+    <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
 
     <SearchOverlay
       v-hotkey="keymap"
@@ -100,7 +100,8 @@ export default {
       "userInformation",
       "apiNotifications",
       "systemNotifications",
-      "requestIntervals"
+      "requestIntervals",
+      "overlayIndex"
     ]),
     ...mapState(["team"]),
     ...mapGetters(["getDeviceInformation", "getIsAdmin"]),

@@ -7,7 +7,7 @@
     >
       <i class="el-icon el-icon-menu"></i>
     </div>
-    <div class="profile_container">
+    <div class="appbar_inner_container">
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
@@ -117,7 +117,7 @@ export default {
   cursor: pointer;
 }
 
-.profile_container {
+.appbar_inner_container {
   display: flex;
   align-items: center;
   flex: 1;
