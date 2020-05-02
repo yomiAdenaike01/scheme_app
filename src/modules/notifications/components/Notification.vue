@@ -1,26 +1,7 @@
 <template functional>
-  <div
-    :class="[
-      'notification_container',
-      data.class,
-      data.staticClass,
-      props.type
-    ]"
-  >
-    <div class="body_container">
-      {{ props.title }}
-      {{ props.message }}
-    </div>
-    <div class="functions_container">
-      <div
-        v-for="(method, index) in props.methods"
-        :key="index"
-        class="function"
-        @click="method.function"
-      >
-        <p>{{ method.label }}</p>
-      </div>
-    </div>
+  <div>
+    <p>{{ props.title }}</p>
+    <p>{{ props.message }}</p>
   </div>
 </template>
 
@@ -28,6 +9,10 @@
 export default {
   name: "Notification",
   props: {
+    api: {
+      type: Boolean,
+      default: false
+    },
     methods: {
       type: Array,
       default: () => []
@@ -52,11 +37,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.notification_container {
-  padding: 20px;
-  background: white;
-  box-shadow: $box_shadow;
-  z-index: 19;
-}
-</style>
+<style lang="scss" scoped></style>

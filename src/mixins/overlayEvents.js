@@ -1,22 +1,27 @@
-import { mapGetters, mapMutations, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters(["getActiveOverlay"]),
-    displayOverlay() {
-      return this.getActiveOverlay()?.name == this.globalOverlayName;
+    ...mapState(["overlayIndex"]),
+    currentOverlay() {
+      return this.overlayIndex[this.overlayName];
+    },
+    isActive() {
+      return this.currentOverlay.view;
+    },
+    activeOverlayData() {
+      return this.currentOverlay.data;
+    },
+    overlayController: {
+      get() {
+        return this.isActive;
+      },
+      set() {
+        this.closeOverlay(this.overlayName);
+      }
     }
   },
   methods: {
-    ...mapActions(["closeActiveOverlay"]),
-    ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
-    closeOverlay(overlay) {
-      let activeOverlay = this.getActiveOverlay(overlay);
-      if (activeOverlay) {
-        this.closeActiveOverlay(overlay);
-      } else {
-        this.$emit("close");
-      }
-    }
+    ...mapActions(["closeOverlay"])
   }
 };

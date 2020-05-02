@@ -1,8 +1,13 @@
 <template>
-  <Overlay :display="view" class="profile_container" backdrop-type="dark">
+  <Overlay
+    v-model="overlayController"
+    class="profile_container"
+    backdrop-type="dark"
+    @close="$emit('close')"
+  >
     <div class="profile_inner_container" type="flex">
       <ProfileContainer
-        :user-data="activeDialogData"
+        :user-data="activeOverlayData"
         :tab-items="tabItems"
         :current-tab="selectedTab"
         @changedTab="selectedTab = $event"
@@ -19,6 +24,8 @@
 <script>
 import { mapGetters, mapActions, mapMutations, mapState } from "vuex";
 
+import overlayEvents from "@/mixins/overlayEvents";
+
 import Overlay from "@/components/Overlay";
 
 import ProfileInformation from "./components/ProfileInformation";
@@ -28,30 +35,24 @@ import ProfileContainer from "./components/ProfileContainer";
 export default {
   name: "ProfileOverlay",
   components: {
+    Overlay,
+
     ProfileInformation,
     ProfileContainer,
-    ProfileEvents,
-    Overlay
+    ProfileEvents
   },
-  props: {
-    display: Boolean
-  },
+  mixins: [overlayEvents],
   data() {
     return {
-      selectedTab: "0"
+      selectedTab: "0",
+      overlayName: "profile"
     };
   },
-
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Events", ["events"]),
-    ...mapGetters(["getIsAdmin", "getActiveOverlay"]),
-    activeDialogData() {
-      return this.activeDialog.data;
-    },
-    activeDialog() {
-      return this.getActiveOverlay("profile");
-    },
+    ...mapGetters(["getIsAdmin"]),
+
     returnComponents() {
       let selectedTab = this.selectedTab;
       let component, props;
@@ -59,7 +60,7 @@ export default {
         // Display user personal details
         case "0": {
           component = ProfileInformation;
-          props = this.activeDialogData;
+          props = this.activeOverlayData;
           break;
         }
         // Display user shifts
@@ -92,16 +93,6 @@ export default {
       return tabs;
     },
 
-    view: {
-      get() {
-        return this.activeDialog.view;
-      },
-      set() {
-        this.closeOverlay("profile");
-        this.$emit("close");
-      }
-    },
-
     associatedProfileEvents() {
       let eventsArray = [];
       for (let i = 0, len = this.events.length; i < len; i++) {
@@ -129,6 +120,7 @@ export default {
       return eventsArray;
     }
   },
+
   methods: {
     ...mapActions(["request", "closeOverlay"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"])

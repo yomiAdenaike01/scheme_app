@@ -27,7 +27,7 @@ export default {
     if (!this.hasEntries(this.errorInformation)) {
       this.$router.push({ name: "events" });
     }
-    this.CLEAR_GLOBAL_INTERVAL();
+    this.DELETE_GLOBAL_INTERVAL();
   },
 
   computed: {
@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     ...mapActions(["request", "genEmail"]),
-    ...mapMutations(["CLEAR_GLOBAL_INTERVAL"]),
+    ...mapMutations(["DELETE_GLOBAL_INTERVAL"]),
 
     sendErrorReport() {
       this.genEmail({

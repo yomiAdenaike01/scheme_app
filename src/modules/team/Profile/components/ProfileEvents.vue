@@ -19,14 +19,17 @@ export default {
     TextDisplay: () => import("@/components/TextDisplay")
   },
   props: {
-    events: {
+    data: {
       type: Array,
       default: () => []
     }
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin", "getActiveOverlay"]),
+    ...mapGetters(["getIsAdmin"]),
+    events() {
+      return this.data;
+    },
     infoDisplayText() {
       let heading = "No events to display",
         content = "All events a user is assigned to will be displayed below.";

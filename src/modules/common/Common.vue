@@ -6,19 +6,49 @@
   >
     <NprogressContainer />
     <CommonBar @search="displaySearch = $event" />
-    <div v-if="systemNotifications.length > 0" class="notification_container">
-      <Notification
-        v-for="notification in systemNotifications"
-        :key="notification._id"
-        v-bind="notification"
-      ></Notification>
-    </div>
+
+    <ProfileOverlay />
+    <ViewEventOverlay />
+
     <SearchOverlay
       v-hotkey="keymap"
       :display="displaySearch"
       @close="displaySearch = false"
     />
-    <div class="inner_common_container">
+
+    <div class="notification_container">
+      <slide-x-right-transition group mode="out-in">
+        <div
+          v-for="(notification, notificationIndex) in systemNotifications"
+          :key="notification._id"
+          :class="['notification', notification.type]"
+        >
+          <div class="body_container">
+            <div class="icon_container">
+              <i :class="`bx bx-${notification.icon}`"></i>
+            </div>
+            <div class="text_container">
+              <h4 class="title">
+                {{ notification.title }}
+              </h4>
+              <p>{{ notification.message }}</p>
+            </div>
+          </div>
+          <div class="functions_container">
+            <div
+              v-for="(method, index) in notification.methods"
+              :key="index"
+              class="function"
+              @click="excecuteNotification(method, notificationIndex)"
+            >
+              <p>{{ method.label }}</p>
+            </div>
+          </div>
+        </div>
+      </slide-x-right-transition>
+    </div>
+
+    <div class="common_wrapper">
       <Navigation />
       <keep-alive>
         <slide-x-left-transition mode="out-in">
@@ -33,13 +63,15 @@
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
-import { SlideXLeftTransition } from "vue2-transitions";
+import { SlideXLeftTransition, SlideXRightTransition } from "vue2-transitions";
+
+import ProfileOverlay from "./../team/Profile/ProfileOverlay";
+import ViewEventOverlay from "./../events/components/ViewEventOverlay";
 
 import CommonBar from "./components/CommonBar";
 import Navigation from "./components/Navigation";
 import SearchOverlay from "./components/SearchOverlay";
 
-import Notification from "@/modules/notifications/components/Notification";
 import SButton from "@/components/SButton";
 
 export default {
@@ -47,10 +79,12 @@ export default {
   components: {
     NprogressContainer,
     SlideXLeftTransition,
+    SlideXRightTransition,
+    ProfileOverlay,
+    ViewEventOverlay,
 
     CommonBar,
     Navigation,
-    Notification,
     SButton,
     SearchOverlay
   },
@@ -111,7 +145,32 @@ export default {
     if (!isVerified) {
       this.CREATE_SYSTEM_NOTIFICATION({
         type: "info",
-        message: "Open settings to activate account."
+        icon: "shield-x",
+        title: "Activate account",
+        message: "Open settings to activate account.",
+        methods: [
+          {
+            label: "Activate",
+            body() {
+              return new Promise((resolve, reject) => {
+                this.UPDATE_USER({ verified: true });
+                this.request({
+                  method: "POST",
+                  data: {
+                    _id: this.userInformation._id,
+                    update: { verified: false }
+                  }
+                })
+                  .then(() => {
+                    resolve();
+                  })
+                  .catch(err => {
+                    reject(err);
+                  });
+              });
+            }
+          }
+        ]
       });
     }
 
@@ -122,18 +181,24 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request", "updateDevices"]),
+    ...mapActions(["request", "updateDevices", "closeOverlay"]),
     ...mapMutations([
       "CREATE_SYSTEM_NOTIFICATION",
+      "DELETE_SYSTEM_NOTIFICATION",
       "CREATE_GLOBAL_INTERVAL",
-      "CLEAR_GLOBAL_INTERVAL",
+      "DELETE_GLOBAL_INTERVAL",
       "UPDATE_API_NOTIFICATIONS",
-      "UPDATE_TEAM"
+      "UPDATE_TEAM",
+      "UPDATE_USER"
     ]),
     ...mapMutations("Tasks", ["UPDATE_BOARDS"]),
     ...mapMutations("Events", ["UPDATE_EVENT_TEMPLATES", "UPDATE_EVENTS"]),
     ...mapMutations("Requests", ["UPDATE_REQUESTS"]),
-
+    excecuteNotification(method, notificationIndex) {
+      method.body().finally(() => {
+        this.DELETE_SYSTEM_NOTIFICATION(notificationIndex);
+      });
+    },
     getEvents(params = {}) {
       return new Promise((resolve, reject) => {
         const payload = {
@@ -287,18 +352,88 @@ export default {
   height: 100%;
   position: relative;
 }
+/**
+  Notifications
+*/
+
 .notification_container {
   position: fixed;
   top: 2%;
-  bottom: 0;
   right: 0;
   left: 85%;
-  z-index: 15;
+  z-index: 999995;
 }
-.inner_common_container {
+.notification {
+  background: white;
+  box-shadow: $box_shadow;
+  display: flex;
+  min-width: 300px;
+  max-width: fit-content;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  min-height: fit-content;
+  border-left: 4px solid var(--colour_primary);
+  &.message,
+  .icon_container {
+    border-left-color: var(--colour_secondary);
+    color: var(--colour_secondary);
+  }
+  &.warning {
+    border-left-color: var(--colour_yellow);
+    color: var(--colour_yellow);
+  }
+}
+.notification .body_container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 0 20px;
+  position: relative;
+}
+.notification .text_container {
   display: flex;
   flex: 1;
-  height: calc(100% - 100px);
+  flex-direction: column;
+  p {
+    margin: 0;
+    font-size: 0.9em;
+  }
+  h4 {
+    margin: 0;
+    font-weight: 500;
+  }
+}
+.notification .icon_container {
+  flex: 0.3;
+  font-size: 2.3em;
+  color: var(--colour_primary);
+}
+
+.functions_container {
+  display: flex;
+  flex: 0.4;
+  flex-direction: column;
+  height: 100%;
+  border-left: 2px solid rgb(240, 240, 240);
+
+  .function {
+    cursor: pointer;
+    border-top: 2px solid whitesmoke;
+    text-align: center;
+    text-transform: capitalize;
+    &:first-of-type {
+      border: none;
+    }
+    &:hover {
+      background: rgb(250, 250, 250);
+    }
+  }
+}
+.common_wrapper {
+  display: flex;
+  flex: 1;
+  height: calc(100% - 70px);
   background: rgb(251, 251, 251);
 }
 </style>

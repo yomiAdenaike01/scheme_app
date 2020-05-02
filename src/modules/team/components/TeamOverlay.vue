@@ -4,8 +4,8 @@
       <div slot="header">
         <TextDisplay
           :display-text="{
-            heading: 'Manage Users',
-            content: 'Manage all users and groups here.'
+            heading: 'Manage team',
+            content: 'Manage all team members and groups here.'
           }"
           mode="title"
         />
@@ -22,7 +22,7 @@ import TextDisplay from "@/components/TextDisplay";
 import UpdateGroups from "@/components/UpdateGroups";
 import Overlay from "@/components/Overlay";
 export default {
-  name: "UserOverlay",
+  name: "TeamOverlay",
   components: {
     TextDisplay,
     Tabs,
@@ -55,14 +55,14 @@ export default {
     tabs() {
       return [
         {
-          label: "Manage user groups",
+          label: "Manage team groups",
           view: {
             component: UpdateGroups,
             props: { groupType: "user_groups" }
           }
         },
         {
-          label: "Create users",
+          label: "Create team member",
           formContent: this.formItems
         }
       ];

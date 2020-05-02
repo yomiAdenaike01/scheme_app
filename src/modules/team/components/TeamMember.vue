@@ -1,7 +1,7 @@
 <template>
-  <div class="user_container" @click="viewUser">
+  <div class="team_member_container" @click="viewUser">
     <Avatar :name="name">
-      <OnlineIndicator :is-online="userInformation.is_online" />
+      <OnlineIndicator :is-online="memberInformation.is_online" />
     </Avatar>
 
     <div class="text_content">
@@ -14,14 +14,17 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 
+import Avatar from "@/components/Avatar";
+import OnlineIndicator from "@/components/OnlineIndicator";
+
 export default {
-  name: "User",
+  name: "TeamMember",
   components: {
-    Avatar: () => import("@/components/Avatar"),
-    OnlineIndicator: () => import("@/components/OnlineIndicator")
+    Avatar,
+    OnlineIndicator
   },
   props: {
-    userInformation: {
+    memberInformation: {
       type: Object,
       default: () => {},
       required: true
@@ -30,10 +33,10 @@ export default {
   computed: {
     ...mapState(["clientInformation"]),
     name() {
-      return this.userInformation.name;
+      return this.memberInformation.name;
     },
     groupName() {
-      return this.userInformation?.user_group?.label;
+      return this.memberInformation?.user_group?.label;
     },
     group() {
       let name = "Group not found";
@@ -49,16 +52,15 @@ export default {
       this.UPDATE_OVERLAY_INDEX({
         overlay: "profile",
         view: true,
-        data: this.userInformation
+        data: this.memberInformation
       });
-      this.$emit("viewUser", true);
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.user_container {
+.team_member_container {
   display: flex;
   flex: 1;
   align-items: center;

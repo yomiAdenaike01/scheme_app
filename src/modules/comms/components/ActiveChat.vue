@@ -133,7 +133,7 @@ export default {
   methods: {
     ...mapMutations([
       "UPDATE_SYSTEM_NOTIFICATION,CREATE_GLOBAL_INTERVAL",
-      "CLEAR_GLOBAL_INTERVAL"
+      "DELETE_GLOBAL_INTERVAL"
     ]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
     ...mapMutations("Comms", ["UPDATE_MESSAGES"]),

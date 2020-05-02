@@ -61,14 +61,16 @@ export default {
     currentTab: {
       type: String,
       required: true
+    },
+    userData: {
+      type: Object,
+      default: () => {}
     }
   },
 
   computed: {
-    ...mapGetters(["getDefaultColour", "getActiveOverlay"]),
-    userData() {
-      return this.getActiveOverlay("profile")?.data ?? {};
-    },
+    ...mapGetters(["getDefaultColour"]),
+
     online() {
       return this.userData?.is_online ?? false;
     },

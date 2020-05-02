@@ -54,10 +54,7 @@ export default {
           icon: "calendar",
           inverseIcon: false,
           method: () => {
-            this.UPDATE_OVERLAY_INDEX({
-              overlay: "eventModule",
-              view: true
-            });
+            this.$emit("updateOverlays", "events");
           }
         },
         {

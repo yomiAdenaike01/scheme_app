@@ -1,9 +1,5 @@
 <template>
-  <Overlay
-    v-model="computeDisplay"
-    backdrop-type="dark"
-    :display="computeDisplay"
-  >
+  <Overlay v-model="overlayController" @close="$emit('close')">
     <div class="view_event_dialog">
       <TextDisplay
         :display-text="{
@@ -153,34 +149,43 @@
 
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
+
+import overlayEvents from "@/mixins/overlayEvents";
+
+import TextDisplay from "@/components/TextDisplay";
+import Avatar from "@/components/Avatar";
+import Form from "@/components/Form";
+import SButton from "@/components/SButton";
+import Overlay from "@/components/Overlay";
+
 export default {
-  name: "ViewEvent",
+  name: "ViewEventOverlay",
   components: {
-    TextDisplay: () => import("@/components/TextDisplay"),
-    Avatar: () => import("@/components/Avatar"),
-    Form: () => import("@/components/Form"),
-    SButton: () => import("@/components/SButton"),
-    Overlay: () => import("@/components/Overlay")
+    TextDisplay,
+    Avatar,
+    Form,
+    SButton,
+    Overlay
   },
+  mixins: [overlayEvents],
   data() {
     return {
       loading: false,
       selectedConfig: "date",
+      overlayName: "viewEvent",
       updates: {},
       popover: {
         team: false
       }
     };
   },
+  mounted() {
+    console.log(this.currentOverlay);
+  },
   computed: {
     ...mapState(["team", "userInformation", "overlayIndex"]),
     ...mapState("Events", ["events", "eventRef"]),
-    ...mapGetters([
-      "getFilteredTeam",
-      "getValidEventTypes",
-      "getIsAdmin",
-      "getActiveOverlay"
-    ]),
+    ...mapGetters(["getFilteredTeam", "getValidEventTypes", "getIsAdmin"]),
     noticePeriodExceeded() {
       return this.initMoment(
         this.event?.notice_period ??
@@ -251,11 +256,11 @@ export default {
     },
 
     canAddMoreUsers() {
-      return this.event.assigned_to.length < this.team.length;
+      return this.event?.assigned_to.length < this.team.length;
     },
 
     event() {
-      return this.overlayIndex.viewEvent.data;
+      return this.activeOverlayData;
     },
 
     duration() {
@@ -263,7 +268,7 @@ export default {
     },
     canReject() {
       return (
-        this.event.assigned_to.findIndex(assignee => {
+        this.event?.assigned_to.findIndex(assignee => {
           return assignee.user_group.enable_event_rejection == true;
         }) == -1
       );
@@ -276,14 +281,14 @@ export default {
         isCreatorAdmin =
           this.event?.created_by?.user_group?.label.toLowerCase() ===
           "system administrator";
-      for (let i = 0, len = this.event.assigned_to; i < len; i++) {
+      for (let i = 0, len = this.event?.assigned_to?.length; i < len; i++) {
         let assignee = this?.event?.assigned_to[i];
         if (assignee?.user_group?.enabledEventRejection) {
           canRejectCount++;
         }
       }
-      for (let i = 0, len = this.event.is_approved; i < len; i++) {
-        let assignee = this.event.is_approved[i];
+      for (let i = 0, len = this.event?.is_approved; i < len; i++) {
+        let assignee = this.event?.is_approved[i];
         if (assignee?.user_group?.enable_event_rejection) {
           hasApprovedCount++;
         }
@@ -307,14 +312,6 @@ export default {
     },
     hasPermissions() {
       return this.getIsAdmin;
-    },
-    computeDisplay: {
-      get() {
-        return this.getActiveOverlay("viewEvent").view;
-      },
-      set() {
-        this.closeOverlay("viewEvent");
-      }
     }
   },
   methods: {
@@ -404,10 +401,10 @@ export default {
 
     // Currently locks database still keeping function for later rework button is hidden
     removeUser(user) {
-      let userIndex = this.event.assigned_to.findIndex(assignee => {
+      let userIndex = this.event?.assigned_to.findIndex(assignee => {
         return assignee._id == user._id;
       });
-      if (this.event.assigned_to.length - 1 == 0) {
+      if (this.event?.assigned_to.length - 1 == 0) {
         this.deleteEvent(
           "This is the last user on the event, if you delete this user it will delete the event. Are you sure you want to delete this event ? "
         );
@@ -464,7 +461,7 @@ export default {
       });
     },
     notifyAssignees() {
-      let assigned_to = this.event.assigned_to;
+      let assigned_to = this.event?.assigned_to;
       let removalMessage = `You have an event on ${this.dates.start} to ${this.dates.end} has been deleted by ${this.userInformation.name}`;
       this.genEmail({
         subject: "Event removal",
@@ -490,7 +487,7 @@ export default {
     },
     sendReminderToUser() {
       let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
-      let assigned_to = [...this.event.assigned_to, this.userInformation._id];
+      let assigned_to = [...this.event?.assigned_to, this.userInformation._id];
       this.genEmail({
         subject: "Reminder",
         to: this.getEmail,

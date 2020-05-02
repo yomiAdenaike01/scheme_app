@@ -19,7 +19,7 @@ const sortPayload = ({ state, getters }, payload) => {
 };
 
 const exitApplication = (context, networkError = false, logout = false) => {
-  context.commit("CLEAR_GLOBAL_INTERVAL");
+  context.commit("DELETE_GLOBAL_INTERVAL");
   context.dispatch("closeOverlay");
   if (networkError) {
     context.commit("UPDATE_NETWORK_ERROR", true);
@@ -30,9 +30,6 @@ const exitApplication = (context, networkError = false, logout = false) => {
 };
 
 export default {
-  activateOverlay(context, overlay) {
-    context.commit("UPDATE_OVERLAY_INDEX", { overlay, view: true });
-  },
   restoreOverlay(context) {
     context.commit("UPDATE_OVERLAY_INDEX", context.state.overlayHistory);
   },
@@ -53,7 +50,7 @@ export default {
     });
   },
 
-  closeOverlay({ getters, commit, state: { overlayIndex } }, name = "") {
+  closeOverlay({ getters, state, commit }, name = "") {
     commit(
       "UPDATE_OVERLAY_INDEX",
       {
@@ -63,23 +60,15 @@ export default {
       },
       { root: true }
     );
-
     if (!name) {
       let activeOverlay = getters.getActiveOverlay()?.name;
+      console.log(activeOverlay);
       if (activeOverlay) {
         commit("UPDATE_OVERLAY_INDEX", {
           view: false,
+          data: null,
           overlay: activeOverlay
         });
-      }
-      for (let property in overlayIndex) {
-        if (overlayIndex[property].view == true) {
-          commit("UPDATE_OVERLAY_INDEX", {
-            view: false,
-            overlay: property,
-            data: null
-          });
-        }
       }
     }
   },

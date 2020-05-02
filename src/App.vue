@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     ...mapState(["requestIntervals", "clientInformation"]),
-    ...mapState(["team"]),
+    ...mapState(["team", "overlayIndex"]),
     ...mapGetters(["getIsIE"]),
 
     isValidClient() {
@@ -34,6 +34,7 @@ export default {
   },
 
   created() {
+    console.log(this.overlayIndex);
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -81,7 +82,7 @@ export default {
   },
 
   beforeDestroy() {
-    this.CLEAR_GLOBAL_INTERVAL();
+    this.DELETE_GLOBAL_INTERVAL();
     this.DELETE_USER_SESSION();
   },
 
@@ -90,7 +91,7 @@ export default {
     ...mapMutations([
       "DELETE_USER_SESSION",
       "CREATE_GLOBAL_INTERVAL",
-      "CLEAR_GLOBAL_INTERVAL",
+      "DELETE_GLOBAL_INTERVAL",
       "UPDATE_CLIENT_INFORMATION",
       "CLEAR_NOTIFICATIONS"
     ])
@@ -195,6 +196,8 @@ export default {
     var(--color-s-tertiary),
     87%
   );
+
+  --colour_yellow: hsl(23, 100%, 63%);
 }
 
 /*
@@ -203,7 +206,7 @@ Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Jost:400,500,600,700&display=swap");
 /*
 
  Default
@@ -211,7 +214,7 @@ Fonts
 
 */
 * {
-  font-family: "Lato", Arial, Helvetica, sans-serif;
+  font-family: "Jost", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
 

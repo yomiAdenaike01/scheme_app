@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { SlideXLeftTransition } from "vue2-transitions";
 import TaskItem from "./TaskItem";
 

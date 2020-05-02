@@ -64,6 +64,12 @@ export default {
     Form: () => import("@/components/Form"),
     SButton: () => import("@/components/SButton")
   },
+  props: {
+    data: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data() {
     return {
       selectedGroup: ""
@@ -75,7 +81,7 @@ export default {
     ...mapGetters(["getIsAdmin", "getUserGroups", "getActiveOverlay"]),
 
     localUserInformation() {
-      return this.getActiveOverlay()?.data;
+      return this.data;
     },
 
     selectedGroupData() {

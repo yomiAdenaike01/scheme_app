@@ -99,7 +99,8 @@ export default {
     ...mapActions(["request", "getClient"]),
     ...mapMutations([
       "UPDATE_USER",
-      "UPDATE_SYSTEM_NOTIFICATIONEAR_GLOBAL_INTERVAL"
+      "UPDATE_USER_SESSION",
+      "UPDATE_SYSTEM_NOTIFICATION"
     ]),
 
     submitController(formInformation) {
@@ -163,7 +164,8 @@ export default {
         url: "/users/login"
       })
         .then(response => {
-          this.UPDATE_USER(response);
+          this.UPDATE_USER(response.user);
+          this.UPDATE_USER_SESSION(response.token);
 
           if (response.user.admin_gen == true) {
             this.UPDATE_SYSTEM_NOTIFICATION({

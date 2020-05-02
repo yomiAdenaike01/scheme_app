@@ -12,7 +12,7 @@
           :items="items"
           position="left"
           :icon="false"
-          @click.native="selectedUser = member"
+          @click.native="selectedTeamMember = member"
           @method="handleEvents"
         >
           <Avatar :name="member.name" :size="40">
@@ -49,7 +49,7 @@ import TextDisplay from "@/components/TextDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 export default {
-  name: "UserSidebar",
+  name: "TeamSidebar",
   components: {
     Dropdown,
     Avatar,
@@ -59,7 +59,7 @@ export default {
 
   data() {
     return {
-      selectedUser: null,
+      selectedTeamMember: null,
       loaderTimeout: null,
       loadingTeam: true
     };
@@ -91,8 +91,8 @@ export default {
             name: "comms",
             params: {
               userToMessage: {
-                name: this.selectedUser?.name,
-                _id: this.selectedUser?._id
+                name: this.selectedTeamMember?.name,
+                _id: this.selectedTeamMember?._id
               }
             }
           });
@@ -103,7 +103,7 @@ export default {
           this.UPDATE_OVERLAY_INDEX({
             overlay: "profile",
             view: true,
-            data: this.selectedUser
+            data: this.selectedTeamMember
           });
           break;
         }

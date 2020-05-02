@@ -1,9 +1,8 @@
 import Vue from "vue";
 import VueRouter from "../router";
 import updateBreadCrumbs from "./helpers";
-import notificationLogic from "@/mixins/notificationsLogic";
 
-const clearStateInterval = (state, intervalID) => {
+const deleteStateInterval = (state, intervalID) => {
   if (!intervalID) {
     for (let property in state.runningIntervals) {
       clearTimeout(state.runningIntervals[property]);
@@ -15,7 +14,9 @@ const clearStateInterval = (state, intervalID) => {
   }
   console.log(state.runningIntervals);
 };
-
+const deleteSystemNotification = (state, notificationIndex) => {
+  Vue.delete(state.systemNotifications, notificationIndex);
+};
 export default {
   // Team
   ADD_TEAM_MEMBER(state, payload) {
@@ -165,7 +166,7 @@ export default {
               runInterval();
             })
             .catch(() => {
-              clearStateInterval(state, payload.id);
+              deleteStateInterval(state, payload.id);
             });
         }, payload.duration);
       };
@@ -177,8 +178,8 @@ export default {
     }
   },
 
-  CLEAR_GLOBAL_INTERVAL(state, intervalID = null) {
-    clearStateInterval(state, intervalID);
+  DELETE_GLOBAL_INTERVAL(state, intervalID = null) {
+    deleteStateInterval(state, intervalID);
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
@@ -250,16 +251,21 @@ export default {
     }
     for (let property in state.runningIntervals) {
       if (property != "client") {
-        clearStateInterval(state, property);
+        deleteStateInterval(state, property);
       }
     }
   },
 
-  UPDATE_USER(state, { user, token }) {
-    state.token = token;
-    state.userInformation = Object.assign(state.userInformation, user);
+  UPDATE_USER(state, payload) {
+    state.userInformation = Object.assign(state.userInformation, payload);
   },
 
+  UPDATE_USER_SESSION(state, payload) {
+    state.token = payload;
+  },
+  DELETE_SYSTEM_NOTIFICATION(state, notificationIndex) {
+    deleteSystemNotification(state, notificationIndex);
+  },
   CREATE_SYSTEM_NOTIFICATION(state, notification) {
     let notificationTypes = [
       "success",
@@ -269,34 +275,40 @@ export default {
       "annoucement",
       "info"
     ];
+
+    let notificationXref = {
+      success: "check-circle",
+      error: "x-circle",
+      warning: "error-circle",
+      message: "message-rounded",
+      annoucement: "user-voice",
+      info: "mail-send"
+    };
     notification._id = Math.random()
       .toString(16)
       .slice(2);
 
-    let closeNotification = {
+    let closeNotificationObject = {
       label: "Close",
-      function() {
-        let _notificationIndex = state.systemNotifications.findIndex(
+      body() {
+        let notificationIndex = state.systemNotifications.findIndex(
           _notification => {
             return _notification._id == notification._id;
           }
         );
-        Vue.delete(state.systemNotifications, _notificationIndex);
+        deleteSystemNotification(state, notificationIndex);
       }
     };
     if (!notification?.methods) {
       notification.methods = [];
     }
 
-    notification.methods.unshift(closeNotification);
+    notification.methods.unshift(closeNotificationObject);
     if (notificationTypes.indexOf(notification.type) == -1) {
       notification.type = "info";
     }
-    notification = notificationLogic.methods.sortNotification(notification);
-
-    if (notification?.icon) {
-      notification.icon = `custom_notification_icon bx bx-${notification.icon} bx-tada`;
-      delete notification.type;
+    if (!notification?.icon) {
+      notification.icon = notificationXref[notification.type];
     }
 
     if (notification.type == "success" && !notification.title) {

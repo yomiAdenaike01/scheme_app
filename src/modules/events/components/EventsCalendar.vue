@@ -88,8 +88,8 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
-  max-height: calc(100% - 20px);
-  overflow: auto;
+  height: 100%;
+  overflow-x: hidden;
   &/deep/ {
     .vuecal__now-line {
       color: $element_colour;

@@ -36,15 +36,12 @@ import { mapState, mapActions, mapMutations } from "vuex";
 import Notification from "./components/Notification";
 import TextDisplay from "@/components/TextDisplay";
 
-import notificationLogic from "@/mixins/notificationsLogic";
-
 export default {
   name: "Notifications",
   components: {
     Notification,
     TextDisplay
   },
-  mixins: [notificationLogic],
   data() {
     return {
       loading: false
@@ -54,7 +51,7 @@ export default {
     ...mapState(["apiNotifications", "userInformation", "notificationRef"]),
     formattedNotifications() {
       return [...this.apiNotifications].map(notification => {
-        return this.notificationLogic(notification);
+        return notification;
       });
     }
   },

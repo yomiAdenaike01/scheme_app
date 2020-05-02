@@ -9,7 +9,7 @@
       ]"
     >
       <div v-click-outside="onClickOutside" class="overlay">
-        <div class="close_button" @click="view = false">
+        <div class="close_button" @click="$emit('close')">
           <i class="bx bx-x"></i>
         </div>
         <header>
@@ -39,6 +39,10 @@ export default {
   directives: {
     clickOutside: vClickOutside.directive
   },
+  model: {
+    prop: "display",
+    event: "close"
+  },
   props: {
     display: {
       type: Boolean
@@ -49,22 +53,13 @@ export default {
     },
     backdropType: {
       type: String,
-      default: "blur",
+      default: "dark",
       validator(type) {
         return ["dark", "blur"].indexOf(type) > -1;
       }
     }
   },
-  computed: {
-    view: {
-      get() {
-        return this.display;
-      },
-      set(val) {
-        this.$emit("input", val);
-      }
-    }
-  },
+
   beforeMount() {
     window.addEventListener("keyup", this.onEscapeKeyUp);
   },
@@ -74,12 +69,12 @@ export default {
   methods: {
     onClickOutside(e) {
       if (e.target.classList.value.includes("overlay_wrapper")) {
-        this.view = false;
+        this.$emit("close");
       }
     },
     onEscapeKeyUp(event) {
       if (event.which === 27) {
-        this.view = false;
+        this.$emit("close");
       }
     }
   }
@@ -111,9 +106,9 @@ export default {
   border-radius: 10px;
   z-index: 11;
   min-width: 40%;
-  min-height: 40%;
-  padding: 1%;
   max-height: 60%;
+  padding: 1%;
+  min-height: 60%;
   overflow-x: hidden;
 }
 section {

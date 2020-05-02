@@ -1,22 +1,17 @@
 <template>
-  <div class="user_module_container">
-    <ManageUsersOverlay
-      :display="display"
-      @close="overlays.manageUsers = false"
+  <div class="team_container">
+    <TeamOverlay
+      :display="overlays.manageTeam"
+      @close="overlays.manageTeam = false"
     />
 
-    <ProfileOverlay
-      :display="overlays.profile"
-      @close="overlays.profile = false"
-    />
+    <TeamGroup add-new @createTeamGroup="overlays.manageTeam = $event" />
 
-    <UserGroup add-new @createUserGroup="displayUser = $event" />
-
-    <UserGroup v-if="team.length > 0">
-      <div class="user_groups_table_container">
+    <TeamGroup v-if="team.length > 0">
+      <div class="team_group_container">
         <TextDisplay
           :display-text="{
-            heading: 'All Users',
+            heading: 'All teams',
             content:
               'Here is a list of all users, select one to view their information'
           }"
@@ -39,7 +34,7 @@
                     .toString(16)
                     .slice(2)}`
                 "
-                class="user_group_container"
+                class="team_wrapper"
               >
                 <div class="icon_text_container">
                   <div class="flex_center">
@@ -48,47 +43,41 @@
                   </div>
                 </div>
 
-                <User
+                <TeamMember
                   v-for="member in group.teamMembers"
                   :key="member._id"
-                  :user-information="{ ...member, groupID: group.groupID }"
-                  @viewUser="overlays.profile = $event"
+                  :member-information="{ ...member, groupID: group.groupID }"
                 />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </UserGroup>
+    </TeamGroup>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters } from "vuex";
 
-import overlayEvents from "@/mixins/overlayEvents";
-
-import ProfileOverlay from "./Profile/ProfileOverlay";
-import UserGroup from "./components/UserGroup";
-import User from "./components/User";
-import ManageUsersOverlay from "./components/ManageUsersOverlay";
+import TeamGroup from "./components/TeamGroup";
+import TeamMember from "./components/TeamMember";
+import TeamOverlay from "./components/TeamOverlay";
+import TextDisplay from "@/components/TextDisplay";
 
 export default {
-  name: "Users",
+  name: "Team",
   components: {
-    User,
-    UserGroup,
-    ProfileOverlay,
-    ManageUsersOverlay,
-    TextDisplay: () => import("@/components/TextDisplay")
+    TeamMember,
+    TeamGroup,
+    TeamOverlay,
+    TextDisplay
   },
-  mixins: [overlayEvents],
   data() {
     return {
       globalOverlayName: "profile",
       overlays: {
-        manageUsers: false,
-        profile: false
+        manageTeam: false
       },
       viewUser: false
     };
@@ -129,14 +118,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user_module_container {
+.team_container {
   display: flex;
   flex: 1;
   font-size: 0.9em;
   padding: 20px;
   max-height: 100%;
 }
-.user_groups_table_container {
+.team_group_container {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -153,7 +142,7 @@ export default {
   flex-direction: column;
   flex: 1;
 }
-.user_group_container {
+.team_wrapper {
   display: flex;
   flex: 1;
   max-height: fit-content;

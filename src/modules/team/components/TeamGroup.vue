@@ -9,8 +9,8 @@
         <TextDisplay
           class="txt_center"
           :display-text="{
-            heading: 'Manage users',
-            content: `<small class='grey'>Create, edit, remove users / groups.</small>`
+            heading: 'Manage team',
+            content: `<small class='grey'>Create, edit, remove team / groups.</small>`
           }"
         >
           <div slot="header" class="i bx bx-user"></div>
@@ -19,7 +19,7 @@
             class="mt-4"
             icon="el-icon-plus"
             circle
-            @click="$emit('createUserGroup', true)"
+            @click="$emit('createTeamGroup', true)"
           ></el-button>
         </TextDisplay>
       </div>
@@ -31,7 +31,7 @@
 import { mapGetters } from "vuex";
 import TextDisplay from "@/components/TextDisplay";
 export default {
-  name: "UserGroup",
+  name: "TeamGroup",
   components: {
     TextDisplay
   },
@@ -63,7 +63,7 @@ export default {
     }
   }
   &.new_group {
-    flex: 0.4;
+    flex: 0.2;
   }
 }
 .user_group_inner_container {

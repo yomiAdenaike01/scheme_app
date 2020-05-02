@@ -133,13 +133,12 @@ export default {
       foundDialog = overlayIndex[dialogName];
     } else {
       for (let property in overlayIndex) {
-        if (overlayIndex[property].view) {
-          foundDialog = Object.assign(overlayIndex[property], foundDialog, {
-            name: property
-          });
+        if (overlayIndex[property].view == true) {
+          foundDialog = { name: property, ...overlayIndex[property] };
         }
       }
     }
+    console.log(foundDialog);
     return foundDialog;
   },
 

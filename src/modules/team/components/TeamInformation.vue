@@ -24,7 +24,7 @@ import Tabs from "@/components/Tabs";
 import Avatar from "@/components/Avatar";
 
 export default {
-  name: "UserInformation",
+  name: "TeamInformation",
   data() {
     return {
       tabs: 0,

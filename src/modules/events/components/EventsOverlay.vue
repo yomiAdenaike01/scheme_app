@@ -41,7 +41,7 @@ import QrcodeVue from "qrcode.vue";
 import TemplateManagement from "./TemplateManagement";
 import Overlay from "@/components/Overlay";
 export default {
-  name: "CreateEventOverlay",
+  name: "EventsOverlay",
   components: {
     TextDisplay: () => import("@/components/TextDisplay"),
     Tabs: () => import("@/components/Tabs"),
@@ -145,20 +145,6 @@ export default {
       };
     },
 
-    assignToUsernames() {
-      let usernames = "";
-      if (this.activeDialogInformation?.assigned_to) {
-        let assignToUsernames = [...this.activeDialogInformation?.assigned_to];
-        usernames = assignToUsernames.map(assignee => {
-          return this.getUserInformation(assignee)?.name;
-        });
-      }
-      return usernames.length > 1 ? usernames.join(",") : usernames;
-    },
-
-    activeDialogInformation() {
-      return this.getActiveOverlay()?.data;
-    },
     isNotShiftOrHoliday() {
       return !this.getIsAdmin && this.events.type > 3;
     },
@@ -220,14 +206,9 @@ export default {
       // Check if it is an admin or not
 
       if (this.getIsAdmin) {
-        console.log(this.events?.user_groups?.length > 0);
-        let teamMemberPlaceholder =
-          this.assignToUsernames?.length > 0
-            ? `Select team members including (${this.assignToUsernames})`
-            : "Select team members";
         createEventConfig.unshift(
           {
-            placeholder: teamMemberPlaceholder,
+            placeholder: "Select team members",
             disabled: this.events?.user_groups?.length > 0,
             "component-type": "select",
             model: "assigned_to",

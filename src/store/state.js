@@ -28,12 +28,12 @@ export default {
 
   overlayHistory: {},
   overlayIndex: {
-    profile: { view: false, data: null },
-    viewEvent: { view: false, data: null },
-    eventModule: { view: false, data: null },
-    tutorial: { view: false, data: null },
-    prevEvents: { view: false, data: null },
-    task: { view: false, data: null }
+    profile: { view: false, data: {} },
+    viewEvent: { view: false, data: {} },
+    eventModule: { view: false, data: {} },
+    tutorial: { view: false, data: {} },
+    prevEvents: { view: false, data: {} },
+    task: { view: false, data: {} }
   },
 
   colours: [

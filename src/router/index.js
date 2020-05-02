@@ -8,10 +8,10 @@ const Support = () => import("@/modules/support/Support");
 // Auth
 const SignIn = () => import("@/modules/authorisation/SignIn");
 // Common
-const EventsModule = () => import("@/modules/events/Events");
-const UserModule = () => import("@/modules/users/Users");
-const CommsModule = () => import("@/modules/comms/Comms");
-const TasksModule = () => import("@/modules/tasks/Tasks");
+const Events = () => import("@/modules/events/Events");
+const Team = () => import("@/modules/team/Team");
+const Comms = () => import("@/modules/comms/Comms");
+const Tasks = () => import("@/modules/tasks/Tasks");
 // Support
 const Error = () => import("@/modules/support/Error");
 const ReleaseNotes = () => import("@/modules/support/ReleaseNotes");
@@ -54,7 +54,7 @@ const routes = [
       {
         path: "events",
         name: "events",
-        component: EventsModule,
+        component: Events,
         meta: {
           authRequired: true
         }
@@ -63,7 +63,7 @@ const routes = [
       {
         path: "user",
         name: "user",
-        component: UserModule,
+        component: Team,
         meta: {
           authRequired: true
         }
@@ -71,7 +71,7 @@ const routes = [
       {
         path: "comms",
         name: "comms",
-        component: CommsModule,
+        component: Comms,
         meta: {
           authRequired: true
         }
@@ -79,7 +79,7 @@ const routes = [
       {
         path: "tasks",
         name: "tasks",
-        component: TasksModule,
+        component: Tasks,
         meta: {
           authRequired: true
         }
