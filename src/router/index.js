@@ -2,14 +2,19 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "./../store";
 
-import AdminRoutes from "./AdminRoutes";
-import AuthRoutes from "./AuthRoutes";
-import SupportRoutes from "./SupportRoutes";
-
-// Router views
-const Common = () => import("@/views/router_views/Common");
-const Admin = () => import("@/views/router_views/Admin");
-const Support = () => import("@/views/router_views/Support");
+// Router modules
+const Common = () => import("@/modules/common/Common");
+const Support = () => import("@/modules/support/Support");
+// Auth
+const SignIn = () => import("@/modules/authorisation/SignIn");
+// Common
+const Events = () => import("@/modules/events/Events");
+const Team = () => import("@/modules/team/Team");
+const Comms = () => import("@/modules/comms/Comms");
+const Tasks = () => import("@/modules/tasks/Tasks");
+// Support
+const Error = () => import("@/modules/support/Error");
+const ReleaseNotes = () => import("@/modules/support/ReleaseNotes");
 
 Vue.use(VueRouter);
 
@@ -18,27 +23,69 @@ const routes = [
     path: "/",
     redirect: { name: "signIn" }
   },
-
+  {
+    path: "/signin",
+    name: "signIn",
+    component: SignIn
+  },
   {
     path: "/support",
     name: "support",
     component: Support,
-    children: [...SupportRoutes]
+    children: [
+      {
+        path: "error",
+        name: "error",
+        component: Error
+      },
+      {
+        path: "releasenotes",
+        name: "releasenotes",
+        component: ReleaseNotes
+      }
+    ]
   },
   {
     path: "/main",
     name: "main",
     component: Common,
+
     children: [
       {
-        path: "/admin",
-        name: "admin",
-        component: Admin,
-        children: [...AdminRoutes]
+        path: "events",
+        name: "events",
+        component: Events,
+        meta: {
+          authRequired: true
+        }
+      },
+
+      {
+        path: "user",
+        name: "user",
+        component: Team,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: "comms",
+        name: "comms",
+        component: Comms,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: "tasks",
+        name: "tasks",
+        component: Tasks,
+        meta: {
+          authRequired: true
+        }
       }
     ]
-  },
-  ...AuthRoutes
+  }
 ];
 
 const router = new VueRouter({

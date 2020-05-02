@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Avatar",
   props: {
@@ -50,28 +51,15 @@ export default {
       default: 80
     }
   },
-  data() {
-    return {
-      backgroundColors: [
-        "#6ca5d8",
-        "#c9249e",
-        "#6f3e9e",
-        "#232323",
-        "#ec305c",
-        "#ff8840",
-        "#f3c43a",
-        "#cccccc",
-        "#44a954"
-      ]
-    };
-  },
+
   computed: {
+    ...mapState(["colours"]),
     background() {
       let backgroundColour = "";
       if (!this.isImage) {
         backgroundColour =
           this.backgroundColor ||
-          this.randomBackgroundColor(this.name.length, this.backgroundColors);
+          this.randomBackgroundColor(this.name.length, this.colours);
       }
       return backgroundColour;
     },

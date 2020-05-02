@@ -19,19 +19,19 @@ const sortPayload = ({ state, getters }, payload) => {
 };
 
 const exitApplication = (context, networkError = false, logout = false) => {
-  context.commit("CLEAR_GLOBAL_INTERVAL");
-  context.dispatch("closeDialog");
+  context.commit("DELETE_GLOBAL_INTERVAL");
+  context.dispatch("closeOverlay");
   if (networkError) {
     context.commit("UPDATE_NETWORK_ERROR", true);
   }
   if (logout) {
-    context.commit("REMOVE_USER");
+    context.commit("DELETE_USER");
   }
 };
 
 export default {
-  restoreDialog(context) {
-    context.commit("UPDATE_DIALOG_INDEX", context.state.lastDialog);
+  restoreOverlay(context) {
+    context.commit("UPDATE_OVERLAY_INDEX", context.state.overlayHistory);
   },
   updateDevices(context) {
     return new Promise((resolve, reject) => {
@@ -50,26 +50,25 @@ export default {
     });
   },
 
-  closeDialog({ commit, state: { dialogIndex } }, name = "") {
+  closeOverlay({ getters, state, commit }, name = "") {
     commit(
-      "UPDATE_DIALOG_INDEX",
+      "UPDATE_OVERLAY_INDEX",
       {
         view: false,
-        dialog: name,
+        overlay: name,
         data: null
       },
       { root: true }
     );
-
     if (!name) {
-      for (let property in dialogIndex) {
-        if (dialogIndex[property].view == true) {
-          commit("UPDATE_DIALOG_INDEX", {
-            view: false,
-            dialog: property,
-            data: null
-          });
-        }
+      let activeOverlay = getters.getActiveOverlay()?.name;
+      console.log(activeOverlay);
+      if (activeOverlay) {
+        commit("UPDATE_OVERLAY_INDEX", {
+          view: false,
+          data: null,
+          overlay: activeOverlay
+        });
       }
     }
   },
@@ -123,16 +122,9 @@ export default {
           footer (optional) :""
         }
    */
-  genEmail(
-    {
-      admin: {
-        state: { team }
-      }
-    },
-    emailContent
-  ) {
+  genEmail(context, emailContent) {
     emailContent.to == "all"
-      ? (emailContent.to = team.map(member => {
+      ? (emailContent.to = context.state.admin.team.map(member => {
           return member.email;
         }))
       : emailContent.to;
@@ -166,7 +158,7 @@ export default {
           response = response.data;
           if (response?.success) {
             if (typeof response.content == "string" && enableNotifications) {
-              context.commit("UPDATE_NOTIFICATIONS", {
+              context.commit("UPDATE_SYSTEM_NOTIFICATION", {
                 message: response.content,
                 type: "success"
               });
@@ -188,8 +180,8 @@ export default {
             error = error.data.content;
           }
           if (enableNotifications) {
-            context.commit("UPDATE_NOTIFICATIONS", {
-              message: error,
+            context.commit("UPDATE_SYSTEM_NOTIFICATION", {
+              error,
               type: "error"
             });
           }

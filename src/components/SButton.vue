@@ -7,6 +7,7 @@
       {
         [props.colourScheme]: props.colourScheme,
         flat: props.flat,
+        plain: props.plain,
         button_shadow: props.shadow,
         center: props.center,
         only_icon: props.onlyIcon
@@ -55,6 +56,9 @@ export default {
     },
     noTrigger: {
       type: Boolean
+    },
+    plain: {
+      type: Boolean
     }
   }
 };
@@ -86,6 +90,18 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   &.center {
     text-align: center;
     justify-content: center;
+  }
+  &.plain {
+    background: white;
+    color: initial;
+    border: 1px solid rgb(220, 220, 220);
+    border-radius: 5px;
+    max-width: fit-content;
+    padding: 0;
+    margin:5px 0 ;
+    &:hover {
+      background: rgb(245, 245, 245);
+    }
   }
   &.flat {
     background: rgba(200, 200, 200, 0.3);

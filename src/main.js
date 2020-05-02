@@ -6,7 +6,6 @@ import NProgress from "vue-nprogress";
 
 // Plugins
 import "./plugins/mobile";
-import "./plugins/resizeText";
 import "./plugins/element";
 import "./plugins/firebase";
 import "./plugins/shortKeys";
