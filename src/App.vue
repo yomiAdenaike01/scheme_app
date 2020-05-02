@@ -5,17 +5,23 @@
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <fade-transition mode="out-in">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </fade-transition>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import refactorLocation from "@/mixins/refactorLocation";
+import { FadeTransition } from "vue2-transitions";
 export default {
   name: "App",
+  components: {
+    FadeTransition
+  },
   mixins: [refactorLocation],
   data() {
     return {
