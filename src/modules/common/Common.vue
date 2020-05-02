@@ -5,16 +5,10 @@
     class="common_container"
   >
     <NprogressContainer />
-    <CommonBar @search="displaySearch = $event" />
+    <CommonBar />
 
     <ProfileOverlay v-if="overlayIndex.profile.view" />
     <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
-
-    <SearchOverlay
-      v-hotkey="keymap"
-      :display="displaySearch"
-      @close="displaySearch = false"
-    />
 
     <div class="notification_container">
       <slide-x-right-transition group mode="out-in">
@@ -70,7 +64,6 @@ import ViewEventOverlay from "./../events/components/ViewEventOverlay";
 
 import CommonBar from "./components/CommonBar";
 import Navigation from "./components/Navigation";
-import SearchOverlay from "./components/SearchOverlay";
 
 import SButton from "@/components/SButton";
 
@@ -85,13 +78,11 @@ export default {
 
     CommonBar,
     Navigation,
-    SButton,
-    SearchOverlay
+    SButton
   },
   data() {
     return {
       loading: true,
-      displaySearch: false,
       display: true
     };
   },

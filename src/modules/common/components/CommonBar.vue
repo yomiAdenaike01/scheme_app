@@ -20,13 +20,6 @@
           icon="el-icon-bell trigger"
         ></el-button>
       </el-popover>
-      <el-button
-        size="small"
-        circle
-        class="search"
-        icon="el-icon-search"
-        @click="$emit('search', true)"
-      />
     </div>
   </div>
 </template>
