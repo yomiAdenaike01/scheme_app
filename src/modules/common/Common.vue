@@ -196,7 +196,7 @@ export default {
     ...mapMutations("Events", ["UPDATE_EVENT_TEMPLATES", "UPDATE_EVENTS"]),
     ...mapMutations("Requests", ["UPDATE_REQUESTS"]),
     excecuteNotification(method, notificationIndex) {
-      method.body().finally(() => {
+      method.body()?.finally(() => {
         this.DELETE_SYSTEM_NOTIFICATION(notificationIndex);
       });
     },
