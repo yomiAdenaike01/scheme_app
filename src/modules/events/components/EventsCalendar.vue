@@ -1,5 +1,12 @@
 <template>
   <div class="cal_container">
+    <SortBy
+      v-model="eventType"
+      :items="[
+        { label: 'adenaike', value: 1 },
+        { label: 'yomi', value: 0 }
+      ]"
+    />
     <VueCal
       ref="eventsCalendar"
       v-loading="loading"
@@ -13,45 +20,52 @@
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 import VueCal from "vue-cal";
+import SortBy from "@/components/SortBy";
 import "vue-cal/dist/vuecal.css";
 export default {
   name: "EventsCalendar",
   components: {
-    VueCal
+    VueCal,
+    SortBy
   },
   data() {
     return {
       view: false,
-      loading: false
+      loading: false,
+      eventsXref: {},
+      eventType: ""
     };
   },
   computed: {
+    ...mapState(["clientInformation"]),
     ...mapState("Events", ["events"]),
-
     calEvents() {
       if (this.events.length > 0) {
         let dateFormat = "YYYY-MM-DD hh:mm";
         return [...this.events].map(event => {
           if (Object.values(event).length > 0) {
             let firstAssignee = event?.assigned_to?.[0];
-            let content = `${firstAssignee?.name ?? "Unassigned"}'s ${
-              event?.type?.label
-            } event`;
+            let content = `${firstAssignee?.name ?? "Unassigned"}`;
             if (event?.assigned_to?.length - 1 > 0) {
               content = `${content} +${parseInt(
                 event?.assigned_to?.length - 1
               )} others`;
             }
+            let eventClass = "";
+            if (event?.assigned_to.length == 0) {
+              eventClass = "no_assignee";
+            }
+            if (event?.assigned_to.length == 1) {
+              eventClass = "alone";
+            }
 
             return {
               title: `${event?.type?.label} event`,
+              heading: event?.type?.label,
               content,
               start: this.formatDate(event?.start_date, dateFormat),
               end: this.formatDate(event?.end_date, dateFormat),
-              class:
-                event.assigned_to.length > 0
-                  ? `${event?.type?.label}`
-                  : "no_assignee",
+              class: eventClass,
               is_approved: event?.is_approved,
               assigned_to: event?.assigned_to,
               type: event?.type,
@@ -84,6 +98,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.cal_filters {
+  padding: 10px;
+}
 .cal_container {
   display: flex;
   flex: 1;
@@ -104,13 +121,12 @@ export default {
       padding: 1em;
       text-transform: capitalize;
 
-      &.no_assignee {
+      &.alone {
         background: #fef0f0;
         border-top: 2px solid #f56c6c;
         color: #f56c6c;
       }
-      &.time_off,
-      &.sick_leave {
+      &.no_assignee {
         background: #fdf6ec;
         border-top: 2px solid #f2c678;
         color: #f2c678;

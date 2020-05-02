@@ -2,9 +2,9 @@
   <Overlay display @close="deactivateOverlay">
     <div class="view_event_container">
       <TextDisplay
+        class="view_event_title"
         :display-text="{
-          heading: 'View event',
-          content: 'Click on more information to display details'
+          heading: event.heading
         }"
       ></TextDisplay>
       <div class="info_button_container">
@@ -538,6 +538,9 @@ export default {
   &.no_border {
     border: none;
   }
+}
+.view_event_title {
+  text-transform: capitalize;
 }
 .view_dialog_information_container {
   padding: 20px;
