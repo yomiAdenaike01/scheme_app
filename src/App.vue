@@ -246,7 +246,11 @@ Fonts
     -webkit-font-smoothing: antialiased;
   }
 }
-
+.el-drawer__body {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
 body,
 html,
 #app {

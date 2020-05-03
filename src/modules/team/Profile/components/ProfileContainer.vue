@@ -117,6 +117,11 @@ export default {
   margin: 0;
   padding: 0;
 }
+
+.slot_container {
+  height: 100%;
+  overflow-x: hidden;
+}
 .dot_container {
   &/deep/ {
     .el-badge__content {

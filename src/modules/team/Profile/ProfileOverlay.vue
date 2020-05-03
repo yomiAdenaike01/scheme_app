@@ -1,13 +1,8 @@
 <template>
-  <Overlay
-    display
-    class="profile_container"
-    backdrop-type="dark"
-    @close="deactivateOverlay"
-  >
-    <div class="profile_inner_container" type="flex">
+  <el-drawer :visible.sync="syncView" class="profile_container">
+    <div class="profile_inner_container">
       <ProfileContainer
-        :user-data="activeOverlayData"
+        :user-data="overlayIndex.profile.data"
         :tab-items="tabItems"
         :current-tab="selectedTab"
         @changedTab="selectedTab = $event"
@@ -18,30 +13,23 @@
         />
       </ProfileContainer>
     </div>
-  </Overlay>
+  </el-drawer>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations, mapState } from "vuex";
 
-import overlayEvents from "@/mixins/overlayEvents";
-
-import Overlay from "@/components/Overlay";
-
 import ProfileInformation from "./components/ProfileInformation";
-import ProfileEvents from "./components/ProfileEvents";
+import EventsTimeline from "./components/EventsTimeline";
 import ProfileContainer from "./components/ProfileContainer";
 
 export default {
   name: "ProfileOverlay",
   components: {
-    Overlay,
-
     ProfileInformation,
     ProfileContainer,
-    ProfileEvents
+    EventsTimeline
   },
-  mixins: [overlayEvents],
   data() {
     return {
       selectedTab: "0",
@@ -49,10 +37,18 @@ export default {
     };
   },
   computed: {
-    ...mapState(["userInformation"]),
+    ...mapState(["userInformation", "overlayIndex"]),
     ...mapState("Events", ["events"]),
     ...mapGetters(["getIsAdmin"]),
 
+    syncView: {
+      get() {
+        return this.overlayIndex.profile.view;
+      },
+      set() {
+        this.closeOverlay("profile");
+      }
+    },
     returnComponents() {
       let selectedTab = this.selectedTab;
       let component, props;
@@ -60,13 +56,13 @@ export default {
         // Display user personal details
         case "0": {
           component = ProfileInformation;
-          props = this.activeOverlayData;
+          props = this.overlayIndex.profile.data;
           break;
         }
         // Display user shifts
         case "1": {
-          component = ProfileEvents;
-          props = this.associatedProfileEvents;
+          component = EventsTimeline;
+          props = this.associatedEventsTimeline;
           break;
         }
 
@@ -87,32 +83,30 @@ export default {
       ];
       if (this.getIsAdmin) {
         tabs.push({
-          label: "Events"
+          label: "Events timeline"
         });
       }
       return tabs;
     },
 
-    associatedProfileEvents() {
+    associatedEventsTimeline() {
       let eventsArray = [];
       for (let i = 0, len = this.events.length; i < len; i++) {
         let event = this.events[i];
         let assigned_to = event.assigned_to;
-        let start_date = this.initMoment(event.start_date);
-
-        if (start_date.isBefore(this.initMoment(), "day")) {
-          event.timeState = "previous";
-        }
-        if (start_date.isSame(this.initMoment(), "day")) {
-          event.timeState = "today";
-        }
-        if (start_date.isAfter(this.initMoment(), "day")) {
-          event.timeState = "upcoming";
-        }
-
+        let startDate = this.initMoment(event.start_date);
         for (let j = 0, jlen = assigned_to.length; j < jlen; j++) {
           let assignee = assigned_to[j];
-          if (assignee._id == this.userInformation._id) {
+          if (assignee._id == this.overlayIndex.profile.data._id) {
+            if (startDate.isBefore(this.initMoment(), "day")) {
+              event.timeState = "previous";
+            }
+            if (startDate.isSame(this.initMoment(), "day")) {
+              event.timeState = "today";
+            }
+            if (startDate.isAfter(this.initMoment(), "day")) {
+              event.timeState = "upcoming";
+            }
             eventsArray.push(event);
           }
         }
@@ -130,11 +124,6 @@ export default {
 
 <style lang="scss">
 .profile_container {
-  &/deep/ {
-    .el-dialog__body {
-      margin: 0;
-      padding: 0;
-    }
-  }
+  height: 100%;
 }
 </style>
