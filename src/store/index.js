@@ -8,13 +8,12 @@ import mutations from "./mutations";
 
 import Events from "./events";
 import Tasks from "./tasks";
-import Comms from "./comms";
+import Comms from "./messenger";
 import Requests from "./requests";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  namespaced: true,
   state,
   mutations,
   actions,
