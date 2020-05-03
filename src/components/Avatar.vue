@@ -1,14 +1,22 @@
 <template>
-  <div class="avatar_wrapper" :style="[style, customStyle]" aria-hidden="true">
+  <div
+    :class="['avatar_wrapper', { grouped: group }]"
+    :style="[style, customStyle]"
+    aria-hidden="true"
+  >
     <p v-show="!this.isImage">{{ userInitial }}</p>
     <slot />
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Avatar",
   props: {
+    group: {
+      type: Boolean
+    },
     name: {
       type: String
     },
@@ -43,44 +51,19 @@ export default {
       default: 80
     }
   },
-  data() {
-    return {
-      backgroundColors: [
-        "#003049",
-        "#d62828",
-        "#f77f00",
-        "#673AB7",
-        "#3F51B5",
-        "#2196F3",
-        "#03A9F4",
-        "#00BCD4",
-        "#009688",
-        "#4CAF50",
-        "#8BC34A",
-        "#CDDC39",
-        /* '#FFEB3B' , */ "#FFC107",
-        "#FF9800",
-        "#FF5722",
-        "#795548",
-        "#eae2b7",
-        "#fcbf49"
-      ]
-    };
-  },
+
   computed: {
+    ...mapState(["colours"]),
     background() {
+      let backgroundColour = "";
       if (!this.isImage) {
-        return (
+        backgroundColour =
           this.backgroundColor ||
-          this.randomBackgroundColor(this.name.length, this.backgroundColors)
-        );
+          this.randomBackgroundColor(this.name.length, this.colours);
       }
+      return backgroundColour;
     },
-    fontColor() {
-      if (!this.isImage) {
-        return this.color || this.lightenColor(this.background, this.lighten);
-      }
-    },
+
     isImage() {
       return Boolean(this.src);
     },
@@ -89,9 +72,8 @@ export default {
         display: this.inline ? "inline-flex" : "flex",
         width: `${this.size}px`,
         height: `${this.size}px`,
-        borderRadius: this.rounded ? "20%" : 0,
+        borderRadius: this.rounded ? "50%" : 0,
         lineHeight: `${this.size + Math.floor(this.size / 20)}px`,
-        fontWeight: "bold",
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
@@ -163,3 +145,14 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.avatar_wrapper.grouped {
+  margin-left: -30px;
+  transition: $default_transition transform;
+  will-change: transform;
+  cursor: pointer;
+  &:hover {
+    transform: translateX(-15px);
+  }
+}
+</style>

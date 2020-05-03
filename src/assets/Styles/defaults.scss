@@ -1,9 +1,12 @@
+
 $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 $success_colour: #53d769;
 $error_colour: #f56c6c;
 $border_radius: 10px;
 $border: 0.3px solid #ebeef5;
 $default_colour: rgb(42, 54, 59);
+$grey: rgb(230, 230, 230);
+
 $default_gradient: linear-gradient(
   to right,
   #13547a,
@@ -47,7 +50,6 @@ $app_bar_height:64px;
   border-radius: 50%;
   background: #efefef;
   padding: 0px 10px;
-  z-index: 999;
   color: #888;
   cursor: pointer;
   &:hover {

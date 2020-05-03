@@ -5,17 +5,23 @@
     :class="{ mobile: $mq != 'lg' }"
     element-loading-text="Loading client instance please wait...."
   >
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <fade-transition mode="out-in">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </fade-transition>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import refactorLocation from "@/mixins/refactorLocation";
+import { FadeTransition } from "vue2-transitions";
 export default {
   name: "App",
+  components: {
+    FadeTransition
+  },
   mixins: [refactorLocation],
   data() {
     return {
@@ -24,28 +30,17 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      "requestIntervals",
-      "notifications",
-      "defaultSize",
-      "clientInformation"
-    ]),
-    ...mapState("Admin", ["team"]),
+    ...mapState(["requestIntervals", "clientInformation"]),
+    ...mapState(["team", "overlayIndex"]),
     ...mapGetters(["getIsIE"]),
 
     isValidClient() {
-      return this.hasEntries(this.clientInformation);
-    }
-  },
-  watch: {
-    notifications(val) {
-      if (val?.length > 0) {
-        this.$notify(val[0]);
-      }
+      return Object.values(this.clientInformation).length > 0;
     }
   },
 
   created() {
+    console.log(this.overlayIndex);
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -71,7 +66,7 @@ export default {
             })
             .catch(err => {
               this.loading = false;
-              this.REMOVE_USER();
+              this.DELETE_USER_SESSION();
               if (this.dialogShowing == false) {
                 this.genPromptBox({
                   boxType: "prompt",
@@ -93,16 +88,16 @@ export default {
   },
 
   beforeDestroy() {
-    this.CLEAR_GLOBAL_INTERVAL();
-    this.REMOVE_USER();
+    this.DELETE_GLOBAL_INTERVAL();
+    this.DELETE_USER_SESSION();
   },
 
   methods: {
     ...mapActions(["request", "genPromptBox"]),
     ...mapMutations([
-      "REMOVE_USER",
+      "DELETE_USER_SESSION",
       "CREATE_GLOBAL_INTERVAL",
-      "CLEAR_GLOBAL_INTERVAL",
+      "DELETE_GLOBAL_INTERVAL",
       "UPDATE_CLIENT_INFORMATION",
       "CLEAR_NOTIFICATIONS"
     ])
@@ -194,11 +189,6 @@ export default {
     var(--color-s-secondary),
     75%
   );
-  --colour_secondary_darker: hsl(
-    var(--color-h-secondary),
-    var(--color-s-secondary),
-    50%
-  );
 
   // tertiary colour (green)
   --colour_tertiary: hsl(
@@ -206,26 +196,39 @@ export default {
     var(--color-s-tertiary),
     var(--color-l-tertiary)
   );
-  --colour_tertiary_darker: hsl(
-    var(--color-h-tertiary),
-    var(--color-s-tertiary),
-    70%
-  );
 
   --colour_tertiary_lighter: hsl(
     var(--color-h-tertiary),
     var(--color-s-tertiary),
     87%
   );
-}
 
+  --colour_yellow: hsl(23, 100%, 63%);
+}
+.input_pill {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 10px;
+  justify-content: space-evenly;
+  max-width: fit-content;
+  border: 2px solid $grey;
+  border-radius: 40px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  text-transform: capitalize;
+  &.no_pointer {
+    cursor: default;
+  }
+}
 /*
 
 Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Lato:300,400&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Jost:400,500,600,700&display=swap");
 /*
 
  Default
@@ -233,16 +236,21 @@ Fonts
 
 */
 * {
-  font-family: "Lato", Arial, Helvetica, sans-serif;
+  font-family: "Jost", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+  outline: none;
 
   :before,
   :after {
     -webkit-font-smoothing: antialiased;
   }
 }
-
+.el-drawer__body {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
 body,
 html,
 #app {
@@ -353,10 +361,7 @@ html,
 
 
 */
-.el-popover .el-popper {
-  max-width: fit-content;
-  min-width: fit-content;
-}
+
 .el-drawer {
   height: 100%;
 }
@@ -371,7 +376,7 @@ html,
   border: none !important;
 }
 
-.popover_item {
+.el-popover_item {
   &.no_events {
     opacity: 0.4;
   }

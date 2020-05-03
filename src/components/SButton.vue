@@ -2,11 +2,12 @@
   <div
     :class="[
       'button_container',
+      data.staticClass,
+      data.class,
       {
-        primary: props.colourScheme == 'primary',
-        secondary: props.colourScheme == 'secondary',
-        tertiary: props.colourScheme == 'tertiary',
+        [props.colourScheme]: props.colourScheme,
         flat: props.flat,
+        plain: props.plain,
         button_shadow: props.shadow,
         center: props.center,
         only_icon: props.onlyIcon
@@ -52,6 +53,12 @@ export default {
     },
     center: {
       type: Boolean
+    },
+    noTrigger: {
+      type: Boolean
+    },
+    plain: {
+      type: Boolean
     }
   }
 };
@@ -65,7 +72,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   background: var(--colour_primary);
   border-radius: 20px;
   display: flex;
-  padding: 3px;
+  padding: 2px;
   align-items: center;
   color: white;
   min-height: 30px;
@@ -74,6 +81,9 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   transition: $default_transition;
   will-change: opacity;
   max-width: 500px;
+  &.no_trigger {
+    cursor: initial;
+  }
   &.only_icon {
     max-width: fit-content;
   }
@@ -81,28 +91,42 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     text-align: center;
     justify-content: center;
   }
+  &.plain {
+    background: white;
+    color: initial;
+    border: 1px solid rgb(220, 220, 220);
+    border-radius: 5px;
+    max-width: fit-content;
+    padding: 0;
+    margin:5px 0 ;
+    &:hover {
+      background: rgb(245, 245, 245);
+    }
+  }
   &.flat {
-    background: var(--colour_grey);
-    box-shadow: none;
-    color: white;
+    background: rgba(200, 200, 200, 0.3);
+    color: rgb(150, 150, 150);
+    transition: $default_transition;
+    &:hover,
+    &.active {
+      transform: translateY(-5px);
+      background: rgb(230, 230, 230);
+      color: rgb(10, 10, 10);
+    }
   }
   &.button_shadow {
     box-shadow: -2px 11px 21px var(--colour_even_lighter_primary);
   }
   &.secondary {
     background: var(--colour_secondary);
-    .icon_container {
-      background: var(--colour_secondary_darker);
-    }
+
     &.button_shadow {
       box-shadow: -2px 11px 21px var(--colour_secondary_lighter);
     }
   }
   &.tertiary {
     background: var(--colour_tertiary);
-    .icon_container {
-      background: var(--colour_tertiary_darker);
-    }
+
     &.button_shadow {
       box-shadow: -2px 11px 21px var(--colour_tertiary_lighter);
     }
@@ -118,7 +142,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   padding: 10px;
   margin: 0;
   border-radius: 50%;
-  background: var(--colour_dark_primary);
+  background: rgba(0, 0, 0, 0.09);
   color: white;
   &.inverse_icon {
     order: -1;

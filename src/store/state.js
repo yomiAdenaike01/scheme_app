@@ -1,9 +1,11 @@
-import vars from "@/assets/Styles/defaults.scss";
-const genUUID = require("uuid-by-string");
-
 export default {
+  team: [],
+
   runningIntervals: {},
-  notificationRef: "",
+  notificationRef: {},
+  groupRef: {},
+  teamRef: {},
+
   requestIntervals: {
     admin: 60000,
     client: 20000,
@@ -11,38 +13,39 @@ export default {
     chat: 30000,
     templates: 30000
   },
-  clientInformation: localStorage.getItem("clientInformation")
-    ? JSON.parse(localStorage.getItem("clientInformation"))
-    : {},
 
-  token: localStorage.getItem("token"),
-  userInformation: localStorage.getItem("userInformation")
-    ? JSON.parse(localStorage.getItem("userInformation"))
-    : {},
+  token: localStorage.getItem("token") ? localStorage.getItem("token") : {},
+
+  clientInformation: {},
+  userInformation: {},
   errorInformation: {},
-  localNotifications: [],
+
+  systemNotifications: [],
+  apiNotifications: [],
+
   networkError: false,
-  weeklyTimesheetUploaded: false,
-  userNotifications: [],
   viewMobileMenu: false,
-  lastDialog: {},
-  dialogIndex: {
-    profile: { view: false, data: null, tabIndex: 0 },
-    viewEvent: { view: false, data: null, tabIndex: 0 },
-    eventModule: { view: false, data: null, tabIndex: 0 },
-    tutorial: { view: false, data: null, tabIndex: 0 },
-    prevEvents: { view: false, data: null, tabIndex: 0 },
-    task: { view: false, data: null, tabIndex: 0 }
+
+  overlayHistory: {},
+  overlayIndex: {
+    profile: { view: false, data: {} },
+    viewEvent: { view: false, data: {} },
+    eventModule: { view: false, data: {} },
+    tutorial: { view: false, data: {} },
+    prevEvents: { view: false, data: {} },
+    task: { view: false, data: {} }
   },
-  defaultCustomColours: [
-    vars.default,
-    "#5e72e4",
-    "#5603ad",
-    "#8965e0",
-    "#f5365c",
-    "#fb6340",
-    "#ffd600",
-    "#2dce89"
+
+  colours: [
+    "#6ca5d8",
+    "#c9249e",
+    "#6f3e9e",
+    "#232323",
+    "#ec305c",
+    "#ff8840",
+    "#f3c43a",
+    "#cccccc",
+    "#44a954"
   ],
   daysOfWeek: [
     {
@@ -72,18 +75,6 @@ export default {
     {
       label: "Sundays",
       value: 7
-    }
-  ],
-  rootGroupRef: "",
-  // Expermimental
-  persmissions: [
-    {
-      _id: genUUID(
-        Math.random()
-          .toString(16)
-          .slice(2)
-      ),
-      name: ""
     }
   ]
 };
