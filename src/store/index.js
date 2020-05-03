@@ -8,7 +8,7 @@ import mutations from "./mutations";
 
 import Events from "./events";
 import Tasks from "./tasks";
-import Comms from "./comms/index";
+import Comms from "./comms";
 import Requests from "./requests";
 
 Vue.use(Vuex);
