@@ -98,7 +98,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     border-radius: 5px;
     max-width: fit-content;
     padding: 0;
-    margin:5px 0 ;
+    margin: 5px 0;
     &:hover {
       background: rgb(245, 245, 245);
     }
