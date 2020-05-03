@@ -40,7 +40,8 @@ export default {
   },
 
   created() {
-    console.log(this.overlayIndex);
+    console.log(document.styleSheets);
+
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -205,6 +206,28 @@ export default {
 
   --colour_yellow: hsl(23, 100%, 63%);
 }
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: white;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(144, 147, 153, 0.2);
+  border-radius: 20px;
+  transition: 0.56s ease-in-out background;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(210, 210, 210);
+  cursor: pointer;
+}
 .input_pill {
   display: flex;
   align-items: center;
@@ -285,12 +308,6 @@ html,
   text-transform: capitalize;
 }
 
-.columns {
-  flex-direction: column;
-}
-.caps {
-  text-transform: uppercase;
-}
 .capitalize {
   text-transform: capitalize;
 }
@@ -305,14 +322,6 @@ html,
 }
 .no_padding {
   padding: 0 !important;
-}
-
-.disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-  &.line-through {
-    text-decoration: line-through;
-  }
 }
 
 .logo {

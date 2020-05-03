@@ -47,6 +47,7 @@ export default {
     "#cccccc",
     "#44a954"
   ],
+
   daysOfWeek: [
     {
       label: "Mondays",

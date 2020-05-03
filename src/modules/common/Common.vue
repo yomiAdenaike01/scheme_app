@@ -43,7 +43,7 @@
     </div>
 
     <div class="common_wrapper">
-      <Navigation />
+      <Menu />
       <keep-alive>
         <slide-x-left-transition mode="out-in">
           <router-view></router-view>
@@ -63,7 +63,7 @@ import ProfileOverlay from "./../team/Profile/ProfileOverlay";
 import ViewEventOverlay from "./../events/components/ViewEventOverlay";
 
 import CommonBar from "./components/CommonBar";
-import Navigation from "./components/Navigation";
+import Menu from "@/components/Menu";
 
 import SButton from "@/components/SButton";
 
@@ -77,7 +77,7 @@ export default {
     ViewEventOverlay,
 
     CommonBar,
-    Navigation,
+    Menu,
     SButton
   },
   data() {

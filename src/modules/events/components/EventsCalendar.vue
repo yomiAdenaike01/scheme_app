@@ -115,6 +115,7 @@ export default {
     ...mapMutations(["UPDATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["DELETE_EVENT"]),
     createEventHere({ date }) {
+      return console.log(date);
       let startDate = date;
       let endDate = this.initMoment(startDate).add(1, "hour");
       this.genPromptBox({

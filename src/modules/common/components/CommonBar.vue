@@ -95,6 +95,7 @@ export default {
   flex: 1;
   padding: 10px;
   max-height: $app_bar_height;
+  border-bottom: 2px solid whitesmoke;
 }
 .client_indicator {
   display: flex;

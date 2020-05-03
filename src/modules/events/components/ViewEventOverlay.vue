@@ -1,5 +1,11 @@
 <template>
   <Overlay display @close="deactivateOverlay">
+    <Menu
+      mode="contextmenu"
+      :display-menu="displayMenu"
+      :menu-items="menuItems"
+      @close="displayMenu = false"
+    />
     <div class="view_event_container">
       <TextDisplay
         class="view_event_title"
@@ -50,11 +56,12 @@
           <div v-if="assignedTo.length > 0" class="assigned_users_container">
             <div v-for="(member, index) in assignedTo" ref="user" :key="index">
               <Avatar
+                ref="avatar"
                 :size="70"
                 class="assigned_user"
                 :name="member.name"
-                group
-                @click="viewUser(member)"
+                :group="assignedTo.length > 1"
+                @contextmenu.native="alterDisplayMenu(member)"
               >
               </Avatar>
             </div>
@@ -148,6 +155,7 @@ import Avatar from "@/components/Avatar";
 import Form from "@/components/Form";
 import SButton from "@/components/SButton";
 import Overlay from "@/components/Overlay";
+import Menu from "@/components/Menu";
 
 export default {
   name: "ViewEventOverlay",
@@ -156,7 +164,8 @@ export default {
     Avatar,
     Form,
     SButton,
-    Overlay
+    Overlay,
+    Menu
   },
   mixins: [overlayEvents],
   data() {
@@ -165,14 +174,14 @@ export default {
       selectedConfig: "date",
       overlayName: "viewEvent",
       updates: {},
+      displayMenu: false,
       popover: {
         team: false
-      }
+      },
+      menuItems: []
     };
   },
-  mounted() {
-    console.log(this.currentOverlay);
-  },
+
   computed: {
     ...mapState(["team", "userInformation", "overlayIndex"]),
     ...mapState("Events", ["events", "eventRef"]),
@@ -337,6 +346,18 @@ export default {
         );
       });
     },
+    alterDisplayMenu(member) {
+      this.displayMenu = true;
+      this.menuItems = [
+        {
+          label: "Remove user from event",
+          action: () => {
+            this.removeUser(member);
+          }
+        }
+      ];
+    },
+
     approvalController() {
       // only disapprove if you have approved and have
       let canMakeAction = this.canRejectEvent;
@@ -394,7 +415,6 @@ export default {
       }).email;
     },
 
-    // Currently locks database still keeping function for later rework button is hidden
     removeUser(user) {
       let userIndex = this.assignedTo.findIndex(assignee => {
         return assignee._id == user._id;
