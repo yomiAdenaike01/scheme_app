@@ -351,6 +351,10 @@ export default {
       this.menuItems = [
         {
           label: "Remove user from event",
+          style: {
+            backgroundColor: "rgba(245,108,108,.1)",
+            color: "rgba(245,108,108,1)"
+          },
           action: () => {
             this.removeUser(member);
           }
@@ -647,7 +651,7 @@ h3 {
   will-change: transform;
   transition: $default_transition transform;
   &:hover {
-    transform: translateY(-5px);
+    transform: translateX(2px);
   }
 }
 </style>

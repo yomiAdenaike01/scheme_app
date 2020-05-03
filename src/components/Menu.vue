@@ -186,6 +186,8 @@ export default {
   box-shadow: 0px 10px 20px 1px rgb(200, 200, 200);
   padding: 10px;
   z-index: 99999;
+  border-radius: 10px;
+
   &:after {
     position: absolute;
     top: -35%;
@@ -198,10 +200,12 @@ export default {
   }
 }
 .contextmenu_item {
-  padding: 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: $default_transition;
   &:hover {
-    background: rgb(250, 250, 250);
+    transform: translateX(2px);
   }
 }
 </style>
