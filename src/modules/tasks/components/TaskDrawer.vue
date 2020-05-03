@@ -9,7 +9,6 @@
             colour-scheme="secondary"
             shadow
             icon="check"
-            plain
             round
             @click="handleUpdate({ state: 1 })"
             >Mark as complete</s-button
@@ -72,41 +71,18 @@
           </div>
         </div>
         <!-- Description container -->
-        <div class="description_container">
-          <div class="task_info_title">
-            <i class="bx bx-align-left"></i>
-            <span>Description</span>
-          </div>
-          <p
-            v-if="editDescription == false"
-            class="description"
-            @click="handleDescriptions"
-          >
-            {{ taskInformation.description }}
-          </p>
-          <el-input
-            v-if="editDescription"
-            v-model="description"
-            type="textarea"
-            :placeholder="taskInformation.description"
-          ></el-input>
-          <el-button
-            v-if="description.length > 0"
-            type="text"
-            @click="updateTask"
-            >Save</el-button
-          >
-          <el-button
-            v-if="editDescription"
-            size="mini"
-            type="text"
-            @click="
-              editDescription = false;
-              description = '';
-            "
-            >Cancel</el-button
-          >
+        <div class="task_info_title">
+          <i class="bx bx-align-left"></i>
+          <span>Description</span>
         </div>
+        <textarea
+          v-model="description"
+          :contenteditable="editDescription"
+          class="task_textarea"
+          :placeholder="taskInformation.description"
+          @focus="handleDescriptions"
+        ></textarea>
+
         <div class="task_info_title">
           <i class="bx bx-comment"></i>
           <span>Comments</span>
@@ -371,13 +347,18 @@ export default {
   }
 }
 
-.description {
+.task_textarea {
+  width: 100%;
+  background: rgb(250, 250, 250);
   min-height: 300px;
   max-height: 300px;
   overflow-x: hidden;
+  flex: 1;
   padding: 10px;
   background: rgb(250, 250, 250);
   border-radius: 10px;
+  outline: none;
+  border: none;
 }
 .inner_wrapper {
   padding: 0 50px;

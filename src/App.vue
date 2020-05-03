@@ -205,7 +205,23 @@ export default {
 
   --colour_yellow: hsl(23, 100%, 63%);
 }
-
+.input_pill {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 10px;
+  justify-content: space-evenly;
+  max-width: fit-content;
+  border: 2px solid $grey;
+  border-radius: 40px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  text-transform: capitalize;
+  &.no_pointer {
+    cursor: default;
+  }
+}
 /*
 
 Fonts
@@ -223,6 +239,7 @@ Fonts
   font-family: "Jost", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+  outline: none;
 
   :before,
   :after {

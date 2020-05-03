@@ -23,7 +23,7 @@
         @val="handleRequest"
       >
         <ColourPicker
-          v-if="groupType == 'event_groups'"
+          v-if="groupType == 'event_groups' && selectedConfig == 'Create'"
           slot="footer"
           v-model="groupData.colour"
           display-details

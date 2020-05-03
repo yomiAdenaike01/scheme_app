@@ -1,12 +1,12 @@
 <template>
   <div class="sortby_container">
     <el-popover v-model="displayPopover" trigger="click">
-      <div slot="reference" class="sortby">
+      <div slot="reference" class="sortby input_pill">
         <div class="icon_container">
           <i class="bx bx-filter"></i>
         </div>
         <p class="sortby_body">
-          <strong>{{ !selectedItem ? filterText : selectedItem }}</strong>
+          {{ !selectedItem ? filterText : selectedItem }}
         </p>
       </div>
 
@@ -55,36 +55,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-$grey: rgb(230, 230, 230);
-.sortby {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 10px;
-  justify-content: space-evenly;
-  max-width: fit-content;
-  border: 2px solid $grey;
-  border-radius: 40px;
-  margin: 10px;
-  cursor: pointer;
-  font-size: 0.9em;
-  strong {
-    padding: 0 20px;
-    text-transform: capitalize;
-  }
-}
-
-p {
-  margin: 0;
-  &:last-of-type {
-    border-left: 2px solid rgb(240, 240, 240);
-  }
-}
 .grey {
   padding: 0 20px;
 }
 .sortby_body {
-  border-left: 2px solid #ccc;
   margin: 0 20px;
 }
 .icon_container {

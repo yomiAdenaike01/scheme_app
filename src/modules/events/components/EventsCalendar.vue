@@ -14,6 +14,11 @@
       :events="calEvents"
       :on-event-click="viewEvent"
       events-on-month-view="short"
+      cell-contextmenu
+      :cell-click-hold="false"
+      :on-event-dblclick="deleteEvent"
+      :editable-events="editEvents"
+      @cell-contextmenu="createEventHere"
     />
   </div>
 </template>
@@ -35,7 +40,8 @@ export default {
       loading: false,
       eventsXref: {},
       eventType: "all event groups",
-      userGroup: ""
+      userGroup: "",
+      editEvents: false
     };
   },
   computed: {
@@ -94,8 +100,10 @@ export default {
             assigned_to: event?.assigned_to,
             type: event?.type,
             _id: event._id,
+            deleteadble: true,
             notice_period: event?.notice_period,
-            created_by: event?.created_by
+            created_by: event?.created_by,
+            event_index: i
           });
         }
       }
@@ -103,9 +111,29 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "genPromptBox"]),
     ...mapMutations(["UPDATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
-
+    ...mapMutations("Events", ["DELETE_EVENT"]),
+    createEventHere({ date }) {
+      let startDate = date;
+      let endDate = this.initMoment(startDate).add(1, "hour");
+      this.genPromptBox({
+        boxType: "confirm",
+        title: "Create quick event",
+        text: `Would you like to create an event from ${this.formatDate(
+          startDate
+        )} to ${this.formatDate(endDate)}`
+      }).then(() => {});
+    },
+    deleteEvent(event) {
+      console.log(event);
+      // this.DELETE_EVENT(event.event_index);
+      // this.request({
+      //   method: "DELETE",
+      //   url: "events/delete",
+      //   data: { _id: event.id }
+      // });
+    },
     viewEvent(event) {
       this.UPDATE_OVERLAY_INDEX({
         view: true,
