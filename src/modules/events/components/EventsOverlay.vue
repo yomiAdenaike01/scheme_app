@@ -379,7 +379,7 @@ export default {
   align-items: center;
   padding: 40px;
   flex-direction: column;
-  border: 2px solid whitesmoke;
+  border: $border;
   max-height: fit-content;
 }
 </style>

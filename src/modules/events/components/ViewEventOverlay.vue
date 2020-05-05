@@ -549,7 +549,7 @@ export default {
   padding: 20px;
 }
 .view_event_container_item {
-  border: 1.2px solid whitesmoke;
+  border: 1$border;
   border-radius: 5px;
   margin: 1em;
   max-width: 100%;

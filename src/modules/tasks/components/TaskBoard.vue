@@ -276,7 +276,7 @@ export default {
   flex-direction: column;
   margin: 0 10px;
   border-radius: 16px;
-  border: 2px solid whitesmoke;
+  border: $border;
   height: 100%;
   background: white;
 }
@@ -294,7 +294,7 @@ export default {
   padding-left: 20px;
   text-transform: capitalize;
   padding-bottom: 20px;
-  border-bottom: 2px solid whitesmoke;
+  border-bottom: $border;
   h1,
   h2,
   h3 {

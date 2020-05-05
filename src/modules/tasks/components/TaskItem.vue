@@ -193,7 +193,7 @@ export default {
   position: relative;
   cursor: pointer;
   background: white;
-  border-bottom: 2px solid whitesmoke;
+  border-bottom: $border;
   transition: $default_transition;
 
   &:hover {

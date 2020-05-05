@@ -214,7 +214,7 @@ export default {
   width: 100%;
 }
 .current_chat_header {
-  border-bottom: 2px solid whitesmoke;
+  border-bottom: $border;
   &/deep/ .el-input {
     font-size: 14px;
     padding: 10px;

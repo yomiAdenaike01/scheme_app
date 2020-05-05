@@ -53,7 +53,7 @@ export default {
   display: flex;
   flex: 1;
   margin: 10px;
-  border: 2px solid whitesmoke;
+  border: $border;
   background: white;
   max-height: 100%;
   &/deep/ {

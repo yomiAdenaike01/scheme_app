@@ -205,6 +205,28 @@ export default {
   );
 
   --colour_yellow: hsl(23, 100%, 63%);
+
+  --blue: #0168fa;
+  --indigo: #5b47fb;
+  --purple: #6f42c1;
+  --pink: #f10075;
+  --red: #dc3545;
+  --orange: #fd7e14;
+  --yellow: #ffc107;
+  --green: #10b759;
+  --teal: #00cccc;
+  --cyan: #00b8d4;
+  --white: #fff;
+  --gray: #7987a1;
+  --gray-dark: #3b4863;
+  --primary: #0168fa;
+  --secondary: #7987a1;
+  --success: #10b759;
+  --info: #00b8d4;
+  --warning: #ffc107;
+  --danger: #dc3545;
+  --light: #f4f5f8;
+  --dark: #3b4863;
 }
 /* width */
 ::-webkit-scrollbar {
@@ -235,7 +257,7 @@ export default {
   padding: 10px;
   justify-content: space-evenly;
   max-width: fit-content;
-  border: 2px solid $grey;
+  border: $border;
   border-radius: 40px;
   margin: 10px;
   cursor: pointer;

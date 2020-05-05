@@ -248,7 +248,7 @@ export default {
   justify-content: space-between;
 }
 .info_container {
-  border: 2px solid whitesmoke;
+  border: $border;
   border-radius: 5px;
   line-height: 2.2em;
   margin-top: 20px;

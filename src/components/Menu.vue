@@ -1,5 +1,5 @@
 <template>
-  <nav :class="{ nav_sidebar: mode == 'main' }">
+  <nav :class="{ flex: mode == 'tabs', nav_sidebar: mode == 'main' }">
     <ul v-if="mode == 'main'">
       <router-link
         v-for="route in routes"
@@ -29,6 +29,17 @@
         </div>
       </div>
     </slide-y-down-transition>
+    <div v-if="mode == 'tabs'" class="tabs_container">
+      <div
+        v-for="(tab, index) in tabItems"
+        :key="index"
+        class="tab"
+        :class="{ active: activeTab == tab }"
+        @click="$emit('changeTab', makeUgly(tab))"
+      >
+        <p>{{ tab }}</p>
+      </div>
+    </div>
   </nav>
 </template>
 
@@ -49,12 +60,20 @@ export default {
       type: String,
       default: "main",
       validator(type) {
-        return ["main", "contextmenu"].indexOf(type) > -1;
+        return ["main", "contextmenu", "tabs"].indexOf(type) > -1;
       }
     },
     menuItems: {
       type: Array,
       default: () => []
+    },
+    tabItems: {
+      type: Array,
+      default: () => []
+    },
+    activeTab: {
+      type: String,
+      default: ""
     },
     displayMenu: {
       type: Boolean,
@@ -211,6 +230,20 @@ export default {
   transition: $default_transition;
   &:hover {
     transform: translateX(2px);
+  }
+}
+.tabs_container {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  border-bottom: $border;
+}
+.tab {
+  cursor: pointer;
+  padding: 5px 20px;
+  text-transform: uppercase;
+  &.active {
+    border-bottom: 2px solid var(--colour_secondary);
   }
 }
 </style>

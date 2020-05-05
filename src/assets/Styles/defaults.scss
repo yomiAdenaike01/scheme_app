@@ -1,18 +1,11 @@
 
 $box_shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-$success_colour: #53d769;
 $error_colour: #f56c6c;
 $border_radius: 10px;
-$border: 0.3px solid #ebeef5;
+$border: 2px solid whitesmoke;
 $default_colour: rgb(42, 54, 59);
 $grey: rgb(230, 230, 230);
 
-$default_gradient: linear-gradient(
-  to right,
-  #13547a,
-  #80d0c7,
-  #2c5364
-); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
 $element_colour: #6b7a8f;
 $default_transition: 0.16s linear;
@@ -34,8 +27,3 @@ $app_bar_height:64px;
   }
 }
 
-
-
-:export {
-  default: $default_colour;
-}

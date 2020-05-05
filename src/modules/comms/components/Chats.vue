@@ -98,7 +98,7 @@ export default {
   flex-direction: column;
   height: 100%;
   flex: 0.2;
-  border-right: 2px solid whitesmoke;
+  border-right: $border;
   position: relative;
   overflow-x: hidden;
   &.no_content {

@@ -411,7 +411,7 @@ export default {
 
   .function {
     cursor: pointer;
-    border-top: 2px solid whitesmoke;
+    border-top: $border;
     text-align: center;
     text-transform: capitalize;
     &:first-of-type {

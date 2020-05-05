@@ -32,10 +32,10 @@ export default {
   flex: 1;
   padding: 5px;
   border-radius: 50%;
-  background: $error_colour;
+  background: var(--danger);
 
   &.online {
-    background: $success_colour;
+    background: var(--success);
   }
 }
 </style>

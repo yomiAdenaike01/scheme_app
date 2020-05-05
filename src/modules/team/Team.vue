@@ -1,10 +1,5 @@
 <template>
   <div class="team_container">
-    <TeamOverlay
-      :display="overlays.manageTeam"
-      @close="overlays.manageTeam = false"
-    />
-
     <div class="team_sidebar">
       <div v-if="team.length > 0" class="team_group_container">
         <div class="filter_team_members">
@@ -41,36 +36,50 @@
                   <span class="capitalize">{{ group.label }}</span>
                   <div class="divider"></div>
                 </div>
-
-                <TeamMember
+                <div
                   v-for="member in group.teamMembers"
                   :key="member._id"
-                  :member-information="{ ...member, groupID: group.groupID }"
-                />
+                  class="team_member_container"
+                  @click="currentMember = member"
+                >
+                  <Avatar :name="member.name">
+                    <OnlineIndicator :is-online="member.is_online" />
+                  </Avatar>
+                  <div class="text_content">
+                    <p class="member_name">{{ member.name }}</p>
+                    <small class="grey">{{ member.email }}</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="view_team_member">
+      <Menu
+        mode="tabs"
+        :tab-items="tabItems"
+        :active-tab="selectedTab"
+        @changeTab="selectedTab = $event"
+      />
+    </div>
+    <div class="user_sidebar"></div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters } from "vuex";
-
-import TeamGroup from "./components/TeamGroup";
-import TeamMember from "./components/TeamMember";
-import TeamOverlay from "./components/TeamOverlay";
-import TextDisplay from "@/components/TextDisplay";
-
+import Avatar from "@/components/Avatar";
+import OnlineIndicator from "@/components/OnlineIndicator";
+import Menu from "@/components/Menu";
 export default {
   name: "Team",
   components: {
-    TeamMember,
-    TeamGroup,
-    TeamOverlay,
-    TextDisplay
+    Avatar,
+    OnlineIndicator,
+    Menu
   },
   data() {
     return {
@@ -79,13 +88,24 @@ export default {
         manageTeam: false
       },
       teamMembername: "",
-      viewUser: false
+      viewUser: false,
+      selectedTab: "",
+      currentMember: {}
     };
   },
   computed: {
     ...mapState(["userInformation", "clientInformation"]),
     ...mapState(["team"]),
     ...mapGetters(["getFilteredTeam"]),
+
+    tabItems() {
+      return [
+        "contact information",
+        "events timeline",
+        "analytics",
+        "audit trail"
+      ];
+    },
 
     groupedTeamMembers() {
       let groups = this.groupsWithUsers.filter(({ teamMembers }) => {
@@ -130,7 +150,7 @@ export default {
   background: white;
 }
 .team_sidebar {
-  border-right: 2px solid whitesmoke;
+  border-right: $border;
 }
 .team_group_container {
   display: flex;
@@ -142,7 +162,7 @@ export default {
 .filter_team_members {
   display: flex;
   align-items: center;
-  border-bottom: 2px solid whitesmoke;
+  border-bottom: $border;
   padding: 10px;
   .bx {
     font-size: 1.4em;
@@ -218,6 +238,31 @@ export default {
   color: #222;
   font-size: 0.9em;
   padding: 10px 0px;
+}
+
+.team_member_container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-height: 50px;
+  max-height: fit-content;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: $default_transition background;
+  &:hover {
+    background: rgb(245, 245, 245);
+  }
+}
+.text_content {
+  margin-left: 20px;
+}
+p {
+  padding: 0;
+  margin: 0;
+}
+.member_name {
+  text-transform: capitalize;
 }
 
 /*

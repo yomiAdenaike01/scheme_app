@@ -23,6 +23,6 @@ export default {
 <style lang="scss" scoped>
 .event_container {
   padding: 10px;
-  border: 2px solid whitesmoke;
+  border: $border;
 }
 </style>
