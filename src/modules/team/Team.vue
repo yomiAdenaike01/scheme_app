@@ -12,7 +12,7 @@
           />
         </div>
 
-        <div class="row_wrapper">
+        <div v-if="groupedTeamMembers.length > 0" class="row_wrapper">
           <div
             v-for="(count, i) in groupedTeamMembers"
             :key="`${count}${i}`"
@@ -41,7 +41,7 @@
                   :key="member._id"
                   :class="{ active: selectedTeamMember._id == member._id }"
                   class="team_member_container"
-                  @click="selectedTeamMember = member"
+                  @click="setTeamMember(member)"
                 >
                   <Avatar :name="member.name" :size="20">
                     <OnlineIndicator :is-online="member.is_online" />
@@ -54,6 +54,9 @@
               </div>
             </div>
           </div>
+        </div>
+        <div v-else>
+          <p>No team members</p>
         </div>
       </div>
     </div>
@@ -155,6 +158,10 @@ export default {
       return [groups];
     },
 
+    firstTeamMember() {
+      return this.groupedTeamMembers[0][0]["teamMembers"][0];
+    },
+
     groupsWithUsers() {
       let { user_groups } = { ...this.clientInformation };
       let userGroupArr = [];
@@ -167,9 +174,9 @@ export default {
         for (let j = 0, jlen = team.length; j < jlen; j++) {
           let member = team[j];
           if (clientGroupID == member.user_group._id) {
-            // if (!nameFilter.includes(member.name)) {
-            //   continue;
-            // }
+            if (!member.name.toLowerCase().includes(nameFilter)) {
+              continue;
+            }
             userGroup.teamMembers.push(member);
           }
         }
@@ -178,8 +185,21 @@ export default {
       return userGroupArr;
     }
   },
+  watch: {
+    searchTeamMemberName: {
+      immediate: false,
+      handler() {
+        this.setTeamMember();
+      }
+    }
+  },
   created() {
-    this.selectedTeamMember = this.groupedTeamMembers[0][0]["teamMembers"][0];
+    this.setTeamMember();
+  },
+  methods: {
+    setTeamMember(teamMember = this.firstTeamMember) {
+      this.selectedTeamMember = teamMember;
+    }
   }
 };
 </script>
@@ -198,6 +218,7 @@ export default {
 .team_group_container {
   display: flex;
   flex: 0.2;
+  min-width: 300px;
   flex-direction: column;
   height: 100%;
   overflow-x: hidden;
