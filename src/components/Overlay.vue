@@ -1,5 +1,5 @@
 <template>
-  <SlideYUpTransition>
+  <ZoomCenterTransition>
     <div
       v-if="display"
       :class="[
@@ -7,7 +7,7 @@
         { light: backdropType == 'blur', dark: backdropType == 'dark' }
       ]"
     >
-      <div v-click-outside="onClickOutside" class="overlay">
+      <div v-show="display" v-click-outside="onClickOutside" class="overlay">
         <div class="close_button" @click="$emit('close')">
           <i class="bx bx-x"></i>
         </div>
@@ -23,17 +23,17 @@
         </footer>
       </div>
     </div>
-  </SlideYUpTransition>
+  </ZoomCenterTransition>
 </template>
 
 <script>
-import { SlideYUpTransition } from "vue2-transitions";
+import { ZoomCenterTransition } from "vue2-transitions";
 import vClickOutside from "v-click-outside";
 
 export default {
   name: "Overlay",
   components: {
-    SlideYUpTransition
+    ZoomCenterTransition
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -44,7 +44,8 @@ export default {
   },
   props: {
     display: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     title: {
       type: String,

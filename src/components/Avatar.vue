@@ -102,11 +102,7 @@ export default {
       return "";
     }
   },
-  mounted() {
-    if (!this.isImage) {
-      this.$emit("avatar-initials", this.name, this.userInitial);
-    }
-  },
+
   methods: {
     initial(username) {
       let parts = username.split(/[ -]/);

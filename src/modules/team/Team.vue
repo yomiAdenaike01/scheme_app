@@ -5,7 +5,7 @@
         <div class="filter_team_members">
           <i class="bx bx-search"></i>
           <input
-            v-model="teamMembername"
+            v-model="searchTeamMemberName"
             class="s_input"
             type="text"
             placeholder="Search team members"
@@ -39,10 +39,11 @@
                 <div
                   v-for="member in group.teamMembers"
                   :key="member._id"
+                  :class="{ active: selectedTeamMember._id == member._id }"
                   class="team_member_container"
-                  @click="currentMember = member"
+                  @click="selectedTeamMember = member"
                 >
-                  <Avatar :name="member.name">
+                  <Avatar :name="member.name" :size="20">
                     <OnlineIndicator :is-online="member.is_online" />
                   </Avatar>
                   <div class="text_content">
@@ -64,8 +65,52 @@
         :active-tab="selectedTab"
         @changeTab="selectedTab = $event"
       />
+      <div class="viewing_container">
+        <template v-if="selectedTab == 'contact_information'">
+          <div
+            v-for="(item, index) in teamMemberInformation[selectedTab]"
+            :key="index"
+          >
+            <div class="data_field">
+              <p>{{ item }}</p>
+              {{ selectedTeamMember[item] }}
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
-    <div class="user_sidebar"></div>
+    <!-- View the user details -->
+    <div class="user_sidebar">
+      <Avatar :name="selectedTeamMember.name" :size="80" />
+      <h3>{{ selectedTeamMember["name"] }}</h3>
+      <h5 class="grey">{{ selectedTeamMember["user_group"]["label"] }}</h5>
+      <div class="shortcuts_container">
+        <div class="phone">
+          <i :style="{ backgroundColor: colours[0] }" class="bx bx-phone"></i>
+        </div>
+        <div
+          class="message"
+          @click="
+            $router.push({ name: 'comms', params: { toMessage: member } })
+          "
+        >
+          <i
+            :style="{ backgroundColor: colours[1] }"
+            class="bx bxl-discourse"
+          ></i>
+        </div>
+      </div>
+      <hr />
+      <div class="options_cotainer">
+        <div class="title_container grey">
+          <i class="bx bx-settings"></i>
+          <h4>Options</h4>
+        </div>
+        <i class="bx bx-trash"></i>
+        <p>Delete account</p>
+        <p></p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -83,28 +128,29 @@ export default {
   },
   data() {
     return {
-      globalOverlayName: "profile",
       overlays: {
         manageTeam: false
       },
-      teamMembername: "",
+      searchTeamMemberName: "",
       viewUser: false,
-      selectedTab: "",
-      currentMember: {}
+      selectedTab: "contact_information",
+      selectedTeamMember: {}
     };
   },
+
   computed: {
-    ...mapState(["userInformation", "clientInformation"]),
+    ...mapState(["colours", "theme", "userInformation", "clientInformation"]),
     ...mapState(["team"]),
     ...mapGetters(["getFilteredTeam"]),
 
+    teamMemberInformation() {
+      return {
+        contact_information: ["email", "name"],
+        events_timeline: []
+      };
+    },
     tabItems() {
-      return [
-        "contact information",
-        "events timeline",
-        "analytics",
-        "audit trail"
-      ];
+      return ["contact_information", "events_timeline", "analytics"];
     },
 
     groupedTeamMembers() {
@@ -119,7 +165,7 @@ export default {
       let { user_groups } = { ...this.clientInformation };
       let userGroupArr = [];
       let team = [...this.team];
-      let nameFilter = this.teamMembername.toLowerCase();
+      let nameFilter = this.searchTeamMemberName.toLowerCase();
 
       for (let i = 0, len = user_groups.length; i < len; i++) {
         let userGroup = { ...user_groups[i], teamMembers: [] };
@@ -137,6 +183,9 @@ export default {
       }
       return userGroupArr;
     }
+  },
+  created() {
+    this.selectedTeamMember = this.groupedTeamMembers[0][0]["teamMembers"][0];
   }
 };
 </script>
@@ -250,7 +299,8 @@ export default {
   padding: 10px;
   cursor: pointer;
   transition: $default_transition background;
-  &:hover {
+  &:hover,
+  &.active {
     background: rgb(245, 245, 245);
   }
 }
@@ -264,7 +314,43 @@ p {
 .member_name {
   text-transform: capitalize;
 }
-
+.view_team_member {
+  flex: 1;
+}
+.data_field {
+  flex: 1;
+}
+.user_sidebar {
+  display: flex;
+  flex: 0.2;
+  flex-direction: column;
+  border-left: $border;
+  padding: 20px;
+  h5,
+  h4,
+  h3 {
+    margin: 0;
+  }
+  &:first-child {
+    margin: 10px 0 50px 0;
+  }
+}
+.shortcuts_container {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: $border;
+  > * {
+    cursor: pointer;
+    margin: 0 5px;
+  }
+  i {
+    border-radius: 50%;
+    padding: 10px;
+    color: white;
+    background: red;
+  }
+}
 /*
 
    __  __       _     _ _

@@ -1,3 +1,8 @@
+let baseStyle = getComputedStyle(document.body);
+const getStyle = cssVar => {
+  return baseStyle.getPropertyValue(cssVar);
+};
+
 export default {
   team: [],
 
@@ -58,6 +63,12 @@ export default {
     "#f4f5f8",
     "#3b4863"
   ],
+
+  theme: {
+    primary: getStyle("--colour_primary"),
+    secondary: getStyle("--colour_secondary"),
+    tertiary: getStyle("--colour_tertiary")
+  },
 
   daysOfWeek: [
     {

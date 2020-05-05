@@ -187,7 +187,7 @@ export default {
   );
   --colour_secondary_lighter: hsl(
     var(--color-h-secondary),
-    var(--color-s-secondary),
+    var(--color-h-secondary),
     75%
   );
 

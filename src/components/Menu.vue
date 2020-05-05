@@ -34,10 +34,19 @@
         v-for="(tab, index) in tabItems"
         :key="index"
         class="tab"
-        :class="{ active: activeTab == tab }"
+        :class="{
+          active: activeTab == tab && Object.values(activeStyle).length == 0
+        }"
+        :style="
+          activeTab == tab && Object.values(activeStyle).length > 0
+            ? activeStyle
+            : Object.values(customStyle).length > 0
+            ? customStyle
+            : {}
+        "
         @click="$emit('changeTab', makeUgly(tab))"
       >
-        <p>{{ tab }}</p>
+        <p>{{ makePretty(tab) }}</p>
       </div>
     </div>
   </nav>
@@ -74,6 +83,18 @@ export default {
     activeTab: {
       type: String,
       default: ""
+    },
+    activeStyle: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    customStyle: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     },
     displayMenu: {
       type: Boolean,
@@ -137,7 +158,9 @@ export default {
       this.closeContextMenu();
     },
     closeContextMenu() {
-      this.$emit("close");
+      if (this.mode == "contextmenu") {
+        this.$emit("close");
+      }
     },
     onContextMenu(e) {
       e.preventDefault();
@@ -237,13 +260,31 @@ export default {
   flex: 1;
   justify-content: space-between;
   border-bottom: $border;
+  background: rgb(250, 250, 250);
 }
 .tab {
   cursor: pointer;
-  padding: 5px 20px;
-  text-transform: uppercase;
+  flex: 1;
+  text-align: center;
+  padding: 0px 15px;
+  text-transform: capitalize;
+  border-right: 1px solid rgb(230, 230, 230);
+  position: relative;
+  transition: $default_transition;
   &.active {
-    border-bottom: 2px solid var(--colour_secondary);
+    &::after {
+      position: absolute;
+      top: 0;
+      height: 2px;
+      left: 0;
+      right: 0;
+      content: "";
+      background: var(--colour_secondary);
+    }
+    background: hsl(var(--color-h-secondary), var(--color-s-secondary), 97%);
+  }
+  &:hover {
+    background: hsl(var(--color-h-secondary), var(--color-s-secondary), 97%);
   }
 }
 </style>
