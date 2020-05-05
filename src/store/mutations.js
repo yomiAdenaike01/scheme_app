@@ -4,15 +4,15 @@ import updateBreadCrumbs from "./helpers";
 
 const deleteStateInterval = (state, intervalID) => {
   if (!intervalID) {
-    for (let property in state.runningIntervals) {
-      clearTimeout(state.runningIntervals[property]);
-      Vue.set(state.runningIntervals, property, null);
+    for (let property in state.globalIntervals) {
+      clearTimeout(state.globalIntervals[property]);
+      Vue.set(state.globalIntervals, property, null);
     }
   } else {
-    clearTimeout(state.runningIntervals[intervalID]);
-    Vue.set(state.runningIntervals, intervalID, null);
+    clearTimeout(state.globalIntervals[intervalID]);
+    Vue.set(state.globalIntervals, intervalID, null);
   }
-  console.log(state.runningIntervals);
+  console.log(state.globalIntervals);
 };
 const deleteSystemNotification = (state, notificationIndex) => {
   Vue.delete(state.systemNotifications, notificationIndex);
@@ -157,7 +157,7 @@ export default {
 
     let timeout;
 
-    if (!state.runningIntervals?.id) {
+    if (!state.globalIntervals?.id) {
       var runInterval = () => {
         timeout = setTimeout(() => {
           payload
@@ -172,9 +172,9 @@ export default {
       };
     }
 
-    if (!state.runningIntervals[payload.id]) {
+    if (!state.globalIntervals[payload.id]) {
       runInterval();
-      state.runningIntervals[payload.id] = timeout;
+      state.globalIntervals[payload.id] = timeout;
     }
   },
 
@@ -249,7 +249,7 @@ export default {
     if (VueRouter.currentRoute.name != "signIn") {
       VueRouter.push({ name: "signIn" });
     }
-    for (let property in state.runningIntervals) {
+    for (let property in state.globalIntervals) {
       if (property != "client") {
         deleteStateInterval(state, property);
       }

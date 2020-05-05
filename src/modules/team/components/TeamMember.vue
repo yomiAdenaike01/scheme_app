@@ -6,7 +6,7 @@
 
     <div class="text_content">
       <p class="member_name">{{ name }}</p>
-      <small class="grey">{{ groupName }}</small>
+      <small class="grey">{{ memberInformation.email }}</small>
     </div>
   </div>
 </template>
@@ -66,14 +66,12 @@ export default {
   align-items: center;
   min-height: 50px;
   max-height: fit-content;
-  border: 1px solid #ebeef5;
-  padding: 20px;
-  margin: 10px;
   border-radius: 10px;
+  padding: 10px;
   cursor: pointer;
   transition: $default_transition background;
   &:hover {
-    background: $hover_grey;
+    background: rgb(245, 245, 245);
   }
 }
 .text_content {

@@ -96,7 +96,7 @@ export default {
   },
   DELETE_EVENT(state, eventIndex) {
     if (!eventIndex) {
-      eventIndex = state.team.length - 1;
+      eventIndex = state.events.length - 1;
       state.events.pop();
     }
     if (state.events[eventIndex]) {

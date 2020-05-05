@@ -23,8 +23,8 @@ export default {
   padding: 0;
   min-width: 26%;
   min-height: 26%;
-  top: 0;
-  right: -4px;
+  top: 70%;
+  right: 0px;
   padding: 3px;
 }
 .online_container {

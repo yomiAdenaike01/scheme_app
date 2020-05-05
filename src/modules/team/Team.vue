@@ -5,21 +5,21 @@
       @close="overlays.manageTeam = false"
     />
 
-    <TeamGroup add-new @createTeamGroup="overlays.manageTeam = $event" />
-
-    <TeamGroup v-if="team.length > 0">
-      <div class="team_group_container">
-        <TextDisplay
-          :display-text="{
-            heading: 'All teams',
-            content:
-              'Here is a list of all users, select one to view their information'
-          }"
-        />
+    <div class="team_sidebar">
+      <div v-if="team.length > 0" class="team_group_container">
+        <div class="filter_team_members">
+          <i class="bx bx-search"></i>
+          <input
+            v-model="teamMembername"
+            class="s_input"
+            type="text"
+            placeholder="Search team members"
+          />
+        </div>
 
         <div class="row_wrapper">
           <div
-            v-for="(count, i) in filteredGroupsWithUsers"
+            v-for="(count, i) in groupedTeamMembers"
             :key="`${count}${i}`"
             class="user_group_row"
           >
@@ -37,10 +37,9 @@
                 class="team_wrapper"
               >
                 <div class="icon_text_container">
-                  <div class="flex_center">
-                    <i class="bx bx-user user_group_icon"></i>
-                    <span class="capitalize">{{ group.label }}</span>
-                  </div>
+                  <div class="divider"></div>
+                  <span class="capitalize">{{ group.label }}</span>
+                  <div class="divider"></div>
                 </div>
 
                 <TeamMember
@@ -53,7 +52,7 @@
           </div>
         </div>
       </div>
-    </TeamGroup>
+    </div>
   </div>
 </template>
 
@@ -79,6 +78,7 @@ export default {
       overlays: {
         manageTeam: false
       },
+      teamMembername: "",
       viewUser: false
     };
   },
@@ -87,7 +87,7 @@ export default {
     ...mapState(["team"]),
     ...mapGetters(["getFilteredTeam"]),
 
-    filteredGroupsWithUsers() {
+    groupedTeamMembers() {
       let groups = this.groupsWithUsers.filter(({ teamMembers }) => {
         return teamMembers.length > 0;
       });
@@ -99,16 +99,20 @@ export default {
       let { user_groups } = { ...this.clientInformation };
       let userGroupArr = [];
       let team = [...this.team];
+      let nameFilter = this.teamMembername.toLowerCase();
 
-      for (let j = 0, len = user_groups.length; j < len; j++) {
-        let userGroup = { ...user_groups[j], teamMembers: [] };
+      for (let i = 0, len = user_groups.length; i < len; i++) {
+        let userGroup = { ...user_groups[i], teamMembers: [] };
         let clientGroupID = userGroup?._id;
-
-        team.map(member => {
+        for (let j = 0, jlen = team.length; j < jlen; j++) {
+          let member = team[j];
           if (clientGroupID == member.user_group._id) {
+            // if (!nameFilter.includes(member.name)) {
+            //   continue;
+            // }
             userGroup.teamMembers.push(member);
           }
-        });
+        }
         userGroupArr.push(userGroup);
       }
       return userGroupArr;
@@ -122,15 +126,34 @@ export default {
   display: flex;
   flex: 1;
   font-size: 0.9em;
-  padding: 20px;
   max-height: 100%;
+  background: white;
+}
+.team_sidebar {
+  border-right: 2px solid whitesmoke;
 }
 .team_group_container {
   display: flex;
-  flex: 1;
+  flex: 0.2;
   flex-direction: column;
-  height: calc(100% - 100px);
+  height: 100%;
   overflow-x: hidden;
+}
+.filter_team_members {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid whitesmoke;
+  padding: 10px;
+  .bx {
+    font-size: 1.4em;
+    color: #999;
+    flex: 0.01;
+  }
+}
+.s_input {
+  padding: 10px;
+  flex: 1;
+  border: none;
 }
 .row_wrapper {
   padding-top: 20px;
@@ -150,8 +173,7 @@ export default {
 }
 .user_group_col {
   display: flex;
-  flex: 1;
-  margin-top: 20px;
+  padding: 10px;
 }
 
 .button {
@@ -181,8 +203,18 @@ export default {
   margin-right: 10px;
 }
 .icon_text_container {
-  background: rgb(250, 250, 250);
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  .divider {
+    flex: 1;
+    height: 2px;
+    background: whitesmoke;
+  }
+  span {
+    text-transform: capitalize;
+    justify-content: flex-start;
+    padding: 0 10px;
+  }
   color: #222;
   font-size: 0.9em;
   padding: 10px 0px;

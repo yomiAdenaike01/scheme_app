@@ -29,6 +29,7 @@
       v-model="selectedTab"
       tab-position="top"
       stretch
+      type="card"
       class="tab_container"
     >
       <el-tab-pane

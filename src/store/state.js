@@ -1,7 +1,7 @@
 export default {
   team: [],
 
-  runningIntervals: {},
+  globalIntervals: {},
   notificationRef: {},
   groupRef: {},
   teamRef: {},
@@ -37,15 +37,26 @@ export default {
   },
 
   colours: [
-    "#6ca5d8",
-    "#c9249e",
-    "#6f3e9e",
-    "#232323",
-    "#ec305c",
-    "#ff8840",
-    "#f3c43a",
-    "#cccccc",
-    "#44a954"
+    "#0168fa",
+    "#5b47fb",
+    "#6f42c1",
+    "#f10075",
+    "#dc3545",
+    "#fd7e14",
+    "#ffc107",
+    "#10b759",
+    "#00cccc",
+    "#00b8d4",
+    "#7987a1",
+    "#3b4863",
+    "#0168fa",
+    "#7987a1",
+    "#10b759",
+    "#00b8d4",
+    "#ffc107",
+    "#dc3545",
+    "#f4f5f8",
+    "#3b4863"
   ],
 
   daysOfWeek: [

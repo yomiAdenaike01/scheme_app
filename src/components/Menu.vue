@@ -74,7 +74,6 @@ export default {
       let allowedRoutes = [
         {
           name: "events",
-          path: "/admin/events",
           icon: "bx bxs-dashboard"
         },
         {
@@ -87,10 +86,16 @@ export default {
         }
       ];
       if (this.getIsAdmin) {
-        allowedRoutes.push({
-          name: "user",
-          icon: "bx bx-group"
-        });
+        allowedRoutes.push(
+          {
+            name: "user",
+            icon: "bx bx-group"
+          },
+          {
+            name: "analytics",
+            icon: "bx bx-bar-chart-alt"
+          }
+        );
       }
       return allowedRoutes;
     }
@@ -192,7 +197,7 @@ export default {
     position: absolute;
     top: -35%;
     content: "";
-    left: 0%;
+    left: 0.9%;
     border-right: 15px solid transparent;
     border-left: 15px solid transparent;
     border-top: 15px solid transparent;

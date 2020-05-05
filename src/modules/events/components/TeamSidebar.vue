@@ -2,7 +2,7 @@
   <div class="team_container">
     <!-- Display if in mobile view -->
 
-    <div v-if="getFilteredTeam.length > 0" class="users_container">
+    <div v-if="getFilteredTeam.length > 0" class="team_members_container">
       <div
         v-for="(member, index) in team"
         :key="index"
@@ -136,7 +136,7 @@ export default {
     background-color: darken($color: #ffff, $amount: 2);
   }
 }
-.users_container {
+.team_members_container {
   display: flex;
   flex-direction: column;
 }

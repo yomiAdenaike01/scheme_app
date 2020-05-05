@@ -16,7 +16,6 @@
           <div slot="header" class="i bx bx-user"></div>
           <el-button
             slot="body"
-            class="mt-4"
             icon="el-icon-plus"
             circle
             @click="$emit('createTeamGroup', true)"

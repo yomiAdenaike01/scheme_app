@@ -323,10 +323,10 @@ export default {
       "request",
       "genEmail",
       "genPromptBox",
-      "closeOverlay",
       "getApiNotification"
     ]),
     ...mapActions("Events", ["getEvents"]),
+    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
     ...mapMutations("Events", [
       "UPDATE_EVENT",
       "ADD_USER_TO_EVENT",
@@ -336,7 +336,6 @@ export default {
       "UPDATE_APPROVE_EVENT",
       "UPDATE_REJECT_EVENT"
     ]),
-    ...mapMutations(["UPDATE_OVERLAY_INDEX", "UPDATE_SYSTEM_NOTIFICATION"]),
 
     hasAdminApproved() {
       return this.event.is_approved.find(approvee => {
@@ -407,7 +406,7 @@ export default {
           this.UPDATE_EVENT(this.eventRef);
         });
       } else {
-        return this.UPDATE_SYSTEM_NOTIFICATION({
+        return this.CREATE_SYSTEM_NOTIFICATION({
           message: "You must add data to the inputs to make changes to an event"
         });
       }
@@ -469,14 +468,10 @@ export default {
           data: {
             _id: this.event._id
           }
-        })
-          .then(() => {
-            this.notifyAssignees();
-          })
-          .catch(() => {
-            this.CREATE_EVENT({ restore: true, ...this.eventRef });
-          });
-        this.closeOverlay("viewEvent");
+        }).catch(() => {
+          this.CREATE_EVENT({ restore: true, ...this.eventRef });
+        });
+        this.deactivateOverlay();
       });
     },
     notifyAssignees() {
