@@ -32,10 +32,10 @@ export default {
   flex: 1;
   padding: 5px;
   border-radius: 50%;
-  background: var(--danger);
+  background: rgba(var(--danger), 1);
 
   &.online {
-    background: var(--success);
+    background: rgba(var(--success), 1);
   }
 }
 </style>

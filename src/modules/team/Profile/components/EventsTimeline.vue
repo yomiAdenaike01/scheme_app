@@ -84,7 +84,7 @@ export default {
     bottom: 0;
     left: 3%;
     width: 6px;
-    background: var(--colour_primary);
+    background: rgba(var(--colour_primary), 1);
   }
 }
 .events_timeline_container {
@@ -103,7 +103,7 @@ export default {
     left: 0;
     border-radius: 50%;
     padding: 20px;
-    border: 4px solid var(--colour_primary);
+    border: 4px solid rgba(var(--colour_primary), 1);
     background: white;
     z-index: 9;
   }

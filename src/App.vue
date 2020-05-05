@@ -117,116 +117,34 @@ export default {
 }
 :root {
   // Primary
-  --color-h-primary: 213;
-  --color-s-primary: 15%;
-  --color-l-primary: 34%;
-
-  // Secondary
-  --color-h-secondary: 145;
-  --color-s-secondary: 59%;
-  --color-l-secondary: 59%;
-
-  // Tertiary
-  --color-h-tertiary: 0;
-  --color-s-tertiary: 100%;
-  --color-l-tertiary: 65%;
-
-  // Grey 1
-  --color-h-gdark: 210;
-  --color-s-gdark: 18%;
-  --color-l-gdark: 83%;
-
-  // Grey 2
-  --color-h-glight: 213;
-  --color-s-glight: 18%;
-  --color-l-glight: 88%;
-
-  --colour_grey: hsl(
-    var(--color-h-gdark),
-    var(--color-s-gdark),
-    var(--color-l-gdark)
-  );
+  --colour_primary: 74, 85, 100;
+  --colour_secondary: 89, 212, 140;
 
   --colour_grey_light: hsl(0, 0%, 98%);
 
-  // Primary colour (blue)
-
-  --colour_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    var(--color-l-primary)
-  );
-
-  --colour_darker_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    56%
-  );
-  --colour_dark_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    40%
-  );
-
-  --colour_lighter_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    55%
-  );
-  --colour_even_lighter_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    80%
-  );
-  // Secondary colour
-
-  --colour_secondary: hsl(
-    var(--color-h-secondary),
-    var(--color-s-secondary),
-    var(--color-l-secondary)
-  );
-  --colour_secondary_lighter: hsl(
-    var(--color-h-secondary),
-    var(--color-h-secondary),
-    75%
-  );
-
-  // tertiary colour (green)
-  --colour_tertiary: hsl(
-    var(--color-h-tertiary),
-    var(--color-s-tertiary),
-    var(--color-l-tertiary)
-  );
-
-  --colour_tertiary_lighter: hsl(
-    var(--color-h-tertiary),
-    var(--color-s-tertiary),
-    87%
-  );
-
   --colour_yellow: hsl(23, 100%, 63%);
 
-  --blue: #0168fa;
-  --indigo: #5b47fb;
-  --purple: #6f42c1;
-  --pink: #f10075;
-  --red: #dc3545;
-  --orange: #fd7e14;
-  --yellow: #ffc107;
-  --green: #10b759;
-  --teal: #00cccc;
-  --cyan: #00b8d4;
-  --white: #fff;
-  --gray: #7987a1;
-  --gray-dark: #3b4863;
-  --primary: #0168fa;
-  --secondary: #7987a1;
-  --success: #10b759;
-  --info: #00b8d4;
-  --warning: #ffc107;
-  --danger: #dc3545;
-  --light: #f4f5f8;
-  --dark: #3b4863;
+  --blue: 1, 104, 250;
+  --indigo: 91, 71, 251;
+  --purple: 111, 66, 193;
+  --pink: 241, 0, 117;
+  --red: 220, 53, 69;
+  --orange: 253, 126, 20;
+  --yellow: 255, 193, 7;
+  --green: 16, 183, 89;
+  --teal: 0, 204, 204;
+  --cyan: 0, 184, 212;
+  --white: 255, 255, 255;
+  --gray: 121, 135, 161;
+  --gray-dark: 59, 72, 99;
+  --primary: 1, 104, 250;
+  --secondary: 59, 72, 99;
+  --success: 16, 183, 89;
+  --info: 0, 184, 212;
+  --warning: 255, 193, 7;
+  --danger: 220, 53, 69;
+  --light: 244, 245, 248;
+  --dark: 59, 72, 99;
 }
 /* width */
 ::-webkit-scrollbar {

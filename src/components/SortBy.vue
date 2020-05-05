@@ -64,7 +64,7 @@ export default {
 .icon_container {
   display: flex;
   align-items: center;
-  background: var(--colour_primary);
+  background: rgba(var(--colour_primary), 1);
   border-radius: 50%;
   color: white;
   font-size: 1.5em;

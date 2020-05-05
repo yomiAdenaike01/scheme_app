@@ -365,7 +365,7 @@ export default {
   justify-content: center;
   border-radius: 5px;
   min-height: fit-content;
-  border-left: 4px solid var(--colour_primary);
+  border-left: 4px solid rgba(var(--colour_primary), 1);
   &.message,
   .icon_container {
     border-left-color: var(--colour_secondary);
@@ -399,7 +399,7 @@ export default {
 .notification .icon_container {
   flex: 0.3;
   font-size: 2.3em;
-  color: var(--colour_primary);
+  color: rgba(var(--colour_primary), 1);
 }
 
 .functions_container {

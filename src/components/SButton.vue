@@ -69,7 +69,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
 
 .button_container {
   font-size: 0.9em;
-  background: var(--colour_primary);
+  background: rgba(var(--colour_primary), 1);
   border-radius: 20px;
   display: flex;
   padding: 2px;
@@ -115,20 +115,20 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     }
   }
   &.button_shadow {
-    box-shadow: -2px 11px 21px var(--colour_even_lighter_primary);
+    box-shadow: -2px 11px 21px rgba(var(--colour_primary), 0.5);
   }
   &.secondary {
-    background: var(--colour_secondary);
+    background: rgba(var(--colour_secondary), 1);
 
     &.button_shadow {
-      box-shadow: -2px 11px 21px var(--colour_secondary_lighter);
+      box-shadow: -2px 11px 21px rgba(var(--colour_secondary), 0.5);
     }
   }
   &.tertiary {
-    background: var(--colour_tertiary);
+    background: rgba(var(--colour_tertiary), 1);
 
     &.button_shadow {
-      box-shadow: -2px 11px 21px var(--colour_tertiary_lighter);
+      box-shadow: -2px 11px 21px rgba(var(--danger), 0.5);
     }
   }
 }

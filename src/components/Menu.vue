@@ -176,7 +176,7 @@ export default {
 
 <style lang="scss" scoped>
 .nav_sidebar {
-  background: var(--colour_primary);
+  background: rgba(var(--colour_primary), 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -208,7 +208,7 @@ export default {
 
   &.router-link-active {
     background: white;
-    color: var(--colour_primary);
+    color: rgba(var(--colour_primary), 1);
   }
   &:hover {
     cursor: pointer;
@@ -279,12 +279,12 @@ export default {
       left: 0;
       right: 0;
       content: "";
-      background: var(--colour_secondary);
+      background: rgba(var(--colour_secondary), 1);
     }
-    background: hsl(var(--color-h-secondary), var(--color-s-secondary), 97%);
+    background: rgba(var(--success), 0.1);
   }
   &:hover {
-    background: hsl(var(--color-h-secondary), var(--color-s-secondary), 97%);
+    background: rgba(var(--colour_secondary), 0.1);
   }
 }
 </style>
