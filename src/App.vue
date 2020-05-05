@@ -191,7 +191,7 @@ Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Jost:400,500,600,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,400,500,600&display=swap");
 /*
 
  Default
@@ -199,7 +199,7 @@ Fonts
 
 */
 * {
-  font-family: "Jost", Arial, Helvetica, sans-serif;
+  font-family: "IBM Plex Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   outline: none;

@@ -91,9 +91,12 @@
       }}</small>
       <small class="grey">{{ selectedTeamMember["email"] }}</small>
       <div class="shortcuts_container">
-        <div class="phone">
-          <i :style="{ backgroundColor: colours[0] }" class="bx bx-phone"></i>
-        </div>
+        <i
+          :style="{ backgroundColor: colours[8] }"
+          class="bx bx-cog"
+          @click="displayOverlay = true"
+        ></i>
+        <i :style="{ backgroundColor: colours[0] }" class="bx bx-phone"></i>
         <div
           class="message"
           @click="
@@ -108,26 +111,34 @@
       </div>
       <hr />
     </div>
+    <!-- Edit user overlay -->
+    <Overlay :display="displayOverlay" @close="displayOverlay = false">
+      <Form :config="updateTeamMemberConfig" @val="updateTeamMember" />
+    </Overlay>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
+
 import Avatar from "@/components/Avatar";
 import OnlineIndicator from "@/components/OnlineIndicator";
 import Menu from "@/components/Menu";
+import Overlay from "@/components/Overlay";
+import Form from "@/components/Form";
+
 export default {
   name: "Team",
   components: {
     Avatar,
     OnlineIndicator,
-    Menu
+    Menu,
+    Overlay,
+    Form
   },
   data() {
     return {
-      overlays: {
-        manageTeam: false
-      },
+      displayOverlay: false,
       searchTeamMemberName: "",
       viewUser: false,
       selectedTab: "contact_information",
@@ -139,7 +150,9 @@ export default {
     ...mapState(["colours", "theme", "userInformation", "clientInformation"]),
     ...mapState(["team"]),
     ...mapGetters(["getFilteredTeam"]),
-
+    updateTeamMemberConfig() {
+      return [];
+    },
     teamMemberInformation() {
       return {
         contact_information: ["email", "name"],
@@ -197,6 +210,8 @@ export default {
     this.setTeamMember();
   },
   methods: {
+    ...mapMutations(["UPDATE_TEAM_MEMBER"]),
+    updateTeamMember() {},
     setTeamMember(teamMember = this.firstTeamMember) {
       this.selectedTeamMember = teamMember;
     }
@@ -363,10 +378,14 @@ p {
     margin: 0 5px;
   }
   i {
+    opacity: 0.9;
+
     border-radius: 50%;
     padding: 10px;
     color: white;
-    background: red;
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 

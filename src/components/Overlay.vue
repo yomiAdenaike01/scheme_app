@@ -92,12 +92,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-y: auto;
   &.light {
     backdrop-filter: saturate(180%) blur(15px);
     background: rgba(0, 0, 0, 0.1);
   }
   &.dark {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.5);
   }
 }
 .overlay {
@@ -106,10 +107,7 @@ export default {
   border-radius: 10px;
   z-index: 11;
   min-width: 40%;
-  max-height: 60%;
   padding: 1%;
-  min-height: 60%;
-  overflow-x: hidden;
 }
 section {
   max-height: fit-content;
