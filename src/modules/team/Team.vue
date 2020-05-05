@@ -83,7 +83,10 @@
     <div class="user_sidebar">
       <Avatar :name="selectedTeamMember.name" :size="80" />
       <h3>{{ selectedTeamMember["name"] }}</h3>
-      <h5 class="grey">{{ selectedTeamMember["user_group"]["label"] }}</h5>
+      <small class="grey">{{
+        selectedTeamMember["user_group"]["label"]
+      }}</small>
+      <small class="grey">{{ selectedTeamMember["email"] }}</small>
       <div class="shortcuts_container">
         <div class="phone">
           <i :style="{ backgroundColor: colours[0] }" class="bx bx-phone"></i>
@@ -101,15 +104,6 @@
         </div>
       </div>
       <hr />
-      <div class="options_cotainer">
-        <div class="title_container grey">
-          <i class="bx bx-settings"></i>
-          <h4>Options</h4>
-        </div>
-        <i class="bx bx-trash"></i>
-        <p>Delete account</p>
-        <p></p>
-      </div>
     </div>
   </div>
 </template>
@@ -331,6 +325,9 @@ p {
   h3 {
     margin: 0;
   }
+  h3 {
+    margin-top: 10px;
+  }
   &:first-child {
     margin: 10px 0 50px 0;
   }
@@ -350,6 +347,11 @@ p {
     color: white;
     background: red;
   }
+}
+
+.title_container {
+  display: flex;
+  align-items: center;
 }
 /*
 
