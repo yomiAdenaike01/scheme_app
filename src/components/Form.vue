@@ -288,6 +288,8 @@ export default {
 }
 .button_container {
   display: flex;
+  flex: 1;
+  border-top: $border;
   justify-content: space-between;
   margin-top: 20px;
 }

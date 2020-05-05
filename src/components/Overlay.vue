@@ -1,5 +1,5 @@
 <template>
-  <ZoomCenterTransition>
+  <SlideYDownTransition>
     <div
       v-if="display"
       :class="[
@@ -23,17 +23,17 @@
         </footer>
       </div>
     </div>
-  </ZoomCenterTransition>
+  </SlideYDownTransition>
 </template>
 
 <script>
-import { ZoomCenterTransition } from "vue2-transitions";
+import { SlideYDownTransition } from "vue2-transitions";
 import vClickOutside from "v-click-outside";
 
 export default {
   name: "Overlay",
   components: {
-    ZoomCenterTransition
+    SlideYDownTransition
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -104,10 +104,10 @@ export default {
 .overlay {
   background: white;
   position: relative;
-  border-radius: 10px;
+  border-radius: 5px;
   z-index: 11;
   min-width: 40%;
-  padding: 1%;
+  padding-top: 1%;
 }
 section {
   max-height: fit-content;
@@ -123,7 +123,6 @@ header {
   position: absolute;
   top: 0px;
   right: 0px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 1.5em;
