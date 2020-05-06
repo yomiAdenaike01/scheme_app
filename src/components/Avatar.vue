@@ -86,7 +86,10 @@ export default {
       const initialBackgroundAndFontStyle = {
         backgroundColor: this.background,
         color: "white",
-        padding: "25px"
+        padding: "25px",
+        font: `${Math.floor(this.size / 2.5)}px/${
+          this.size
+        }px IBM Plex Sans, sans-serif`
       };
       const backgroundAndFontStyle = this.isImage
         ? imgBackgroundAndFontStyle

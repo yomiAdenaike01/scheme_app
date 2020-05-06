@@ -28,11 +28,6 @@ export default {
         return _id;
       });
   },
-  getFilteredTeam: ({ team }, getters, { userInformation }) => {
-    return team.filter(({ _id }) => {
-      return _id != userInformation._id;
-    });
-  },
 
   getValidEventTypes({ clientInformation, userInformation }, { getIsAdmin }) {
     let hasValues = Vue.prototype.hasEntries(clientInformation);
@@ -65,16 +60,6 @@ export default {
       }
     }
     return arr;
-  },
-
-  getDropdownTeamMembers({ team }) {
-    team = [...team];
-    return team.map(({ name, _id }) => {
-      return {
-        label: name,
-        value: _id
-      };
-    });
   },
 
   getGroupName: ({ clientInformation }) => (groupType, id) => {

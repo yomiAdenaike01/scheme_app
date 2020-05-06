@@ -128,7 +128,7 @@ export default {
       if (this.getIsAdmin) {
         allowedRoutes.push(
           {
-            name: "user",
+            name: "team",
             icon: "bx bx-group"
           },
           {

@@ -230,6 +230,14 @@ html,
   width: 100%;
   height: 100%;
 }
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  padding: 0;
+}
 .no_content {
   display: flex;
   flex: 1;
@@ -244,8 +252,8 @@ html,
   color: #999;
 }
 
-.capitalise {
-  text-transform: capitalize;
+.bold {
+  font-weight: bold;
 }
 
 .capitalize {
@@ -373,9 +381,7 @@ textarea {
 .el-input__inner {
   border-color: rgb(200, 200, 200) !important;
 }
-.el-form--label-top {
-  padding: 0 !important;
-}
+
 /*
 
  Notifications

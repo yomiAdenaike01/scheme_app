@@ -125,7 +125,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     }
   }
   &.tertiary {
-    background: rgba(var(--colour_tertiary), 1);
+    background: rgba(var(--danger), 1);
 
     &.button_shadow {
       box-shadow: -2px 11px 21px rgba(var(--danger), 0.5);

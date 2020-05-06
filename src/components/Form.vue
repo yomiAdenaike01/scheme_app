@@ -3,6 +3,7 @@
     <slot name="header"></slot>
     <el-form
       ref="form"
+      class="form"
       :inline="inline"
       :disabled="disableForm"
       :rules="form.validate"
@@ -21,6 +22,15 @@
             : input.placeholder
         "
       >
+        <span
+          v-if="
+            Object.values(headings).length > 0 &&
+              headings.hasOwnProperty(input.model)
+          "
+          slot="label"
+          class="form_item_heading"
+          v-html="headings[input.model]"
+        ></span>
         <component
           :is="
             input['component-type'] == 'text' ||
@@ -54,7 +64,7 @@
               ? 'date'
               : input['input-type'] == 'date-time-range'
               ? 'datetimerange'
-              : input.hasOwnProperty('textarea')
+              : input['input-type'] == 'textarea'
               ? 'textarea'
               : input['input-type'] == 'date-time'
               ? 'datetime'
@@ -91,14 +101,13 @@
       </el-form-item>
 
       <slot name="footer"></slot>
-
-      <!-- Submit button -->
-      <div v-if="!disable" class="button_container">
-        <s-button :shadow="true" :icon="submitButton.icon" @click="submitForm">
-          {{ submitButton.text }}</s-button
-        >
-      </div>
     </el-form>
+    <!-- Submit button -->
+    <div v-if="!disable" class="button_container">
+      <s-button :icon="submitButton.icon" @click="submitForm">
+        {{ submitButton.text }}</s-button
+      >
+    </div>
   </div>
 </template>
 
@@ -124,6 +133,12 @@ export default {
     disable: {
       type: Boolean,
       default: false
+    },
+    headings: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     },
     submitButton: {
       type: Object,
@@ -286,12 +301,25 @@ export default {
     max-width: 70%;
   }
 }
+.form {
+  padding: 20px;
+}
 .button_container {
   display: flex;
   flex: 1;
-  border-top: $border;
   justify-content: space-between;
   margin-top: 20px;
+  position: relative;
+  padding: 20px;
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgb(240, 240, 240);
+    height: 1px;
+  }
 }
 .button_text {
   text-transform: capitalize;
@@ -302,5 +330,10 @@ export default {
   display: block;
   margin: 0;
   padding: 0;
+}
+.form_item_heading {
+  p {
+    margin: 0;
+  }
 }
 </style>

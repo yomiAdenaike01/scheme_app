@@ -1,5 +1,5 @@
 <template>
-  <div class="information_display_container">
+  <div class="text_display_container">
     <!-- Title display -->
     <div
       v-if="mode == 'title' || mode == 'both'"
@@ -22,11 +22,11 @@
       />
 
       <div
-        :class="{ txt_center: displayCenter.text }"
+        :class="[displayText.contentClass, { txt_center: displayCenter.text }]"
         class="heading_text_content"
         v-html="displayText.content"
       ></div>
-      <div v-if="$slots.body" class="slot_body_container">
+      <div v-if="$slots.body">
         <slot name="body"></slot>
       </div>
     </div>
@@ -85,6 +85,7 @@ export default {
   }
   .heading {
     font-weight: 500;
+    margin-bottom: 5px;
   }
   .slot_container {
     &.center_icon {
@@ -115,10 +116,6 @@ export default {
 }
 .heading_text_content {
   font-size: 0.9em;
-}
-.slot_body_container {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
+  max-width: 600px;
 }
 </style>

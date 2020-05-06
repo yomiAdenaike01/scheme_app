@@ -48,8 +48,8 @@ const routes = [
     ]
   },
   {
-    path: "/main",
-    name: "main",
+    path: "/common",
+    name: "common",
     component: Common,
 
     children: [
@@ -63,8 +63,8 @@ const routes = [
       },
 
       {
-        path: "user",
-        name: "user",
+        path: "team",
+        name: "team",
         component: Team,
         meta: {
           authRequired: true

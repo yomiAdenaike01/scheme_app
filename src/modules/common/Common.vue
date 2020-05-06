@@ -7,7 +7,6 @@
     <NprogressContainer />
     <CommonBar />
 
-    <ProfileOverlay v-if="overlayIndex.profile.view" />
     <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
 
     <div class="notification_container">
@@ -59,7 +58,6 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import { SlideXLeftTransition, SlideXRightTransition } from "vue2-transitions";
 
-import ProfileOverlay from "./../team/Profile/ProfileOverlay";
 import ViewEventOverlay from "./../events/components/ViewEventOverlay";
 
 import CommonBar from "./components/CommonBar";
@@ -73,7 +71,6 @@ export default {
     NprogressContainer,
     SlideXLeftTransition,
     SlideXRightTransition,
-    ProfileOverlay,
     ViewEventOverlay,
 
     CommonBar,
@@ -180,10 +177,10 @@ export default {
       "CREATE_GLOBAL_INTERVAL",
       "DELETE_GLOBAL_INTERVAL",
       "UPDATE_API_NOTIFICATIONS",
-      "UPDATE_TEAM",
       "UPDATE_USER"
     ]),
     ...mapMutations("Tasks", ["UPDATE_BOARDS"]),
+    ...mapMutations("Team", ["UPDATE_TEAM"]),
     ...mapMutations("Events", ["UPDATE_EVENT_TEMPLATES", "UPDATE_EVENTS"]),
     ...mapMutations("Requests", ["UPDATE_REQUESTS"]),
     excecuteNotification(method, notificationIndex) {

@@ -183,9 +183,11 @@ export default {
   },
 
   computed: {
-    ...mapState(["team", "userInformation", "overlayIndex"]),
+    ...mapState(["userInformation", "overlayIndex"]),
     ...mapState("Events", ["events", "eventRef"]),
-    ...mapGetters(["getFilteredTeam", "getValidEventTypes", "getIsAdmin"]),
+    ...mapState("Team", ["team"]),
+    ...mapGetters(["getValidEventTypes", "getIsAdmin"]),
+    ...mapGetters("Team", ["getFilteredTeam"]),
 
     assignedTo() {
       return this.event?.assigned_to ?? [];

@@ -65,8 +65,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(["team"]),
-    ...mapGetters(["getIsAdmin", "getFilteredTeam"]),
+    ...mapState("Team", ["team"]),
+    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters("Team", ["getFilteredTeam"]),
     items() {
       return [
         {
@@ -100,10 +101,9 @@ export default {
           break;
         }
         case "view_team_member": {
-          this.UPDATE_OVERLAY_INDEX({
-            overlay: "profile",
-            view: true,
-            data: this.selectedTeamMember
+          this.$router.push({
+            name: "team",
+            params: { user: this.selectedTeamMember?.name }
           });
           break;
         }

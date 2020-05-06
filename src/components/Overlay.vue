@@ -15,7 +15,7 @@
           <p class="overlay_header_title">{{ title }}</p>
           <slot name="header" />
         </header>
-        <section>
+        <section class="slot_wrapper">
           <slot />
         </section>
         <footer v-if="$slots.footer">

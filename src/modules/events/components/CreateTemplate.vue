@@ -46,7 +46,6 @@ export default {
     ...mapState(["clientInformation", "daysOfWeek"]),
     ...mapGetters([
       "getIsAdmin",
-      "getTeamMember",
       "getUserGroups",
       "getDropdownTeamMembers",
       "getUsersInGroup"
