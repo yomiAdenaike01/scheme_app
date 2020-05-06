@@ -113,17 +113,22 @@
           "
         ></i>
         <i :style="{ backgroundColor: colours[0] }" class="bx bx-phone"></i>
-        <div
-          class="message"
+
+        <i
+          :style="{ backgroundColor: colours[1] }"
+          class="bx bxl-discourse"
           @click="
             $router.push({ name: 'comms', params: { toMessage: member } })
           "
-        >
-          <i
-            :style="{ backgroundColor: colours[1] }"
-            class="bx bxl-discourse"
-          ></i>
-        </div>
+        ></i>
+        <i
+          :style="{ backgroundColor: colours[4] }"
+          class="bx bx-trash"
+          @click="
+            mode = 'delete';
+            handleTeamMember();
+          "
+        ></i>
       </div>
       <hr />
     </div>
@@ -138,7 +143,7 @@
           :submit-button="{
             text: mode == 'update' ? 'Update team member' : 'Create team member'
           }"
-          @val="handleTeamMemberData"
+          @val="handleTeamMember"
           @change="updateTeamMemberObject"
         >
           <TextDisplay
@@ -450,7 +455,7 @@ export default {
     updateTeamMemberObject(e) {
       this.inputtedTeamMemberData = e;
     },
-    handleTeamMemberData() {
+    handleTeamMember() {
       // Update team member from form
       let methodXref = this.handleTeamMemberXref.methods[this.mode];
       let requestXref = this.handleTeamMemberXref.requestPayloads[this.mode];
@@ -626,7 +631,7 @@ p {
   align-items: center;
   padding: 20px 0;
   border-bottom: $border;
-  > * {
+  * {
     cursor: pointer;
     margin: 0 5px;
   }
