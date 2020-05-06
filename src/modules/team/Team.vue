@@ -13,7 +13,7 @@
           <i
             v-if="searchTeamMemberName.length > 0"
             class="bx bx-x trigger"
-            @click="searchTeamMemberName = ''"
+            @click="clearSearch"
           ></i>
 
           <i
@@ -133,112 +133,24 @@
       <hr />
     </div>
     <!-- Edit user overlay -->
-    <Overlay :display="displayOverlay" @close="closeOverlay">
-      <div class="team_overlay">
-        <Form
-          :headings="headings"
-          all-optional
-          :config="teamMemberFormConfig"
-          emit-on-change
-          :submit-button="{
-            text: mode == 'update' ? 'Update team member' : 'Create team member'
-          }"
-          @val="handleTeamMember"
-          @change="updateTeamMemberObject"
-        >
-          <TextDisplay
-            slot="header"
-            :display-text="{
-              heading:
-                mode == 'update' ? 'Edit team member' : 'Create team member',
-              headingAlign: false,
-              textAlign: false,
-              contentClass: 'grey',
-              content:
-                'The changes that are made in this form will be reflected in the instance below. Once submitted these changes will be made live.'
-            }"
-          >
-            <div slot="body" class="text_display_header">
-              <SlideYUpTransition>
-                <div v-if="mode == 'update'">
-                  <Avatar
-                    :size="100"
-                    :name="
-                      inputtedTeamMemberData.name
-                        ? inputtedTeamMemberData.name
-                        : selectedTeamMember.name
-                    "
-                  />
-                  <div v-if="Object.values(selectedTeamMember).length > 0">
-                    <p
-                      v-for="(item, index) in teamMemberFormConfig"
-                      :key="`${item.model}${index}`"
-                      :class="[
-                        `${item.model}_item`,
-                        {
-                          grey: item.model != 'name',
-                          'bold capitalize': item.model == 'name'
-                        }
-                      ]"
-                    >
-                      {{
-                        item.model == "user_group"
-                          ? userGroupXref
-                          : !inputtedTeamMemberData[item.model]
-                          ? selectedTeamMember[item.model]
-                          : inputtedTeamMemberData[item.model]
-                      }}
-                    </p>
-                  </div>
-                </div>
-                <div v-else>
-                  <SlideYUpTransition>
-                    <Avatar
-                      v-if="inputtedTeamMemberData.name"
-                      :size="100"
-                      :name="inputtedTeamMemberData.name"
-                    />
-                  </SlideYUpTransition>
-                  <div v-if="Object.values(inputtedTeamMemberData).length > 0">
-                    <p
-                      v-for="(item, index) in teamMemberFormConfig"
-                      :key="`${item.model}${index}`"
-                      :class="[
-                        `${item.model}_item`,
-                        {
-                          grey: item.model != 'name',
-                          'bold capitalize': item.model == 'name'
-                        }
-                      ]"
-                    >
-                      {{
-                        item.model == "user_group"
-                          ? userGroupXref
-                          : inputtedTeamMemberData[item.model]
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </SlideYUpTransition>
-            </div>
-          </TextDisplay>
-        </Form>
-      </div>
-    </Overlay>
+    <TeamOverlay
+      :mode="mode"
+      :display-overlay="displayOverlay"
+      :selected-team-member="selectedTeamMember"
+      :selected-team-member-index="selectedTeamMemberIndex"
+      @close="displayOverlay = false"
+      @clearSearch="clearSearch"
+    />
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 import Avatar from "@/components/Avatar";
 import OnlineIndicator from "@/components/OnlineIndicator";
 import Menu from "@/components/Menu";
-import Overlay from "@/components/Overlay";
-import Form from "@/components/Form";
-import TextDisplay from "@/components/TextDisplay";
-
-import { SlideYUpTransition } from "vue2-transitions";
+import TeamOverlay from "./components/TeamOverlay";
 
 export default {
   name: "Team",
@@ -246,10 +158,7 @@ export default {
     Avatar,
     OnlineIndicator,
     Menu,
-    Overlay,
-    Form,
-    TextDisplay,
-    SlideYUpTransition
+    TeamOverlay
   },
   data() {
     return {
@@ -259,8 +168,7 @@ export default {
       viewUser: false,
       selectedTab: "contact_information",
       selectedTeamMember: {},
-      selectedTeamMemberIndex: 0,
-      inputtedTeamMemberData: {}
+      selectedTeamMemberIndex: 0
     };
   },
 
@@ -369,56 +277,6 @@ export default {
         userGroupArr.push(userGroup);
       }
       return userGroupArr;
-    },
-    handleTeamMemberXref() {
-      return {
-        requestPayloads: {
-          create: {
-            method: "POST",
-            url: "users/register",
-            data: {
-              client_id: this.clientInformation._id,
-              admin_gen: true,
-              ...this.inputtedTeamMemberData
-            }
-          },
-          update: {
-            method: "PUT",
-            url: "users/update",
-            data: {
-              _id: this.selectedTeamMember._id,
-              update: this.inputtedTeamMemberData
-            }
-          },
-          delete: {
-            method: "DELETE",
-            url: "users/delete",
-            data: { _id: this.selectedTeamMember._id }
-          }
-        },
-        methods: {
-          create: {
-            mutation: "CREATE_TEAM_MEMBER",
-            data: {
-              _id: Math.random()
-                .toString(16)
-                .slice(2),
-              ...this.inputtedTeamMemberData
-            }
-          },
-          update: {
-            mutation: "UPDATE_ONE_TEAM_MEMBER",
-            data: {
-              index: this.selectedTeamMemberIndex,
-              payload: this.inputtedTeamMemberData
-            }
-          },
-          delete: {
-            mutation: "DELETE_TEAM_MEMBER",
-            data: { index: this.selectedTeamMemberIndex }
-          }
-        }
-      };
     }
   },
   watch: {
@@ -439,31 +297,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request"]),
-    ...mapMutations("Team", [
-      "UPDATE_ONE_TEAM_MEMBER",
-      "DELETE_TEAM_MEMBER",
-      "CREATE_TEAM_MEMBER"
-    ]),
-    closeOverlay(clearSearch) {
-      this.displayOverlay = false;
-      this.inputtedTeamMemberData = {};
-      if (clearSearch) {
-        this.searchTeamMemberName = "";
-      }
-    },
-    updateTeamMemberObject(e) {
-      this.inputtedTeamMemberData = e;
-    },
-    handleTeamMember() {
-      // Update team member from form
-      let methodXref = this.handleTeamMemberXref.methods[this.mode];
-      let requestXref = this.handleTeamMemberXref.requestPayloads[this.mode];
-      this[methodXref.mutation](methodXref.data);
-      this.request(requestXref).catch(() => {
-        this.displayOverlay = true;
-      });
-      this.closeOverlay();
+    clearSearch() {
+      this.searchTeamMemberName = "";
     },
     setTeamMember(teamMember = this.firstTeamMember, index = 0) {
       if (teamMember) {
@@ -651,45 +486,7 @@ p {
   display: flex;
   align-items: center;
 }
-.team_overlay {
-  display: flex;
-  flex-direction: column;
-  &/deep/ .text_display_container .headings_wrapper {
-    padding-bottom: 0;
-  }
-}
-.text_display_header {
-  margin-top: 30px;
-}
-.user_info_item {
-  margin: 0;
-  &:first-of-type {
-    margin-top: 10px;
-  }
-}
-.user_info_item.firstname {
-  font-weight: bold;
-  text-transform: capitalize;
-  margin-bottom: 5px;
-}
-.selected_user_avatar {
-  margin: 0 40px;
-}
-.edit_user_wrapper {
-  display: flex;
-  padding: 10px;
-  > * {
-    flex: 1;
-  }
-}
-.name_item,
-.notes_item {
-  margin-top: 10px;
-}
-.name_item {
-  font-size: 1.3em;
-  margin-bottom: 5px;
-}
+
 /*
 
    __  __       _     _ _

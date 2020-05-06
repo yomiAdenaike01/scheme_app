@@ -262,7 +262,11 @@ export default {
       });
     },
     completeForm() {
-      this.$emit("val", this.formContent);
+      if (this.emitOnChange) {
+        this.$emit("val");
+      } else {
+        this.$emit("val", this.formContent);
+      }
       this.formContent = {};
       if (this.customMethod) {
         this.customMethod();
