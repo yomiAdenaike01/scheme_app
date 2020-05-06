@@ -187,11 +187,13 @@
                   </div>
                 </div>
                 <div v-else>
-                  <Avatar
-                    v-if="inputtedTeamMemberData.name"
-                    :size="100"
-                    :name="inputtedTeamMemberData.name"
-                  />
+                  <SlideYUpTransition>
+                    <Avatar
+                      v-if="inputtedTeamMemberData.name"
+                      :size="100"
+                      :name="inputtedTeamMemberData.name"
+                    />
+                  </SlideYUpTransition>
                   <div v-if="Object.values(inputtedTeamMemberData).length > 0">
                     <p
                       v-for="(item, index) in teamMemberFormConfig"
@@ -308,7 +310,7 @@ export default {
           "component-type": "select",
           options: this.getUserGroups,
           noLabel: true,
-          placeholder: "Reassign to user group"
+          placeholder: "Assign to user group"
         },
         {
           "component-type": "text",
