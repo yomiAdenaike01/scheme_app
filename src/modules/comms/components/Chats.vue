@@ -65,7 +65,7 @@ export default {
   computed: {
     ...mapState("Comms", ["chats"]),
     ...mapState(["userInformation"]),
-    ...mapGetters(["getUserInformation"]),
+    ...mapGetters(["getTeamMember"]),
     hasChats() {
       return this.chats.length > 0;
     }

@@ -78,22 +78,7 @@ export default {
     }
     return res;
   },
-  getUserInformation: ({ team, userInformation }) => (
-    match,
-    params = "_id"
-  ) => {
-    let userInfo = null;
-    if (match == userInformation[params]) {
-      userInfo = userInformation;
-    } else {
-      if (Vue.prototype.hasEntries(team)) {
-        userInfo = team.find(member => {
-          return member[params] == match;
-        });
-      }
-    }
-    return userInfo;
-  },
+
   getUA() {
     return new UAParser();
   },

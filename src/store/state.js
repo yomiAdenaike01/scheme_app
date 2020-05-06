@@ -11,7 +11,7 @@ export default {
   groupRef: {},
   teamRef: {},
 
-  requestIntervals: {
+  globalIntervals: {
     admin: 60000,
     client: 20000,
     chatMessages: 3000,

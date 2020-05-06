@@ -68,14 +68,14 @@ export default {
   computed: {
     ...mapState(["clientInformation", "daysOfWeek", "userInformation"]),
     ...mapGetters([
-      "getDropdownTeamMembers",
       "getValidEventTypes",
       "getUserGroups",
-      "getUserInformation",
+      "getTeamMember",
       "getUsersInGroup",
       "getIsAdmin",
       "getCurrentTabXref"
     ]),
+    ...mapGetters("Team", ["getDropdownTeamMembers"]),
     eventContent() {
       // this.loading = true;
       let events = { ...this.events };
@@ -97,8 +97,8 @@ export default {
         this.userInformation._id,
         ...events.assigned_to.filter(assignee => {
           return (
-            this.getUserInformation(assignee)?.user_group
-              ?.enable_event_rejection == true
+            this.getTeamMember(assignee)?.user_group?.enable_event_rejection ==
+            true
           );
         })
       ];

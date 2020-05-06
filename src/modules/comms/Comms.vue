@@ -32,8 +32,8 @@ export default {
     TextDisplay: () => import("@/components/TextDisplay")
   },
   computed: {
-    ...mapState(["requestIntervals"]),
-    ...mapState(["team"]),
+    ...mapState(["globalIntervals"]),
+    ...mapState("Team", ["team"]),
     ...mapState("Comms", ["activeChat"]),
     userToMessage() {
       return this.$route.params?.userToMessage;
@@ -54,7 +54,7 @@ export default {
             });
         });
       },
-      duration: this.requestIntervals.chat
+      duration: this.globalIntervals.chat
     });
   },
   activated() {

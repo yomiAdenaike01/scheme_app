@@ -88,7 +88,7 @@ export default {
       "userInformation",
       "apiNotifications",
       "systemNotifications",
-      "requestIntervals",
+      "globalIntervals",
       "overlayIndex"
     ]),
     ...mapState(["team"]),
@@ -108,7 +108,7 @@ export default {
       immediateCallback: () => {
         this.loading = false;
       },
-      duration: this.requestIntervals.admin,
+      duration: this.globalIntervals.admin,
       id: "adminIntervals",
       method: () => {
         return new Promise((resolve, reject) => {

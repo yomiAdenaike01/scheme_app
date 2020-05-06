@@ -59,8 +59,8 @@ export default {
   computed: {
     displayCenter() {
       return {
-        heading: this.displayText?.headingAlign ?? true,
-        text: this.displayText?.textAlign ?? true
+        heading: this.displayText?.headingAlign ?? false,
+        text: this.displayText?.textAlign ?? false
       };
     }
   }

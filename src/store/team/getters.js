@@ -8,15 +8,20 @@ export default {
       };
     });
   },
-  getTeamMemberInformation: ({ team }) => findBy => {
-    if (Number.isInteger(findBy)) {
-      return team[findBy];
+  getTeamMember: ({ team, userInformation }) => (match, params = "_id") => {
+    let userInfo = null;
+    if (match == userInformation[params]) {
+      userInfo = userInformation;
     } else {
-      return team.find(member => {
-        return member._id == findBy;
-      });
+      if (team.length > 0) {
+        userInfo = team.find(member => {
+          return member[params] == match;
+        });
+      }
     }
+    return userInfo;
   },
+
   getFilteredTeam: ({ team }, getters, { userInformation }) => {
     return team.filter(({ _id }) => {
       return _id != userInformation._id;

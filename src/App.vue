@@ -30,7 +30,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["requestIntervals", "clientInformation"]),
+    ...mapState(["globalIntervals", "clientInformation"]),
     ...mapState(["team", "overlayIndex"]),
     ...mapGetters(["getIsIE"]),
 
@@ -84,7 +84,7 @@ export default {
             });
         });
       },
-      duration: this.requestIntervals.client
+      duration: this.globalIntervals.client
     });
   },
 

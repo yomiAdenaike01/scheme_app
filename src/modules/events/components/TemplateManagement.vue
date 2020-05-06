@@ -86,7 +86,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["userInformation", "requestIntervals"]),
+    ...mapState(["userInformation", "globalIntervals"]),
     ...mapState("Events", ["eventTemplates"]),
     ...mapGetters(["getIsAdmin"]),
 
