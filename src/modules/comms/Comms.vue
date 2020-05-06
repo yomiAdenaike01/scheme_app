@@ -1,10 +1,7 @@
 <template>
   <div v-if="team.length > 0" class="comms_container">
     <Chats />
-    <ActiveChat
-      v-if="Object.values(activeChat).length > 0"
-      :user-to-message="userToMessage"
-    />
+    <ActiveChat v-if="activeChat" :user-to-message="userToMessage" />
   </div>
   <div v-else class="no_content center">
     <TextDisplay
@@ -15,7 +12,7 @@
       }"
     >
       <i slot="header" class="bx bx-user"></i>
-      <el-button slot="body" type="text" @click="$router.push({ name: 'user' })"
+      <el-button slot="body" type="text" @click="$router.push({ name: 'team' })"
         >Go to user management</el-button
       >
     </TextDisplay>
@@ -24,12 +21,15 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
+import Chats from "./components/Chats";
+import ActiveChat from "./components/ActiveChat";
+import TextDisplay from "@/components/TextDisplay";
 export default {
   name: "CommsModule",
   components: {
-    Chats: () => import("./components/Chats"),
-    ActiveChat: () => import("./components/ActiveChat"),
-    TextDisplay: () => import("@/components/TextDisplay")
+    Chats,
+    ActiveChat,
+    TextDisplay
   },
   computed: {
     ...mapState(["globalIntervals"]),

@@ -112,10 +112,11 @@
 </template>
 
 <script>
+import SButton from "@/components/SButton";
 export default {
   name: "Form",
   components: {
-    SButton: () => import("@/components/SButton")
+    SButton
   },
   props: {
     displayReset: {

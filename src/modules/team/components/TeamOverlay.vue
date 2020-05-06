@@ -9,7 +9,7 @@
         :submit-button="{
           text: mode == 'update' ? 'Update team member' : 'Create team member'
         }"
-        @val="handleTeamMember"
+        @val="$emit('handleTeamMember', inputtedTeamMemberData)"
         @change="updateTeamMemberObject"
       >
         <TextDisplay
@@ -94,7 +94,8 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapGetters } from "vuex";
+import Avatar from "@/components/Avatar";
 import Overlay from "@/components/Overlay";
 import Form from "@/components/Form";
 import TextDisplay from "@/components/TextDisplay";
@@ -106,17 +107,15 @@ export default {
     Overlay,
     Form,
     TextDisplay,
-    SlideYUpTransition
+    SlideYUpTransition,
+    Avatar
   },
   props: {
     mode: {
       type: String,
       default: "create"
     },
-    selectedTeamMemberIndex: {
-      type: Number,
-      default: 0
-    },
+
     selectedTeamMember: {
       type: Object,
       default: () => {
@@ -134,6 +133,18 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["getUserGroups"]),
+
+    userGroupXref() {
+      let group = this.getUserGroups.find(group => {
+        return group.value == this.inputtedTeamMemberData.user_group;
+      })?.label;
+      if (this.mode == "create") {
+        return group;
+      } else {
+        return this.selectedTeamMember.user_group.label;
+      }
+    },
     headings() {
       return {
         name: `
@@ -182,80 +193,15 @@ export default {
           noLabel: true
         }
       ];
-    },
-    handleTeamMemberXref() {
-      return {
-        requestPayloads: {
-          create: {
-            method: "POST",
-            url: "users/register",
-            data: {
-              client_id: this.clientInformation._id,
-              admin_gen: true,
-              ...this.inputtedTeamMemberData
-            }
-          },
-          update: {
-            method: "PUT",
-            url: "users/update",
-            data: {
-              _id: this.selectedTeamMember._id,
-              update: this.inputtedTeamMemberData
-            }
-          },
-          delete: {
-            method: "DELETE",
-            url: "users/delete",
-            data: { _id: this.selectedTeamMember._id }
-          }
-        },
-        methods: {
-          create: {
-            mutation: "CREATE_TEAM_MEMBER",
-            data: {
-              _id: Math.random()
-                .toString(16)
-                .slice(2),
-              ...this.inputtedTeamMemberData
-            }
-          },
-          update: {
-            mutation: "UPDATE_ONE_TEAM_MEMBER",
-            data: {
-              index: this.selectedTeamMemberIndex,
-              payload: this.inputtedTeamMemberData
-            }
-          },
-          delete: {
-            mutation: "DELETE_TEAM_MEMBER",
-            data: { index: this.selectedTeamMemberIndex }
-          }
-        }
-      };
     }
   },
   methods: {
-    ...mapActions(["request"]),
-    ...mapMutations("Team", [
-      "UPDATE_ONE_TEAM_MEMBER",
-      "DELETE_TEAM_MEMBER",
-      "CREATE_TEAM_MEMBER"
-    ]),
     updateTeamMemberObject(e) {
       this.inputtedTeamMemberData = e;
     },
-    handleTeamMember() {
-      // Update team member from form
-      let methodXref = this.handleTeamMemberXref.methods[this.mode];
-      let requestXref = this.handleTeamMemberXref.requestPayloads[this.mode];
-      this[methodXref.mutation](methodXref.data);
-      this.request(requestXref).catch(() => {
-        this.displayOverlay = true;
-      });
-      this.closeOverlay();
-    },
+
     closeOverlay(clearSearch) {
-      this.displayOverlay = false;
+      this.$emit("close");
       this.inputtedTeamMemberData = {};
       if (clearSearch) {
         this.$emit("clearSearch");
@@ -272,6 +218,9 @@ export default {
   &/deep/ .text_display_container .headings_wrapper {
     padding-bottom: 0;
   }
+}
+p {
+  margin: 0;
 }
 .text_display_header {
   margin-top: 30px;

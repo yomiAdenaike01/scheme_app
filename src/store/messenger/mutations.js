@@ -72,8 +72,11 @@ export default {
     if (index > 0) {
       setActiveChat(state, { index: index - 1, ...state.chats[index - 1] });
     } else {
-      state.activeChat = {};
+      state.activeChat = null;
     }
     Vue.delete(state.chats, index);
+  },
+  CLEAR_ACTIVE_CHAT(state) {
+    state.activeChat = null;
   }
 };

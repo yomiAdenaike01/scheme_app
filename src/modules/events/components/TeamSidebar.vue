@@ -48,13 +48,14 @@ import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import TextDisplay from "@/components/TextDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
+import OnlineIndicator from "@/components/OnlineIndicator";
 export default {
   name: "TeamSidebar",
   components: {
     Dropdown,
     Avatar,
     TextDisplay,
-    OnlineIndicator: () => import("@/components/OnlineIndicator")
+    OnlineIndicator
   },
 
   data() {
@@ -71,11 +72,11 @@ export default {
     items() {
       return [
         {
-          name: "Message",
+          name: "<i class='bx bxl-discourse'></i> Message",
           command: "message"
         },
         {
-          name: "View",
+          name: "<i class='bx bx-user'></i> View",
           command: "view_team_member"
         }
       ];

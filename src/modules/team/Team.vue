@@ -17,6 +17,7 @@
           ></i>
 
           <i
+            v-if="hasPermission"
             class="bx bx-plus"
             @click="
               displayOverlay = true;
@@ -53,7 +54,9 @@
                   <div
                     v-for="(member, index) in group.teamMembers"
                     :key="member._id"
-                    :class="{ active: selectedTeamMember._id == member._id }"
+                    :class="{
+                      active: selectedTeamMember._id == member._id
+                    }"
                     class="team_member_container"
                     @click="setTeamMember(member, index)"
                   >
@@ -64,6 +67,10 @@
                       <p class="member_name">{{ member.name }}</p>
                       <small class="grey">{{ member.email }}</small>
                     </div>
+                    <i
+                      v-if="member._id == userInformation._id"
+                      class="is_user_badge bx bxs-badge-check"
+                    ></i>
                   </div>
                 </div>
               </div>
@@ -103,8 +110,13 @@
       <h3>{{ selectedTeamMember.name }}</h3>
       <small class="grey">{{ selectedTeamMember.user_group.label }}</small>
       <small class="grey">{{ selectedTeamMember.email }}</small>
+      <i
+        v-if="selectedTeamMember._id == userInformation._id"
+        class="is_user_badge bx bxs-badge-check"
+      ></i>
       <div class="shortcuts_container">
         <i
+          v-if="hasPermission"
           :style="{ backgroundColor: colours[8] }"
           class="bx bx-cog"
           @click="
@@ -122,6 +134,7 @@
           "
         ></i>
         <i
+          v-if="hasPermission"
           :style="{ backgroundColor: colours[4] }"
           class="bx bx-trash"
           @click="
@@ -132,20 +145,19 @@
       </div>
       <hr />
     </div>
-    <!-- Edit user overlay -->
     <TeamOverlay
       :mode="mode"
       :display-overlay="displayOverlay"
       :selected-team-member="selectedTeamMember"
-      :selected-team-member-index="selectedTeamMemberIndex"
       @close="displayOverlay = false"
       @clearSearch="clearSearch"
+      @handleTeamMember="handleTeamMember"
     />
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 
 import Avatar from "@/components/Avatar";
 import OnlineIndicator from "@/components/OnlineIndicator";
@@ -168,6 +180,7 @@ export default {
       viewUser: false,
       selectedTab: "contact_information",
       selectedTeamMember: {},
+      inputtedTeamMemberData: {},
       selectedTeamMemberIndex: 0
     };
   },
@@ -175,13 +188,13 @@ export default {
   computed: {
     ...mapState(["colours", "theme", "userInformation", "clientInformation"]),
     ...mapState("Team", ["team"]),
-    ...mapGetters(["getUserGroups"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-    userGroupXref() {
+    ...mapGetters(["getIsAdmin"]),
+
+    hasPermission() {
       return (
-        this.getUserGroups.find(group => {
-          return group.value == this.inputtedTeamMemberData.user_group;
-        })?.label ?? this.selectedTeamMember.user_group.label
+        this.selectedTeamMember._id == this.userInformation._id ||
+        this.getIsAdmin
       );
     },
 
@@ -255,11 +268,61 @@ export default {
     firstTeamMember() {
       return this.groupedTeamMembers[0][0]?.teamMembers[0];
     },
+    handleTeamMemberXref() {
+      return {
+        requestPayloads: {
+          create: {
+            method: "POST",
+            url: "users/register",
+            data: {
+              client_id: this.clientInformation._id,
+              admin_gen: true,
+              ...this.inputtedTeamMemberData
+            }
+          },
+          update: {
+            method: "PUT",
+            url: "users/update",
+            data: {
+              _id: this.selectedTeamMember._id,
+              update: this.inputtedTeamMemberData
+            }
+          },
+          delete: {
+            method: "DELETE",
+            url: "users/delete",
+            data: { _id: this.selectedTeamMember._id }
+          }
+        },
+        methods: {
+          create: {
+            mutation: "CREATE_TEAM_MEMBER",
+            data: {
+              _id: Math.random()
+                .toString(16)
+                .slice(2),
+              ...this.inputtedTeamMemberData
+            }
+          },
+          update: {
+            mutation: "UPDATE_ONE_TEAM_MEMBER",
+            data: {
+              index: this.selectedTeamMemberIndex,
+              payload: this.inputtedTeamMemberData
+            }
+          },
+          delete: {
+            mutation: "DELETE_TEAM_MEMBER",
+            data: { index: this.selectedTeamMemberIndex }
+          }
+        }
+      };
+    },
 
     groupsWithUsers() {
       let { user_groups } = { ...this.clientInformation };
       let userGroupArr = [];
-      let team = [...this.team];
+      let team = [...this.team, this.userInformation];
       let nameFilter = this.searchTeamMemberName.toLowerCase();
 
       for (let i = 0, len = user_groups.length; i < len; i++) {
@@ -297,6 +360,35 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["request"]),
+    ...mapMutations("Team", [
+      "UPDATE_ONE_TEAM_MEMBER",
+      "DELETE_TEAM_MEMBER",
+      "CREATE_TEAM_MEMBER"
+    ]),
+    handleTeamMember(e) {
+      if (e) {
+        this.inputtedTeamMemberData = e;
+      }
+      // Update team member from form
+      let methodXref = this.handleTeamMemberXref.methods[this.mode];
+      let requestXref = this.handleTeamMemberXref.requestPayloads[this.mode];
+      this[methodXref.mutation](methodXref.data);
+      this.request(requestXref)
+        .then(response => {
+          // If create mutation replace the team member at the index
+          if (this.mode == "create") {
+            this.UPDATE_ONE_TEAM_MEMBER({
+              index: this.team.length - 1,
+              payload: response
+            });
+          }
+        })
+        .catch(() => {
+          this.displayOverlay = true;
+        });
+      this.closeOverlay();
+    },
     clearSearch() {
       this.searchTeamMemberName = "";
     },
@@ -356,6 +448,10 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+.is_user_badge {
+  font-size: 1.3em;
+  margin-left: 20px;
 }
 .team_wrapper {
   display: flex;
@@ -425,6 +521,8 @@ export default {
   &:hover,
   &.active {
     background: rgb(245, 245, 245);
+  }
+  &.bx {
   }
 }
 .text_content {

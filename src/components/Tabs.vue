@@ -31,6 +31,7 @@
           :submit-text="submitText"
           :emit-on-change="tab.emitOnChange"
           :display-reset="tab.displayReset"
+          :headings="tab.headings"
           @val="$emit('val', $event)"
           @formValChange="$emit('formValChange', $event)"
         />

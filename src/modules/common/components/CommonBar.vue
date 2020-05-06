@@ -58,16 +58,14 @@ export default {
   },
   methods: {
     ...mapMutations(["DELETE_USER_SESSION", "UPDATE_TOGGLE_MOBILE_MENU"]),
-    ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
-
     ...mapActions(["request"]),
+
     handleCommands(command) {
       switch (command) {
         case "view_profile": {
-          this.UPDATE_OVERLAY_INDEX({
-            overlay: "profile",
-            view: true,
-            data: this.userInformation
+          this.$router.push({
+            name: "team",
+            params: { user: this.userInformation.name }
           });
           break;
         }

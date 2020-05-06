@@ -5,9 +5,16 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Analytics",
-  methods: {}
+  computed: {
+    ...mapState("Events", ["events"]),
+    ...mapState("Team", ["team"]),
+    totalHours() {
+      return [{}];
+    }
+  }
 };
 </script>
 

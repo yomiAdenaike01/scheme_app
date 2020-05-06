@@ -10,17 +10,46 @@
         <router-view></router-view>
       </keep-alive>
     </fade-transition>
+
+    <slide-y-down-transition>
+      <div v-if="!enabledCookies" class="cookies_container">
+        <div class="inner_cookies_container">
+          <i class="bx bx-x grey trigger" @click="setCookies(false)"></i>
+
+          <h3>Enable cookies</h3>
+          <p class="grey">
+            We use cookies to personalise content and ads, to provide social
+            media features and to analyse our traffic. We also share information
+            about your use of our site with our social media, advertising and
+            analytics partners who may combine it with other information that
+            you’ve provided to them or that they’ve collected from your use of
+            their services
+          </p>
+        </div>
+        <s-button
+          :rounded="false"
+          icon="right-arrow-alt"
+          @click="setCookies(true)"
+          >Got it!</s-button
+        >
+      </div>
+    </slide-y-down-transition>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
+import { FadeTransition, SlideYDownTransition } from "vue2-transitions";
+
+import SButton from "@/components/SButton";
 import refactorLocation from "@/mixins/refactorLocation";
-import { FadeTransition } from "vue2-transitions";
+
 export default {
   name: "App",
   components: {
-    FadeTransition
+    SButton,
+    FadeTransition,
+    SlideYDownTransition
   },
   mixins: [refactorLocation],
   data() {
@@ -34,14 +63,12 @@ export default {
     ...mapState(["team", "overlayIndex"]),
     ...mapGetters(["getIsIE"]),
 
-    isValidClient() {
-      return Object.values(this.clientInformation).length > 0;
+    enabledCookies() {
+      return localStorage.getItem("enabledCookies");
     }
   },
 
   created() {
-    console.log(document.styleSheets);
-
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -101,11 +128,25 @@ export default {
       "DELETE_GLOBAL_INTERVAL",
       "UPDATE_CLIENT_INFORMATION",
       "CLEAR_NOTIFICATIONS"
-    ])
+    ]),
+    setCookies(enabledCookies) {
+      localStorage.setItem("enabledCookies", enabledCookies);
+    }
   }
 };
 </script>
 <style lang="scss">
+.cookies_container {
+  position: fixed;
+  left: 1%;
+  bottom: 30px;
+  box-shadow: $box_shadow;
+  max-width: 400px;
+}
+.inner_cookies_container {
+  padding: 20px;
+  line-height: 1.7em;
+}
 .flat_input {
   &/deep/ .el-input__inner {
     padding: 15px;
@@ -119,11 +160,8 @@ export default {
   // Primary
   --colour_primary: 74, 85, 100;
   --colour_secondary: 89, 212, 140;
-
   --colour_grey_light: hsl(0, 0%, 98%);
-
   --colour_yellow: hsl(23, 100%, 63%);
-
   --blue: 1, 104, 250;
   --indigo: 91, 71, 251;
   --purple: 111, 66, 193;
@@ -270,19 +308,6 @@ h5 {
 }
 .no_padding {
   padding: 0 !important;
-}
-
-.logo {
-  background-image: linear-gradient(
-    340deg,
-    $default_colour 0%,
-    $element_colour 100%
-  );
-  border-radius: 50%;
-
-  color: white;
-  font-weight: bold;
-  padding: 5px 19px;
 }
 
 .rounded {

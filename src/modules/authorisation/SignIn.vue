@@ -208,7 +208,6 @@ export default {
   display: flex;
   flex-direction: column;
   width: 400px;
-  padding: 40px;
   box-shadow: $box_shadow;
 }
 </style>

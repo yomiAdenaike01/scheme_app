@@ -7,6 +7,7 @@
       {
         [props.colourScheme]: props.colourScheme,
         flat: props.flat,
+        rounded: props.rounded,
         plain: props.plain,
         button_shadow: props.shadow,
         center: props.center,
@@ -59,6 +60,10 @@ export default {
     },
     plain: {
       type: Boolean
+    },
+    rounded: {
+      type: Boolean,
+      default: true
     }
   }
 };
@@ -70,7 +75,6 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
 .button_container {
   font-size: 0.9em;
   background: rgba(var(--colour_primary), 1);
-  border-radius: 20px;
   display: flex;
   padding: 2px;
   align-items: center;
@@ -81,6 +85,13 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   transition: $default_transition;
   will-change: opacity;
   max-width: 500px;
+  justify-content: space-between;
+  &.rounded {
+    border-radius: 20px;
+    .icon_container {
+      border-radius: 50%;
+    }
+  }
   &.no_trigger {
     cursor: initial;
   }
@@ -141,7 +152,7 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   align-items: center;
   padding: 10px;
   margin: 0;
-  border-radius: 50%;
+
   background: rgba(0, 0, 0, 0.09);
   color: white;
   &.inverse_icon {

@@ -76,6 +76,13 @@ export default {
       "getCurrentTabXref"
     ]),
     ...mapGetters("Team", ["getDropdownTeamMembers"]),
+    headings() {
+      return {
+        assigned_to: "<h3>Assign team members</h3>",
+        until:
+          "<h3>Timings & Templating</h3> <small class='grey'>The content of this will be saved as a template, once saved as a template it can be reused with the timings that are entered below</small>"
+      };
+    },
     eventContent() {
       // this.loading = true;
       let events = { ...this.events };
@@ -162,7 +169,8 @@ export default {
           label: this.getIsAdmin ? "Create event" : "Create request",
           formContent: this.createEventForm,
           displayReset: true,
-          emitOnChange: true
+          emitOnChange: true,
+          headings: this.headings
         }
       ];
 
@@ -191,7 +199,8 @@ export default {
           "component-type": "select",
           placeholder: "Select event type",
           options: this.getValidEventTypes,
-          model: "type"
+          model: "type",
+          noLabel: true
         },
         {
           "component-type": "date-picker",
@@ -199,7 +208,8 @@ export default {
           placeholder: "Timings",
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",
-          model: "date"
+          model: "date",
+          noLabel: true
         }
       ];
 
@@ -213,7 +223,9 @@ export default {
             "component-type": "select",
             model: "assigned_to",
             options: this.getDropdownTeamMembers,
-            multiple: true
+            multiple: true,
+            optional:true,
+            noLabel: true
           },
           {
             "component-type": "select",
@@ -222,7 +234,8 @@ export default {
             multiple: true,
             model: "user_groups",
             placeholder: "Assign to a user group",
-            optional: true
+            optional: true,
+            noLabel: true
           },
           {
             "component-type": "select",
@@ -230,7 +243,8 @@ export default {
             options: this.daysOfWeek,
             multiple: true,
             model: "weekdays",
-            optional: true
+            optional: true,
+            noLabel: true
           },
           // Assign to an event group,
 
@@ -239,7 +253,8 @@ export default {
             "input-type": "date-time",
             placeholder: "Repeat until",
             model: "until",
-            optional: true
+            optional: true,
+            noLabel: true
           }
         );
       }

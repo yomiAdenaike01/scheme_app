@@ -30,10 +30,11 @@
 
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import Avatar from "@/components/Avatar";
 export default {
   name: "Chat",
   components: {
-    Avatar: () => import("@/components/Avatar")
+    Avatar
   },
   props: {
     chatIndex: {
@@ -73,7 +74,11 @@ export default {
     ...mapActions(["request"]),
     ...mapActions("Comms", ["getChats"]),
     ...mapMutations(["REMOVE_GLOBAL_INTERVAL"]),
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT", "DELETE_CHAT"]),
+    ...mapMutations("Comms", [
+      "UPDATE_ACTIVE_CHAT",
+      "DELETE_CHAT",
+      "CLEAR_ACTIVE_CHAT"
+    ]),
     updateScrollPos() {
       if (this.isNewChat) {
         this.$emit("scroll");
@@ -88,6 +93,7 @@ export default {
     },
     deleteChat() {
       this.DELETE_CHAT(this.chatIndex);
+      this.CLEAR_ACTIVE_CHAT();
       if (!this.chatInformation?.initChat) {
         this.request({
           method: "DELETE",
