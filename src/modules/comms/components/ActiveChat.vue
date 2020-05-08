@@ -93,14 +93,18 @@ export default {
     ...mapGetters("Team", ["getTeamMember"]),
 
     chatMessages() {
-      return [...this.activeChat?.messages].map(message => {
-        return Object.assign(message, {
-          id: message._id,
-          sentAt: this.initMoment(message.sentAt).calendar(),
-          sentBy: message.sender?.name,
-          isSentByUser: message.sender._id == this.userInformation._id
+      let chatMessages = [];
+      if (this.activeChat?.messages) {
+        chatMessages = [...this.activeChat?.messages].map(message => {
+          return Object.assign(message, {
+            id: message._id,
+            sentAt: this.initMoment(message.sentAt).calendar(),
+            sentBy: message.sender?.name,
+            isSentByUser: message.sender._id == this.userInformation._id
+          });
         });
-      });
+      }
+      return chatMessages;
     },
     isNewChat() {
       return this.activeChat.hasOwnProperty("initChat");

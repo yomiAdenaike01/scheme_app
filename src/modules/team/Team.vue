@@ -99,6 +99,25 @@
             </div>
           </div>
         </template>
+        <div v-else-if="selectedTab == 'events_timeline'">
+          <Timeline v-if="events.length > 0" :events="relatedEvents" />
+          <TextDisplay
+            v-else
+            :display-text="{
+              heading: 'No events for this user',
+              hasIcon: true,
+              icon: 'bx-badge',
+              content: 'You can create an event for the user here'
+            }"
+          >
+            <s-button
+              slot="body"
+              icon="calendar"
+              @click="$router.push({ name: 'events' })"
+              >Go to events</s-button
+            >
+          </TextDisplay>
+        </div>
       </div>
     </div>
     <!-- View the user details -->
@@ -143,7 +162,27 @@
           "
         ></i>
       </div>
+
       <hr />
+      <div
+        class="activity_wrapper"
+        :class="{ display_center: selectedUserActivity.length == 0 }"
+      >
+        <div v-if="selectedUserActivity.length > 0" v-loading="loading">
+          <ActivityLog
+            v-for="activity in selectedUserActivity"
+            :key="activity._id"
+            :activity="activity"
+            :date-created="initMoment(activity.date_created).calendar()"
+          />
+        </div>
+        <TextDisplay
+          v-else
+          :display-text="{
+            content: 'No recent activity found'
+          }"
+        />
+      </div>
     </div>
     <TeamOverlay
       :mode="mode"
@@ -162,7 +201,12 @@ import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import Avatar from "@/components/Avatar";
 import OnlineIndicator from "@/components/OnlineIndicator";
 import Menu from "@/components/Menu";
+import SButton from "@/components/SButton";
+import TextDisplay from "@/components/TextDisplay";
+
 import TeamOverlay from "./components/TeamOverlay";
+import ActivityLog from "./components/ActivityLog";
+import Timeline from "./components/Timeline";
 
 export default {
   name: "Team",
@@ -170,7 +214,12 @@ export default {
     Avatar,
     OnlineIndicator,
     Menu,
-    TeamOverlay
+    SButton,
+    TextDisplay,
+
+    ActivityLog,
+    TeamOverlay,
+    Timeline
   },
   data() {
     return {
@@ -181,15 +230,44 @@ export default {
       selectedTab: "contact_information",
       selectedTeamMember: {},
       inputtedTeamMemberData: {},
-      selectedTeamMemberIndex: 0
+      selectedTeamMemberIndex: 0,
+      selectedUserActivity: [],
+      loading: false
     };
   },
 
   computed: {
     ...mapState(["colours", "theme", "userInformation", "clientInformation"]),
     ...mapState("Team", ["team"]),
+    ...mapState("Events", ["events"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
+
     ...mapGetters(["getIsAdmin"]),
+
+    relatedEvents() {
+      let relatedEvents = [];
+      if (this.events.length > 0) {
+        let sortedEvents = [...this.events].sort((a, b) => {
+          return new Date(a.start_date) - new Date(b.start_date);
+        });
+        for (let i = 0, len = sortedEvents.length; i < len; i++) {
+          let event = sortedEvents[i];
+          if (Object.values(event).length > 0) {
+            let isAssingnedToEvent =
+              event.assigned_to.findIndex(assignee => {
+                return assignee._id == this.selectedTeamMember._id;
+              }) > -1;
+            if (isAssingnedToEvent) {
+              let { start_date, end_date, type } = event;
+              start_date = this.formatDate(start_date);
+              end_date = this.formatDate(end_date);
+              relatedEvents.push({ start_date, end_date, type });
+            }
+          }
+        }
+      }
+      return relatedEvents;
+    },
 
     hasPermission() {
       return (
@@ -206,7 +284,6 @@ export default {
         phoneNumber: `
         <h3>Contact information</h3>
         `,
-
         user_group: `<h3>Misc information</h3/>`
       };
     },
@@ -343,6 +420,9 @@ export default {
     }
   },
   watch: {
+    selectedTeamMember() {
+      this.getAuditLog();
+    },
     searchTeamMemberName: {
       immediate: false,
       handler() {
@@ -358,6 +438,7 @@ export default {
     } else {
       this.setTeamMember();
     }
+    this.loading = true;
   },
   methods: {
     ...mapActions(["request"]),
@@ -366,6 +447,17 @@ export default {
       "DELETE_TEAM_MEMBER",
       "CREATE_TEAM_MEMBER"
     ]),
+    getAuditLog() {
+      this.loading = true;
+      this.request({
+        method: "GET",
+        url: "services/logs",
+        params: { user_id: this.selectedTeamMember._id }
+      }).then(response => {
+        this.loading = false;
+        this.selectedUserActivity = response;
+      });
+    },
     handleTeamMember(e) {
       if (e) {
         this.inputtedTeamMemberData = e;
@@ -520,9 +612,7 @@ export default {
   transition: $default_transition background;
   &:hover,
   &.active {
-    background: rgb(245, 245, 245);
-  }
-  &.bx {
+    background: rgb(248, 248, 248);
   }
 }
 .text_content {
@@ -580,6 +670,16 @@ p {
   }
 }
 
+.activity_wrapper {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  background: rgb(250, 250, 250);
+  &.display_center {
+    justify-content: center;
+    align-items: center;
+  }
+}
 .title_container {
   display: flex;
   align-items: center;

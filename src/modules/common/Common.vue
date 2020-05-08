@@ -188,6 +188,7 @@ export default {
         this.DELETE_SYSTEM_NOTIFICATION(notificationIndex);
       });
     },
+
     getEvents(params = {}) {
       return new Promise((resolve, reject) => {
         const payload = {

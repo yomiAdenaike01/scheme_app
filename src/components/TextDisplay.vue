@@ -72,9 +72,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.bx {
-  font-size: 2.3em;
-}
+
 .headings_wrapper {
   padding: 30px;
   &.align_left {

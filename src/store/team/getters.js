@@ -8,7 +8,10 @@ export default {
       };
     });
   },
-  getTeamMember: ({ team, userInformation }) => (match, params = "_id") => {
+  getTeamMember: ({ team }, getters, { userInformation }) => (
+    match,
+    params = "_id"
+  ) => {
     let userInfo = null;
     if (match == userInformation[params]) {
       userInfo = userInformation;

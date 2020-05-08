@@ -33,7 +33,7 @@
           :display-reset="tab.displayReset"
           :headings="tab.headings"
           @val="$emit('val', $event)"
-          @formValChange="$emit('formValChange', $event)"
+          @change="$emit('formChange', $event)"
         />
         <div v-else>
           <component
@@ -124,9 +124,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.tabs_body {
-  height: 100%;
-  padding: 10px 20px;
-}
-</style>

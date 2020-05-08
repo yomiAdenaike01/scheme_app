@@ -84,8 +84,12 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   position: relative;
   transition: $default_transition;
   will-change: opacity;
-  max-width: 500px;
+  white-space: nowrap;
+  max-width: fit-content;
   justify-content: space-between;
+  &.full_width {
+    flex: 1;
+  }
   &.rounded {
     border-radius: 20px;
     .icon_container {

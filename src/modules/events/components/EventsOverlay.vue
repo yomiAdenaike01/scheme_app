@@ -8,7 +8,7 @@
       :selected-tab="currentTab"
       :submit-text="tabXref.display"
       @val="eventsCtrl"
-      @change="events = $event"
+      @formChange="events = $event"
     >
       <div slot="header">
         <TextDisplay :display-text="informationDisplay" />
@@ -70,12 +70,12 @@ export default {
     ...mapGetters([
       "getValidEventTypes",
       "getUserGroups",
-      "getTeamMember",
       "getUsersInGroup",
       "getIsAdmin",
       "getCurrentTabXref"
     ]),
-    ...mapGetters("Team", ["getDropdownTeamMembers"]),
+
+    ...mapGetters("Team", ["getDropdownTeamMembers", "getTeamMember"]),
     headings() {
       return {
         assigned_to: "<h3>Assign team members</h3>",
@@ -224,7 +224,7 @@ export default {
             model: "assigned_to",
             options: this.getDropdownTeamMembers,
             multiple: true,
-            optional:true,
+            optional: true,
             noLabel: true
           },
           {
