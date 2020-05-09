@@ -14,15 +14,14 @@
         }"
       ></TextDisplay>
       <div class="info_button_container">
-        <s-button no-trigger shadow colour-scheme="secondary" icon="check">{{
+        <s-button class="rounded shadow secondary" icon="check">{{
           approvalButtonConfig.content
         }}</s-button>
 
         <s-button
           v-if="hasPermissions"
-          colour-scheme="tertiary"
+          class="shadow rounded tertiary"
           icon="x"
-          shadow
           @click="deleteEvent('Are you sure you want to delete this event ? ')"
           >Delete Event</s-button
         >
@@ -102,8 +101,7 @@
             />
             <s-button
               slot="reference"
-              size="mini"
-              plain
+              class="primary rounded"
               @click="selectedConfig = 'date'"
               >Update date information</s-button
             >
@@ -127,7 +125,10 @@
               class="full_width"
               @val="updateEvent"
             />
-            <s-button slot="reference" plain @click="selectedConfig = 'type'"
+            <s-button
+              slot="reference"
+              class="plain rounded"
+              @click="selectedConfig = 'type'"
               >Update event type information</s-button
             >
           </el-popover>

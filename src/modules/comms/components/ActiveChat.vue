@@ -36,11 +36,9 @@
           />
           <s-button
             icon="send"
-            shadow
-            colour-scheme="secondary"
+            class="secondary only_icon"
             @click="sendChatMessage"
-            >Send</s-button
-          >
+          />
         </div>
       </div>
     </div>

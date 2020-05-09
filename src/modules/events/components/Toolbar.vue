@@ -5,7 +5,7 @@
     <div v-for="(button, key) in buttons" :key="key" class="button_wrapper">
       <div v-if="button.display">
         <s-button
-          :shadow="button.shadow"
+          :class="`${button.class ? button.class : 'rounded primary'}`"
           :icon="button.icon"
           :inverse-icon="button.inverseIcon"
           @click="button.method"
@@ -52,6 +52,7 @@ export default {
           display: this.currentView == "events",
           shadow: this.currentView == "events",
           icon: "calendar",
+          class: "primary rounded shadow",
           inverseIcon: false,
           method: () => {
             this.$emit("updateOverlays", "events");
@@ -62,7 +63,10 @@ export default {
             this.currentView == "events" ? "View requests " : "View events",
           icon: this.currentView == "events" ? "right-arrow-alt" : "arrow-back",
           display: true,
-          shadow: this.currentView == "requests",
+          class:
+            this.currentView == "requests"
+              ? "shadow secondary rounded"
+              : "primary rounded",
           inverseIcon: this.currentView == "requests",
           method: () => {
             if (this.currentView == "events") {

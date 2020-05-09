@@ -36,13 +36,12 @@
         hasIcon: true
       }"
     >
-      <el-button
+      <s-button
         slot="body"
-        circle
-        type="text"
-        icon="el-icon-plus"
+        class="only_icon secondary"
+        icon="plus"
         @click="startNewChat"
-      ></el-button>
+      />
     </TextDisplay>
   </div>
 </template>
@@ -50,11 +49,15 @@
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import { FadeTransition } from "vue2-transitions";
+import Chat from "./Chat";
+import TextDisplay from "@/components/TextDisplay";
+import SButton from "@/components/SButton";
 export default {
   name: "Chats",
   components: {
-    TextDisplay: () => import("@/components/TextDisplay"),
-    Chat: () => import("./Chat"),
+    TextDisplay,
+    Chat,
+    SButton,
     FadeTransition
   },
   data() {
@@ -97,7 +100,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  flex: 0.2;
+  flex: 0.4;
   border-right: $border;
   position: relative;
   overflow-x: hidden;

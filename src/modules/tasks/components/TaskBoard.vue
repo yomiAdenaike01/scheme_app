@@ -22,7 +22,7 @@
               />
               <hr />
 
-              <s-button colour-scheme="tertiary" shadow icon="x"
+              <s-button class="rounded tertiary shadow" icon="x"
                 >Delete Board</s-button
               >
             </div>
@@ -84,7 +84,7 @@
           trigger="click"
         >
           <div slot="reference">
-            <s-button colour-scheme="secondary" only-icon icon="plus" shadow />
+            <s-button class="only_icon secondary" icon="plus" />
           </div>
           <Form class="full_width" :config="formConfig" @val="createBoard" />
         </el-popover>

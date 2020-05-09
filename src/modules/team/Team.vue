@@ -113,6 +113,7 @@
             <s-button
               slot="body"
               icon="calendar"
+              class="primary rounded"
               @click="$router.push({ name: 'events' })"
               >Go to events</s-button
             >
@@ -129,10 +130,7 @@
       <h3>{{ selectedTeamMember.name }}</h3>
       <small class="grey">{{ selectedTeamMember.user_group.label }}</small>
       <small class="grey">{{ selectedTeamMember.email }}</small>
-      <i
-        v-if="selectedTeamMember._id == userInformation._id"
-        class="is_user_badge bx bxs-badge-check"
-      ></i>
+
       <div class="shortcuts_container">
         <i
           v-if="hasPermission"
@@ -143,9 +141,14 @@
             mode = 'update';
           "
         ></i>
-        <i :style="{ backgroundColor: colours[0] }" class="bx bx-phone"></i>
+        <i
+          v-if="selectedTeamMember._id != userInformation._id"
+          :style="{ backgroundColor: colours[0] }"
+          class="bx bx-phone"
+        ></i>
 
         <i
+          v-if="selectedTeamMember._id != userInformation._id"
           :style="{ backgroundColor: colours[1] }"
           class="bx bxl-discourse"
           @click="
@@ -161,6 +164,17 @@
             handleTeamMember();
           "
         ></i>
+        <i
+          v-if="hasPermission"
+          :style="{ backgroundColor: colours[9] }"
+          class="bx bx-bar-chart-alt-2"
+          @click="
+            $router.push({
+              name: 'analytics',
+              params: { teamMember: selectedTeamMember._id }
+            })
+          "
+        ></i>
       </div>
 
       <hr />
@@ -169,6 +183,8 @@
         :class="{ display_center: selectedUserActivity.length == 0 }"
       >
         <div v-if="selectedUserActivity.length > 0" v-loading="loading">
+          <h3>Activity feed</h3>
+          <small class="grey">All user activity is displayed below</small>
           <ActivityLog
             v-for="activity in selectedUserActivity"
             :key="activity._id"
@@ -331,7 +347,7 @@ export default {
       };
     },
     tabItems() {
-      return ["contact_information", "events_timeline", "analytics"];
+      return ["contact_information", "events_timeline"];
     },
 
     groupedTeamMembers() {

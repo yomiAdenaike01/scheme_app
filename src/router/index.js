@@ -12,7 +12,6 @@ const Events = () => import("@/modules/events/Events");
 const Team = () => import("@/modules/team/Team");
 const Comms = () => import("@/modules/comms/Comms");
 const Tasks = () => import("@/modules/tasks/Tasks");
-const Analytics = () => import("@/modules/analytics/Analytics");
 
 // Support
 const Error = () => import("@/modules/support/Error");
@@ -82,14 +81,6 @@ const routes = [
         path: "tasks",
         name: "tasks",
         component: Tasks,
-        meta: {
-          authRequired: true
-        }
-      },
-      {
-        path: "analytics",
-        name: "analytics",
-        component: Analytics,
         meta: {
           authRequired: true
         }

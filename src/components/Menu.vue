@@ -126,16 +126,10 @@ export default {
         }
       ];
       if (this.getIsAdmin) {
-        allowedRoutes.push(
-          {
-            name: "team",
-            icon: "bx bx-group"
-          },
-          {
-            name: "analytics",
-            icon: "bx bx-bar-chart-alt"
-          }
-        );
+        allowedRoutes.push({
+          name: "team",
+          icon: "bx bx-group"
+        });
       }
       return allowedRoutes;
     }

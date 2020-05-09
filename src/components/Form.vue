@@ -104,7 +104,11 @@
     </el-form>
     <!-- Submit button -->
     <div v-if="!disable" class="button_container">
-      <s-button :icon="submitButton.icon" @click="submitForm">
+      <s-button
+        class="rounded primary"
+        :icon="submitButton.icon"
+        @click="submitForm"
+      >
         {{ submitButton.text }}</s-button
       >
     </div>

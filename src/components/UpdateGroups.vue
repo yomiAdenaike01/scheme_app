@@ -4,10 +4,10 @@
       <s-button
         v-for="(button, index) in config"
         :key="index"
+        class="flat"
         :class="{
           active: button.toLowerCase() == selectedConfig.toLowerCase()
         }"
-        flat
         @click="changeContent(button)"
       >
         {{ `${button} group` }}

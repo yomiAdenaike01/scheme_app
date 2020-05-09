@@ -1,7 +1,14 @@
 <template>
   <div v-if="team.length > 0" class="comms_container">
     <Chats />
-    <ActiveChat v-if="activeChat" :user-to-message="userToMessage" />
+    <ActiveChat
+      v-if="Object.values(activeChat).length > 0"
+      :user-to-message="userToMessage"
+    />
+    <div v-else class="no_active_chat">
+      <h1>No chats selected</h1>
+      <i class="bx bxl-discourse"></i>
+    </div>
   </div>
   <div v-else class="no_content center">
     <TextDisplay
@@ -80,5 +87,17 @@ export default {
   display: flex;
   flex: 1;
   height: 100%;
+}
+.no_active_chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  color: rgb(220, 220, 220);
+
+  .bx {
+    font-size: 9em;
+  }
 }
 </style>

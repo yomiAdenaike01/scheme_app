@@ -65,11 +65,11 @@
           @keyup.enter.native="createComment"
         ></el-input>
         <s-button
-          type="text"
+          class="
           shadow
-          colour-scheme="secondary"
+          secondary"
+          :class="{ disabled: newMessage.length == 0 }"
           icon="send"
-          :disabled="newMessage.length == 0"
           @click="createComment"
           >Post</s-button
         >

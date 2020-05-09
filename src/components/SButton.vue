@@ -5,11 +5,7 @@
       data.staticClass,
       data.class,
       {
-        [props.colourScheme]: props.colourScheme,
         flat: props.flat,
-        rounded: props.rounded,
-        plain: props.plain,
-        button_shadow: props.shadow,
         center: props.center,
         only_icon: props.onlyIcon
       }
@@ -35,16 +31,7 @@ export default {
       type: String,
       default: null
     },
-    flat: {
-      type: Boolean
-    },
-    shadow: {
-      type: Boolean
-    },
-    colourScheme: {
-      type: String,
-      default: "primary"
-    },
+
     onlyIcon: {
       type: Boolean,
       default: false
@@ -54,16 +41,6 @@ export default {
     },
     center: {
       type: Boolean
-    },
-    noTrigger: {
-      type: Boolean
-    },
-    plain: {
-      type: Boolean
-    },
-    rounded: {
-      type: Boolean,
-      default: true
     }
   }
 };
@@ -100,7 +77,18 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     cursor: initial;
   }
   &.only_icon {
-    max-width: fit-content;
+    border-radius: 50%;
+    text-align: center;
+    .slot_wrapper {
+      padding: 0;
+    }
+    .icon_container {
+      background: transparent;
+    }
+  }
+  &.expanded {
+    flex: 1;
+    max-width: initial;
   }
   &.center {
     text-align: center;
@@ -129,22 +117,25 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
       color: rgb(10, 10, 10);
     }
   }
-  &.button_shadow {
+  &.shadow {
     box-shadow: -2px 11px 21px rgba(var(--colour_primary), 0.5);
   }
   &.secondary {
     background: rgba(var(--colour_secondary), 1);
 
-    &.button_shadow {
+    &.shadow {
       box-shadow: -2px 11px 21px rgba(var(--colour_secondary), 0.5);
     }
   }
   &.tertiary {
     background: rgba(var(--danger), 1);
 
-    &.button_shadow {
+    &.shadow {
       box-shadow: -2px 11px 21px rgba(var(--danger), 0.5);
     }
+  }
+  .icon_container {
+    background: rgba(0, 0, 0, 0.14);
   }
 }
 .slot_wrapper {
@@ -156,8 +147,6 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   align-items: center;
   padding: 10px;
   margin: 0;
-
-  background: rgba(0, 0, 0, 0.09);
   color: white;
   &.inverse_icon {
     order: -1;

@@ -27,7 +27,7 @@
           </p>
         </div>
         <s-button
-          :rounded="false"
+          class="primary expanded"
           icon="right-arrow-alt"
           @click="setCookies(true)"
           >Got it!</s-button

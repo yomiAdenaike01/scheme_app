@@ -6,17 +6,14 @@
         <div class="button_container">
           <s-button
             v-if="canInteract"
-            colour-scheme="secondary"
-            shadow
+            class="secondary shadow rounded"
             icon="check"
-            round
             @click="handleUpdate({ state: 1 })"
             >Mark as complete</s-button
           >
           <s-button
-            colour-scheme="tertiary"
+            class=" shadow rounded primary tertiary"
             icon="x"
-            shadow
             @click="
               deleteTask(defaultPayload);
               view = false;
