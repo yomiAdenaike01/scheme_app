@@ -6,23 +6,18 @@
       :user-to-message="userToMessage"
     />
     <div v-else class="no_active_chat">
-      <h1>No chats selected</h1>
+      <h1>Select a chat to begin</h1>
       <i class="bx bxl-discourse"></i>
     </div>
   </div>
   <div v-else class="no_content center">
-    <TextDisplay
-      :display-text="{
-        heading: 'No team members',
-        hasIcon: true,
-        content: 'To create a team member please go to user management'
-      }"
+    <h2>No team members</h2>
+    <p>To create a team member please go to user management</p>
     >
-      <i slot="header" class="bx bx-user"></i>
-      <el-button slot="body" type="text" @click="$router.push({ name: 'team' })"
-        >Go to user management</el-button
-      >
-    </TextDisplay>
+    <i slot="header" class="bx bx-user"></i>
+    <s-button class="primary rounded" @click="$router.push({ name: 'team' })"
+      >Go to team management</s-button
+    >
   </div>
 </template>
 
@@ -30,13 +25,13 @@
 import { mapActions, mapMutations, mapState } from "vuex";
 import Chats from "./components/Chats";
 import ActiveChat from "./components/ActiveChat";
-import TextDisplay from "@/components/TextDisplay";
+import SButton from "@/components/SButton";
 export default {
   name: "CommsModule",
   components: {
     Chats,
     ActiveChat,
-    TextDisplay
+    SButton
   },
   computed: {
     ...mapState(["globalIntervals"]),

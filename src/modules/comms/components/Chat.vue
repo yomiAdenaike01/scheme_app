@@ -91,7 +91,6 @@ export default {
     deleteChat(e) {
       e.stopPropagation();
       this.DELETE_CHAT(this.chatIndex);
-      this.CLEAR_ACTIVE_CHAT();
       if (!this.chatInformation?.initChat) {
         this.request({
           method: "DELETE",

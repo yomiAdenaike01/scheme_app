@@ -16,6 +16,7 @@
             <div class="content">
               <Form
                 class="full_width"
+                :heading="heading"
                 :config="formConfig"
                 :submit-button="{ text: 'Update board' }"
                 @val="updateBoard"
@@ -34,20 +35,11 @@
           :percentage="progressCount.percentage"
         ></el-progress>
       </div>
-      <div v-if="!tasks.length > 0" class="no_tasks_container">
-        <TextDisplay
-          :display-text="{
-            hasIcon: true,
-            heading: 'No tasks found',
-            content:
-              'Press the button below to create a task assigned to this board'
-          }"
-        >
-          <i slot="heading" class="bx bx-task"></i>
-          <el-button circle icon="el-icon-plus" @click="createTask" />
-        </TextDisplay>
+      <div v-if="tasks.length == 0" class="text_container all_centre">
+        <h3>No tasks found</h3>
+        <p>Press the button below to create a task assigned to this board</p>
       </div>
-      <slide-x-left-transition group>
+      <slide-x-left-transition v-else group>
         <TaskItem
           v-for="(task, index) in boardData.tasks"
           :key="`${task._id}${index}`"
@@ -58,10 +50,7 @@
         />
       </slide-x-left-transition>
 
-      <div
-        class="create_new_task_wrapper grey"
-        @click="$emit('createTask', { boardData, boardIndex, display: true })"
-      >
+      <div class="create_new_item grey" @click="createTask">
         <span> <i class="bx bx-plus"></i> Create new task</span>
       </div>
     </div>
@@ -70,16 +59,12 @@
       class="new_board_container"
       :class="{ disabled: boardIndex != 0 }"
     >
-      <TextDisplay
-        class="info_display"
-        :display-text="{
-          hasIcon: true,
-          ...computeText
-        }"
-      >
+      <div class="text_container all_centre">
+        <h3>{{ computeText.heading }}</h3>
+        <p>{{ computeText.content }}</p>
+
         <el-popover
           v-if="boardIndex == 0 && getIsAdmin"
-          slot="header"
           position="top"
           trigger="click"
         >
@@ -88,7 +73,7 @@
           </div>
           <Form class="full_width" :config="formConfig" @val="createBoard" />
         </el-popover>
-      </TextDisplay>
+      </div>
     </div>
   </div>
 </template>
@@ -97,15 +82,16 @@
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { SlideXLeftTransition } from "vue2-transitions";
 import TaskItem from "./TaskItem";
+import SButton from "@/components/SButton";
+import Form from "@/components/Form";
 
 export default {
   name: "TaskBoard",
   components: {
-    Form: () => import("@/components/Form"),
-    TextDisplay: () => import("@/components/TextDisplay"),
     TaskItem,
     SlideXLeftTransition,
-    SButton: () => import("@/components/SButton")
+    SButton,
+    Form
   },
 
   props: {
@@ -176,16 +162,24 @@ export default {
       }
       return displayText;
     },
+    heading() {
+      return {
+        name: "<h3>Board information</h3>"
+      };
+    },
     formConfig() {
       return [
         {
           "component-type": "text",
+          noLabel: true,
           placeholder: "Board name",
           model: "name"
         },
         {
           "component-type": "text",
           textarea: true,
+          noLabel: true,
+
           placeholder: "Board desciprtion",
           model: "description"
         }
@@ -259,10 +253,10 @@ export default {
       });
     },
     createTask() {
-      this.UPDATE_OVERLAY_INDEX({
-        overlay: "task",
-        view: true,
-        data: this.boardID
+      this.$emit("createTask", {
+        boardData: this.boardData,
+        boardIndex: this.boardIndex,
+        display: true
       });
     }
   }
@@ -332,13 +326,8 @@ export default {
   margin: 10px 0;
   text-transform: initial;
 }
-.no_tasks_container {
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-}
-.create_new_task_wrapper {
+
+.create_new_item {
   position: absolute;
   bottom: 0;
   left: 0;

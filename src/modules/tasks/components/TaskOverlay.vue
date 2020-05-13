@@ -1,30 +1,31 @@
 <template>
-  <el-dialog :visible.sync="view">
+  <Overlay :display="display" @close="$emit('toggleDisplay')">
     <div v-loading="loading" class="create_task_container">
-      <TextDisplay
-        :display-text="{
-          heading: `Create task for <strong>${boardData.name}</strong>`,
-          content: 'Fill in the form below to create a new task'
-        }"
-      />
-      <div class="form_container">
-        <Form
-          :config="createTaskForm"
-          submit-text="Create task"
-          @val="createAction"
-        />
+      <div class="text_container all_centre">
+        <h2>
+          Create task for <strong>{{ boardData.name }}</strong>
+        </h2>
+        <p>Fill in the form below to create a new task</p>
       </div>
+      <Form
+        :config="createTaskForm"
+        submit-text="Create task"
+        @val="createAction"
+      />
     </div>
-  </el-dialog>
+  </Overlay>
 </template>
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
+import Overlay from "@/components/Overlay";
+import Form from "@/components/Form";
+
 export default {
-  name: "CreateTask",
+  name: "TaskOverlay",
   components: {
-    Form: () => import("@/components/Form"),
-    TextDisplay: () => import("@/components/TextDisplay")
+    Overlay,
+    Form
   },
   props: {
     display: {
@@ -44,14 +45,7 @@ export default {
   computed: {
     ...mapState(["team", "clientInformation", "userInformation"]),
     ...mapGetters(["getIsAdmin", "getDropdownTeamMembers"]),
-    view: {
-      get() {
-        return this.display;
-      },
-      set() {
-        this.$emit("toggleDisplay", false);
-      }
-    },
+
     boardData() {
       let task = this.createTaskInformation;
       return {
@@ -129,8 +123,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.form_container {
-  padding: 20px;
-}
-</style>
+<style lang="scss" scoped></style>

@@ -51,7 +51,6 @@ import scrollToBottom from "@/mixins/scrollToBottom";
 export default {
   name: "ActiveChat",
   components: {
-    TextDisplay: () => import("@/components/TextDisplay"),
     ChatActions: () => import("./ChatActions"),
     SButton: () => import("@/components/SButton"),
     ChatMessage: () => import("./ChatMessage"),

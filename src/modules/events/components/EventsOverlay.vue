@@ -10,8 +10,9 @@
       @val="eventsCtrl"
       @formChange="events = $event"
     >
-      <div slot="header">
-        <TextDisplay :display-text="informationDisplay" />
+      <div slot="header" class="text_container all_centre">
+        <h2>{{ informationDisplay.heading }}</h2>
+        <p>{{ informationDisplay.content }}</p>
       </div>
       <div
         v-if="
@@ -38,12 +39,10 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import QrcodeVue from "qrcode.vue";
 
-import TemplateManagement from "./TemplateManagement";
 import Overlay from "@/components/Overlay";
 export default {
   name: "EventsOverlay",
   components: {
-    TextDisplay: () => import("@/components/TextDisplay"),
     Tabs: () => import("@/components/Tabs"),
     ColourPicker: () => import("@/components/ColourPicker"),
     QrcodeVue,
@@ -179,13 +178,6 @@ export default {
           label: "Manage event groups",
           view: {
             component: () => import("@/components/UpdateGroups")
-          }
-        });
-
-        tabs.push({
-          label: "Manage event templates",
-          view: {
-            component: TemplateManagement
           }
         });
       }

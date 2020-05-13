@@ -12,19 +12,8 @@
         @val="$emit('handleTeamMember', inputtedTeamMemberData)"
         @change="updateTeamMemberObject"
       >
-        <TextDisplay
-          slot="header"
-          :display-text="{
-            heading:
-              mode == 'update' ? 'Edit team member' : 'Create team member',
-            headingAlign: false,
-            textAlign: false,
-            contentClass: 'grey',
-            content:
-              'The changes that are made in this form will be reflected in the instance below. Once submitted these changes will be made live.'
-          }"
-        >
-          <div slot="body" class="text_display_header">
+        <div slot="header" class="text_container team_overlay_body">
+          <div class="text_display_header">
             <SlideYUpTransition>
               <div v-if="mode == 'update'">
                 <Avatar
@@ -87,7 +76,7 @@
               </div>
             </SlideYUpTransition>
           </div>
-        </TextDisplay>
+        </div>
       </Form>
     </div>
   </Overlay>
@@ -98,7 +87,6 @@ import { mapGetters } from "vuex";
 import Avatar from "@/components/Avatar";
 import Overlay from "@/components/Overlay";
 import Form from "@/components/Form";
-import TextDisplay from "@/components/TextDisplay";
 
 import { SlideYUpTransition } from "vue2-transitions";
 
@@ -106,7 +94,6 @@ export default {
   components: {
     Overlay,
     Form,
-    TextDisplay,
     SlideYUpTransition,
     Avatar
   },
@@ -222,6 +209,7 @@ export default {
 p {
   margin: 0;
 }
+
 .text_display_header {
   margin-top: 30px;
 }
@@ -253,5 +241,8 @@ p {
 .name_item {
   font-size: 1.3em;
   margin-bottom: 5px;
+}
+.text_container {
+  padding: 20px;
 }
 </style>

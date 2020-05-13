@@ -2,9 +2,8 @@ export default {
   eventFilters: {},
   eventRef: {},
   eventTemplateRef: {},
-  teamRef: {},
-  groupRef: {},
-
+  eventRequestRef: {},
   events: [],
-  eventTemplates: []
+  eventTemplates: [],
+  eventRequests: []
 };

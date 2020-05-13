@@ -1,4 +1,5 @@
 import updateBreadCrumbs from "../helpers";
+import Vue from "vue";
 
 export default {
   UPDATE_BOARDS(state, { data, action = "update" }) {
@@ -87,7 +88,21 @@ export default {
       comments.splice(commentIndex, 0, data);
     }
   },
+  UPDATE_COMMENT(state, payload) {
+    let { update, boardIndex, taskIndex } = payload;
+    let comments = state.boards[boardIndex].tasks[taskIndex].comments;
 
+    if (!payload?.commentIndex) {
+      var commentIndex = comments.length - 1;
+    }
+    comments.splice(commentIndex, 1, update);
+    updateBreadCrumbs(state, "commentRef", {
+      boardIndex,
+      taskIndex,
+      commentIndex,
+      data: update
+    });
+  },
   DELETE_COMMENT(state, { boardIndex, taskIndex, commentIndex }) {
     let comment =
         state.boards[boardIndex].tasks[taskIndex]?.comments[commentIndex],
@@ -98,7 +113,7 @@ export default {
       commentIndex,
       data: comment
     });
-    comments.splice(commentIndex, 1);
+    Vue.delete(comments, commentIndex);
   },
 
   //  Labels

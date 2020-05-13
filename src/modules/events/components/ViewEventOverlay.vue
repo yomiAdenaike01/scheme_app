@@ -35,13 +35,11 @@
         <h3>Actions</h3>
         <!-- Reject event -->
         <div class="info_unit">
-          <el-button
-            :disabled="noticePeriodExceeded"
-            round
-            class="full_width"
-            plain
+          <s-button
+            :class="{ disabled: noticePeriodExceeded }"
+            class="flat rounded"
             @click="rejectEvent"
-            >Reject event</el-button
+            >Reject event</s-button
           >
         </div>
       </div>
@@ -101,7 +99,7 @@
             />
             <s-button
               slot="reference"
-              class="primary rounded"
+              class="plain"
               @click="selectedConfig = 'date'"
               >Update date information</s-button
             >
@@ -127,7 +125,7 @@
             />
             <s-button
               slot="reference"
-              class="plain rounded"
+              class="plain"
               @click="selectedConfig = 'type'"
               >Update event type information</s-button
             >

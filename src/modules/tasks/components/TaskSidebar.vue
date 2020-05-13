@@ -1,109 +1,118 @@
 <template>
-  <el-drawer :visible.sync="view" width="200">
-    <div class="inner_container">
-      <div class="inner_wrapper">
-        <!-- Task actions -->
-        <div class="button_container">
-          <s-button
-            v-if="canInteract"
-            class="secondary shadow rounded"
-            icon="check"
-            @click="handleUpdate({ state: 1 })"
-            >Mark as complete</s-button
-          >
-          <s-button
-            class=" shadow rounded primary tertiary"
-            icon="x"
-            @click="
-              deleteTask(defaultPayload);
-              view = false;
-            "
-            >Delete Task</s-button
-          >
-        </div>
-        <!-- Labels, duedate, and assigned users -->
-        <div class="information_wrapper">
-          <div class="information_unit">
-            <p>Assigned team members</p>
-            <AssignedUsers
-              remove-user
-              add-new
-              :users="taskInformation.assigned_to"
-              @assignUser="handleUpdate"
-              @removeUser="handleUpdate"
-            />
+  <div class="tasks_sidebar">
+    <div v-click-outside="onClickOutside" class="task_sidebar_container">
+      <i class="bx bx-x grey" @click="view = false"></i>
+      <div class="inner_container">
+        <div class="inner_wrapper">
+          <!-- Task actions -->
+          <div class="button_container">
+            <s-button
+              v-if="canInteract"
+              class="secondary rounded"
+              icon="check"
+              @click="handleUpdate({ state: 1 })"
+              >Mark as complete</s-button
+            >
+            <s-button
+              class=" shadow rounded primary tertiary"
+              icon="x"
+              @click="
+                deleteTask(defaultPayload);
+                view = false;
+              "
+              >Delete Task</s-button
+            >
           </div>
-          <div class="information_unit">
-            <p>Labels</p>
-            <Labels
-              mode="board"
-              :icon-config="{
-                text: 'Create label',
-                actionStyle: 'squared'
-              }"
-              @createLabel="handleLabels.create.function"
-              @updateLabel="handleLabels.update.function"
-              @deleteLabel="handleLabels.delete.function"
-            />
-          </div>
-          <div class="information_unit">
-            <p>Due date</p>
-            <div v-if="taskInformation.dueDate">
-              <i class="bx bx-time"></i>
-              {{ formatDate(taskInformation.dueDate) }}
+          <!-- Labels, duedate, and assigned users -->
+          <div class="information_wrapper">
+            <div class="information_unit">
+              <p>Assigned team members</p>
+              <AssignedUsers
+                remove-user
+                add-new
+                :users="taskInformation.assigned_to"
+                @assignUser="handleUpdate"
+                @removeUser="handleUpdate"
+              />
             </div>
-            <el-popover v-model="popoverDisplay.dueDate" trigger="click">
-              <ActionIcon
-                slot="reference"
-                icon="time"
-                text="Set due date"
-                action-style="squared"
+            <div class="information_unit">
+              <p>Labels</p>
+              <Labels
+                mode="board"
+                :icon-config="{
+                  text: 'Create label',
+                  actionStyle: 'squared'
+                }"
+                @createLabel="handleLabels.create.function"
+                @updateLabel="handleLabels.update.function"
+                @deleteLabel="handleLabels.delete.function"
               />
-              <Form
-                :config="dueDateConfig"
-                class="full_width"
-                @val="setDueDate"
-              />
-            </el-popover>
+            </div>
+            <div class="information_unit">
+              <p>Due date</p>
+              <div v-if="taskInformation.dueDate">
+                <i class="bx bx-time"></i>
+                {{ formatDate(taskInformation.dueDate) }}
+              </div>
+              <el-popover v-model="popoverDisplay.dueDate" trigger="click">
+                <ActionIcon
+                  slot="reference"
+                  icon="time"
+                  text="Set due date"
+                  action-style="squared"
+                />
+                <Form
+                  :config="dueDateConfig"
+                  class="full_width"
+                  @val="setDueDate"
+                />
+              </el-popover>
+            </div>
           </div>
-        </div>
-        <!-- Description container -->
-        <div class="task_info_title">
-          <i class="bx bx-align-left"></i>
-          <span>Description</span>
-        </div>
-        <textarea
-          v-model="description"
-          :contenteditable="editDescription"
-          class="task_textarea"
-          :placeholder="taskInformation.description"
-          @focus="handleDescriptions"
-        ></textarea>
+          <!-- Description container -->
+          <div class="task_info_title">
+            <i class="bx bx-align-left"></i>
+            <span>Description</span>
+          </div>
+          <textarea
+            v-model="description"
+            :contenteditable="editDescription"
+            class="task_textarea"
+            :placeholder="taskInformation.description"
+            @focus="handleDescriptions"
+          ></textarea>
+          <div class="button_container">
+            <s-button v-if="description.length > 0" class="primary rounded"
+              >Save</s-button
+            >
+          </div>
 
-        <div class="task_info_title">
-          <i class="bx bx-comment"></i>
-          <span>Comments</span>
-        </div>
+          <div class="task_info_title">
+            <i class="bx bx-comment"></i>
+            <span>Comments</span>
+          </div>
 
-        <Comments
-          :can-interact="canInteract"
-          mode="full"
-          :comments="comments"
-          @createComment="handleComments['create'].function($event)"
-          @deleteComment="handleComments['delete'].function($event)"
-          @scrollToBottom="scrollToBottom($event)"
-        />
+          <Comments
+            :can-interact="canInteract"
+            mode="full"
+            :comments="comments"
+            @createComment="handleComments['create'].function($event)"
+            @deleteComment="handleComments['delete'].function($event)"
+            @scrollToBottom="scrollToBottom($event)"
+          />
+        </div>
       </div>
     </div>
-  </el-drawer>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import scrollToBottom from "@/mixins/scrollToBottom.js";
+import vClickOutside from "v-click-outside";
 
 export default {
-  name: "TaskDrawer",
+  name: "TaskSidebar",
   components: {
     Avatar: () => import("@/components/Avatar"),
     Form: () => import("@/components/Form"),
@@ -112,6 +121,9 @@ export default {
     AssignedUsers: () => import("./AssignedUsers"),
     ActionIcon: () => import("@/components/ActionIcon"),
     SButton: () => import("@/components/SButton")
+  },
+  directives: {
+    clickOutside: vClickOutside.directive
   },
   mixins: [scrollToBottom],
 
@@ -234,9 +246,17 @@ export default {
               method: this.method,
               url: this.url,
               data: { message, task_id: defaultPayload._id }
-            }).catch(() => {
-              vm.DELETE_COMMENT();
-            });
+            })
+              .catch(() => {
+                vm.DELETE_COMMENT();
+              })
+              .then(response => {
+                response = {
+                  ...response,
+                  assigned_to: vm.userInformation
+                };
+                vm.UPDATE_COMMENT({ update: response, ...defaultPayload });
+              });
             vm.scrollToBottom(ref);
           }
         },
@@ -245,13 +265,11 @@ export default {
           method: "DELETE",
           url,
           function: function({ commentIndex, _id }) {
-            vm.DELETE_COMMENT(Object.assign({ commentIndex }, defaultPayload));
+            vm.DELETE_COMMENT({ commentIndex, ...defaultPayload });
             vm.request({
               method: this.method,
               url: this.url,
               data: { _id }
-            }).catch(() => {
-              vm.CREATE_COMMENT(this.commentRef);
             });
           }
         }
@@ -300,8 +318,14 @@ export default {
       "DELETE_COMMENT",
       "CREATE_LABEL",
       "UPDATE_LABEL",
-      "REMOVE_LABEL"
+      "REMOVE_LABEL",
+      "UPDATE_COMMENT"
     ]),
+    onClickOutside(e) {
+      if (e.target.classList.value.includes("tasks_sidebar")) {
+        this.view = false;
+      }
+    },
     setDueDate(e) {
       this.updateTask({ dueDate: e });
     },
@@ -320,13 +344,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.tasks_sidebar {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.5);
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 11;
+}
+.task_sidebar_container {
+  background: white;
+  box-shadow: $box_shadow;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 73%;
+}
 .button_container {
   display: flex;
   justify-content: space-between;
   margin-bottom: 40px;
-  .el-button {
-    flex: 1;
-  }
 }
 .information_wrapper {
   display: flex;

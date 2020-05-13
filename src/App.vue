@@ -229,7 +229,15 @@ Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,400,500,600&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Jost:300,400,500,600&display=swap");
+.tab_content_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  max-height: calc(100% - 60px);
+  overflow-x: hidden;
+}
+
 /*
 
  Default
@@ -237,7 +245,7 @@ Fonts
 
 */
 * {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Jost", sans-serif;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   outline: none;
@@ -245,6 +253,20 @@ Fonts
   :before,
   :after {
     -webkit-font-smoothing: antialiased;
+  }
+}
+.text_container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .large_icon {
+    font-size: 5em;
+  }
+  &.all_centre {
+    justify-content: center;
+    align-items: center;
+    flex: 1;
   }
 }
 .el-drawer__body {
@@ -344,12 +366,6 @@ h5 {
 
 */
 
-.el-drawer {
-  height: 100%;
-}
-.el-drawer__body {
-  height: calc(100% - 39px);
-}
 .long {
   width: 100%;
 }
@@ -367,16 +383,6 @@ h5 {
   }
 }
 
-.el-dialog {
-  border-radius: 10px !important;
-  padding: 10px 0 !important;
-  width: 50% !important;
-  &/deep/ {
-    .el-dialog__body {
-      padding: 0 !important;
-    }
-  }
-}
 .el-card__body {
   height: 100%;
   overflow-x: scroll;
@@ -427,12 +433,6 @@ textarea {
 */
 .mobile {
   overflow: scroll;
-  .el-dialog {
-    width: 100%;
-  }
-  .el-drawer__body {
-    overflow-y: scroll;
-  }
 }
 .trigger {
   cursor: pointer;

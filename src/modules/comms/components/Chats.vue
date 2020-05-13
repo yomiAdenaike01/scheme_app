@@ -25,24 +25,16 @@
         <span>Compose</span>
       </div>
     </div>
-
-    <TextDisplay
-      v-else
-      class="no_content"
-      :display-text="{
-        heading: 'No previous chats',
-        content: 'Press the button below to start a new chat',
-        icon: 'bx bx-message-group',
-        hasIcon: true
-      }"
-    >
+    <div v-else class="text_container all_centre">
+      <h2>No previous chats</h2>
+      <p>Press the button below to start a new chat</p>
       <s-button
         slot="body"
         class="only_icon secondary"
         icon="plus"
         @click="startNewChat"
       />
-    </TextDisplay>
+    </div>
   </div>
 </template>
 
@@ -50,12 +42,10 @@
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import { FadeTransition } from "vue2-transitions";
 import Chat from "./Chat";
-import TextDisplay from "@/components/TextDisplay";
 import SButton from "@/components/SButton";
 export default {
   name: "Chats",
   components: {
-    TextDisplay,
     Chat,
     SButton,
     FadeTransition

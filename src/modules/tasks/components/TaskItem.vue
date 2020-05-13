@@ -21,7 +21,10 @@
           }}</small>
 
           <div class="info_wrapper">
-            <Comments mode="overview" :comment-count="comments.length" />
+            <div class="overview_wrapper">
+              <i class="bx bx-message-rounded grey"></i>
+              <small class="grey">{{ comments.length }}</small>
+            </div>
             <AssignedUsers
               class="user_wrapper"
               :users="taskInformation.assigned_to"
@@ -71,8 +74,7 @@ export default {
   components: {
     Form: () => import("@/components/Form"),
     Labels: () => import("./Labels"),
-    AssignedUsers: () => import("./AssignedUsers"),
-    Comments: () => import("./Comments")
+    AssignedUsers: () => import("./AssignedUsers")
   },
   props: {
     taskInformation: {
@@ -257,5 +259,17 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.overview_wrapper {
+  background: rgb(247, 247, 247);
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 5px 20px;
+  border-radius: 10px;
+  small {
+    margin-left: 5px;
+  }
 }
 </style>

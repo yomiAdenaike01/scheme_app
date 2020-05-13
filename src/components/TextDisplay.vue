@@ -1,34 +1,18 @@
-<template>
-  <div class="text_display_container">
+<template functional>
+  <div class="text_display_container" :class="[data.class, data.staticClass]">
     <!-- Title display -->
-    <div
-      v-if="mode == 'title' || mode == 'both'"
-      :class="displayText.class"
-      class="headings_wrapper"
-    >
+    <div v-if="mode == 'title' || mode == 'both'" class="headings_wrapper">
       <div
         v-if="$slots.header"
-        :class="{ center_icon: displayText.hasIcon }"
+        :class="{ center_icon: props.displayText.hasIcon }"
         class="slot_container"
       >
         <slot name="header"></slot>
       </div>
 
-      <component
-        :is="displayText.tag ? displayText.tag : 'h2'"
-        class="heading"
-        :class="{ txt_center: displayCenter.heading }"
-        v-html="displayText.heading"
-      />
+      <h2 class="heading" v-html="props.displayText.heading" />
 
-      <div
-        :class="[displayText.contentClass, { txt_center: displayCenter.text }]"
-        class="heading_text_content"
-        v-html="displayText.content"
-      ></div>
-      <div v-if="$slots.body">
-        <slot name="body"></slot>
-      </div>
+      <p class="heading_text_content" v-html="props.displayText.content"></p>
     </div>
   </div>
 </template>
@@ -53,15 +37,6 @@ export default {
           hasIcon: false
         };
       }
-    }
-  },
-
-  computed: {
-    displayCenter() {
-      return {
-        heading: this.displayText?.headingAlign ?? false,
-        text: this.displayText?.textAlign ?? false
-      };
     }
   }
 };

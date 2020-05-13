@@ -87,39 +87,40 @@
         :active-tab="selectedTab"
         @changeTab="selectedTab = $event"
       />
-      <div class="viewing_container">
-        <template v-if="selectedTab == 'contact_information'">
-          <div
-            v-for="(item, index) in teamMemberInformation[selectedTab]"
-            :key="index"
+
+      <div
+        v-if="selectedTab == 'events_timeline'"
+        class="tab_content_container"
+      >
+        <RelatedEvent
+          v-for="event in relatedEvents"
+          :key="event._id"
+          :event="event"
+        />
+        <div
+          v-if="relatedEvents.length == 0"
+          class="no_related_events text_container all_centre"
+        >
+          <h2>
+            {{
+              isCurrentUser
+                ? "You have no events assigned to you"
+                : "No events for this user"
+            }}
+          </h2>
+
+          <s-button
+            class="plain rounded"
+            @click="$router.push({ name: 'events' })"
+            >Go to events</s-button
           >
-            <div class="data_field">
-              <p>{{ item }}</p>
-              {{ selectedTeamMember[item] }}
-            </div>
-          </div>
-        </template>
-        <div v-else-if="selectedTab == 'events_timeline'">
-          <Timeline v-if="events.length > 0" :events="relatedEvents" />
-          <TextDisplay
-            v-else
-            :display-text="{
-              heading: 'No events for this user',
-              hasIcon: true,
-              icon: 'bx-badge',
-              content: 'You can create an event for the user here'
-            }"
-          >
-            <s-button
-              slot="body"
-              icon="calendar"
-              class="primary rounded"
-              @click="$router.push({ name: 'events' })"
-              >Go to events</s-button
-            >
-          </TextDisplay>
         </div>
       </div>
+
+      <Analytics
+        v-if="selectedTab == 'analytics'"
+        :selected-team-member="selectedTeamMember"
+      />
     </div>
     <!-- View the user details -->
     <div
@@ -142,13 +143,13 @@
           "
         ></i>
         <i
-          v-if="selectedTeamMember._id != userInformation._id"
+          v-if="!isCurrentUser"
           :style="{ backgroundColor: colours[0] }"
           class="bx bx-phone"
         ></i>
 
         <i
-          v-if="selectedTeamMember._id != userInformation._id"
+          v-if="!isCurrentUser"
           :style="{ backgroundColor: colours[1] }"
           class="bx bxl-discourse"
           @click="
@@ -164,17 +165,6 @@
             handleTeamMember();
           "
         ></i>
-        <i
-          v-if="hasPermission"
-          :style="{ backgroundColor: colours[9] }"
-          class="bx bx-bar-chart-alt-2"
-          @click="
-            $router.push({
-              name: 'analytics',
-              params: { teamMember: selectedTeamMember._id }
-            })
-          "
-        ></i>
       </div>
 
       <hr />
@@ -184,7 +174,6 @@
       >
         <div v-if="selectedUserActivity.length > 0" v-loading="loading">
           <h3>Activity feed</h3>
-          <small class="grey">All user activity is displayed below</small>
           <ActivityLog
             v-for="activity in selectedUserActivity"
             :key="activity._id"
@@ -192,22 +181,19 @@
             :date-created="initMoment(activity.date_created).calendar()"
           />
         </div>
-        <TextDisplay
-          v-else
-          :display-text="{
-            content: 'No recent activity found'
-          }"
-        />
+        <div v-else class="text_container all_centre">
+          <h3>No recent activity found</h3>
+        </div>
       </div>
+      <TeamOverlay
+        :mode="mode"
+        :display-overlay="displayOverlay"
+        :selected-team-member="selectedTeamMember"
+        @close="displayOverlay = false"
+        @clearSearch="clearSearch"
+        @handleTeamMember="handleTeamMember"
+      />
     </div>
-    <TeamOverlay
-      :mode="mode"
-      :display-overlay="displayOverlay"
-      :selected-team-member="selectedTeamMember"
-      @close="displayOverlay = false"
-      @clearSearch="clearSearch"
-      @handleTeamMember="handleTeamMember"
-    />
   </div>
 </template>
 
@@ -218,11 +204,11 @@ import Avatar from "@/components/Avatar";
 import OnlineIndicator from "@/components/OnlineIndicator";
 import Menu from "@/components/Menu";
 import SButton from "@/components/SButton";
-import TextDisplay from "@/components/TextDisplay";
 
+import Analytics from "./components/Analytics";
 import TeamOverlay from "./components/TeamOverlay";
 import ActivityLog from "./components/ActivityLog";
-import Timeline from "./components/Timeline";
+import RelatedEvent from "./components/RelatedEvent";
 
 export default {
   name: "Team",
@@ -231,11 +217,11 @@ export default {
     OnlineIndicator,
     Menu,
     SButton,
-    TextDisplay,
+    Analytics,
 
     ActivityLog,
     TeamOverlay,
-    Timeline
+    RelatedEvent
   },
   data() {
     return {
@@ -243,7 +229,7 @@ export default {
       mode: "create",
       searchTeamMemberName: "",
       viewUser: false,
-      selectedTab: "contact_information",
+      selectedTab: "events_timeline",
       selectedTeamMember: {},
       inputtedTeamMemberData: {},
       selectedTeamMemberIndex: 0,
@@ -259,9 +245,13 @@ export default {
     ...mapGetters("Team", ["getFilteredTeam"]),
 
     ...mapGetters(["getIsAdmin"]),
+    isCurrentUser() {
+      return this.selectedTeamMember._id == this.userInformation._id;
+    },
 
     relatedEvents() {
       let relatedEvents = [];
+
       if (this.events.length > 0) {
         let sortedEvents = [...this.events].sort((a, b) => {
           return new Date(a.start_date) - new Date(b.start_date);
@@ -275,8 +265,9 @@ export default {
               }) > -1;
             if (isAssingnedToEvent) {
               let { start_date, end_date, type } = event;
-              start_date = this.formatDate(start_date);
-              end_date = this.formatDate(end_date);
+              start_date = this.initMoment(start_date);
+              end_date = this.initMoment(end_date);
+
               relatedEvents.push({ start_date, end_date, type });
             }
           }
@@ -286,10 +277,7 @@ export default {
     },
 
     hasPermission() {
-      return (
-        this.selectedTeamMember._id == this.userInformation._id ||
-        this.getIsAdmin
-      );
+      return this.isCurrentUser || this.getIsAdmin;
     },
 
     headings() {
@@ -340,14 +328,9 @@ export default {
         }
       ];
     },
-    teamMemberInformation() {
-      return {
-        contact_information: ["email", "name"],
-        events_timeline: []
-      };
-    },
+
     tabItems() {
-      return ["contact_information", "events_timeline"];
+      return ["events_timeline", "analytics"];
     },
 
     groupedTeamMembers() {
@@ -449,10 +432,14 @@ export default {
 
   created() {
     let routeTeamMember = this.$route.params?.user;
+    let routeTab = this.$route.params?.tab;
     if (routeTeamMember) {
       this.searchTeamMemberName = routeTeamMember;
     } else {
       this.setTeamMember();
+    }
+    if (routeTab) {
+      this.selectedTab = routeTab;
     }
     this.loading = true;
   },
@@ -642,8 +629,11 @@ p {
   text-transform: capitalize;
 }
 .view_team_member {
+  display: flex;
+  flex-direction: column;
   flex: 1;
 }
+
 .data_field {
   flex: 1;
 }
@@ -663,6 +653,11 @@ p {
   }
   &:first-child {
     margin: 10px 0 50px 0;
+  }
+}
+.no_related_events {
+  p {
+    margin-bottom: 5px;
   }
 }
 .shortcuts_container {

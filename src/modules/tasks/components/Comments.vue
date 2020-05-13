@@ -1,78 +1,64 @@
 <template>
   <div class="comments_container">
-    <div v-if="mode == 'overview'" class="overview_wrapper">
-      <i class="bx bx-message-rounded grey"></i>
-      <small class="grey">{{ commentCount }}</small>
-    </div>
-    <div v-if="mode != 'overview'" class="full_mode_container">
+    <div class="full_mode_container">
       <div
         v-if="comments.length > 0"
         ref="comments_wrapper"
         class="comments_wrapper"
       >
-        <slide-x-left-transition group>
-          <div
-            v-for="(comment, index) in comments"
-            :key="`${comment._id}${index}`"
-            class="comment"
-          >
-            <div class="comment_header">
-              <Avatar :name="comment.assigned_to.name" />
-              <small class="username">{{ comment.assigned_to.name }}</small>
-              <small class="timestamp">{{
-                initMoment(comment.date_created).calendar()
-              }}</small>
-            </div>
-
-            <div class="comment_message" @click="editMessage = true">
-              <p>{{ comment.message }}</p>
-            </div>
-            <el-button
-              v-show="canInteract"
-              class="delete_comment"
-              icon="el-icon-close"
-              type="danger"
-              circle
-              @click="
-                $emit('deleteComment', {
-                  commentIndex: index,
-                  _id: comment._id
-                })
-              "
-            ></el-button>
+        <div
+          v-for="(comment, index) in comments"
+          :key="`${comment._id}${index}`"
+          class="comment"
+        >
+          <div class="comment_header">
+            <Avatar :name="comment.assigned_to.name" />
+            <small class="username">{{ comment.assigned_to.name }}</small>
+            <small class="timestamp">{{
+              initMoment(comment.date_created).calendar()
+            }}</small>
           </div>
-        </slide-x-left-transition>
+
+          <div class="comment_message" @click="editMessage = true">
+            <p>{{ comment.message }}</p>
+          </div>
+          <el-button
+            v-show="canInteract"
+            class="delete_comment"
+            icon="el-icon-close"
+            type="danger"
+            circle
+            @click="
+              $emit('deleteComment', {
+                commentIndex: index,
+                _id: comment._id
+              })
+            "
+          ></el-button>
+        </div>
       </div>
 
-      <div v-else class="no_comments_wrapper">
-        <TextDisplay
-          :display-text="{
-            hasIcon: true,
+      <div v-else class="no_comments_wrapper text_container all_centre">
+        <i class="grey large_icon bx bx-comment-detail"></i>
 
-            content: 'Be the first to comment on this task'
-          }"
-        >
-          <i slot="header" class="grey large_icon bx bx-comment-detail"></i>
-        </TextDisplay>
+        <h4 class="grey">Be the first to comment on this task</h4>
       </div>
 
       <div v-if="canInteract" class="create_comment_wrapper">
         <Avatar class="comment_avatar" :name="userInformation.name" />
-        <el-input
+        <input
           v-model="newMessage"
-          class="input_comment"
           placeholder="Write a comment..."
-          @keyup.enter.native="createComment"
-        ></el-input>
+          class="input_comment"
+          @keyup.enter="createComment"
+        />
+
         <s-button
-          class="
-          shadow
-          secondary"
+          class="only_icon secondary"
           :class="{ disabled: newMessage.length == 0 }"
           icon="send"
           @click="createComment"
-          >Post</s-button
-        >
+        />
       </div>
     </div>
   </div>
@@ -86,15 +72,10 @@ export default {
   components: {
     ActionIcon: () => import("@/components/ActionIcon"),
     Avatar: () => import("@/components/Avatar"),
-    TextDisplay: () => import("@/components/TextDisplay"),
     SlideXLeftTransition,
     SButton: () => import("@/components/SButton")
   },
   props: {
-    mode: {
-      type: String,
-      default: "overview"
-    },
     comments: {
       type: Array,
       default: () => []
@@ -187,7 +168,13 @@ export default {
   }
 }
 .input_comment {
+  padding: 10px;
+  border: none;
+  outline: none;
+  background: $grey;
+  flex: 1;
   margin-right: 10px;
+  border-radius: 10px;
 }
 .update_comment_container {
   display: flex;
@@ -227,6 +214,7 @@ export default {
 }
 .no_comments_wrapper {
   background: rgb(250, 250, 250);
+  padding: 20px;
 }
 
 .delete_comment {

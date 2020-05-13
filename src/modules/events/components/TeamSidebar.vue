@@ -21,41 +21,34 @@
         </Dropdown>
       </div>
     </div>
-    <div v-else class="information_container">
-      <TextDisplay
-        :display-text="{
-          heading: 'No team members found',
-          headingAlign: 'center',
-          textAlign: 'center',
-          tag: 'h3',
-          hasIcon: true,
-          content:
-            'To create a team member please navigate to user management and manage users to create team members'
-        }"
-        mode="title"
+    <div v-else class="text_container all_centre">
+      <i class="bx bx-user flex_center"></i>
+      <h3>No team members found</h3>
+      <p>
+        To create a team member please navigate to user management and manage
+        users to create team members
+      </p>
+
+      <s-button class="rounded primary" @click="$router.push({ name: 'user' })"
+        >Go to user management</s-button
       >
-        <i slot="header" class="bx bx-user flex_center"></i>
-        <el-button slot="body" round @click="$router.push({ name: 'user' })"
-          >Go to user management</el-button
-        >
-      </TextDisplay>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
-import TextDisplay from "@/components/TextDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
 import OnlineIndicator from "@/components/OnlineIndicator";
+import SButton from "@/components/SButton";
 export default {
   name: "TeamSidebar",
   components: {
     Dropdown,
     Avatar,
-    TextDisplay,
-    OnlineIndicator
+    OnlineIndicator,
+    SButton
   },
 
   data() {
@@ -73,11 +66,17 @@ export default {
       return [
         {
           name: "<i class='bx bxl-discourse'></i> Message",
-          command: "message"
+          command: "message",
+          divider: true
         },
         {
-          name: "<i class='bx bx-user'></i> View",
-          command: "view_team_member"
+          name: "<i class='bx bx-bar-chart-alt-2'></i> View analytics",
+          command: "view_team_member_analytics",
+          divider: true
+        },
+        {
+          name: "<i class='bx bxs-calendar-check'></i> View events timeline ",
+          command: "view_team_member_events"
         }
       ];
     }
@@ -101,10 +100,20 @@ export default {
           this.createStubChat();
           break;
         }
-        case "view_team_member": {
+        case "view_team_member_analytics": {
           this.$router.push({
             name: "team",
-            params: { user: this.selectedTeamMember?.name }
+            params: { user: this.selectedTeamMember?.name, tab: "analytics" }
+          });
+          break;
+        }
+        case "view_team_member_events": {
+          this.$router.push({
+            name: "team",
+            params: {
+              user: this.selectedTeamMember?.name,
+              tab: "events_timeline"
+            }
           });
           break;
         }
@@ -146,13 +155,6 @@ export default {
   align-items: center;
   display: flex;
   justify-content: center;
-}
-.information_container {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
 }
 
 /**

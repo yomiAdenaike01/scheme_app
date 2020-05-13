@@ -4,7 +4,7 @@
       <s-button
         v-for="(button, index) in config"
         :key="index"
-        class="flat"
+        class="rounded flat"
         :class="{
           active: button.toLowerCase() == selectedConfig.toLowerCase()
         }"

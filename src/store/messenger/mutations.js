@@ -75,8 +75,5 @@ export default {
       state.activeChat = {};
     }
     Vue.delete(state.chats, index);
-  },
-  CLEAR_ACTIVE_CHAT(state) {
-    state.activeChat = {};
   }
 };
