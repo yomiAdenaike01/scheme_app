@@ -4,15 +4,15 @@ import updateBreadCrumbs from "./helpers";
 
 const deleteStateInterval = (state, intervalID) => {
   if (!intervalID) {
-    for (let property in state.globalIntervals) {
-      clearTimeout(state.globalIntervals[property]);
-      Vue.set(state.globalIntervals, property, null);
+    for (let property in state.runningIntervals) {
+      clearTimeout(state.runningIntervals[property]);
+      Vue.set(state.runningIntervals, property, null);
     }
   } else {
-    clearTimeout(state.globalIntervals[intervalID]);
-    Vue.set(state.globalIntervals, intervalID, null);
+    clearTimeout(state.runningIntervals[intervalID]);
+    Vue.set(state.runningIntervals, intervalID, null);
   }
-  console.log(state.globalIntervals);
+  console.log(state.runningIntervals);
 };
 const deleteSystemNotification = (state, notificationIndex) => {
   Vue.delete(state.systemNotifications, notificationIndex);
@@ -25,7 +25,6 @@ export default {
     for (let property in state.overlayIndex[payload.overlay]) {
       Vue.set(state.overlayIndex[payload.overlay], property, payload[property]);
     }
-    console.log(state.overlayIndex[payload.overlay]);
     state.overlayHistory = payload;
   },
 
@@ -88,7 +87,7 @@ export default {
 
     let timeout;
 
-    if (!state.globalIntervals?.id) {
+    if (!state.runningIntervals?.id) {
       var runInterval = () => {
         timeout = setTimeout(() => {
           payload
@@ -103,9 +102,9 @@ export default {
       };
     }
 
-    if (!state.globalIntervals[payload.id]) {
+    if (!state.runningIntervals[payload.id]) {
       runInterval();
-      state.globalIntervals[payload.id] = timeout;
+      state.runningIntervals[payload.id] = timeout;
     }
   },
 

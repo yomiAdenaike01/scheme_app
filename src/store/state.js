@@ -2,11 +2,19 @@ let baseStyle = getComputedStyle(document.body);
 const getStyle = cssVar => {
   return baseStyle.getPropertyValue(cssVar);
 };
-
+const genTheme = () => {
+  let theme = {};
+  let themeVars = ["colour_primary", "colour_secondary", "colour_tertiary"];
+  for (let i = 0, len = themeVars.length; i < len; i++) {
+    let themeItem = `--${themeVars[i]}`;
+    theme[themeVars[i]] = getStyle(themeItem);
+  }
+  return theme;
+};
 export default {
   team: [],
 
-  globalIntervals: {},
+  runningIntervals: {},
   notificationRef: {},
   groupRef: {},
   teamRef: {},
@@ -33,12 +41,8 @@ export default {
 
   overlayHistory: {},
   overlayIndex: {
-    profile: { view: false, data: {} },
     viewEvent: { view: false, data: {} },
-    eventModule: { view: false, data: {} },
-    tutorial: { view: false, data: {} },
-    prevEvents: { view: false, data: {} },
-    task: { view: false, data: {} }
+    eventModule: { view: false, data: {} }
   },
 
   colours: [
@@ -57,11 +61,7 @@ export default {
     "#3b4863"
   ],
 
-  theme: {
-    primary: getStyle("--colour_primary"),
-    secondary: getStyle("--colour_secondary"),
-    tertiary: getStyle("--colour_tertiary")
-  },
+  theme: genTheme(),
 
   daysOfWeek: [
     {

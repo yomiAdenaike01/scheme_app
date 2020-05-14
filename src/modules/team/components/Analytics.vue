@@ -37,35 +37,34 @@
       <!-- Select status for tasks -->
     </div>
     <div v-if="mode == 'dashboard'" class="data_container">
-      <div
-        v-for="(value, key) in dataItems"
-        :key="key"
-        :class="`data_item_container ${key}`"
-      >
-        <!-- Value is an array of objects -->
-        <div v-if="value.length > 0" class="data_item_wrapper">
+      <!-- Value is an array of objects -->
+      <div v-if="dataItems[dataSet].length > 0" class="data_item_wrapper">
+        <div
+          v-for="(dataUnit, index) in dataItems[dataSet]"
+          :key="index"
+          class="data_item"
+        >
+          <!-- Each data unit is an object -->
           <div
-            v-for="(dataUnit, index) in value"
-            :key="index"
-            class="data_item"
+            v-for="(_value, _key) in dataUnit"
+            :key="`${(_value, _key)}`"
+            class="data_item_text"
           >
-            <!-- Each data unit is an object -->
-            <div
-              v-for="(_value, _key) in dataUnit"
-              :key="`${(_value, _key)}`"
-              class="data_item_text"
-            >
-              <!-- Day , week value -->
-              <h3 class="time_container">
-                {{ formatDate(_value.times.start, "DD-MM-YYYY") }} -
-                {{ formatDate(_value.times.end, "DD-MM-YYYY") }}
-              </h3>
-              <h3 class="title">This {{ _key }}</h3>
+            <!-- Day , week value -->
+            <h3 class="time_container">
+              {{ formatDate(_value.times.start, "DD-MM-YYYY") }} -
+              {{ formatDate(_value.times.end, "DD-MM-YYYY") }}
+            </h3>
+            <h3 class="title">
+              {{ _key == "day" ? "Today" : `This ${_key}` }}
+            </h3>
 
-              <h1 class="grey">{{ _value.events }}</h1>
-            </div>
+            <h1 class="grey">{{ _value.events }}</h1>
           </div>
         </div>
+      </div>
+      <div class="data_item_container">
+        <Chart />
       </div>
     </div>
     <div v-if="mode == 'custom'" class="custom_container">
@@ -77,12 +76,17 @@
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 import { FadeTransition } from "vue2-transitions";
+
+import Chart from "./Chart";
+
 import SortBy from "@/components/SortBy";
 import SButton from "@/components/SButton";
+
 export default {
   name: "Analytics",
   components: {
     FadeTransition,
+    Chart,
     SortBy,
     SButton
   },
@@ -97,6 +101,7 @@ export default {
     return {
       loading: false,
       filters: {},
+      analyticsRunning: false,
       mode: "dashboard",
       dataSets: [
         { label: "Events", value: 1 },
@@ -118,18 +123,28 @@ export default {
     }
   },
   watch: {
-    async selectedTeamMember() {
-      await this.initAnalytics();
+    selectedTeamMember: {
+      immediate: true,
+      async handler() {
+        await this.initAnalytics();
+      }
     }
   },
-  async created() {
-    await this.initAnalytics();
+  created() {
+    this.request({
+      url: "analytics/events/graph",
+      params: { time_step: "day", user: this.selectedTeamMember._id },
+      method: "GET"
+    }).then(response => {
+      console.log(response);
+    });
   },
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL", "DELETE_GLOBAL_INTERVAL"]),
     initAnalytics() {
       this.loading = true;
+      this.analyticsRunning = true;
       this.mode = "dashboard";
       return new Promise((resolve, reject) => {
         try {
@@ -146,6 +161,9 @@ export default {
         }
       });
     },
+    updateDataSet({ dataSet, key, data }) {
+      this.dataItems[dataSet].push({ [key]: data });
+    },
     async getAnalytics() {
       try {
         for (let i = 0, len = this.timeStepArr.length; i < len; i++) {
@@ -156,7 +174,11 @@ export default {
             time_step,
             this.dataSet
           );
-          this.dataItems[this.dataSet].push({ [time_step]: eventCount });
+          this.updateDataSet({
+            dataSet: this.dataSet,
+            key: time_step,
+            data: eventCount
+          });
         }
         return Promise.resolve();
       } catch (error) {
@@ -227,12 +249,14 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow-x: hidden;
 }
 .filters_container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(var(--colour_primary), 0.03);
+  background: rgba(var(--colour_primary), 0.01);
+  border-bottom: $border;
 }
 .filters_tools_container {
   display: flex;
@@ -246,20 +270,19 @@ export default {
   flex: 1;
 }
 .data_item_wrapper {
-  display: flex;
   flex-wrap: wrap;
+  display: flex;
   flex: 1;
+  margin: 10px;
 }
+
 .data_item {
   display: flex;
-  flex: 1;
-  min-width: 400px;
   justify-content: center;
   align-items: center;
-  padding: 30px;
-  margin: 10px;
-  max-height: 300px;
-  box-shadow: $box_shadow;
+  flex: 1;
+  margin: 0 10px;
+  border: $border;
   .title {
     text-transform: capitalize;
   }
@@ -268,10 +291,10 @@ export default {
   }
 }
 .time_container {
-  padding: 10px;
+  padding: 5px;
   border-radius: 40px;
   background: rgb(220, 220, 220);
-
+  margin-bottom: 20px;
   color: white;
   font-size: 1em;
 }
@@ -281,7 +304,10 @@ export default {
 .data_container {
   display: flex;
   flex: 1;
+  flex-direction: column;
+  padding: 10px;
 }
+
 .date_inputs_container {
   padding: 10px;
   background: rgb(240, 240, 240);

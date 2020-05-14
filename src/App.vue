@@ -269,11 +269,7 @@ Fonts
     flex: 1;
   }
 }
-.el-drawer__body {
-  height: 100%;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
+
 body,
 html,
 #app {
@@ -358,59 +354,6 @@ h5 {
   &:hover {
     background: darken(#efefef, 4);
   }
-}
-/*
-
- Element UI Configuration
-
-
-*/
-
-.long {
-  width: 100%;
-}
-.el-collapse-item__header,
-.el-collapse-item__wrap {
-  border: none !important;
-}
-
-.el-popover_item {
-  &.no_events {
-    opacity: 0.4;
-  }
-  &:hover {
-    background: $hover_grey;
-  }
-}
-
-.el-card__body {
-  height: 100%;
-  overflow-x: scroll;
-}
-.el-tabs--border-card {
-  background: #ffffff;
-  border-top: 1px solid #dcdfe6;
-  border-bottom: none !important;
-  border-left: none !important;
-  border-right: none !important;
-  box-shadow: none !important;
-}
-
-.el-dialog__wrapper {
-  background: rgba(42, 54, 59, 0.01);
-}
-.el-tabs__item,
-button,
-input,
-select,
-textarea {
-  font-size: 0.9em !important;
-}
-.el-input,
-.el-textarea,
-.el-textarea__inner,
-.el-input__inner {
-  border-color: rgb(200, 200, 200) !important;
 }
 
 /*
