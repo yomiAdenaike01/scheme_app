@@ -7,18 +7,19 @@
       height: `${chartHeight + 20}px`
     }"
   >
-    <ApexChart
-      v-if="series.length > 0"
-      :type="chartOptions.chart.type"
-      :options="chartOptions"
-      :series="series"
-      :height="chartHeight"
-    />
+    <div v-if="series.length > 0" class="chart_wrapper">
+      <h2>{{ textContent.title.text }}</h2>
+      <ApexChart
+        :type="chartOptions.chart.type"
+        :options="chartOptions"
+        :series="series"
+        :height="chartHeight"
+      />
+    </div>
     <div v-else class="text_container grey all_centre">
       <i class="large_icon bx bx-bar-chart-alt-2"></i>
-      <h1>
-        No chart data found
-      </h1>
+      <h1>No chart data found</h1>
+      <h3>({{ textContent.title.text }})</h3>
     </div>
   </div>
 </template>
@@ -36,6 +37,9 @@ export default {
   props: {
     username: {
       type: String
+    },
+    yAxis: {
+      type: Object
     },
     textContent: {
       type: Object,
@@ -141,10 +145,9 @@ export default {
         },
         ...this.miscOptions,
         xaxis: this.xAxis,
+        yaxis: this.yAxis,
         colors: chartColours,
-        legend: this.legend,
-        title: this.textContent.title,
-        subtitle: this.textContent.subtitle
+        legend: this.legend
       };
     }
   }
@@ -160,5 +163,8 @@ export default {
     flex: 1;
     display: flex;
   }
+}
+.chart_wrapper {
+  padding: 10px;
 }
 </style>

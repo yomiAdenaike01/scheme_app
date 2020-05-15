@@ -87,7 +87,7 @@
         :active-tab="selectedTab"
         @changeTab="selectedTab = $event"
       />
-
+      <!-- Related events -->
       <div
         v-if="selectedTab == 'events_timeline'"
         class="tab_content_container"
@@ -99,8 +99,9 @@
         />
         <div
           v-if="relatedEvents.length == 0"
-          class="no_related_events text_container all_centre"
+          class="grey no_related_events text_container all_centre"
         >
+          <i class="bx bx-calendar large_icon"></i>
           <h2>
             {{
               isCurrentUser
@@ -108,15 +109,9 @@
                 : "No events for this user"
             }}
           </h2>
-
-          <s-button
-            class="plain rounded"
-            @click="$router.push({ name: 'events' })"
-            >Go to events</s-button
-          >
         </div>
       </div>
-
+      <!-- Anayltics -->
       <Analytics
         v-if="selectedTab == 'analytics'"
         :selected-team-member="selectedTeamMember"

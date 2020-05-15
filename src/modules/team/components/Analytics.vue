@@ -38,7 +38,7 @@
     </div>
     <div v-if="mode == 'dashboard'" class="data_container">
       <!-- Value is an array of objects -->
-      <div v-loading="dataItems[dataSet].length == 0" class="data_item_wrapper">
+      <div v-loading="dataItems[dataSet].length < 1" class="data_item_wrapper">
         <div
           v-for="(dataUnit, index) in dataItems[dataSet]"
           :key="index"
@@ -109,32 +109,43 @@ export default {
       mode: "dashboard",
       chartData: {},
       chartLoading: false,
-      dataSets: [
-        { label: "Events", value: 1 },
-        { label: "Tasks", value: 0 }
-      ],
+
       dataSet: "events",
-      dataItems: {
-        events: [],
-        tasks: []
-      },
+      dataItems: {},
       timeStepArr: ["day", "week", "month", "year"],
       urlKeys: ["events", "tasks"]
     };
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapGetters("Team", ["userLookup"]),
     globalIntervalID() {
       return `analytics_${this.selectedTeamMember._id}`;
+    },
+    dataSets() {
+      let keys = this.urlKeys;
+      let dataSets = [];
+      for (let i = 0, len = keys.length; i < len; i++) {
+        dataSets.push({ label: keys[i], value: i });
+      }
+      return dataSets;
+    },
+    dataPointCallbacks() {
+      return {
+        events: data => {
+          console.log(data);
+        },
+        tasks: data => {
+          console.log(data);
+        }
+      };
     }
   },
   watch: {
     selectedTeamMember: {
       immediate: true,
       async handler() {
-        await this.initAnalytics();
-        await this.getGraph();
+        await Promise.all([await this.initAnalytics(), await this.getGraph()]);
+        this.loading = false;
       }
     }
   },
@@ -150,6 +161,37 @@ export default {
         method: "GET"
       }).then(response => {
         let chartData = {
+          miscOptions: {
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                columnWidth: "10%",
+                endingShape: "rounded"
+              }
+            },
+            fill: {
+              type: "solid",
+              gradient: {
+                shade: "light",
+                type: "horizontal",
+                shadeIntensity: 0.25,
+                gradientToColors: undefined,
+                inverseColors: true,
+                opacityFrom: 0.85,
+                opacityTo: 0.85,
+                stops: [50, 0, 100]
+              }
+            }
+          },
+          chartAesthetic: {
+            type: "bar",
+            stacked: false,
+            events: {
+              dataPointSelection: (event, chartContext, config) => {
+                console.log({ event, chartContext, config });
+              }
+            }
+          },
           textContent: {
             title: {
               text: `Events in hours`,
@@ -163,6 +205,11 @@ export default {
           xAxis: {
             type: "datetime",
             categories: []
+          },
+          yAxis: {
+            title: {
+              text: "Duration (hours)"
+            }
           },
           series: []
         };
@@ -180,6 +227,10 @@ export default {
     },
     initAnalytics() {
       this.mode = "dashboard";
+      console.log("running");
+      for (let i = 0, len = this.urlKeys.length; i < len; i++) {
+        this.dataItems[this.urlKeys[i]] = [];
+      }
       return new Promise((resolve, reject) => {
         try {
           this.dataItems = {

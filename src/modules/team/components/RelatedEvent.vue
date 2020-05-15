@@ -21,6 +21,7 @@ export default {
 .event {
   padding: 15px;
   margin: 10px;
+  flex: 1;
   box-shadow: $box_shadow;
 }
 </style>

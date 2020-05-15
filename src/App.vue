@@ -305,7 +305,7 @@ h5 {
 }
 
 .grey {
-  color: #999;
+  color: rgb(180, 180, 180);
 }
 
 .bold {

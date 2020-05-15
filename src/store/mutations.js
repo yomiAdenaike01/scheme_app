@@ -281,7 +281,7 @@ export default {
       clearTimeout(removeNotificationTimeout);
       let removeNotificationTimeout = setTimeout(() => {
         state.systemNotifications.pop();
-      }, 9000);
+      }, 5000);
     }
   }
 };

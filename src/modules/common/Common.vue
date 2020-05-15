@@ -349,15 +349,15 @@ export default {
 .notification_container {
   position: fixed;
   top: 2%;
-  right: 0;
-  left: 85%;
+  bottom: 0;
+  right: 20px;
   z-index: 999995;
 }
 .notification {
   background: white;
   box-shadow: $box_shadow;
   display: flex;
-  min-width: 300px;
+  min-width: 410px;
   max-width: fit-content;
   align-items: center;
   justify-content: center;

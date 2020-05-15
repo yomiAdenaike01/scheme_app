@@ -14,7 +14,7 @@
         }"
       ></TextDisplay>
       <div class="info_button_container">
-        <s-button class="rounded shadow secondary" icon="check">{{
+        <s-button class="rounded secondary" icon="check">{{
           approvalButtonConfig.content
         }}</s-button>
 
