@@ -63,8 +63,13 @@
           </div>
         </div>
       </div>
+      <!-- Charts -->
       <div class="data_item_container">
-        <Chart :username="selectedTeamMember.name" v-bind="chartData" />
+        <Chart
+          v-loading="chartLoading"
+          :username="selectedTeamMember.name"
+          v-bind="chartData"
+        />
       </div>
     </div>
     <div v-if="mode == 'custom'" class="custom_container">
@@ -103,6 +108,7 @@ export default {
       filters: {},
       mode: "dashboard",
       chartData: {},
+      chartLoading: false,
       dataSets: [
         { label: "Events", value: 1 },
         { label: "Tasks", value: 0 }
@@ -137,6 +143,7 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL", "DELETE_GLOBAL_INTERVAL"]),
     getGraph() {
+      this.chartLoading = true;
       this.request({
         url: `analytics/${this.dataSet}/graph`,
         params: { time_step: "year", user: this.selectedTeamMember._id },
@@ -168,6 +175,7 @@ export default {
           });
         }
         this.chartData = chartData;
+        this.chartLoading = false;
       });
     },
     initAnalytics() {

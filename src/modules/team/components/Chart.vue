@@ -14,7 +14,7 @@
       :series="series"
       :height="chartHeight"
     />
-    <div class="text_container grey all_centre">
+    <div v-else class="text_container grey all_centre">
       <i class="large_icon bx bx-bar-chart-alt-2"></i>
       <h1>
         No chart data found
