@@ -74,7 +74,7 @@ export default {
       "getCurrentTabXref"
     ]),
 
-    ...mapGetters("Team", ["getDropdownTeamMembers", "getTeamMember"]),
+    ...mapGetters("Team", ["getDropdownTeamMembers", "userLookup"]),
     headings() {
       return {
         assigned_to: "<h3>Assign team members</h3>",
@@ -103,7 +103,7 @@ export default {
         this.userInformation._id,
         ...events.assigned_to.filter(assignee => {
           return (
-            this.getTeamMember(assignee)?.user_group?.enable_event_rejection ==
+            this.userLookup(assignee)?.user_group?.enable_event_rejection ==
             true
           );
         })

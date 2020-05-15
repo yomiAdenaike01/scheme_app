@@ -150,10 +150,10 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Tasks", ["boards", "commentRef"]),
-    ...mapGetters(["getIsAdmin", "getTeamMember", "getGroupName"]),
+    ...mapGetters(["getIsAdmin", "userLookup", "getGroupName"]),
     users() {
       return this.taskInformation.assigned_to.map(assignee => {
-        return this.getTeamMember(assignee);
+        return this.userLookup(assignee);
       });
     },
     defaultPayload() {

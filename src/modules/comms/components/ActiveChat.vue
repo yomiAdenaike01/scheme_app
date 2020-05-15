@@ -87,7 +87,7 @@ export default {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "messages"]),
     ...mapState("Team", ["team"]),
-    ...mapGetters("Team", ["getTeamMember"]),
+    ...mapGetters("Team", ["userLookup"]),
 
     chatMessages() {
       let chatMessages = [];
@@ -165,7 +165,7 @@ export default {
       cb(queriedTeam.length > 0 ? queriedTeam : this.autoCompleteTeam);
     },
     sendChatMessage() {
-      let userName = this.getTeamMember(this.chat.reciever)?.name;
+      let userName = this.userLookup(this.chat.reciever)?.name;
 
       const createError = message => {
         this.UPDATE_SYSTEM_NOTIFICATION({
@@ -187,7 +187,7 @@ export default {
 
       if (!this.isNewChat) {
         this.chat.reciever = this.activeChat.user_two._id;
-        userName = this.getTeamMember(this.chat.reciever)?.name;
+        userName = this.userLookup(this.chat.reciever)?.name;
       }
       let sendMessage = {
         ...this.chat,

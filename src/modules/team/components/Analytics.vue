@@ -30,7 +30,7 @@
           icon="refresh"
           @click="
             mode = 'dashboard';
-            initAnalytics();
+            getGraph();
           "
         />
       </div>
@@ -38,7 +38,7 @@
     </div>
     <div v-if="mode == 'dashboard'" class="data_container">
       <!-- Value is an array of objects -->
-      <div v-if="dataItems[dataSet].length > 0" class="data_item_wrapper">
+      <div v-loading="dataItems[dataSet].length == 0" class="data_item_wrapper">
         <div
           v-for="(dataUnit, index) in dataItems[dataSet]"
           :key="index"
@@ -64,7 +64,7 @@
         </div>
       </div>
       <div class="data_item_container">
-        <Chart />
+        <Chart :username="selectedTeamMember.name" v-bind="chartData" />
       </div>
     </div>
     <div v-if="mode == 'custom'" class="custom_container">
@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import { FadeTransition } from "vue2-transitions";
 
 import Chart from "./Chart";
@@ -99,10 +99,10 @@ export default {
 
   data() {
     return {
-      loading: false,
+      loading: true,
       filters: {},
-      analyticsRunning: false,
       mode: "dashboard",
+      chartData: {},
       dataSets: [
         { label: "Events", value: 1 },
         { label: "Tasks", value: 0 }
@@ -118,6 +118,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
+    ...mapGetters("Team", ["userLookup"]),
     globalIntervalID() {
       return `analytics_${this.selectedTeamMember._id}`;
     }
@@ -127,24 +128,49 @@ export default {
       immediate: true,
       async handler() {
         await this.initAnalytics();
+        await this.getGraph();
       }
     }
   },
-  created() {
-    this.request({
-      url: "analytics/events/graph",
-      params: { time_step: "day", user: this.selectedTeamMember._id },
-      method: "GET"
-    }).then(response => {
-      console.log(response);
-    });
-  },
+
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL", "DELETE_GLOBAL_INTERVAL"]),
+    getGraph() {
+      this.request({
+        url: `analytics/${this.dataSet}/graph`,
+        params: { time_step: "year", user: this.selectedTeamMember._id },
+        method: "GET"
+      }).then(response => {
+        let chartData = {
+          textContent: {
+            title: {
+              text: `Events in hours`,
+              align: "left"
+            },
+            subtitle: {
+              text: "Data",
+              align: "left"
+            }
+          },
+          xAxis: {
+            type: "datetime",
+            categories: []
+          },
+          series: []
+        };
+        for (let i = 0, len = response.length; i < len; i++) {
+          let responseItem = response[i];
+          chartData.xAxis.categories = responseItem.categories;
+          chartData.series.push({
+            data: responseItem.data,
+            name: this.selectedTeamMember.name
+          });
+        }
+        this.chartData = chartData;
+      });
+    },
     initAnalytics() {
-      this.loading = true;
-      this.analyticsRunning = true;
       this.mode = "dashboard";
       return new Promise((resolve, reject) => {
         try {
@@ -152,12 +178,12 @@ export default {
             events: [],
             tasks: []
           };
-          this.getAnalytics();
-          this.loading = false;
+          this.getAnalytics().then(() => {
+            this.loading = false;
+          });
           resolve();
         } catch (error) {
           reject(error);
-          this.loading = false;
         }
       });
     },
@@ -174,6 +200,7 @@ export default {
             time_step,
             this.dataSet
           );
+
           this.updateDataSet({
             dataSet: this.dataSet,
             key: time_step,

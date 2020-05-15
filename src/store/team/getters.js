@@ -8,7 +8,7 @@ export default {
       };
     });
   },
-  getTeamMember: ({ team }, getters, { userInformation }) => (
+  userLookup: ({ team }, getters, { userInformation }) => (
     match,
     params = "_id"
   ) => {

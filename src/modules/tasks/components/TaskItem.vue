@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin", "getTeamMember"]),
+    ...mapGetters(["getIsAdmin", "userLookup"]),
     comments() {
       return this.taskInformation?.comments ?? [];
     },

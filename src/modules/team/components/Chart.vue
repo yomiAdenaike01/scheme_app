@@ -2,16 +2,24 @@
   <div
     ref="chart_container"
     class="chart_container"
+    :class="{ no_chart: series.length == 0 }"
     :style="{
       height: `${chartHeight + 20}px`
     }"
   >
     <ApexChart
+      v-if="series.length > 0"
       :type="chartOptions.chart.type"
       :options="chartOptions"
       :series="series"
       :height="chartHeight"
     />
+    <div class="text_container grey all_centre">
+      <i class="large_icon bx bx-bar-chart-alt-2"></i>
+      <h1>
+        No chart data found
+      </h1>
+    </div>
   </div>
 </template>
 
@@ -26,6 +34,9 @@ export default {
   },
 
   props: {
+    username: {
+      type: String
+    },
     textContent: {
       type: Object,
       default: () => {
@@ -45,10 +56,6 @@ export default {
     series: {
       type: Array,
       default: () => [
-        {
-          name: "series1",
-          data: [31, 40, 28, 51, 42, 109, 100]
-        },
         {
           name: "series2",
           data: [11, 32, 45, 32, 34, 52, 41]
@@ -110,15 +117,21 @@ export default {
     }
   },
   computed: {
-    ...mapState(["colours"]),
+    ...mapState(["colours", "userInformation"]),
     chartHeight() {
       let chartHeight = 600;
       if (Object.keys(this.$refs).length > 0) {
-        chartHeight = this.$refs.chart_container.clientHeight;
+        chartHeight = this.$refs.chart_container.parentElement.height / 2;
       }
       return chartHeight;
     },
     chartOptions() {
+      let chartColours = [...this.colours].splice(0, this.series.length);
+      if (this.series.length == 1) {
+        chartColours = [
+          this.colours[this.username.length % this.colours.length]
+        ];
+      }
       return {
         chart: {
           ...this.chartAesthetic,
@@ -128,7 +141,7 @@ export default {
         },
         ...this.miscOptions,
         xaxis: this.xAxis,
-        colors: [...this.colours].splice(0, this.series.length),
+        colors: chartColours,
         legend: this.legend,
         title: this.textContent.title,
         subtitle: this.textContent.subtitle
@@ -143,5 +156,9 @@ export default {
   flex: 1;
   border: $border;
   padding: 0 20px;
+  &.no_chart {
+    flex: 1;
+    display: flex;
+  }
 }
 </style>

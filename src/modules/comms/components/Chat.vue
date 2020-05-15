@@ -51,7 +51,7 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "chats"]),
-    ...mapGetters(["getTeamMember"]),
+    ...mapGetters(["userLookup"]),
     oppositeUser() {
       if (this.chatInformation.user_two._id == this.userInformation._id) {
         return this.chatInformation.user_one.name;
