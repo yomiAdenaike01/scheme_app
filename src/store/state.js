@@ -4,7 +4,7 @@ const getStyle = cssVar => {
 };
 const genTheme = () => {
   let theme = {};
-  let themeVars = ["colour_primary", "colour_secondary", "colour_tertiary"];
+  let themeVars = ["colour_primary", "colour_secondary", "danger"];
   for (let i = 0, len = themeVars.length; i < len; i++) {
     let themeItem = `--${themeVars[i]}`;
     theme[themeVars[i]] = getStyle(themeItem);

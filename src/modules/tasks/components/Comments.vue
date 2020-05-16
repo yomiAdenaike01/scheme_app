@@ -22,19 +22,17 @@
           <div class="comment_message" @click="editMessage = true">
             <p>{{ comment.message }}</p>
           </div>
-          <el-button
+          <s-button
             v-show="canInteract"
-            class="delete_comment"
-            icon="el-icon-close"
-            type="danger"
-            circle
+            class="icon_only tertiary delete_comment"
+            icon="close"
             @click="
               $emit('deleteComment', {
                 commentIndex: index,
                 _id: comment._id
               })
             "
-          ></el-button>
+          />
         </div>
       </div>
 
@@ -45,7 +43,6 @@
       </div>
 
       <div v-if="canInteract" class="create_comment_wrapper">
-        <Avatar class="comment_avatar" :name="userInformation.name" />
         <input
           v-model="newMessage"
           placeholder="Write a comment..."
@@ -67,23 +64,25 @@
 <script>
 import { mapGetters, mapState } from "vuex";
 import { SlideXLeftTransition } from "vue2-transitions";
+
+import SButton from "@/components/SButton";
+import Avatar from "@/components/Avatar";
+import ActionIcon from "@/components/ActionIcon";
+
 export default {
   name: "Comments",
   components: {
-    ActionIcon: () => import("@/components/ActionIcon"),
-    Avatar: () => import("@/components/Avatar"),
+    ActionIcon,
+    Avatar,
     SlideXLeftTransition,
-    SButton: () => import("@/components/SButton")
+    SButton
   },
   props: {
     comments: {
       type: Array,
       default: () => []
     },
-    commentCount: {
-      type: Number,
-      default: 0
-    },
+
     canInteract: {
       type: Boolean,
       default: false
@@ -98,7 +97,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["adminPermission"]),
     ...mapState(["userInformation"])
   },
 
@@ -116,7 +115,7 @@ export default {
       this.editMessage = false;
     },
     handleDisplayActions(userID) {
-      if (this.getIsAdmin || userID == this.userInformation._id) {
+      if (this.adminPermission || userID == this.userInformation._id) {
         this.displayActions = true;
       }
     },

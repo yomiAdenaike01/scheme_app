@@ -45,7 +45,7 @@ export default {
   computed: {
     ...mapState(["clientInformation", "daysOfWeek"]),
     ...mapGetters([
-      "getIsAdmin",
+      "adminPermission",
       "getUserGroups",
       "getDropdownTeamMembers",
       "getUsersInGroup"
@@ -115,7 +115,7 @@ export default {
         }
       ];
 
-      if (this.getIsAdmin && this.contains("individualUsers")) {
+      if (this.adminPermission && this.contains("individualUsers")) {
         templateConfig.unshift({
           placeholder: "Select team members",
           id: "assigned_to",
@@ -126,7 +126,7 @@ export default {
           multiple: true
         });
       }
-      if (this.getIsAdmin && this.contains("individualUserGroups")) {
+      if (this.adminPermission && this.contains("individualUserGroups")) {
         templateConfig.unshift({
           model: "user_group",
           "component-type": "select",

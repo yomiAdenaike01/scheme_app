@@ -73,7 +73,7 @@ export default {
   name: "TaskItem",
   components: {
     Form: () => import("@/components/Form"),
-    Labels: () => import("./Labels"),
+
     AssignedUsers: () => import("./AssignedUsers")
   },
   props: {
@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin", "userLookup"]),
+    ...mapGetters(["adminPermission", "userLookup"]),
     comments() {
       return this.taskInformation?.comments ?? [];
     },
@@ -163,7 +163,7 @@ export default {
     isassigned_to() {
       return (
         this.taskInformation?.assigned_to?.indexOf(this.userInformation._id) >
-          -1 || this.getIsAdmin
+          -1 || this.adminPermission
       );
     }
   },
@@ -171,13 +171,11 @@ export default {
     ...mapActions(["request"]),
     ...mapActions("Tasks", ["updateTask"]),
     viewTaskController() {
-      if (this.currState != "complete") {
-        this.$emit("viewTask", {
-          boardIndex: this.boardIndex,
-          taskIndex: this.taskIndex,
-          ...this.taskInformation
-        });
-      }
+      this.$emit("viewTask", {
+        boardIndex: this.boardIndex,
+        taskIndex: this.taskIndex,
+        ...this.taskInformation
+      });
     },
     assignToTask(e) {
       console.log(e);

@@ -185,7 +185,7 @@ export default {
     ...mapState(["userInformation", "overlayIndex"]),
     ...mapState("Events", ["events", "eventRef"]),
     ...mapState("Team", ["team"]),
-    ...mapGetters(["getValidEventTypes", "getIsAdmin"]),
+    ...mapGetters(["getValidEventTypes", "adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
 
     assignedTo() {
@@ -208,7 +208,7 @@ export default {
         buttonConfig.type = "success";
         buttonConfig.content = "Approved";
       }
-      if (!this.getIsAdmin && this.noticePeriodExceeded) {
+      if (!this.adminPermission && this.noticePeriodExceeded) {
         buttonConfig.disabled = true;
         buttonConfig.content =
           "You cannot disapprove this event as it is past the notice period";
@@ -316,7 +316,7 @@ export default {
       });
     },
     hasPermissions() {
-      return this.getIsAdmin;
+      return this.adminPermission;
     }
   },
   methods: {

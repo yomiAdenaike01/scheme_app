@@ -29,7 +29,7 @@ export default {
       });
   },
 
-  getValidEventTypes({ clientInformation, userInformation }, { getIsAdmin }) {
+  getValidEventTypes({ clientInformation, userInformation }, { adminPermission }) {
     let hasValues = Vue.prototype.hasEntries(clientInformation);
     let arr = [];
     if (hasValues) {
@@ -37,7 +37,7 @@ export default {
       let {
         user_group: { _id }
       } = userInformation;
-      if (!getIsAdmin) {
+      if (!adminPermission) {
         for (let i = 0, len = event_groups.length; i < len; i++) {
           let eventGroup = event_groups[i];
           let user_groupIndex = eventGroup.enabled_for.indexOf(_id);
@@ -127,7 +127,7 @@ export default {
     }
   },
 
-  getIsAdmin({ userInformation: { user_group } }) {
+  adminPermission({ userInformation: { user_group } }) {
     if (user_group) {
       return user_group.is_admin == true;
     } else {

@@ -60,7 +60,7 @@ export default {
   },
   computed: {
     ...mapState("Team", ["team"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
     items() {
       return [

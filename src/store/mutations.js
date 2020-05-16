@@ -12,7 +12,6 @@ const deleteStateInterval = (state, intervalID) => {
     clearTimeout(state.runningIntervals[intervalID]);
     Vue.set(state.runningIntervals, intervalID, null);
   }
-  console.log(state.runningIntervals);
 };
 const deleteSystemNotification = (state, notificationIndex) => {
   Vue.delete(state.systemNotifications, notificationIndex);

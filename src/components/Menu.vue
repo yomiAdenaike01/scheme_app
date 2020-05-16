@@ -108,7 +108,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation", "localSettings"]),
-    ...mapGetters(["getDefaultColour", "getIsAdmin"]),
+    ...mapGetters(["getDefaultColour", "adminPermission"]),
 
     routes() {
       let allowedRoutes = [
@@ -125,7 +125,7 @@ export default {
           icon: "bx bxl-discourse"
         }
       ];
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         allowedRoutes.push({
           name: "team",
           icon: "bx bx-group"

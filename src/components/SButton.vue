@@ -47,6 +47,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$sbutton_config: (
+  primary: var(--colour_primary),
+  secondary: var(--colour_secondary),
+  tertiary: var(--danger)
+);
 $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
 
 .button_container {
@@ -117,23 +122,15 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
       color: rgb(10, 10, 10);
     }
   }
-  &.shadow {
-    box-shadow: -2px 11px 21px rgba(var(--colour_primary), 0.5);
-  }
-  &.secondary {
-    background: rgba(var(--colour_secondary), 1);
-
-    &.shadow {
-      box-shadow: -2px 11px 21px rgba(var(--colour_secondary), 0.5);
+  @each $key, $value in $sbutton_config {
+    &.#{$key} {
+      background: rgba($value, 1);
+      &.shadow {
+        box-shadow: -2px 11px 21px rgba($value, 0.5);
+      }
     }
   }
-  &.tertiary {
-    background: rgba(var(--danger), 1);
 
-    &.shadow {
-      box-shadow: -2px 11px 21px rgba(var(--danger), 0.5);
-    }
-  }
   .icon_container {
     background: rgba(0, 0, 0, 0.14);
   }

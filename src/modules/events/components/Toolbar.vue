@@ -32,13 +32,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["adminPermission"]),
     ...mapState(["userInformation"]),
     ...mapState("Events", ["events"]),
     buttonText() {
       let text = "Request management";
 
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         text = "Event management";
       }
 

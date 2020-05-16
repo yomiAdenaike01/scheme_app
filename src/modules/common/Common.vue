@@ -92,7 +92,7 @@ export default {
       "overlayIndex"
     ]),
     ...mapState(["team"]),
-    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
+    ...mapGetters(["getDeviceInformation", "adminPermission"]),
 
     keymap() {
       return {

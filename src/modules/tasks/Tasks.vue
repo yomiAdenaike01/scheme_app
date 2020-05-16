@@ -1,62 +1,56 @@
 <template>
   <div class="task_boards_container">
-    <TaskOverlay
-      :create-task-information="createTaskInformation"
-      :display="display"
-      @toggleDisplay="display = $event"
-    />
-    <div class="boards_wrapper">
-      <TaskBoard
-        v-for="board in boards"
-        :key="board._id"
-        :board-data="board"
-        @createTask="toggleTaskOverlay"
-        @viewTask="viewTask"
-      />
+    <slide-x-right-transition mode="out-in">
+      <div v-if="!display" class="boards_wrapper">
+        <TaskBoard
+          v-for="(board, boardIndex) in boards"
+          :key="board._id"
+          :board-data="board"
+          @createTask="createTask(boardIndex)"
+          @viewTask="viewTask"
+        />
 
-      <TaskBoard
-        v-for="(board, index) in calcBoardsLeft"
-        :key="index"
-        :board-index="index"
-        new-board
-      />
-    </div>
-    <slide-x-right-transition>
-      <TaskSidebar
-        v-if="displayTask"
-        :display="displayTask"
-        :task-information="viewTaskInformation"
-        @toggle="displayTask = $event"
+        <TaskBoard
+          v-for="(board, index) in calcBoardsLeft"
+          :key="index"
+          :board-index="index"
+          new-board
+        />
+      </div>
+
+      <TaskView
+        v-else
+        :task="task"
+        @dataChange="alterTask"
+        @toggle="display = false"
+        @viewNextTask="loadNextTask"
       />
     </slide-x-right-transition>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import TaskBoard from "./components/TaskBoard";
-import TaskSidebar from "./components/TaskSidebar";
-import TaskOverlay from "./components/TaskOverlay";
+import TaskView from "./components/TaskView";
 import { SlideXRightTransition } from "vue2-transitions";
 
 export default {
   name: "TasksModule",
   components: {
     TaskBoard,
-    TaskSidebar,
-    TaskOverlay,
+    TaskView,
     SlideXRightTransition
   },
   data() {
     return {
       display: false,
-      createTaskInformation: {},
-      displayTask: false,
-      viewTaskInformation: {}
+      task: {},
+      displayTask: false
     };
   },
   computed: {
-    ...mapState(["clientInformation"]),
+    ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Tasks", ["boards"]),
 
     boardCount() {
@@ -68,16 +62,45 @@ export default {
     }
   },
   methods: {
-    toggleTaskOverlay(e) {
-      this.display = e.display;
-      this.createTaskInformation = {
-        boardData: e.boardData,
-        boardIndex: e.boardIndex
+    ...mapMutations("Tasks", ["CREATE_TASK"]),
+    loadNextTask() {
+      let { boardIndex, taskIndex } = this.task;
+      // if last task in board go to next board if there is a next board
+      let tasks = this.boards[boardIndex].tasks;
+      let canLoadOnBoard = taskIndex + 1 > tasks.length;
+      if (canLoadOnBoard) {
+        this.task = tasks[taskIndex + 1];
+      } else {
+        // has next board
+        if (this.boards[boardIndex + 1]) {
+          this.task = this.boards[boardIndex + 1].tasks[0];
+        }
+      }
+    },
+    alterTask({ key, value }) {
+      this.task[key] = value;
+    },
+
+    createTask(boardIndex) {
+      this.task = {
+        _id: Math.random()
+          .toString(16)
+          .slice(2),
+        boardIndex,
+        name: "New Task",
+        description: "",
+        due_date: null,
+        assigned_to: [this.userInformation],
+        labels: [],
+        comments: [],
+        newTask: true
       };
+      this.CREATE_TASK(this.task);
+      this.display = true;
     },
     viewTask(task) {
-      this.displayTask = true;
-      this.viewTaskInformation = task;
+      this.task = task;
+      this.display = true;
     }
   }
 };
@@ -87,7 +110,10 @@ export default {
 .task_boards_container {
   display: flex;
   flex: 1;
-  padding: 10px;
+}
+.task_boards_wrapper {
+  display: flex;
+  flex: 1;
 }
 .boards_wrapper {
   display: flex;

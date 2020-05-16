@@ -239,7 +239,7 @@ export default {
     ...mapState("Events", ["events"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
 
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["adminPermission"]),
     isCurrentUser() {
       return this.selectedTeamMember._id == this.userInformation._id;
     },
@@ -272,7 +272,7 @@ export default {
     },
 
     hasPermission() {
-      return this.isCurrentUser || this.getIsAdmin;
+      return this.isCurrentUser || this.adminPermission;
     },
 
     headings() {

@@ -6,7 +6,15 @@ export default {
     // Update board at an index and create a reference
     if (action == "update") {
       if (Array.isArray(data)) {
-        state.boards = data;
+        for (let i = 0, len = data.length; i < len; i++) {
+          let apiBoard = data[i];
+          let foundBoard = state.boards.find(board => {
+            return board._id == apiBoard._id;
+          });
+          if (!foundBoard) {
+            state.boards.splice(i, 1, apiBoard);
+          }
+        }
       } else {
         let { name, description } = data;
         let boardIndex = data.boardIndex;
@@ -53,7 +61,7 @@ export default {
     console.log(task, update);
   },
 
-  REMOVE_TASK(state, { boardIndex, taskIndex }) {
+  DELETE_TASK(state, { boardIndex, taskIndex }) {
     let tasks = state.boards[boardIndex].tasks,
       task = tasks[taskIndex];
     updateBreadCrumbs(state, "taskRef", {

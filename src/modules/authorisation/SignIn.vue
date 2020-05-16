@@ -208,6 +208,6 @@ export default {
   display: flex;
   flex-direction: column;
   width: 400px;
-  box-shadow: $box_shadow;
+  border: $border;
 }
 </style>

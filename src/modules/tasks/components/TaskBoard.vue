@@ -64,7 +64,7 @@
         <p>{{ computeText.content }}</p>
 
         <el-popover
-          v-if="boardIndex == 0 && getIsAdmin"
+          v-if="boardIndex == 0 && adminPermission"
           position="top"
           trigger="click"
         >
@@ -115,7 +115,7 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["adminPermission"]),
     description() {
       return this.boardData?.description ?? "";
     },
@@ -151,11 +151,11 @@ export default {
         content: "Initialise the board before to enable this board."
       };
       let heading = "Create task board";
-      if (index == 0 && this.getIsAdmin) {
+      if (index == 0 && this.adminPermission) {
         displayText.heading = heading;
         displayText.content = "Press the button above to initialse this board";
       }
-      if (!this.getIsAdmin && index == 0) {
+      if (!this.adminPermission && index == 0) {
         displayText.heading = heading;
         displayText.content =
           "Only system administrators can create a task board";

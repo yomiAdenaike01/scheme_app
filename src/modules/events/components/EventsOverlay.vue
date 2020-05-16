@@ -19,7 +19,7 @@
           tabXref.name == 'create_event' &&
             hasEntries(events) &&
             qrCode.length > 0 &&
-            getIsAdmin
+            adminPermission
         "
         slot="body"
         class="body_container"
@@ -70,7 +70,7 @@ export default {
       "getValidEventTypes",
       "getUserGroups",
       "getUsersInGroup",
-      "getIsAdmin",
+      "adminPermission",
       "getCurrentTabXref"
     ]),
 
@@ -117,7 +117,7 @@ export default {
         }
       };
 
-      if (!this.getIsAdmin) {
+      if (!this.adminPermission) {
         events.assigned_to = [this.userInformation._id];
       }
       let templates = {
@@ -140,7 +140,7 @@ export default {
       let content =
           "You can create a request here that will be sent to an admin for approval",
         heading = "Request Management";
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         heading = "Event Management";
         content =
           "As an admin you can create templates to batch create events. You can also create event groups and singular events.";
@@ -152,7 +152,7 @@ export default {
     },
 
     isNotShiftOrHoliday() {
-      return !this.getIsAdmin && this.events.type > 3;
+      return !this.adminPermission && this.events.type > 3;
     },
 
     tabXref() {
@@ -165,7 +165,7 @@ export default {
     tabs() {
       let tabs = [
         {
-          label: this.getIsAdmin ? "Create event" : "Create request",
+          label: this.adminPermission ? "Create event" : "Create request",
           formContent: this.createEventForm,
           displayReset: true,
           emitOnChange: true,
@@ -173,7 +173,7 @@ export default {
         }
       ];
 
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         tabs.unshift({
           label: "Manage event groups",
           view: {
@@ -207,7 +207,7 @@ export default {
 
       // Check if it is an admin or not
 
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         createEventConfig.unshift(
           {
             placeholder: "Select team members",
@@ -308,7 +308,7 @@ export default {
       this.createEvent(this.eventContent.events)
         .then(response => {
           this.qrCode = response ? response : "";
-          if (this.getIsAdmin) {
+          if (this.adminPermission) {
             this.initSaveTemplate();
           } else {
             this.view = false;
