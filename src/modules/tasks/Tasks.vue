@@ -49,6 +49,7 @@ export default {
       displayTask: false
     };
   },
+
   computed: {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Tasks", ["boards"]),
@@ -59,6 +60,12 @@ export default {
 
     calcBoardsLeft() {
       return parseInt(this.clientInformation?.maxBoard ?? 5 - this.boardCount);
+    }
+  },
+  activated() {
+    if (this.$route.params?.user) {
+      // Select a board
+      // Force create task with auto assignement
     }
   },
   methods: {

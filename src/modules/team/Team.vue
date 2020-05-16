@@ -140,7 +140,13 @@
         <i
           v-if="!isCurrentUser"
           :style="{ backgroundColor: colours[0] }"
-          class="bx bx-phone"
+          class="bx bx-task"
+          @click="
+            $router.push({
+              name: 'tasks',
+              params: { user: selectedTeamMember }
+            })
+          "
         ></i>
 
         <i
