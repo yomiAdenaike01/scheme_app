@@ -15,19 +15,36 @@
         <i class="bx bx-right-arrow-alt grey"></i>
       </div>
     </div>
+
     <!-- Task content -->
     <div class="task_content_body">
       <div class="task_main_content_wrapper">
         <h3 class="task_title_unit grey">Task description</h3>
         <textarea
-          v-if="edit.description"
           class="task_description"
           :placeholder="task.description"
           :disabled="!hasAccess"
         ></textarea>
         {{ task.description }}
-        {{ task }}
+
+        <!-- Assigned to -->
+        <div class="assigned_to_container">
+          <h3 class="task_title_unit grey">Assigned team members</h3>
+          <div class="avatar_container">
+            <div @click="goToTeam(member)">
+              <Avatar
+                v-for="member in task.assigned_to"
+                :key="member._id"
+                :name="member.name"
+                :size="30"
+                class="trigger"
+              />
+            </div>
+          </div>
+        </div>
+        <span class="json_display">{{ task }}</span>
       </div>
+
       <!-- Task sidebar -->
       <div class="task_sidebar_content_wrapper">
         <!-- Add items -->
@@ -60,20 +77,38 @@
                 v-if="checkDrawer(item.label, 'members')"
                 class="add_item_body"
               >
+                <input
+                  v-model="teamNameSearch"
+                  type="text"
+                  placeholder="Search"
+                  class="team_search"
+                  @click="$event.stopPropagation()"
+                />
                 <div
-                  v-for="member in team"
+                  v-for="member in filteredTeam"
                   :key="member._id"
                   :class="[
                     'team_member',
-                    { disabled: task.assigned_to.indexOf(member) > -1 }
+                    {
+                      assigned:
+                        task.assigned_to.findIndex(
+                          assignee => assignee._id == member._id
+                        ) > -1
+                    }
                   ]"
-                  @click="toggleAssignedTeamMember(member._id)"
+                  @click="toggleAssignedTeamMember($event, member)"
                 >
-                  <p>{{ member.name }}</p>
-                  <i
-                    v-if="task.assigned_to.indexOf(member._id) > -1"
-                    class="bx bx-check"
-                  />
+                  <p>
+                    <span>{{ member.name }}</span>
+                    <i
+                      v-if="
+                        task.assigned_to.findIndex(
+                          assignee => assignee._id == member._id
+                        ) > -1
+                      "
+                      class="bx bx-check"
+                    />
+                  </p>
                 </div>
               </div>
 
@@ -110,16 +145,19 @@
 import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
 import SButton from "@/components/SButton";
 import Comments from "./Comments";
+import Avatar from "@/components/Avatar";
+
 import { CollapseTransition } from "vue2-transitions";
 export default {
   name: "TaskView",
   components: {
     SButton,
     Comments,
+    Avatar,
     CollapseTransition
   },
   props: {
-    task: {
+    taskInformation: {
       type: Object,
       required: true
     }
@@ -127,13 +165,36 @@ export default {
   data() {
     return {
       edit: {},
-      selectedItem: ""
+      selectedItem: "",
+      task: this.taskInformation,
+      teamNameSearch: ""
     };
   },
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Team", ["team"]),
     ...mapState("Tasks", ["boards"]),
+    taskStateXref() {
+      return {
+        0: "todo",
+        1: "doing",
+        2: "done",
+        3: "defer"
+      };
+    },
+    state() {
+      return this.taskStateXref[this.task.state];
+    },
+    isPastDeadline() {
+      return this.task.due_date
+        ? this.initMoment().isAfter(this.initMoment(this.task.due_date))
+        : false;
+    },
+    filteredTeam() {
+      return this.team.filter(x =>
+        x.name.toLowerCase().includes(this.teamNameSearch.toLowerCase())
+      );
+    },
     isNewTask() {
       return this.task?.newTask ?? false;
     },
@@ -152,15 +213,6 @@ export default {
         {
           label: "deadlines",
           icon: "bx bx-alarm-exclamation"
-        },
-        {
-          label: "delete_task",
-          icon: "bx bx-trash",
-          class: "delete_task",
-          function: () => {
-            this.DELETE_TASK(this.indexs);
-            this.$emit("toggle");
-          }
         }
       ];
       if (this.isNewTask) {
@@ -169,10 +221,22 @@ export default {
           class: "save_task",
           icon: "bx bx-download",
           function: () => {
-            this.saveTask();
+            this.$emit("saveTask");
           }
         });
       }
+      if (!this.isNewTask && this.hasAccess) {
+        quickActions.push({
+          label: "delete_task",
+          icon: "bx bx-trash",
+          class: "delete_task",
+          function: () => {
+            this.DELETE_TASK(this.indexs);
+            this.$emit("toggle");
+          }
+        });
+      }
+
       return quickActions;
     },
     edittableProperties() {
@@ -194,16 +258,6 @@ export default {
         taskIndex: this.task.taskIndex,
         boardIndex: this.task.boardIndex
       };
-    },
-    taskData: {
-      get() {
-        return this.task;
-      },
-      set(data) {
-        console.log(data);
-        this.$emit("dataChange", data);
-        // this.$emit("dataChange", data);
-      }
     }
   },
   created() {
@@ -213,6 +267,10 @@ export default {
     }
   },
 
+  destroyed() {
+    this.goBack();
+  },
+
   methods: {
     ...mapActions(["request"]),
     ...mapMutations("Tasks", [
@@ -220,7 +278,14 @@ export default {
       "CREATE_COMMENT",
       "DELETE_COMMENT"
     ]),
-
+    goToTeam(member) {
+      this.$router.push({
+        name: "team",
+        params: {
+          user: member.name
+        }
+      });
+    },
     toggleSelectedItem(item) {
       console.log(item);
       let { label } = item;
@@ -234,17 +299,23 @@ export default {
         item.function();
       }
     },
-    toggleAssignedTeamMember(teamMember) {
-      let alreadyAssigned = this.task.assigned_to.indexOf(teamMember) > -1;
+    toggleAssignedTeamMember(e, teamMember) {
+      e.stopPropagation();
+      let assignedIndex = this.task.assigned_to.findIndex(
+        assignee => assignee._id == teamMember._id
+      );
+
+      if (assignedIndex > -1) {
+        this.task.assigned_to.splice(assignedIndex, 1);
+      } else {
+        this.task.assigned_to.push(teamMember);
+      }
 
       // If already assigned remove them
 
       // Else add them
     },
-    async saveTask() {
-      // Send request
-      // replace the task when response is good
-    },
+
     goBack() {
       if (this.isNewTask) {
         this.DELETE_TASK(this.indexs);
@@ -328,24 +399,28 @@ $quick_actions: (
   display: flex;
   flex-direction: row;
   flex: 1;
-
   margin: 30px;
   background: white;
 }
 .task_main_content_wrapper {
   display: flex;
   flex: 1;
+  max-height: calc(100% - 220px);
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 .task_description {
   display: flex;
   flex: 1;
   background: rgb(250, 250, 250);
-  border: none;
   outline: none;
+  border: none;
   padding: 10px;
-  border: $border;
+}
+.avatar_container {
+  display: flex;
+  align-items: center;
 }
 .task_sidebar_content_wrapper {
   position: relative;
@@ -376,6 +451,8 @@ $quick_actions: (
   .add_item_body {
     border-top: $border;
     overflow-x: hidden;
+    max-height: 400px; // change for more dynamic sizing
+    position: relative;
   }
   .header {
     display: flex;
@@ -404,10 +481,28 @@ $quick_actions: (
     font-size: 1.5em;
   }
 }
+.team_search {
+  border: none;
+  background: rgb(250, 250, 250);
+  padding: 10px;
+  display: flex;
+  flex: 1;
+  width: 100%;
+  position: sticky;
+  top: 0px;
+}
+
 .team_member {
   padding: 2px 10px;
   cursor: pointer;
   font-size: 0.9em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &.assigned {
+    background: rgba(var(--green), 0.05);
+    color: rgba(var(--green), 0.95);
+  }
   &:hover {
     background: $grey;
   }

@@ -20,17 +20,18 @@
 
       <TaskView
         v-else
-        :task="task"
+        :task-information="task"
         @dataChange="alterTask"
         @toggle="display = false"
         @viewNextTask="loadNextTask"
+        @saveTask="saveTask"
       />
     </slide-x-right-transition>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import TaskBoard from "./components/TaskBoard";
 import TaskView from "./components/TaskView";
 import { SlideXRightTransition } from "vue2-transitions";
@@ -69,7 +70,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["request"]),
     ...mapMutations("Tasks", ["CREATE_TASK"]),
+    async saveTask() {
+      // Send request
+      // replace the task when response is good
+    },
     loadNextTask() {
       let { boardIndex, taskIndex } = this.task;
       // if last task in board go to next board if there is a next board
@@ -100,7 +106,8 @@ export default {
         assigned_to: [this.userInformation],
         labels: [],
         comments: [],
-        newTask: true
+        newTask: true,
+        state: 0
       };
       this.CREATE_TASK(this.task);
       this.display = true;

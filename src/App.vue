@@ -11,45 +11,42 @@
       </keep-alive>
     </fade-transition>
 
-    <slide-y-down-transition>
-      <div v-if="!enabledCookies" class="cookies_container">
-        <div class="inner_cookies_container">
-          <i class="bx bx-x grey trigger" @click="setCookies(false)"></i>
-
-          <h3>Enable cookies</h3>
-          <p class="grey">
-            We use cookies to personalise content and ads, to provide social
-            media features and to analyse our traffic. We also share information
-            about your use of our site with our social media, advertising and
-            analytics partners who may combine it with other information that
-            you’ve provided to them or that they’ve collected from your use of
-            their services
-          </p>
-        </div>
-        <s-button
-          class="primary expanded"
-          icon="right-arrow-alt"
-          @click="setCookies(true)"
-          >Got it!</s-button
-        >
+    <PopupBox :display="enabledCookies" class="left" @close="setCookies(false)">
+      <div class="inner_cookies_container">
+        <h3>Enable cookies</h3>
+        <p class="grey">
+          We use cookies to personalise content and ads, to provide social media
+          features and to analyse our traffic. We also share information about
+          your use of our site with our social media, advertising and analytics
+          partners who may combine it with other information that you’ve
+          provided to them or that they’ve collected from your use of their
+          services
+        </p>
       </div>
-    </slide-y-down-transition>
+      <s-button
+        class="primary expanded"
+        icon="right-arrow-alt"
+        @click="setCookies(true)"
+        >Got it!</s-button
+      >
+    </PopupBox>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
-import { FadeTransition, SlideYDownTransition } from "vue2-transitions";
+import { FadeTransition } from "vue2-transitions";
 
 import SButton from "@/components/SButton";
+import PopupBox from "@/components/PopupBox";
 import refactorLocation from "@/mixins/refactorLocation";
 
 export default {
   name: "App",
   components: {
     SButton,
-    FadeTransition,
-    SlideYDownTransition
+    PopupBox,
+    FadeTransition
   },
   mixins: [refactorLocation],
   data() {
@@ -64,7 +61,7 @@ export default {
     ...mapGetters(["getIsIE"]),
 
     enabledCookies() {
-      return localStorage.getItem("enabledCookies");
+      return localStorage.getItem("enabledCookies") ? true : false;
     }
   },
 
@@ -136,13 +133,6 @@ export default {
 };
 </script>
 <style lang="scss">
-.cookies_container {
-  position: fixed;
-  left: 1%;
-  bottom: 30px;
-  box-shadow: $box_shadow;
-  max-width: 400px;
-}
 .inner_cookies_container {
   padding: 20px;
   line-height: 1.7em;
@@ -279,6 +269,9 @@ html,
   padding: 0;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
+}
+.json_display {
+  white-space: pre;
 }
 #app {
   display: flex;
