@@ -45,7 +45,10 @@
           <div class="due_date_display_container">
             <!-- Due date -->
             <h3 class="task_title_unit grey">Due date</h3>
-            <p :class="['due_date_label capitalize', dueDateXref[true]]">
+            <p
+              :class="['due_date_label capitalize', dueDateXref[true]]"
+              @click="selectedItem = 'deadlines'"
+            >
               {{ makePretty(dueDateXref[true]) }}
             </p>
           </div>
@@ -69,11 +72,18 @@
             </div>
           </div>
         </div>
-        <div v-if="hasAccess" class="comments_wrapper">
-          <h3 class="task_title_unit grey">Comments</h3>
+        <template v-if="hasAccess">
+          <h3 class="task_title_unit grey">
+            Comments ({{ task.comments.length }})
+          </h3>
 
-          <Comments :comments="task.comments" :can-interact="hasAccess" />
-        </div>
+          <Comments
+            :comments="task.comments"
+            :can-interact="hasAccess"
+            @createComment="createComment"
+            @deleteComment="deleteComment"
+          />
+        </template>
       </div>
 
       <!-- Task sidebar -->
@@ -234,7 +244,10 @@
                   class="due_date_select"
                 />
                 <!-- Check the due date time -->
-                <p :class="['due_date_label capitalize', dueDateXref[true]]">
+                <p
+                  v-if="!isNewTask"
+                  :class="['due_date_label capitalize', dueDateXref[true]]"
+                >
                   {{ makePretty(dueDateXref[true]) }}
                 </p>
 
@@ -374,7 +387,7 @@ export default {
           class: "save_task",
           icon: "bx bx-download",
           function: () => {
-            this.$emit("saveTask");
+            this.$emit("saveTask", this.task);
           }
         });
       }
@@ -525,27 +538,21 @@ export default {
         label.toLowerCase() == match && this.selectedItem.toLowerCase() == match
       );
     },
-    async createComment({ commentIndex, message }) {
-      try {
-        this.CREATE_COMMENT({
-          ...this.indexs,
-          commentIndex,
-          data: message
-        });
-        await this.request({
-          method: "POST",
-          url: "tasks/comments",
-          data: {
-            task_id: this.task._id,
-            message
-          }
-        });
-      } catch (error) {
-        this.DELETE_COMMENT({
-          ...this.indexs,
-          commentIndex
-        });
-      }
+    deleteComment(commentIndex) {
+      this.task.comments.splice(commentIndex, 1);
+    },
+    createComment({ message }) {
+      let comment = {
+        message,
+        _id: Math.random()
+          .toString(16)
+          .slice(2),
+        task_id: this.task._id,
+        assigned_to: this.userInformation,
+        updated: false,
+        date_created: new Date()
+      };
+      this.task.comments.push(comment);
     }
   }
 };
@@ -601,15 +608,16 @@ $due_date_ref: (
   flex-direction: row;
   flex: 1;
   margin: 30px;
+  max-height: calc(100% - 150px);
   background: white;
 }
 .task_main_content_wrapper {
   display: flex;
   flex: 1;
-  padding: 10px;
-  max-height: calc(100% - 220px);
-  flex-direction: column;
+  padding: 30px;
   overflow-x: hidden;
+  max-height: 100%;
+  flex-direction: column;
 }
 .task_details_grid {
   display: flex;
@@ -617,19 +625,11 @@ $due_date_ref: (
   justify-content: space-between;
   padding: 10px;
 }
-.comments_wrapper {
-  position: relative;
-  flex: 1;
-  height: 100%;
-}
 
 .task_description {
-  display: flex;
-  flex: 1;
-  background: rgb(250, 250, 250);
   outline: none;
-  border: none;
-  max-height: 40%;
+  border: $border;
+  min-height: 300px;
   border-radius: 10px;
 }
 .avatar_container {

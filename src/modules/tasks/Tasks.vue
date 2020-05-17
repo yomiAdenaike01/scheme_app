@@ -92,8 +92,13 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations("Tasks", ["CREATE_TASK"]),
-    async saveTask() {
+    async saveTask(task) {
       // Send request
+      this.request({
+        method: "POST",
+        url: "tasks/create",
+        data: task
+      });
       // replace the task when response is good
     },
     loadNextTask() {
