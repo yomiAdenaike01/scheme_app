@@ -1,3 +1,4 @@
+import { methods } from "@/mixins/genID";
 export default {
   createStubChat(context) {
     let isoDate = new Date().toISOString();
@@ -9,16 +10,12 @@ export default {
       },
       user_two: {
         name: "New message",
-        _id: Math.random()
-          .toString(16)
-          .slice(2)
+        _id: methods.genID()
       },
       date_created: isoDate,
       date_updated: isoDate,
       initChat: true,
-      _id: Math.random()
-        .toString(16)
-        .slice(2),
+      _id: methods.genID(),
       messages: [],
       index: context.state.chats.length
     });

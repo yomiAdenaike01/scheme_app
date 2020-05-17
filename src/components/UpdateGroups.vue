@@ -36,6 +36,7 @@
 
 <script>
 import { mapActions, mapState, mapMutations, mapGetters } from "vuex";
+import genID from "@/mixins/genID";
 import Form from "@/components/Form";
 export default {
   name: "UpdateGroups",
@@ -44,6 +45,7 @@ export default {
     SButton: () => import("@/components/SButton"),
     ColourPicker: () => import("@/components/ColourPicker")
   },
+  mixins: [genID],
   props: {
     groupType: {
       type: String,
@@ -269,9 +271,7 @@ export default {
               groupType: this.groupType,
               payload: {
                 ...this.groupData,
-                _id: Math.random()
-                  .toString(16)
-                  .slice(2)
+                _id: this.genID()
               }
             });
           },

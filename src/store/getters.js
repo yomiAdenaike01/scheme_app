@@ -1,6 +1,6 @@
 import UAParser from "ua-parser-js";
 import Vue from "vue";
-const genUUID = require("uuid-by-string");
+import { methods } from "@/mixins/genID";
 
 export default {
   getUserGroups({ clientInformation }) {
@@ -29,7 +29,10 @@ export default {
       });
   },
 
-  getValidEventTypes({ clientInformation, userInformation }, { adminPermission }) {
+  getValidEventTypes(
+    { clientInformation, userInformation },
+    { adminPermission }
+  ) {
     let hasValues = Vue.prototype.hasEntries(clientInformation);
     let arr = [];
     if (hasValues) {
@@ -115,7 +118,7 @@ export default {
   getDeviceInformation(state, { getUA }) {
     return {
       system: getUA.getOS(),
-      id: genUUID(window.navigator.userAgent.toString().trim())
+      id: methods.genID()
     };
   },
 

@@ -37,14 +37,7 @@
               :key="`${group.groupID}${index}`"
               class="user_group_col"
             >
-              <div
-                :key="
-                  `${group.groupID}${Math.random()
-                    .toString(16)
-                    .slice(2)}`
-                "
-                class="team_wrapper"
-              >
+              <div :key="`${group.groupID}${genID()}`" class="team_wrapper">
                 <div class="icon_text_container">
                   <div class="divider"></div>
                   <span class="capitalize">{{ group.label }}</span>
@@ -201,15 +194,17 @@
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 
-import Avatar from "@/components/Avatar";
-import OnlineIndicator from "@/components/OnlineIndicator";
-import Menu from "@/components/Menu";
-import SButton from "@/components/SButton";
-
 import Analytics from "./components/Analytics";
 import TeamOverlay from "./components/TeamOverlay";
 import ActivityLog from "./components/ActivityLog";
 import RelatedEvent from "./components/RelatedEvent";
+
+import genID from "@/mixins/genID";
+
+import Avatar from "@/components/Avatar";
+import OnlineIndicator from "@/components/OnlineIndicator";
+import Menu from "@/components/Menu";
+import SButton from "@/components/SButton";
 
 export default {
   name: "Team",
@@ -224,6 +219,7 @@ export default {
     TeamOverlay,
     RelatedEvent
   },
+  mixins: [genID],
   data() {
     return {
       displayOverlay: false,
@@ -375,9 +371,7 @@ export default {
           create: {
             mutation: "CREATE_TEAM_MEMBER",
             data: {
-              _id: Math.random()
-                .toString(16)
-                .slice(2),
+              _id: genID(),
               ...this.inputtedTeamMemberData
             }
           },

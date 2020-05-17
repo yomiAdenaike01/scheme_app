@@ -53,12 +53,7 @@ export default {
     // Update task at index
     let task = state.boards[boardIndex].tasks[taskIndex];
     updateBreadCrumbs(state, "taskRef", { boardIndex, task, taskIndex });
-
-    state.boards[boardIndex].tasks[taskIndex] = {
-      ...task,
-      ...update
-    };
-    console.log(task, update);
+    state.boards[boardIndex].tasks.splice(taskIndex, 1, update);
   },
 
   DELETE_TASK(state, { boardIndex, taskIndex }) {
@@ -82,74 +77,5 @@ export default {
 
   RESTORE_BOARD(state) {
     state.boards.splice(state.boardRef.boardIndex, 0, state.boardRef.board);
-  },
-  CREATE_COMMENT(state, { taskIndex, boardIndex, commentIndex = 0, data }) {
-    let comments = state.boards[boardIndex].tasks[taskIndex].comments;
-    updateBreadCrumbs(state, "commentsRef", {
-      taskIndex,
-      boardIndex,
-      commentIndex: comments.length - 1
-    });
-    if (commentIndex == 0) {
-      comments.push(data);
-    } else {
-      comments.splice(commentIndex, 0, data);
-    }
-  },
-  UPDATE_COMMENT(state, payload) {
-    let { update, boardIndex, taskIndex } = payload;
-    let comments = state.boards[boardIndex].tasks[taskIndex].comments;
-
-    if (!payload?.commentIndex) {
-      var commentIndex = comments.length - 1;
-    }
-    comments.splice(commentIndex, 1, update);
-    updateBreadCrumbs(state, "commentRef", {
-      boardIndex,
-      taskIndex,
-      commentIndex,
-      data: update
-    });
-  },
-  DELETE_COMMENT(state, { boardIndex, taskIndex, commentIndex }) {
-    let comment =
-        state.boards[boardIndex].tasks[taskIndex]?.comments[commentIndex],
-      comments = state.boards[boardIndex].tasks[taskIndex].comments;
-    updateBreadCrumbs(state, "commentsRef", {
-      boardIndex,
-      taskIndex,
-      commentIndex,
-      data: comment
-    });
-    Vue.delete(comments, commentIndex);
-  },
-
-  //  Labels
-  CREATE_LABEL(state, { boardIndex, taskIndex, data = state.labelRef?.label }) {
-    let labels = state.boards[boardIndex].tasks[taskIndex].labels;
-    labels.push(data);
-    updateBreadCrumbs(state, "labelRef", {
-      boardIndex,
-      taskIndex,
-      labelIndex: labels.length - 1
-    });
-  },
-  UPDATE_LABEL(state, { boardIndex, taskIndex, data }) {
-    let tasks = state.boards[boardIndex].tasks[taskIndex];
-    updateBreadCrumbs(state, "labelRef", { ...arguments[1] });
-    tasks.labels.splice(data.labelIndex, 0, {
-      ...data
-    });
-  },
-  REMOVE_LABEL(state, labelIndex = state.labelRef.labelIndex) {
-    let { boardIndex, taskIndex } = state.labelRef,
-      labels = state.boards[boardIndex].tasks[taskIndex].labels,
-      label = labels[labelIndex];
-    updateBreadCrumbs(state, "labelRef", {
-      boardIndex,
-      taskIndex,
-      label
-    });
-    labels.splice(labelIndex, 1);
   }
 };

@@ -215,10 +215,10 @@ export default {
         this.request({
           method: "DELETE",
           url: "tasks/boards/delete",
-          data: { _id: payload.boardID }
+          data: { _id: payload.board_id }
         }).catch(() => {
           this.UPDATE_BOARDS({ data: payload, action: "create" });
-          this.DELETE_BOARD(payload.boardID);
+          this.DELETE_BOARD(payload.board_id);
           this.updateBoardQuota("minus");
         });
       });
@@ -235,7 +235,7 @@ export default {
       };
 
       this.request(payload).catch(() => {
-        this.DELETE_BOARD(payload.boardID);
+        this.DELETE_BOARD(payload.board_id);
         this.updateBoardQuota("plus");
       });
     },
@@ -254,9 +254,8 @@ export default {
     },
     createTask() {
       this.$emit("createTask", {
-        boardData: this.boardData,
         boardIndex: this.boardIndex,
-        display: true
+        taskIndex: this.boardData.tasks.length + 1
       });
     }
   }
@@ -285,9 +284,8 @@ export default {
 .board_header {
   display: flex;
   flex-direction: column;
-  padding-left: 20px;
+  padding: 10px;
   text-transform: capitalize;
-  padding-bottom: 20px;
   border-bottom: $border;
   h1,
   h2,

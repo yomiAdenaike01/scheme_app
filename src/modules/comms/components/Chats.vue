@@ -11,11 +11,7 @@
       <fade-transition group>
         <Chat
           v-for="(chat, index) in chats"
-          :key="
-            `${index}${Math.random()
-              .toString(16)
-              .slice(2)}`
-          "
+          :key="`${index}${genID()}`"
           :chat-index="index"
           :chat-information="chat"
         />
@@ -42,7 +38,10 @@
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import { FadeTransition } from "vue2-transitions";
 import Chat from "./Chat";
+
+import genID from "@/mixins/genID";
 import SButton from "@/components/SButton";
+
 export default {
   name: "Chats",
   components: {
@@ -50,6 +49,7 @@ export default {
     SButton,
     FadeTransition
   },
+  mixins: [genID],
   data() {
     return {
       query: ""

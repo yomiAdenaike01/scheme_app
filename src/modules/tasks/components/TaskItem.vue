@@ -25,40 +25,22 @@
               <i class="bx bx-message-rounded grey"></i>
               <small class="grey">{{ comments.length }}</small>
             </div>
-            <AssignedUsers
-              class="user_wrapper"
-              :users="taskInformation.assigned_to"
-              @assignUser="assignToTask"
-            />
-            <el-tag v-if="taskInformation.dueDate">{{
-              formatDate(taskInformation.dueDate)
+            <div class="avatar_container">
+              <Avatar
+                v-for="(user, index) in taskInformation.assigned_to"
+                :key="user._id ? user._id : index"
+                :name="user.name"
+                multiple
+                :size="40"
+              />
+            </div>
+
+            <el-tag v-if="taskInformation.due_date">{{
+              formatDate(taskInformation.due_date)
             }}</el-tag>
           </div>
         </div>
 
-        <transition name="el-fade-in">
-          <div v-if="currState == 'complete'" class="completed_overlay">
-            <el-button
-              class="complete_button"
-              circle
-              icon="el-icon-check"
-              type="success"
-            />
-            <el-button
-              size="mini"
-              type="text"
-              @click="
-                updateTask({
-                  boardIndex,
-                  taskIndex,
-                  _id: taskInformation._id,
-                  update: { state: 0 }
-                })
-              "
-              >Undo complete</el-button
-            >
-          </div>
-        </transition>
         <!-- Tag container (date,assigned to, duedate) -->
         <div class="tag_container"></div>
       </div>
@@ -68,13 +50,13 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
-
+import Form from "@/components/Form";
+import Avatar from "@/components/Avatar";
 export default {
   name: "TaskItem",
   components: {
-    Form: () => import("@/components/Form"),
-
-    AssignedUsers: () => import("./AssignedUsers")
+    Form,
+    Avatar
   },
   props: {
     taskInformation: {
@@ -198,6 +180,13 @@ export default {
 
   &:hover {
     box-shadow: $box_shadow;
+  }
+}
+.avatar_container {
+  display: flex;
+  align-items: center;
+  &/deep/ .avatar_wrapper {
+    margin-left: -7px;
   }
 }
 .labels {

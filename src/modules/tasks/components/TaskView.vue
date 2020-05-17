@@ -6,9 +6,14 @@
         <i class="bx bx-left-arrow-alt grey"></i>
       </div>
       <div class="text_container">
-        <h1 class="task_title">
-          {{ task.name }}
-        </h1>
+        <input
+          v-model="task.name"
+          :disabled="!hasAccess"
+          type="text"
+          :placeholder="isNewTask ? 'Task name...' : task.name"
+          class="new_task_input"
+        />
+
         <h4 class="grey">{{ boardData.name }}</h4>
       </div>
       <div class="arrow_container right" @click="viewNextTask">
@@ -21,11 +26,11 @@
       <div class="task_main_content_wrapper">
         <h3 class="task_title_unit grey">Task description</h3>
         <textarea
+          v-model="task.description"
           class="task_description"
           :placeholder="task.description"
           :disabled="!hasAccess"
         ></textarea>
-        {{ task.description }}
 
         <div class="task_details_grid">
           <!-- Assigned to -->
@@ -55,7 +60,7 @@
           <div class="labels_display_container">
             <!-- Labels -->
             <h3 class="task_title_unit grey">Labels</h3>
-            <div class="labels_grid">
+            <div v-if="task.labels.length > 0" class="labels_grid">
               <div
                 v-for="(label, labelIndex) in task.labels"
                 :key="labelIndex"
@@ -70,6 +75,7 @@
                 ></i>
               </div>
             </div>
+            <h3 v-else class="grey">No labels</h3>
           </div>
         </div>
         <template v-if="hasAccess">
@@ -93,6 +99,7 @@
           <div
             v-for="(item, index) in addItems"
             :key="index"
+            v-loading="loading == item.label"
             class="add_item"
             @click="toggleSelectedItem(item)"
           >
@@ -282,12 +289,17 @@
 
 <script>
 import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
-import SButton from "@/components/SButton";
+import { CollapseTransition, SlideXLeftTransition } from "vue2-transitions";
+
 import Comments from "./Comments";
+
+import genID from "@/mixins/genID";
+
+import SButton from "@/components/SButton";
 import Avatar from "@/components/Avatar";
 import PopupBox from "@/components/PopupBox";
 import ColourPicker from "@/components/ColourPicker";
-import { CollapseTransition, SlideXLeftTransition } from "vue2-transitions";
+
 export default {
   name: "TaskView",
   components: {
@@ -299,21 +311,28 @@ export default {
     PopupBox,
     ColourPicker
   },
+  mixins: [genID],
   props: {
     taskInformation: {
       type: Object,
-      required: true
+      default: () => {}
+    },
+    boardIndex: {
+      type: Number,
+      default: 0
     }
   },
+
   data() {
     return {
       edit: {},
       selectedItem: "",
-      task: this.taskInformation,
+      task: {},
       teamNameSearch: "",
       displayPopup: false,
       displayPopover: false,
       createNewLabel: false,
+      loading: "",
       newLabel: {
         name: "",
         colour: ""
@@ -325,6 +344,13 @@ export default {
     ...mapState("Team", ["team"]),
     ...mapState("Tasks", ["boards"]),
     ...mapGetters(["adminPermission"]),
+
+    defaultTaskXref() {
+      return {
+        name: "Blank task",
+        description: "blank task description"
+      };
+    },
 
     dueDateXref() {
       let dueDateXref = {
@@ -363,7 +389,7 @@ export default {
       );
     },
     isNewTask() {
-      return this.task?.newTask ?? false;
+      return this.task.newTask ?? false;
     },
 
     addItems() {
@@ -379,26 +405,26 @@ export default {
         {
           label: "deadlines",
           icon: "bx bx-alarm-exclamation"
-        }
-      ];
-      if (this.isNewTask) {
-        quickActions.push({
+        },
+        {
           label: "Save",
           class: "save_task",
           icon: "bx bx-download",
-          function: () => {
-            this.$emit("saveTask", this.task);
-          }
-        });
-      }
+          function: this.saveTask
+        }
+      ];
+
       if (!this.isNewTask && this.hasAccess) {
         quickActions.push({
           label: "delete_task",
           icon: "bx bx-trash",
           class: "delete_task",
           function: () => {
-            this.DELETE_TASK(this.indexs);
-            this.$emit("toggle");
+            if (this.isNewTask) {
+              this.$emit("toggle");
+            } else {
+              this.deleteTask();
+            }
           }
         });
       }
@@ -409,7 +435,7 @@ export default {
       return ["name", "description"];
     },
     boardData() {
-      return this.boards[this.indexs.boardIndex];
+      return this.boards[this.boardIndex];
     },
     isAssignedToUser() {
       return this.task.assigned_to.some(user => {
@@ -419,47 +445,137 @@ export default {
     hasAccess() {
       return this.adminPermission || this.isAssignedToUser;
     },
-    indexs() {
-      return {
-        taskIndex: this.task.taskIndex,
-        boardIndex: this.task.boardIndex
-      };
-    },
+
     isCached() {
       return localStorage.getItem("newTask");
     }
   },
+
   created() {
+    this.loadTask();
+
     for (let i = 0, len = this.edittableProperties.length; i < len; i++) {
       let property = this.edittableProperties[i];
       this.edit[property] = false;
     }
+
     // Restore previous unsaved
     if (this.isCached) {
       for (let property in this.isCached) {
         let val = this.isCached[property];
+
         if (this.task[property] && val != this.task[property]) {
           this.displayPopup = true;
           break;
         }
       }
     }
-    this.newLabel.colour = this.colours[
-      Math.round(Math.random() * this.colours.length)
-    ];
+
+    this.genLabelColour();
   },
 
   destroyed() {
     this.destoryComponent();
   },
-
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations("Tasks", [
-      "DELETE_TASK",
-      "CREATE_COMMENT",
-      "DELETE_COMMENT"
-    ]),
+    ...mapMutations("Tasks", ["UPDATE_TASKS", "CREATE_TASK", "DELETE_TASK"]),
+    async deleteTask() {
+      try {
+        let { _id } = this.task;
+
+        this.$emit("toggle");
+        this.DELETE_TASK({
+          boardIndex: this.boardIndex,
+          taskIndex: this.task.taskIndex
+        });
+        await this.request({
+          method: "DELETE",
+          url: "tasks/delete",
+          data: { _id }
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async saveTask() {
+      try {
+        this.loading = "save_task";
+        let { newTask, ...taskData } = this.task;
+        let taskPayload = {
+          method: "POST",
+          url: "tasks/create",
+          data: taskData
+        };
+
+        taskData.board_id = this.boardData._id;
+
+        if (!this.isNewTask) {
+          taskPayload = {
+            method: "PUT",
+            url: "tasks/update",
+            data: { _id: this.task._id, update: taskData }
+          };
+          let { boardIndex, taskIndex, ...update } = taskData;
+
+          this.UPDATE_TASKS({
+            boardIndex,
+            taskIndex,
+            update
+          });
+        } else {
+          let validationFields = ["name", "description"];
+
+          for (let i = 0, len = validationFields.length; i < len; i++) {
+            let validationItem = validationFields[i];
+
+            if (!this.task[validationItem]) {
+              this.task[validationItem] = this.defaultTaskXref[validationItem];
+            }
+          }
+
+          this.CREATE_TASK({ boardIndex: this.boardIndex, ...taskData });
+        }
+        taskData.assigned_to = taskData.assigned_to.map(assignee => {
+          return assignee._id;
+        });
+        await this.request(taskPayload);
+        this.loading = "";
+        this.selectedItem = "";
+      } catch (error) {
+        this.loading = "";
+        this.selectedItem = "";
+
+        console.warn(error);
+      }
+    },
+    genLabelColour() {
+      this.newLabel.colour = this.colours[
+        Math.round(Math.random() * this.colours.length)
+      ];
+    },
+    loadTask() {
+      let task = {
+        _id: this.genID(),
+        name: "",
+        description: "",
+        due_date: null,
+        assigned_to: [this.userInformation],
+        labels: [],
+        comments: [],
+        newTask: true,
+        state: 0,
+        boardIndex: this.boardIndex,
+        taskIndex: this.taskIndex
+      };
+      if (
+        this.taskInformation &&
+        Object.keys(this.taskInformation).length > 0
+      ) {
+        task = this.taskInformation;
+      }
+      this.task = Object.assign({}, task);
+    },
     deleteLabel(id) {
       let labelIndex = this.task.labels.findIndex(x => x._id == id);
       if (labelIndex > -1) {
@@ -469,12 +585,11 @@ export default {
     saveLabel() {
       let newLabel = {
         ...this.newLabel,
-        _id: Math.random()
-          .toString(16)
-          .slice(2)
+        _id: this.genID()
       };
       this.task.labels.push(newLabel);
       this.newLabel.name = "";
+      this.genLabelColour();
     },
     navigateLabels() {
       if (this.task.labels.length > 0) {
@@ -488,7 +603,7 @@ export default {
     restoreCachedTask() {
       this.task = this.isCached
         ? JSON.parse(localStorage.getItem("newTask"))
-        : this.taskInformation;
+        : this.taskStub;
       this.displayPopup = false;
     },
     goToTeam(member) {
@@ -525,7 +640,6 @@ export default {
 
     destoryComponent() {
       if (this.isNewTask) {
-        this.DELETE_TASK(this.indexs);
         localStorage.setItem("newTask", JSON.stringify(this.task));
       }
       this.$emit("toggle");
@@ -544,9 +658,7 @@ export default {
     createComment({ message }) {
       let comment = {
         message,
-        _id: Math.random()
-          .toString(16)
-          .slice(2),
+        _id: this.genID(),
         task_id: this.task._id,
         assigned_to: this.userInformation,
         updated: false,
@@ -561,7 +673,8 @@ export default {
 <style lang="scss" scoped>
 $quick_actions: (
   save_task: var(--green),
-  delete_task: var(--danger)
+  delete_task: var(--danger),
+  reset_task: var(--dark)
 );
 
 $due_date_ref: (
@@ -587,6 +700,11 @@ $due_date_ref: (
 }
 .task_title_unit {
   margin: 10px 0;
+}
+.new_task_input {
+  font-size: 3em;
+  border: none;
+  outline: none;
 }
 .arrow_container {
   display: flex;
@@ -629,8 +747,10 @@ $due_date_ref: (
 .task_description {
   outline: none;
   border: $border;
-  min-height: 300px;
+  min-height: 100px;
   border-radius: 10px;
+  padding: 10px;
+  font-size: 1em;
 }
 .avatar_container {
   display: flex;
@@ -682,6 +802,7 @@ $due_date_ref: (
       &.#{$key} {
         background: rgba($value, 0.05);
         color: rgba($value, 0.95);
+        border-bottom: 1px solid rgba($value, 0.95);
 
         &:hover {
           color: rgba($value, 1);
@@ -783,7 +904,7 @@ $due_date_ref: (
   justify-content: space-between;
   align-items: center;
   color: white;
-  border-radius: 20px;
+  border-radius: 10px;
   margin: 10px;
   padding: 7px 0px 7px 10px;
   background: attr(data-label-colour);
@@ -796,7 +917,7 @@ $due_date_ref: (
   background: transparent;
   display: flex;
   flex: 1;
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 3px;
 
   &::placeholder {

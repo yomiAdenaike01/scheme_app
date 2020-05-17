@@ -6,7 +6,7 @@
           v-for="(board, boardIndex) in boards"
           :key="board._id"
           :board-data="board"
-          @createTask="createTask(boardIndex)"
+          @createTask="createTask"
           @viewTask="viewTask"
         />
 
@@ -21,10 +21,12 @@
       <TaskView
         v-else
         :task-information="task"
-        @dataChange="alterTask"
-        @toggle="display = false"
+        :board-index="boardIndex"
+        @toggle="
+          task = {};
+          display = false;
+        "
         @viewNextTask="loadNextTask"
-        @saveTask="saveTask"
       />
     </slide-x-right-transition>
   </div>
@@ -46,30 +48,16 @@ export default {
   data() {
     return {
       display: false,
-      task: {},
-      displayTask: false
+      routedTaskData: {},
+      displayTask: false,
+      boardIndex: 0,
+      task: {}
     };
   },
 
   computed: {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Tasks", ["boards"]),
-
-    taskStub() {
-      return {
-        _id: Math.random()
-          .toString(16)
-          .slice(2),
-        name: "New Task",
-        description: "",
-        due_date: null,
-        assigned_to: [this.userInformation],
-        labels: [],
-        comments: [],
-        newTask: true,
-        state: 0
-      };
-    },
 
     boardCount() {
       return this.boards.length;
@@ -85,22 +73,14 @@ export default {
       // Force create task with auto assignement
     }
     if (this.$route.params?.task) {
-      this.task = this.$route.params.task;
+      this.routedTaskData = this.$route.params.task;
       this.display = true;
     }
   },
   methods: {
     ...mapActions(["request"]),
     ...mapMutations("Tasks", ["CREATE_TASK"]),
-    async saveTask(task) {
-      // Send request
-      this.request({
-        method: "POST",
-        url: "tasks/create",
-        data: task
-      });
-      // replace the task when response is good
-    },
+
     loadNextTask() {
       let { boardIndex, taskIndex } = this.task;
       // if last task in board go to next board if there is a next board
@@ -119,12 +99,8 @@ export default {
       this.task[key] = value;
     },
 
-    createTask(boardIndex) {
-      this.task = {
-        ...this.taskStub,
-        boardIndex
-      };
-      this.CREATE_TASK(this.task);
+    createTask({ boardIndex }) {
+      this.boardIndex = boardIndex;
       this.display = true;
     },
     viewTask(task) {

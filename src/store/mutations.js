@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "../router";
 import updateBreadCrumbs from "./helpers";
+import mixins from "@/mixins/genID";
 
 const deleteStateInterval = (state, intervalID) => {
   if (!intervalID) {
@@ -72,9 +73,7 @@ export default {
       : {
           duration: 3000,
           method: () => {},
-          id: Math.random()
-            .toString(16)
-            .slice(2),
+          id: mixins.methods.genID(),
           immediate: false
         };
     if (payload.immediate) {
@@ -213,9 +212,7 @@ export default {
       annoucement: "user-voice",
       info: "mail-send"
     };
-    notification._id = Math.random()
-      .toString(16)
-      .slice(2);
+    notification._id = mixins.methods.genID();
 
     let closeNotificationObject = {
       label: "Close",
