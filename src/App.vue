@@ -10,26 +10,6 @@
         <router-view></router-view>
       </keep-alive>
     </fade-transition>
-
-    <PopupBox :display="enabledCookies" class="left" @close="setCookies(false)">
-      <div class="inner_cookies_container">
-        <h3>Enable cookies</h3>
-        <p class="grey">
-          We use cookies to personalise content and ads, to provide social media
-          features and to analyse our traffic. We also share information about
-          your use of our site with our social media, advertising and analytics
-          partners who may combine it with other information that you’ve
-          provided to them or that they’ve collected from your use of their
-          services
-        </p>
-      </div>
-      <s-button
-        class="primary expanded"
-        icon="right-arrow-alt"
-        @click="setCookies(true)"
-        >Got it!</s-button
-      >
-    </PopupBox>
   </div>
 </template>
 
@@ -38,14 +18,12 @@ import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import { FadeTransition } from "vue2-transitions";
 
 import SButton from "@/components/SButton";
-import PopupBox from "@/components/PopupBox";
 import refactorLocation from "@/mixins/refactorLocation";
 
 export default {
   name: "App",
   components: {
     SButton,
-    PopupBox,
     FadeTransition
   },
   mixins: [refactorLocation],
@@ -58,11 +36,7 @@ export default {
   computed: {
     ...mapState(["globalIntervals", "clientInformation"]),
     ...mapState(["team", "overlayIndex"]),
-    ...mapGetters(["getIsIE"]),
-
-    enabledCookies() {
-      return localStorage.getItem("enabledCookies") ? true : false;
-    }
+    ...mapGetters(["getIsIE"])
   },
 
   created() {
@@ -125,10 +99,7 @@ export default {
       "DELETE_GLOBAL_INTERVAL",
       "UPDATE_CLIENT_INFORMATION",
       "CLEAR_NOTIFICATIONS"
-    ]),
-    setCookies(enabledCookies) {
-      localStorage.setItem("enabledCookies", enabledCookies);
-    }
+    ])
   }
 };
 </script>

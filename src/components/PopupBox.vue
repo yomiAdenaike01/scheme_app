@@ -6,9 +6,15 @@
           v-if="closeButton"
           class="close_button only_icon primary"
           icon="x"
-          @click="$emit('close')"
+          @click="closePopup"
         ></s-button>
-        <slot />
+        <div v-if="title" class="popup_title_container">
+          <h3>{{ title }}</h3>
+        </div>
+        <div class="slot_body_container">
+          <slot name="body" />
+        </div>
+        <slot name="footer" />
       </div>
     </div>
   </slide-y-down-transition>
@@ -24,6 +30,13 @@ export default {
     SButton
   },
   props: {
+    title: {
+      type: String
+    },
+    timeout: {
+      type: Boolean,
+      default: true
+    },
     display: {
       type: Boolean,
       default: false
@@ -31,6 +44,25 @@ export default {
     closeButton: {
       type: Boolean,
       default: true
+    }
+  },
+  data() {
+    return {
+      displayTimeout: null
+    };
+  },
+  created() {
+    if (this.timeout) {
+      clearTimeout(this.displayTimeout);
+
+      this.displayTimeout = setTimeout(() => {
+        this.closePopup();
+      }, 4500);
+    }
+  },
+  methods: {
+    closePopup() {
+      this.$emit("close");
     }
   }
 };
@@ -42,38 +74,38 @@ export default {
   bottom: 30px;
   max-width: 400px;
   &.left {
-    left: 1%;
+    left: 4%;
   }
   &.right {
     right: 1%;
   }
 }
-// .left .popup_box_container ::after {
-//   content: "";
-//   position: absolute;
-//   bottom: 50%;
-//   left: -26px;
-//   border-top: 15px solid transparent;
-//   border-right: 15px solid white;
-//   border-left: 15px solid transparent;
-//   border-bottom: 15px solid transparent;
-// }
+
 .popup_box_container {
   box-shadow: $box_shadow;
   position: relative;
-  //   &::after {
-  //     content: "";
-  //     position: absolute;
-  //     bottom: 50%;
-  //     border-top: 15px solid transparent;
-  //     border-right: 15px solid transparent;
-  //     border-left: 15px solid white;
-  //     right: -26px;
-  //     border-bottom: 15px solid transparent;
-  //   }
+  background: white;
+  max-width: 300px;
+  z-index: 999995;
+  &/deep/ .close_button {
+    position: absolute;
+    right: 0;
+    top: -20px;
+    padding: -2px;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -17%;
+    left: 40%;
+    border-top: 25px solid rgba(var(--colour_primary), 1);
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-bottom: 25px solid transparent;
+  }
 }
-.close_button {
-  position: absolute;
-  left: 0;
+.popup_title_container {
+  padding: 10px;
+  border-bottom: $border;
 }
 </style>

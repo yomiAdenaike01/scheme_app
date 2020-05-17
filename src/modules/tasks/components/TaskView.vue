@@ -2,7 +2,7 @@
   <div class="task_view_container">
     <!-- Task header -->
     <div class="task_view_bar">
-      <div class="arrow_container left" @click="goBack">
+      <div class="arrow_container left" @click="destoryComponent">
         <i class="bx bx-left-arrow-alt grey"></i>
       </div>
       <div class="text_container">
@@ -27,22 +27,53 @@
         ></textarea>
         {{ task.description }}
 
-        <!-- Assigned to -->
-        <div class="assigned_to_container">
-          <h3 class="task_title_unit grey">Assigned team members</h3>
-          <div class="avatar_container">
-            <div @click="goToTeam(member)">
+        <div class="task_details_grid">
+          <!-- Assigned to -->
+          <div class="assigned_to_container">
+            <h3 class="task_title_unit grey">Assigned team members</h3>
+            <div class="avatar_container">
               <Avatar
                 v-for="member in task.assigned_to"
                 :key="member._id"
                 :name="member.name"
                 :size="30"
                 class="trigger"
+                @click.native="goToTeam(member)"
               />
             </div>
           </div>
+          <div class="due_date_display_container">
+            <!-- Due date -->
+            <h3 class="task_title_unit grey">Due date</h3>
+            <p :class="['due_date_label capitalize', dueDateXref[true]]">
+              {{ makePretty(dueDateXref[true]) }}
+            </p>
+          </div>
+          <div class="labels_display_container">
+            <!-- Labels -->
+            <h3 class="task_title_unit grey">Labels</h3>
+            <div class="labels_grid">
+              <div
+                v-for="(label, labelIndex) in task.labels"
+                :key="labelIndex"
+                class="label"
+                :style="{ background: label.colour }"
+              >
+                <small>{{ label.name }}</small>
+                <i
+                  v-if="hasAccess"
+                  class="bx bx-x delete_label trigger"
+                  @click="deleteLabel(label._id)"
+                ></i>
+              </div>
+            </div>
+          </div>
         </div>
-        <span class="json_display">{{ task }}</span>
+        <div v-if="hasAccess" class="comments_wrapper">
+          <h3 class="task_title_unit grey">Comments</h3>
+
+          <Comments :comments="task.comments" :can-interact="hasAccess" />
+        </div>
       </div>
 
       <!-- Task sidebar -->
@@ -57,7 +88,7 @@
           >
             <div class="header grey" :class="item.class">
               <div class="container">
-                <i :class="item.icon"></i>
+                <i class="header_icon" :class="item.icon"></i>
                 <p>{{ makePretty(item.label) }}</p>
               </div>
               <i
@@ -65,7 +96,7 @@
                 :class="[
                   `bx bx-${
                     selectedItem == item.label ? 'down' : 'right'
-                  }-arrow-alt grey`
+                  }-arrow-alt grey header_icon`
                 ]"
               ></i>
             </div>
@@ -76,13 +107,13 @@
               <div
                 v-if="checkDrawer(item.label, 'members')"
                 class="add_item_body"
+                @click="$event.stopPropagation()"
               >
                 <input
                   v-model="teamNameSearch"
                   type="text"
                   placeholder="Search"
                   class="team_search"
-                  @click="$event.stopPropagation()"
                 />
                 <div
                   v-for="member in filteredTeam"
@@ -117,27 +148,122 @@
               <div
                 v-if="checkDrawer(item.label, 'labels')"
                 class="add_item_body"
+                @click="$event.stopPropagation()"
               >
-                <p>{{ item.label || item.text }}</p>
+                <!-- Navigate labels -->
+                <div class="labels_nav">
+                  <small>{{
+                    createNewLabel ? "Create new label" : "View labels"
+                  }}</small>
+                  <i
+                    v-if="task.labels.length > 0"
+                    :class="
+                      `bx bx-${
+                        !createNewLabel ? 'right' : 'left'
+                      }-arrow-alt trigger`
+                    "
+                    @click="navigateLabels"
+                  ></i>
+                </div>
+                <div class="labels_container">
+                  <!-- Viewing all labels -->
+                  <div
+                    v-if="task.labels.length > 0 && !createNewLabel"
+                    class="labels_grid"
+                  >
+                    <div
+                      v-for="(label, labelIndex) in task.labels"
+                      :key="labelIndex"
+                      class="label"
+                      :style="{ background: label.colour }"
+                    >
+                      <small>{{ label.name }}</small>
+                      <i
+                        v-if="hasAccess"
+                        class="bx bx-x delete_label trigger"
+                        @click="deleteLabel(label._id)"
+                      ></i>
+                    </div>
+                  </div>
+                  <!-- Create new label -->
+                  <div v-if="createNewLabel || task.labels.length == 0">
+                    <div
+                      :data-label-colour="newLabel.colour"
+                      :style="{
+                        background: newLabel.colour
+                      }"
+                      class="label"
+                    >
+                      <input
+                        v-model="newLabel.name"
+                        placeholder="Click to create new label"
+                        type="text"
+                        class="label_placeholder_input"
+                        @keyup.enter="saveLabel"
+                      />
+                      <el-popover v-model="displayPopover">
+                        <i
+                          slot="reference"
+                          class="bx bx-color-fill label_placeholder_icon trigger"
+                        ></i>
+                        <div class="colour_picker_container">
+                          <small>Select the colour of the new label</small>
+                          <ColourPicker
+                            v-model="newLabel.colour"
+                            :display-details="false"
+                            @input="displayPopover = false"
+                          />
+                        </div>
+                      </el-popover>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Deadlines -->
 
               <div
                 v-if="checkDrawer(item.label, 'deadlines')"
-                class="add_item_body"
+                class="add_item_body deadline"
+                @click="$event.stopPropagation()"
               >
                 <!-- Current deadline -->
-                <p>{{ item.label }}</p>
+                <small class="grey">Set a deadline for this task</small>
+                <el-date-picker
+                  v-model="task.due_date"
+                  class="due_date_select"
+                />
+                <!-- Check the due date time -->
+                <p :class="['due_date_label capitalize', dueDateXref[true]]">
+                  {{ makePretty(dueDateXref[true]) }}
+                </p>
+
                 <!-- update deadline -->
               </div>
             </collapse-transition>
           </div>
         </div>
-
-        <!-- Comments -->
       </div>
     </div>
+    <!-- Popup box for cached items -->
+    <PopupBox
+      title="Restore previous new task"
+      class="right"
+      :display="displayPopup"
+      @close="removeCachedTask"
+    >
+      <div slot="body" class="message_container">
+        <p>
+          Your previous task was unsaved, would you like to restore this task ?
+        </p>
+      </div>
+      <s-button
+        slot="footer"
+        class="primary expanded"
+        @click="restoreCachedTask"
+        >Restore previous task</s-button
+      >
+    </PopupBox>
   </div>
 </template>
 
@@ -146,15 +272,19 @@ import { mapGetters, mapState, mapMutations, mapActions } from "vuex";
 import SButton from "@/components/SButton";
 import Comments from "./Comments";
 import Avatar from "@/components/Avatar";
-
-import { CollapseTransition } from "vue2-transitions";
+import PopupBox from "@/components/PopupBox";
+import ColourPicker from "@/components/ColourPicker";
+import { CollapseTransition, SlideXLeftTransition } from "vue2-transitions";
 export default {
   name: "TaskView",
   components: {
     SButton,
     Comments,
     Avatar,
-    CollapseTransition
+    CollapseTransition,
+    SlideXLeftTransition,
+    PopupBox,
+    ColourPicker
   },
   props: {
     taskInformation: {
@@ -167,13 +297,37 @@ export default {
       edit: {},
       selectedItem: "",
       task: this.taskInformation,
-      teamNameSearch: ""
+      teamNameSearch: "",
+      displayPopup: false,
+      displayPopover: false,
+      createNewLabel: false,
+      newLabel: {
+        name: "",
+        colour: ""
+      }
     };
   },
   computed: {
-    ...mapState(["userInformation"]),
+    ...mapState(["userInformation", "colours"]),
     ...mapState("Team", ["team"]),
     ...mapState("Tasks", ["boards"]),
+    ...mapGetters(["adminPermission"]),
+
+    dueDateXref() {
+      let dueDateXref = {
+        [this.task.due_date == null]: "no_due_date"
+      };
+      if (this.task.due_date) {
+        let dueDate = this.initMoment(this.task.due_date);
+
+        dueDateXref = {
+          ...dueDateXref,
+          [dueDate.isAfter(this.initMoment())]: "on_track",
+          [dueDate.isBefore(this.initMoment())]: "overdue"
+        };
+      }
+      return dueDateXref;
+    },
     taskStateXref() {
       return {
         0: "todo",
@@ -199,7 +353,6 @@ export default {
       return this.task?.newTask ?? false;
     },
 
-    ...mapGetters(["adminPermission"]),
     addItems() {
       let quickActions = [
         {
@@ -258,6 +411,9 @@ export default {
         taskIndex: this.task.taskIndex,
         boardIndex: this.task.boardIndex
       };
+    },
+    isCached() {
+      return localStorage.getItem("newTask");
     }
   },
   created() {
@@ -265,10 +421,23 @@ export default {
       let property = this.edittableProperties[i];
       this.edit[property] = false;
     }
+    // Restore previous unsaved
+    if (this.isCached) {
+      for (let property in this.isCached) {
+        let val = this.isCached[property];
+        if (this.task[property] && val != this.task[property]) {
+          this.displayPopup = true;
+          break;
+        }
+      }
+    }
+    this.newLabel.colour = this.colours[
+      Math.round(Math.random() * this.colours.length)
+    ];
   },
 
   destroyed() {
-    this.goBack();
+    this.destoryComponent();
   },
 
   methods: {
@@ -278,16 +447,46 @@ export default {
       "CREATE_COMMENT",
       "DELETE_COMMENT"
     ]),
+    deleteLabel(id) {
+      let labelIndex = this.task.labels.findIndex(x => x._id == id);
+      if (labelIndex > -1) {
+        this.task.labels.splice(labelIndex, 1);
+      }
+    },
+    saveLabel() {
+      let newLabel = {
+        ...this.newLabel,
+        _id: Math.random()
+          .toString(16)
+          .slice(2)
+      };
+      this.task.labels.push(newLabel);
+      this.newLabel.name = "";
+    },
+    navigateLabels() {
+      if (this.task.labels.length > 0) {
+        this.createNewLabel = !this.createNewLabel;
+      }
+    },
+    removeCachedTask() {
+      localStorage.removeItem("newTask");
+      this.displayPopup = false;
+    },
+    restoreCachedTask() {
+      this.task = this.isCached
+        ? JSON.parse(localStorage.getItem("newTask"))
+        : this.taskInformation;
+      this.displayPopup = false;
+    },
     goToTeam(member) {
       this.$router.push({
         name: "team",
         params: {
-          user: member.name
+          user: member?.name
         }
       });
     },
     toggleSelectedItem(item) {
-      console.log(item);
       let { label } = item;
       if (!item?.function) {
         if (this.selectedItem == label) {
@@ -300,7 +499,6 @@ export default {
       }
     },
     toggleAssignedTeamMember(e, teamMember) {
-      e.stopPropagation();
       let assignedIndex = this.task.assigned_to.findIndex(
         assignee => assignee._id == teamMember._id
       );
@@ -310,15 +508,12 @@ export default {
       } else {
         this.task.assigned_to.push(teamMember);
       }
-
-      // If already assigned remove them
-
-      // Else add them
     },
 
-    goBack() {
+    destoryComponent() {
       if (this.isNewTask) {
         this.DELETE_TASK(this.indexs);
+        localStorage.setItem("newTask", JSON.stringify(this.task));
       }
       this.$emit("toggle");
     },
@@ -362,6 +557,12 @@ $quick_actions: (
   delete_task: var(--danger)
 );
 
+$due_date_ref: (
+  no_due_date: rgb(200, 200, 200),
+  overdue: var(--danger),
+  on_track: var(--green)
+);
+
 .task_view_container {
   display: flex;
   flex: 1;
@@ -377,8 +578,8 @@ $quick_actions: (
   margin: 0 0 0 40px;
   padding: 20px 0;
 }
-.task_title {
-  padding: 10px 0;
+.task_title_unit {
+  margin: 10px 0;
 }
 .arrow_container {
   display: flex;
@@ -405,9 +606,21 @@ $quick_actions: (
 .task_main_content_wrapper {
   display: flex;
   flex: 1;
+  padding: 10px;
   max-height: calc(100% - 220px);
   flex-direction: column;
   overflow-x: hidden;
+}
+.task_details_grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+.comments_wrapper {
+  position: relative;
+  flex: 1;
+  height: 100%;
 }
 
 .task_description {
@@ -416,7 +629,8 @@ $quick_actions: (
   background: rgb(250, 250, 250);
   outline: none;
   border: none;
-  padding: 10px;
+  max-height: 40%;
+  border-radius: 10px;
 }
 .avatar_container {
   display: flex;
@@ -453,6 +667,10 @@ $quick_actions: (
     overflow-x: hidden;
     max-height: 400px; // change for more dynamic sizing
     position: relative;
+    text-transform: initial;
+    &.deadline {
+      padding: 10px;
+    }
   }
   .header {
     display: flex;
@@ -476,7 +694,7 @@ $quick_actions: (
       background: rgb(250, 250, 250);
     }
   }
-  .bx {
+  .header_icon {
     margin-right: 10px;
     font-size: 1.5em;
   }
@@ -506,5 +724,98 @@ $quick_actions: (
   &:hover {
     background: $grey;
   }
+}
+.due_date_select {
+  width: 100%;
+  flex: 1;
+  border: none;
+  outline: none;
+}
+.due_date_label {
+  border-radius: 5px;
+  @each $key, $value in $due_date_ref {
+    &.#{$key} {
+      border: 1px solid rgba($value, 0.2);
+      color: rgba($value, 1);
+      padding: 10px;
+      background: rgba($value, 0.1);
+    }
+  }
+}
+
+.message_container {
+  padding: 20px;
+}
+.labels_display_container {
+  max-width: 10%;
+}
+.labels_nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: whitesmoke;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+.labels_container {
+  padding: 10px;
+}
+.label_placeholder {
+  color: white;
+  padding: 10px;
+}
+.labels_grid {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.label {
+  flex: 1;
+
+  white-space: nowrap;
+  border: none;
+  outline: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  border-radius: 20px;
+  margin: 10px;
+  padding: 7px 0px 7px 10px;
+  background: attr(data-label-colour);
+}
+
+.label_placeholder_input {
+  border: none;
+  outline: none;
+  color: white;
+  background: transparent;
+  display: flex;
+  flex: 1;
+  border-radius: 20px;
+  padding: 3px;
+
+  &::placeholder {
+    color: white;
+  }
+}
+.delete_label {
+  margin-right: 10px;
+}
+.label_placeholder_icon {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.colour_picker_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 </style>

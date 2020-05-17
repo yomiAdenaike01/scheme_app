@@ -55,6 +55,22 @@ export default {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Tasks", ["boards"]),
 
+    taskStub() {
+      return {
+        _id: Math.random()
+          .toString(16)
+          .slice(2),
+        name: "New Task",
+        description: "",
+        due_date: null,
+        assigned_to: [this.userInformation],
+        labels: [],
+        comments: [],
+        newTask: true,
+        state: 0
+      };
+    },
+
     boardCount() {
       return this.boards.length;
     },
@@ -67,6 +83,10 @@ export default {
     if (this.$route.params?.user) {
       // Select a board
       // Force create task with auto assignement
+    }
+    if (this.$route.params?.task) {
+      this.task = this.$route.params.task;
+      this.display = true;
     }
   },
   methods: {
@@ -96,18 +116,8 @@ export default {
 
     createTask(boardIndex) {
       this.task = {
-        _id: Math.random()
-          .toString(16)
-          .slice(2),
-        boardIndex,
-        name: "New Task",
-        description: "",
-        due_date: null,
-        assigned_to: [this.userInformation],
-        labels: [],
-        comments: [],
-        newTask: true,
-        state: 0
+        ...this.taskStub,
+        boardIndex
       };
       this.CREATE_TASK(this.task);
       this.display = true;

@@ -349,7 +349,6 @@ export default {
 .notification_container {
   position: fixed;
   top: 2%;
-  bottom: 0;
   right: 20px;
   z-index: 999995;
 }

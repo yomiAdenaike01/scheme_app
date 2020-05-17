@@ -167,7 +167,7 @@ export default {
   }
 }
 .input_comment {
-  padding: 10px;
+  padding: 20px;
   border: none;
   outline: none;
   background: $grey;
