@@ -2,20 +2,30 @@
   <div class="task_boards_container">
     <slide-x-right-transition mode="out-in">
       <div v-if="!display" class="boards_wrapper">
-        <TaskBoard
-          v-for="(board, boardIndex) in boards"
-          :key="board._id"
-          :board-data="board"
-          @createTask="createTask"
-          @viewTask="viewTask"
-        />
-
-        <TaskBoard
-          v-for="(board, index) in calcBoardsLeft"
-          :key="index"
-          :board-index="index"
-          new-board
-        />
+        <div class="filters_container">
+          <input
+            v-model="filters.name"
+            placeholder="Search board"
+            type="text"
+            class="task_input_filter"
+          />
+          <el-date-picker v-model="filters.date"></el-date-picker>
+        </div>
+        <div class="tasks_boards">
+          <TaskBoard
+            v-for="(board, boardIndex) in filteredBoards"
+            :key="board._id"
+            :board-data="board"
+            @createTask="createTask"
+            @viewTask="viewTask"
+          />
+          <TaskBoard
+            v-for="(board, index) in calcBoardsLeft"
+            :key="index"
+            :board-index="index"
+            new-board
+          />
+        </div>
       </div>
 
       <TaskView
@@ -51,7 +61,11 @@ export default {
       routedTaskData: {},
       displayTask: false,
       boardIndex: 0,
-      task: {}
+      task: {},
+      filters: {
+        name: "",
+        date: ""
+      }
     };
   },
 
@@ -59,8 +73,37 @@ export default {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Tasks", ["boards"]),
 
+    filteredBoards() {
+      let filteredBoards = [];
+      let filtersName = this.filters.name.toLowerCase();
+      let { date } = this.filters;
+
+      let filterDates = {
+        start: new Date(date).setHours(0, 0, 0),
+        end: new Date(date).setHours(23, 59, 59)
+      };
+
+      for (let i = 0, len = this.boards.length; i < len; i++) {
+        const board = this.boards[i];
+        const boardName = board.name.toLowerCase();
+        const boardDate = new Date(board.date_created);
+
+        if (!filtersName.includes(boardName)) {
+          continue;
+        }
+
+        if (filterDates.start > boardDate && filterDates.end < boardDate) {
+          continue;
+        }
+
+        filteredBoards.push(board);
+      }
+
+      return filteredBoards.length > 0 ? filteredBoards : this.boards;
+    },
+
     boardCount() {
-      return this.boards.length;
+      return this.filteredBoards.length;
     },
 
     calcBoardsLeft() {
@@ -112,6 +155,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.filters_container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  justify-content: space-between;
+}
+.tasks_boards {
+  display: flex;
+  flex: 1;
+}
+.task_input_filter {
+  padding: 15px;
+  background: rgb(245, 245, 245);
+  flex: 1;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 1.1em;
+  margin: 10px 0;
+}
 .task_boards_container {
   display: flex;
   flex: 1;
@@ -123,5 +186,6 @@ export default {
 .boards_wrapper {
   display: flex;
   flex: 1;
+  flex-direction: column;
 }
 </style>
