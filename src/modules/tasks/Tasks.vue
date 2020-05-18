@@ -44,9 +44,10 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
+import { SlideXRightTransition } from "vue2-transitions";
+
 import TaskBoard from "./components/TaskBoard";
 import TaskView from "./components/TaskView";
-import { SlideXRightTransition } from "vue2-transitions";
 
 export default {
   name: "TasksModule",

@@ -7,6 +7,16 @@
     <NprogressContainer />
     <CommonBar />
 
+    <!-- Bot -->
+    <Bot v-model="botDisplay" class="left" close-button title="Bottom">
+      <p slot="body">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis illum
+        repudiandae dicta tenetur repellendus. Magnam nostrum modi aliquam
+        soluta. Ea quis vero similique ullam rerum porro dignissimos est quaerat
+        sapiente.
+      </p>
+    </Bot>
+
     <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
 
     <div class="notification_container">
@@ -43,6 +53,7 @@
 
     <div class="common_wrapper">
       <Menu />
+
       <keep-alive>
         <slide-x-left-transition mode="out-in">
           <router-view></router-view>
@@ -62,6 +73,7 @@ import ViewEventOverlay from "./../events/components/ViewEventOverlay";
 
 import CommonBar from "./components/CommonBar";
 import Menu from "@/components/Menu";
+import Bot from "@/components/Bot";
 
 import SButton from "@/components/SButton";
 
@@ -75,12 +87,14 @@ export default {
 
     CommonBar,
     Menu,
-    SButton
+    SButton,
+    Bot
   },
   data() {
     return {
       loading: true,
-      display: true
+      display: true,
+      botDisplay: true
     };
   },
   computed: {
@@ -92,12 +106,31 @@ export default {
       "overlayIndex"
     ]),
     ...mapState(["team"]),
+    ...mapState("Tasks", ["boards"]),
     ...mapGetters(["getDeviceInformation", "adminPermission"]),
 
     keymap() {
       return {
         "ctrl+shift+space": this.toggleDisplaySearch
       };
+    },
+    taskDueToday() {
+      // Find tasks that are due today
+      let taskBoards = this.boards;
+      let tasksDueToday = [];
+
+      for (let i = 0, len = taskBoards.length; i < len; i++) {
+        let { tasks } = taskBoards[i];
+
+        for (let j = 0, jlen = tasks.length; j < jlen; j++) {
+          let { name, due_date, _id } = tasks[j];
+
+          if (this.initMoment(due_date).isSame(this.initMoment(), "day")) {
+            tasksDueToday.push({ name, _id });
+          }
+        }
+      }
+      return tasksDueToday;
     }
   },
 

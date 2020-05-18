@@ -266,7 +266,7 @@
       </div>
     </div>
     <!-- Popup box for cached items -->
-    <PopupBox
+    <Bot
       title="Restore previous new task"
       class="right"
       :display="displayPopup"
@@ -283,7 +283,7 @@
         @click="restoreCachedTask"
         >Restore previous task</s-button
       >
-    </PopupBox>
+    </Bot>
   </div>
 </template>
 
@@ -297,7 +297,7 @@ import genID from "@/mixins/genID";
 
 import SButton from "@/components/SButton";
 import Avatar from "@/components/Avatar";
-import PopupBox from "@/components/PopupBox";
+import Bot from "@/components/Bot";
 import ColourPicker from "@/components/ColourPicker";
 
 export default {
@@ -308,7 +308,7 @@ export default {
     Avatar,
     CollapseTransition,
     SlideXLeftTransition,
-    PopupBox,
+    Bot,
     ColourPicker
   },
   mixins: [genID],

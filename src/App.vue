@@ -120,6 +120,7 @@ export default {
 :root {
   // Primary
   --colour_primary: 74, 85, 100;
+  --colour_grey: 250, 250, 250;
   --colour_secondary: 89, 212, 140;
   --colour_grey_light: hsl(0, 0%, 98%);
   --colour_yellow: hsl(23, 100%, 63%);

@@ -43,7 +43,7 @@
       />
 
       <s-button
-        class="only_icon secondary"
+        class="rounded only_icon"
         :class="{ disabled: newMessage.length == 0 }"
         icon="send"
         @click="createComment"
@@ -55,6 +55,7 @@
 <script>
 import { mapGetters, mapState } from "vuex";
 import { SlideXLeftTransition } from "vue2-transitions";
+
 import scrollToBottom from "@/mixins/scrollToBottom";
 import SButton from "@/components/SButton";
 import Avatar from "@/components/Avatar";
@@ -143,6 +144,7 @@ export default {
   flex-direction: column;
   background: rgb(250, 250, 250);
   margin-bottom: 10px;
+  font-size: 0.9em;
   max-height: fit-content;
   border-radius: 10px;
   &:hover {
@@ -155,10 +157,10 @@ export default {
   padding: 20px;
   border: none;
   outline: none;
-  background: $grey;
   flex: 1;
   margin-right: 10px;
   border-radius: 10px;
+  background: transparent;
 }
 .update_comment_container {
   display: flex;
@@ -187,11 +189,12 @@ export default {
 .create_comment_wrapper {
   display: flex;
   align-items: center;
-  padding: 20px;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
+  background: $grey;
+  padding-right: 20px;
 }
 .comment_avatar {
   margin-right: 10px;

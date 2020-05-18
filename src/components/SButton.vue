@@ -50,7 +50,8 @@ export default {
 $sbutton_config: (
   primary: var(--colour_primary),
   secondary: var(--colour_secondary),
-  tertiary: var(--danger)
+  tertiary: var(--danger),
+  grey: var(--colour_grey)
 );
 $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
 

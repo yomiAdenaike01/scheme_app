@@ -24,10 +24,14 @@
 import { SlideYDownTransition } from "vue2-transitions";
 import SButton from "@/components/SButton";
 export default {
-  name: "PopupBox",
+  name: "Bot",
   components: {
     SlideYDownTransition,
     SButton
+  },
+  model: {
+    event: "close",
+    prop: "display"
   },
   props: {
     title: {
@@ -62,7 +66,7 @@ export default {
   },
   methods: {
     closePopup() {
-      this.$emit("close");
+      this.$emit("close", false);
     }
   }
 };
@@ -93,19 +97,12 @@ export default {
     top: -20px;
     padding: -2px;
   }
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -17%;
-    left: 40%;
-    border-top: 25px solid rgba(var(--colour_primary), 1);
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
-    border-bottom: 25px solid transparent;
-  }
 }
 .popup_title_container {
   padding: 10px;
   border-bottom: $border;
+}
+.slot_body_container {
+  padding: 10px;
 }
 </style>
