@@ -27,12 +27,17 @@
             </div>
             <div class="avatar_container">
               <Avatar
-                v-for="(user, index) in taskInformation.assigned_to"
+                v-for="(user, index) in assignedToFiltered"
                 :key="user._id ? user._id : index"
                 :name="user.name"
                 multiple
                 :size="40"
               />
+              <span
+                v-if="assignedToFiltered.length == maxAssignedToLen"
+                class="assigned_to_count"
+                >+{{ assignedToLeftCount }}</span
+              >
             </div>
 
             <el-tag v-if="taskInformation.due_date">{{
@@ -81,6 +86,21 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapGetters(["adminPermission", "userLookup"]),
+    maxAssignedToLen() {
+      return 3;
+    },
+    assignedToFiltered() {
+      let assignedTo = [...this.taskInformation.assigned_to];
+
+      return assignedTo.length > this.maxAssignedToLen
+        ? assignedTo.splice(1, this.maxAssignedToLen)
+        : assignedTo;
+    },
+    assignedToLeftCount() {
+      return parseInt(
+        this.taskInformation.assigned_to.length - this.assignedToFiltered.length
+      );
+    },
     comments() {
       return this.taskInformation?.comments ?? [];
     },
@@ -258,5 +278,16 @@ export default {
   small {
     margin-left: 5px;
   }
+}
+.assigned_to_count {
+  border-radius: 50%;
+  padding: 13px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(245, 245, 245);
+  color: #999;
+  margin-left: -10px;
+  z-index: 2;
 }
 </style>

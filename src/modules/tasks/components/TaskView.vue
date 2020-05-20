@@ -246,6 +246,16 @@
               >
                 <!-- Current deadline -->
                 <small class="grey">Set a deadline for this task</small>
+                <div class="button_date_create">
+                  <small
+                    v-for="(button, index) in dateIncreaseButtons"
+                    :key="index"
+                    class="date_button trigger"
+                    @click="increaseTime(button)"
+                    >+1 {{ button }}
+                  </small>
+                </div>
+
                 <el-date-picker
                   v-model="task.due_date"
                   class="due_date_select"
@@ -344,6 +354,10 @@ export default {
     ...mapState("Team", ["team"]),
     ...mapState("Tasks", ["boards"]),
     ...mapGetters(["adminPermission"]),
+
+    dateIncreaseButtons() {
+      return ["day", "week", "month", "year"];
+    },
 
     defaultTaskXref() {
       return {
@@ -497,6 +511,11 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    increaseTime(timeGap) {
+      this.task.due_date = this.initMoment(this.task.due_date)
+        .add(1, timeGap)
+        .toISOString();
     },
     async saveTask() {
       try {
@@ -705,6 +724,7 @@ $due_date_ref: (
   font-size: 3em;
   border: none;
   outline: none;
+  text-transform: capitalize;
 }
 .arrow_container {
   display: flex;
@@ -938,5 +958,22 @@ $due_date_ref: (
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.button_date_create {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  padding: 10px 0;
+  justify-content: space-between;
+}
+.date_button {
+  text-align: center;
+  background: whitesmoke;
+  color: #999;
+  padding: 10px 15px;
+  border-radius: 50px;
+  &:hover {
+    color: #555;
+  }
 }
 </style>
