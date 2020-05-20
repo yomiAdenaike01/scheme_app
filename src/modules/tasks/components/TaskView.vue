@@ -36,13 +36,14 @@
           <!-- Assigned to -->
           <div class="assigned_to_container">
             <h3 class="task_title_unit grey">Assigned team members</h3>
-            <div class="avatar_container">
+            <div class="avatar_container grouped">
               <Avatar
                 v-for="member in task.assigned_to"
                 :key="member._id"
                 :name="member.name"
                 :size="30"
                 class="trigger"
+                multiple
                 @click.native="goToTeam(member)"
               />
             </div>
@@ -245,30 +246,55 @@
                 @click="$event.stopPropagation()"
               >
                 <!-- Current deadline -->
-                <small class="grey">Set a deadline for this task</small>
-                <div class="button_date_create">
-                  <small
-                    v-for="(button, index) in dateIncreaseButtons"
-                    :key="index"
-                    class="date_button trigger"
-                    @click="increaseTime(button)"
-                    >+1 {{ button }}
-                  </small>
+
+                <div class="deadline_navigation">
+                  <small>{{
+                    assignedToEvent
+                      ? "Set deadline"
+                      : "Assign to event deadline"
+                  }}</small>
+                  <i
+                    class="bx bx-right-arrow-alt trigger"
+                    @click="deadlineNavigation"
+                  ></i>
                 </div>
+                <div class="deadline_nav_wrapper">
+                  <div v-if="assignedToEvent">
+                    <div class="button_date_create">
+                      <small
+                        v-for="(button, dateButtonIndex) in dateIncreaseButtons"
+                        :key="dateButtonIndex"
+                        class="date_button trigger"
+                        @click="increaseTime(button)"
+                        >+1 {{ button }}
+                      </small>
+                    </div>
 
-                <el-date-picker
-                  v-model="task.due_date"
-                  class="due_date_select"
-                />
-                <!-- Check the due date time -->
-                <p
-                  v-if="!isNewTask"
-                  :class="['due_date_label capitalize', dueDateXref[true]]"
-                >
-                  {{ makePretty(dueDateXref[true]) }}
-                </p>
-
-                <!-- update deadline -->
+                    <el-date-picker
+                      v-model="task.due_date"
+                      class="due_date_select"
+                    />
+                    <!-- Check the due date time -->
+                    <p
+                      v-if="!isNewTask"
+                      :class="['due_date_label capitalize', dueDateXref[true]]"
+                    >
+                      {{ makePretty(dueDateXref[true]) }}
+                    </p>
+                    <!-- Assign deadline to end of event -->
+                  </div>
+                  <div v-else>
+                    <div
+                      v-for="(event, eventIndex) in eventsToAssign"
+                      :key="eventIndex"
+                      class="event trigger"
+                      @click="assignEventTime(event.end_date.val)"
+                    >
+                      <small> {{ event.label }} </small>
+                      <small> End date: {{ event.end_date.label }} </small>
+                    </div>
+                  </div>
+                </div>
               </div>
             </collapse-transition>
           </div>
@@ -346,14 +372,37 @@ export default {
       newLabel: {
         name: "",
         colour: ""
-      }
+      },
+      assignedToEvent: false
     };
   },
   computed: {
     ...mapState(["userInformation", "colours"]),
     ...mapState("Team", ["team"]),
     ...mapState("Tasks", ["boards"]),
+    ...mapState("Events", ["events"]),
     ...mapGetters(["adminPermission"]),
+
+    eventsToAssign() {
+      let filteredEvents = [];
+      for (let i = 0, len = this.events.length; i < len; i++) {
+        let { start_date, end_date, type } = this.events[i];
+        let isEventAfterToday = this.initMoment(start_date).isAfter(
+          this.initMoment()
+        );
+
+        if (isEventAfterToday) {
+          let { label } = type;
+          filteredEvents.push({
+            start_date: { val: start_date, label: this.formatDate(start_date) },
+            end_date: { label: this.formatDate(end_date), val: end_date },
+            label
+          });
+        }
+      }
+
+      return filteredEvents;
+    },
 
     dateIncreaseButtons() {
       return ["day", "week", "month", "year"];
@@ -375,7 +424,7 @@ export default {
 
         dueDateXref = {
           ...dueDateXref,
-          [dueDate.isAfter(this.initMoment())]: "on_track",
+          [dueDate.isAfter(this.initMoment())]: "on_time",
           [dueDate.isBefore(this.initMoment())]: "overdue"
         };
       }
@@ -420,6 +469,7 @@ export default {
           label: "deadlines",
           icon: "bx bx-alarm-exclamation"
         },
+
         {
           label: "Save",
           class: "save_task",
@@ -493,7 +543,16 @@ export default {
   },
   methods: {
     ...mapActions(["request"]),
+    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
     ...mapMutations("Tasks", ["UPDATE_TASKS", "CREATE_TASK", "DELETE_TASK"]),
+    assignEventTime(date) {
+      this.task.due_date = date;
+      this.CREATE_SYSTEM_NOTIFICATION({
+        title: "Due date update",
+        message: "Task due date assigned to event",
+        icon: "timer"
+      });
+    },
     async deleteTask() {
       try {
         let { _id } = this.task;
@@ -572,6 +631,9 @@ export default {
       this.newLabel.colour = this.colours[
         Math.round(Math.random() * this.colours.length)
       ];
+    },
+    deadlineNavigation() {
+      this.assignedToEvent = !this.assignedToEvent;
     },
     loadTask() {
       let task = {
@@ -699,7 +761,7 @@ $quick_actions: (
 $due_date_ref: (
   no_due_date: rgb(200, 200, 200),
   overdue: var(--danger),
-  on_track: var(--green)
+  on_time: var(--green)
 );
 
 .task_view_container {
@@ -808,9 +870,6 @@ $due_date_ref: (
     max-height: 400px; // change for more dynamic sizing
     position: relative;
     text-transform: initial;
-    &.deadline {
-      padding: 10px;
-    }
   }
   .header {
     display: flex;
@@ -880,6 +939,7 @@ $due_date_ref: (
       color: rgba($value, 1);
       padding: 10px;
       background: rgba($value, 0.1);
+      font-size: 0.9em;
     }
   }
 }
@@ -959,6 +1019,12 @@ $due_date_ref: (
   align-items: center;
   flex-direction: column;
 }
+.deadline_navigation {
+  background: whitesmoke;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .button_date_create {
   display: flex;
   flex-wrap: wrap;
@@ -975,5 +1041,22 @@ $due_date_ref: (
   &:hover {
     color: #555;
   }
+}
+.deadline_nav_wrapper {
+  padding: 10px;
+}
+.deadline_navigation {
+  position: sticky;
+  top: 0;
+  padding: 5px;
+}
+.event {
+  padding: 10px;
+  margin: 5px 0;
+  text-transform: capitalize;
+  border: $border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>

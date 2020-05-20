@@ -7,16 +7,6 @@
     <NprogressContainer />
     <CommonBar />
 
-    <!-- Bot -->
-    <Bot v-model="botDisplay" class="left" close-button title="Bottom">
-      <p slot="body">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis illum
-        repudiandae dicta tenetur repellendus. Magnam nostrum modi aliquam
-        soluta. Ea quis vero similique ullam rerum porro dignissimos est quaerat
-        sapiente.
-      </p>
-    </Bot>
-
     <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
 
     <div class="notification_container">
@@ -73,7 +63,6 @@ import ViewEventOverlay from "./../events/components/ViewEventOverlay";
 
 import CommonBar from "./components/CommonBar";
 import Menu from "@/components/Menu";
-import Bot from "@/components/Bot";
 
 import SButton from "@/components/SButton";
 
@@ -87,8 +76,7 @@ export default {
 
     CommonBar,
     Menu,
-    SButton,
-    Bot
+    SButton
   },
   data() {
     return {
@@ -169,7 +157,10 @@ export default {
         type: "info",
         icon: "shield-x",
         title: "Activate account",
-        message: "Open settings to activate account.",
+        message: "Click to activate account.",
+        route: {
+          name: "Common"
+        },
         methods: [
           {
             label: "Activate",

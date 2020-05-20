@@ -268,7 +268,15 @@ h5 {
     align-items: center;
   }
 }
-
+.avatar_container {
+  display: flex;
+  align-items: center;
+  &.grouped {
+    &/deep/ .avatar_wrapper {
+      margin-left: -7px;
+    }
+  }
+}
 .grey {
   color: rgb(180, 180, 180);
 }

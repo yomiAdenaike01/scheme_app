@@ -25,7 +25,7 @@
               <i class="bx bx-message-rounded grey"></i>
               <small class="grey">{{ comments.length }}</small>
             </div>
-            <div class="avatar_container">
+            <div class="avatar_container grouped">
               <Avatar
                 v-for="(user, index) in assignedToFiltered"
                 :key="user._id ? user._id : index"
@@ -202,13 +202,7 @@ export default {
     box-shadow: $box_shadow;
   }
 }
-.avatar_container {
-  display: flex;
-  align-items: center;
-  &/deep/ .avatar_wrapper {
-    margin-left: -7px;
-  }
-}
+
 .labels {
   margin: 10px 0;
 }

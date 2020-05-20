@@ -252,17 +252,24 @@ export default {
       }
     }
 
-    if (notification?.desktop) {
+    if (document.visibilityState == "hidden") {
       //  params:  // 'To do list', { body: text, icon: img }
-      let desktopNotification;
-      let desktop = notification.desktop;
-      let { content, title } = desktop;
-      desktopNotification = new Notification(title, content);
-      if ("click" in desktop) {
-        desktopNotification.onclick = () => {
-          desktop.click();
-        };
-      }
+
+      let desktopNotification = new Notification(notification.title, {
+        icon: "",
+        body: notification.message
+      });
+      desktopNotification.onclick = () => {
+        window.focus();
+        if (notification?.methods) {
+          notification.methods[0].body();
+        } else {
+          if (!notification?.route) {
+            VueRouter.push({ name: "Common" });
+          }
+          VueRouter.push(notification.route);
+        }
+      };
     }
 
     let notificationIndex = state.systemNotifications.findIndex(
