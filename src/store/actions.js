@@ -163,19 +163,20 @@ export default {
                 type: "success"
               });
             }
-
             resolve(response.content);
-          } else if (response?.error) {
+          }
+          if (response?.error) {
             reject(response.content);
           }
         })
         .catch(error => {
           const status = error?.request?.status;
           // Web token error
+          console.log(error);
           if (status === 401) {
             exitApplication(context, false, true);
           }
-          console.error(error);
+
           if (error?.data) {
             error = error.data.content;
           }

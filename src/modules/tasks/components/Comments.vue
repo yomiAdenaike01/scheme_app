@@ -38,7 +38,7 @@
       <input
         v-model="newMessage"
         placeholder="Write a comment..."
-        class="input_comment"
+        class="s_input input_comment"
         @keyup.enter="createComment"
       />
 
@@ -155,11 +155,9 @@ export default {
 }
 .input_comment {
   padding: 20px;
-  border: none;
-  outline: none;
+
   flex: 1;
   margin-right: 10px;
-  border-radius: 10px;
   background: transparent;
 }
 .update_comment_container {

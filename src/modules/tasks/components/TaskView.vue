@@ -131,7 +131,7 @@
                   v-model="teamNameSearch"
                   type="text"
                   placeholder="Search"
-                  class="team_search"
+                  class="s_input team_search"
                 />
                 <div
                   v-for="member in filteredTeam"
@@ -729,7 +729,7 @@ export default {
         localStorage.setItem("newTask", JSON.stringify(this.task));
       }
       this.$emit("toggle");
-      window.removeEventListener(this.toggleDisplay);
+      window.removeEventListener("keyup", this.toggleDisplay);
     },
     viewNextTask() {
       this.$emit("nextTask");
@@ -906,12 +906,6 @@ $due_date_ref: (
   }
 }
 .team_search {
-  border: none;
-  background: rgb(250, 250, 250);
-  padding: 10px;
-  display: flex;
-  flex: 1;
-  width: 100%;
   position: sticky;
   top: 0px;
 }

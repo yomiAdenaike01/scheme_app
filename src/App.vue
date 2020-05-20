@@ -185,6 +185,16 @@ export default {
     cursor: default;
   }
 }
+.s_input {
+  border: none;
+  background: whitesmoke;
+  padding: 10px;
+  display: flex;
+  flex: 1;
+  border-radius: 10px;
+  outline: none;
+  width: 100%;
+}
 /*
 
 Fonts

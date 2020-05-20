@@ -30,12 +30,12 @@
           </el-popover>
         </div>
         <el-progress
-          v-if="tasks.length > 0"
+          v-if="filteredTasks.length > 0"
           :status="progressCount.status"
           :percentage="progressCount.percentage"
         ></el-progress>
       </div>
-      <div v-if="tasks.length == 0" class="text_container all_centre">
+      <div v-if="filteredTasks.length == 0" class="text_container all_centre">
         <h3>No tasks found</h3>
         <p>Press the button below to create a task assigned to this board</p>
       </div>
@@ -43,26 +43,23 @@
       <slide-x-left-transition v-else group>
         <!-- Filters -->
         <div key="filters_container" class="filters_container">
-          <input v-model="filters.name" placeholder="Task name" type="text" />
+          <small class="grey"><strong>Filters</strong></small>
+          <input
+            v-model="filters.name"
+            class="s_input"
+            placeholder="Task name"
+            type="text"
+          />
           <input
             v-model="filters.assigned_to"
             placeholder="Task assigned to"
             type="text"
-          />
-          <input
-            v-model="filters.due_date"
-            type="date"
-            placeholder="Due date"
-          />
-          <input
-            v-model="filters.date_created"
-            type="date"
-            placeholder="Date created"
+            class="s_input"
           />
         </div>
         <!-- Tasks -->
         <TaskItem
-          v-for="(task, index) in boardData.tasks"
+          v-for="(task, index) in filteredTasks"
           :key="`${task._id}${index}`"
           :task-information="task"
           :task-index="index"
@@ -134,13 +131,40 @@ export default {
       taskCap: 10,
       filters: {
         name: "",
-        assigned_to: ""
+        assignedTo: ""
       }
     };
   },
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters(["adminPermission"]),
+    filteredTasks() {
+      let tasks = this.tasks,
+        filters = this.filters,
+        filteredTasks = [];
+      for (let i = 0, len = tasks.length; i < len; i++) {
+        let task = tasks[i];
+
+        if (!task.name.toLowerCase().includes(filters.name.toLowerCase())) {
+          continue;
+        }
+
+        let hasAssignedUser = task.assigned_to.some(member => {
+          return member.name
+            .toLowerCase()
+            .includes(filters.assignedTo.toLowerCase());
+        });
+
+        if (!hasAssignedUser) {
+          continue;
+        }
+
+        filteredTasks.push(task);
+      }
+
+      return filteredTasks.length > 0 ? filteredTasks : tasks;
+    },
+
     description() {
       return this.boardData?.description ?? "";
     },
@@ -388,12 +412,8 @@ export default {
   flex-direction: column;
   padding: 10px;
   border-bottom: $border;
-  input {
+  .s_input {
     margin-top: 10px;
-    background: whitesmoke;
-    border-radius: 10px;
-    border: none;
-    padding: 10px;
   }
 }
 </style>
