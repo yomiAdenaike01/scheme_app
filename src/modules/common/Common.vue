@@ -10,7 +10,7 @@
     <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
 
     <div class="notification_container">
-      <slide-x-right-transition group mode="out-in">
+      <slide-x-right-transition group>
         <div
           v-for="(notification, notificationIndex) in systemNotifications"
           :key="notification._id"

@@ -516,6 +516,7 @@ export default {
   },
 
   created() {
+    window.addEventListener("keyup", this.toggleDisplay);
     this.loadTask();
 
     for (let i = 0, len = this.edittableProperties.length; i < len; i++) {
@@ -718,12 +719,17 @@ export default {
         this.task.assigned_to.push(teamMember);
       }
     },
-
+    toggleDisplay(e) {
+      if (e.key == "Escape") {
+        this.$emit("toggle");
+      }
+    },
     destoryComponent() {
       if (this.isNewTask) {
         localStorage.setItem("newTask", JSON.stringify(this.task));
       }
       this.$emit("toggle");
+      window.removeEventListener(this.toggleDisplay);
     },
     viewNextTask() {
       this.$emit("nextTask");
