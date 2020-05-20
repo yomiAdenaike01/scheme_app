@@ -2,19 +2,10 @@
   <div class="task_boards_container">
     <slide-x-right-transition mode="out-in">
       <div v-if="!display" class="boards_wrapper">
-        <div class="filters_container">
-          <input
-            v-model="filters.name"
-            placeholder="Search board"
-            type="text"
-            class="task_input_filter"
-          />
-          <el-date-picker v-model="filters.date"></el-date-picker>
-        </div>
         <div class="tasks_boards">
           <TaskBoard
-            v-for="(board, boardIndex) in filteredBoards"
-            :key="board._id"
+            v-for="(board, boardIndex) in boards"
+            :key="`${board._id}${boardIndex}`"
             :board-data="board"
             @createTask="createTask"
             @viewTask="viewTask"
@@ -74,37 +65,8 @@ export default {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Tasks", ["boards"]),
 
-    filteredBoards() {
-      let filteredBoards = [];
-      let filtersName = this.filters.name.toLowerCase();
-      let { date } = this.filters;
-
-      let filterDates = {
-        start: new Date(date).setHours(0, 0, 0),
-        end: new Date(date).setHours(23, 59, 59)
-      };
-
-      for (let i = 0, len = this.boards.length; i < len; i++) {
-        const board = this.boards[i];
-        const boardName = board.name.toLowerCase();
-        const boardDate = new Date(board.date_created);
-
-        if (!filtersName.includes(boardName)) {
-          continue;
-        }
-
-        if (filterDates.start > boardDate && filterDates.end < boardDate) {
-          continue;
-        }
-
-        filteredBoards.push(board);
-      }
-
-      return filteredBoards.length > 0 ? filteredBoards : this.boards;
-    },
-
     boardCount() {
-      return this.filteredBoards.length;
+      return this.boards.length;
     },
 
     calcBoardsLeft() {
@@ -179,6 +141,7 @@ export default {
 .task_boards_container {
   display: flex;
   flex: 1;
+  padding: 10px;
 }
 .task_boards_wrapper {
   display: flex;

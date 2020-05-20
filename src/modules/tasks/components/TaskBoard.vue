@@ -39,7 +39,28 @@
         <h3>No tasks found</h3>
         <p>Press the button below to create a task assigned to this board</p>
       </div>
+
       <slide-x-left-transition v-else group>
+        <!-- Filters -->
+        <div key="filters_container" class="filters_container">
+          <input v-model="filters.name" placeholder="Task name" type="text" />
+          <input
+            v-model="filters.assigned_to"
+            placeholder="Task assigned to"
+            type="text"
+          />
+          <input
+            v-model="filters.due_date"
+            type="date"
+            placeholder="Due date"
+          />
+          <input
+            v-model="filters.date_created"
+            type="date"
+            placeholder="Date created"
+          />
+        </div>
+        <!-- Tasks -->
         <TaskItem
           v-for="(task, index) in boardData.tasks"
           :key="`${task._id}${index}`"
@@ -110,7 +131,11 @@ export default {
   },
   data() {
     return {
-      taskCap: 10
+      taskCap: 10,
+      filters: {
+        name: "",
+        assigned_to: ""
+      }
     };
   },
   computed: {
@@ -356,6 +381,19 @@ export default {
   cursor: pointer;
   &:hover {
     background: darken(#99b898, 14);
+  }
+}
+.filters_container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-bottom: $border;
+  input {
+    margin-top: 10px;
+    background: whitesmoke;
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
   }
 }
 </style>
