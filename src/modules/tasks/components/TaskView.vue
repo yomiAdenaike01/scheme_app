@@ -301,25 +301,6 @@
         </div>
       </div>
     </div>
-    <!-- Popup box for cached items -->
-    <Bot
-      title="Restore previous new task"
-      class="right"
-      :display="displayPopup"
-      @close="removeCachedTask"
-    >
-      <div slot="body" class="message_container">
-        <p>
-          Your previous task was unsaved, would you like to restore this task ?
-        </p>
-      </div>
-      <s-button
-        slot="footer"
-        class="primary expanded"
-        @click="restoreCachedTask"
-        >Restore previous task</s-button
-      >
-    </Bot>
   </div>
 </template>
 
@@ -333,7 +314,6 @@ import genID from "@/mixins/genID";
 
 import SButton from "@/components/SButton";
 import Avatar from "@/components/Avatar";
-import Bot from "@/components/Bot";
 import ColourPicker from "@/components/ColourPicker";
 
 export default {
@@ -344,7 +324,6 @@ export default {
     Avatar,
     CollapseTransition,
     SlideXLeftTransition,
-    Bot,
     ColourPicker
   },
   mixins: [genID],
@@ -508,10 +487,6 @@ export default {
     },
     hasAccess() {
       return this.adminPermission || this.isAssignedToUser;
-    },
-
-    isCached() {
-      return localStorage.getItem("newTask");
     }
   },
 
@@ -522,18 +497,6 @@ export default {
     for (let i = 0, len = this.edittableProperties.length; i < len; i++) {
       let property = this.edittableProperties[i];
       this.edit[property] = false;
-    }
-
-    // Restore previous unsaved
-    if (this.isCached) {
-      for (let property in this.isCached) {
-        let val = this.isCached[property];
-
-        if (this.task[property] && val != this.task[property]) {
-          this.displayPopup = true;
-          break;
-        }
-      }
     }
 
     this.genLabelColour();
@@ -678,16 +641,7 @@ export default {
         this.createNewLabel = !this.createNewLabel;
       }
     },
-    removeCachedTask() {
-      localStorage.removeItem("newTask");
-      this.displayPopup = false;
-    },
-    restoreCachedTask() {
-      this.task = this.isCached
-        ? JSON.parse(localStorage.getItem("newTask"))
-        : this.taskStub;
-      this.displayPopup = false;
-    },
+
     goToTeam(member) {
       this.$router.push({
         name: "team",
