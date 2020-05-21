@@ -54,9 +54,9 @@ export default {
   },
   data() {
     return {
-      selectedConfig: "",
+      selectedConfig: "Create",
       groupData: {},
-      displayContent: false
+      displayContent: true
     };
   },
   computed: {

@@ -1,7 +1,20 @@
 <template>
   <Overlay :display="displayOverlay" @close="closeOverlay">
     <div class="team_overlay">
+      <div class="navigation_container">
+        <strong class="capitalize"> {{ makePretty(langXref[view]) }}</strong>
+        <i
+          :class="
+            `bx bx-${
+              view == 'create_group' ? 'left' : 'right'
+            }-arrow-alt trigger`
+          "
+          @click="updateView"
+        ></i>
+      </div>
+
       <Form
+        v-if="view == 'create_user'"
         :headings="headings"
         all-optional
         :config="teamMemberFormConfig"
@@ -78,6 +91,8 @@
           </div>
         </div>
       </Form>
+
+      <UpdateGroups v-else group-type="user_groups" />
     </div>
   </Overlay>
 </template>
@@ -87,6 +102,7 @@ import { mapGetters } from "vuex";
 import Avatar from "@/components/Avatar";
 import Overlay from "@/components/Overlay";
 import Form from "@/components/Form";
+import UpdateGroups from "@/components/UpdateGroups";
 
 import { SlideYUpTransition } from "vue2-transitions";
 
@@ -95,7 +111,8 @@ export default {
     Overlay,
     Form,
     SlideYUpTransition,
-    Avatar
+    Avatar,
+    UpdateGroups
   },
   props: {
     mode: {
@@ -116,11 +133,19 @@ export default {
   },
   data() {
     return {
-      inputtedTeamMemberData: {}
+      inputtedTeamMemberData: {},
+      view: "create_user"
     };
   },
   computed: {
     ...mapGetters(["getUserGroups"]),
+
+    langXref() {
+      return {
+        create_group: "manage groups",
+        create_user: "create new user"
+      };
+    },
 
     userGroupXref() {
       let group = this.getUserGroups.find(group => {
@@ -187,6 +212,14 @@ export default {
       this.inputtedTeamMemberData = e;
     },
 
+    updateView() {
+      if (this.view == "create_user") {
+        this.view = "create_group";
+      } else {
+        this.view = "create_user";
+      }
+    },
+
     closeOverlay(clearSearch) {
       this.$emit("close");
       this.inputtedTeamMemberData = {};
@@ -199,6 +232,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.navigation_container {
+  background: rgb(250, 250, 250);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 10px;
+}
 .team_overlay {
   display: flex;
   flex-direction: column;
