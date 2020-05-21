@@ -118,6 +118,10 @@
               {{ event.start_time }} - {{ event.end_time }}
               <br />
               <span class="capitalize">{{ event.time_code.label }}</span>
+              <br />
+              <span class="capitalize"
+                >End date {{ formatDate(event.end_date) }}</span
+              >
             </div>
           </div>
         </div>
@@ -803,7 +807,7 @@ p {
 }
 
 $time_code: (
-  completed: var(--success),
+  completed: var(--dark),
   upcoming: var(--colour_primary),
   in_progress: var(--purple)
 );
