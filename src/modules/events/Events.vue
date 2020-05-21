@@ -52,6 +52,12 @@ export default {
       }
     };
   },
+  created() {
+    console.log("activated", this.$route.params);
+    if (Object.keys(this.$route?.params).length > 0) {
+      this.changeView(this.$route.params);
+    }
+  },
   methods: {
     changeView({ view, teamMember }) {
       this.view = view;

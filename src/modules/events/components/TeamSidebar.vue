@@ -69,13 +69,9 @@ export default {
           command: "message",
           divider: true
         },
+
         {
-          name: "<i class='bx bx-bar-chart-alt-2'></i> View analytics",
-          command: "view_team_member_analytics",
-          divider: true
-        },
-        {
-          name: "<i class='bx bxs-calendar-check'></i> View events timeline ",
+          name: "<i class='bx bxs-calendar-check'></i> View events",
           command: "view_team_member_events"
         },
         {
@@ -111,13 +107,7 @@ export default {
           this.createStubChat();
           break;
         }
-        case "view_team_member_analytics": {
-          this.$router.push({
-            name: "team",
-            params: { user: this.selectedTeamMember?.name, tab: "analytics" }
-          });
-          break;
-        }
+
         case "view_team_member_events": {
           this.$router.push({
             name: "team",

@@ -131,6 +131,21 @@
 
       <div class="shortcuts_container">
         <i
+          v-if="!isCurrentUser"
+          class="bx bx-question-mark"
+          :style="{ backgroundColor: colours[0] }"
+          @click="
+            $router.push({
+              name: 'events',
+              params: {
+                view: 'requests',
+                teamMember: selectedTeamMember
+              }
+            })
+          "
+        >
+        </i>
+        <i
           v-if="hasPermission"
           :style="{ backgroundColor: colours[8] }"
           class="bx bx-cog"
