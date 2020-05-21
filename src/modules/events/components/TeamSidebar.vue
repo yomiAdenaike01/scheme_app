@@ -77,6 +77,10 @@ export default {
         {
           name: "<i class='bx bxs-calendar-check'></i> View events timeline ",
           command: "view_team_member_events"
+        },
+        {
+          name: "<i class='bx bx-question-mark'></i> View Requests ",
+          command: "view_team_member_requests"
         }
       ];
     }
@@ -87,6 +91,13 @@ export default {
 
     handleEvents(event) {
       switch (event) {
+        case "view_team_member_requests": {
+          this.$emit("changeView", {
+            view: "requests",
+            teamMember: this.selectedTeamMember
+          });
+          break;
+        }
         case "message": {
           this.$router.push({
             name: "comms",

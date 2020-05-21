@@ -184,6 +184,12 @@ export default {
     SlideXLeftTransition,
     FadeTransition
   },
+  props: {
+    propFilters: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data() {
     return {
       selectedRequest: {},
@@ -195,6 +201,7 @@ export default {
       }
     };
   },
+
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Events", ["eventRequests"]),
@@ -321,6 +328,13 @@ export default {
   },
 
   watch: {
+    propFilters: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        this.assignFilters(val);
+      }
+    },
     filteredRequests: {
       immediate: true,
       handler(val) {
@@ -339,6 +353,13 @@ export default {
       "UPDATE_ONE_REQUEST",
       "DELETE_REQUEST"
     ]),
+    assignFilters(val = this.propFilters) {
+      if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
+        for (let property in val) {
+          this.filters[property] = val[property];
+        }
+      }
+    },
     clearFilters() {
       for (let property in this.filters) {
         this.filters[property] = "";
