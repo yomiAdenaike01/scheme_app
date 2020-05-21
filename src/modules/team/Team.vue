@@ -297,12 +297,12 @@ export default {
     },
 
     relatedEvents() {
-      let events = this.events;
+      let events = [...this.events];
       let relatedEvents = [];
 
-      if (this.events.length > 0) {
+      if (events.length > 0) {
         for (let i = 0, len = events.length; i < len; i++) {
-          let event = events[i];
+          let event = Object.assign({}, events[i]);
           let _start_date = event.start_date,
             _end_date = event.end_date;
 
@@ -323,7 +323,7 @@ export default {
 
             event.start_time = this.formatDate(_start_date, "hh:mm");
             event.end_time = this.formatDate(_end_date, "hh:mm");
-            event.start_date = this.formatDate(_start_date, "DD-MM-YYYY");
+            event.start_date = this.formatDate(event.start_date, "DD-MM YYYY");
             relatedEvents.push(event);
           }
         }
