@@ -104,6 +104,11 @@ export default {
 };
 </script>
 <style lang="scss">
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
 .inner_cookies_container {
   padding: 20px;
   line-height: 1.7em;
@@ -168,6 +173,9 @@ export default {
   background: rgb(210, 210, 210);
   cursor: pointer;
 }
+.large_icon {
+  font-size: 9em;
+}
 .input_pill {
   display: flex;
   align-items: center;
@@ -187,13 +195,16 @@ export default {
 }
 .s_input {
   border: none;
-  background: whitesmoke;
+  background: rgb(249, 249, 249);
   padding: 10px;
   display: flex;
   flex: 1;
   border-radius: 10px;
   outline: none;
   width: 100%;
+  &.no_border_radius {
+    border-radius: 0px;
+  }
 }
 /*
 

@@ -73,6 +73,30 @@ export default {
       }
     }
   },
+  CREATE_REQUEST(state, payload) {
+    state.eventRequests.push(payload);
+
+    updateBreadCrumbs(state, "eventRequestRef", {
+      index: state.eventRequests.length - 1,
+      ...payload
+    });
+  },
+  DELETE_REQUEST(state, requestIndex) {
+    updateBreadCrumbs(
+      state,
+      "eventRequestRef",
+      state.eventRequests[requestIndex]
+    );
+    state.eventRequests.splice(requestIndex, 1);
+  },
+  UPDATE_ONE_REQUEST(state, payload) {
+    let { index, ...data } = payload;
+    updateBreadCrumbs(state, "eventRequestRef", {
+      index,
+      ...state.eventRequests[index]
+    });
+    state.eventRequests.splice(index, 1, data);
+  },
   CREATE_EVENT(state, payload) {
     // Get the data
 

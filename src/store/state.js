@@ -11,6 +11,7 @@ const genTheme = () => {
   }
   return theme;
 };
+
 export default {
   team: [],
 
@@ -27,7 +28,7 @@ export default {
     templates: 30000
   },
 
-  token: localStorage.getItem("token") ? localStorage.getItem("token") : {},
+  token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
 
   clientInformation: {},
   userInformation: {},
@@ -57,7 +58,6 @@ export default {
     "#00b8d4",
     "#ffc107",
     "#dc3545",
-    "#f4f5f8",
     "#3b4863"
   ],
 

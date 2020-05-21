@@ -23,17 +23,15 @@
       </div>
 
       <div class="current_chat_interaction">
-        <ChatActions
-          @emojiSelection="includeEmoji"
-          @uploadAttachment="addAttachment"
-        />
         <div class="send_message_container">
-          <el-input
+          <input
             v-model="chat.content"
-            class="flat_input"
+            class="s_input"
+            type="text"
             placeholder="Send a message..."
-            @keyup.enter.native="sendChatMessage"
+            @keyup.enter="sendChatMessage"
           />
+
           <s-button
             icon="send"
             class="secondary only_icon"
@@ -251,7 +249,6 @@ export default {
   align-items: center;
   background: white;
   padding: 10px 20px;
-  height: 100px;
   position: absolute;
   bottom: 0;
   left: 0;

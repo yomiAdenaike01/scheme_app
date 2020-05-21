@@ -4,6 +4,7 @@
     class="task_container"
     :class="{
       disabled: !isassigned_to,
+
       completed: hasEntries(taskInformation) && currState == 'complete'
     }"
     @click="viewTaskController"
@@ -41,7 +42,7 @@
             </div>
 
             <el-tag v-if="taskInformation.due_date">{{
-              formatDate(taskInformation.due_date)
+              formatDate(taskInformation.due_date, "DD-MM-YYYY")
             }}</el-tag>
           </div>
         </div>
@@ -195,8 +196,11 @@ export default {
   position: relative;
   cursor: pointer;
   background: white;
+  border-top: $border;
   border-bottom: $border;
+
   transition: $default_transition;
+  margin: 10px 0;
 
   &:hover {
     box-shadow: $box_shadow;

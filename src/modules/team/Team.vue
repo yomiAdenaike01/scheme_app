@@ -6,7 +6,7 @@
           <i class="bx bx-search"></i>
           <input
             v-model="searchTeamMemberName"
-            class="s_input"
+            class="s_input no_border_radius"
             type="text"
             placeholder="Search team members"
           />
@@ -85,11 +85,6 @@
         v-if="selectedTab == 'events_timeline'"
         class="tab_content_container"
       >
-        <RelatedEvent
-          v-for="event in relatedEvents"
-          :key="event._id"
-          :event="event"
-        />
         <div
           v-if="relatedEvents.length == 0"
           class="grey no_related_events text_container all_centre"
@@ -102,6 +97,20 @@
                 : "No events for this user"
             }}
           </h2>
+        </div>
+        <div v-else>
+          <input
+            v-model="filters.userGroup"
+            type="text"
+            placeholder="Filter by event type"
+            class="s_input no_border_radius"
+          />
+
+          <RelatedEvent
+            v-for="event in relatedEvents"
+            :key="event._id"
+            :event="event"
+          />
         </div>
       </div>
       <!-- Anayltics -->
@@ -231,7 +240,10 @@ export default {
       inputtedTeamMemberData: {},
       selectedTeamMemberIndex: 0,
       selectedUserActivity: [],
-      loading: false
+      loading: false,
+      filters: {
+        userGroup: ""
+      }
     };
   },
 
@@ -240,32 +252,41 @@ export default {
     ...mapState("Team", ["team"]),
     ...mapState("Events", ["events"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-
     ...mapGetters(["adminPermission"]),
+
     isCurrentUser() {
       return this.selectedTeamMember._id == this.userInformation._id;
     },
 
     relatedEvents() {
+      let events = this.events;
       let relatedEvents = [];
 
       if (this.events.length > 0) {
-        let sortedEvents = [...this.events].sort((a, b) => {
-          return new Date(a.start_date) - new Date(b.start_date);
-        });
-        for (let i = 0, len = sortedEvents.length; i < len; i++) {
-          let event = sortedEvents[i];
-          if (Object.values(event).length > 0) {
-            let isAssingnedToEvent =
-              event.assigned_to.findIndex(assignee => {
-                return assignee._id == this.selectedTeamMember._id;
-              }) > -1;
-            if (isAssingnedToEvent) {
-              let { start_date, end_date, type } = event;
-              start_date = this.initMoment(start_date);
-              end_date = this.initMoment(end_date);
+        for (let i = 0, len = events.length; i < len; i++) {
+          let event = events[i];
+          let _start_date = event.start_date,
+            _end_date = event.end_date;
 
-              relatedEvents.push({ start_date, end_date, type });
+          if (Object.values(event).length > 0) {
+            let isAssingnedToEvent = event.assigned_to.some(assignee => {
+              return assignee._id == this.selectedTeamMember._id;
+            });
+
+            if (isAssingnedToEvent) {
+              let timeCode = this.determineTimeCode({
+                start_date: _start_date,
+                end_date: _end_date
+              });
+              event.time_code = {
+                label: this.makePretty(timeCode),
+                value: timeCode
+              };
+
+              event.start_time = this.formatDate(_start_date, "hh:mm");
+              event.end_time = this.formatDate(_end_date, "hh:mm");
+
+              relatedEvents.push(event);
             }
           }
         }
@@ -445,6 +466,17 @@ export default {
       "DELETE_TEAM_MEMBER",
       "CREATE_TEAM_MEMBER"
     ]),
+    determineTimeCode({ start_date, end_date }) {
+      let now = this.initMoment(),
+        startDate = this.initMoment(start_date),
+        endDate = this.initMoment(end_date);
+
+      let timeXref = {
+        [endDate.isAfter(now)]: "completed",
+        [startDate.isAfter(now)]: "upcoming"
+      };
+      return timeXref[true] ? timeXref[true] : "in_progress";
+    },
     getAuditLog() {
       this.loading = true;
       this.request({

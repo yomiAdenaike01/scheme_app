@@ -65,7 +65,7 @@ export default {
           display: true,
           class:
             this.currentView == "requests"
-              ? "shadow secondary rounded"
+              ? "secondary rounded"
               : "primary rounded",
           inverseIcon: this.currentView == "requests",
           method: () => {

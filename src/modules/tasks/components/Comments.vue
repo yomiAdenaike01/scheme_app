@@ -1,5 +1,6 @@
 <template>
   <div class="comments">
+    <h3 class="comments_title grey">Comments ({{ comments.length }})</h3>
     <div
       v-if="comments.length > 0"
       ref="comments_wrapper"
@@ -123,16 +124,17 @@ export default {
 <style scoped lang="scss">
 .comments {
   display: flex;
-  flex: 1;
+  flex: 0.3;
   flex-direction: column;
   position: relative;
   max-height: 100%;
   overflow: hidden;
-  border: $border;
-  border-radius: 20px;
+  border-left: $border;
   padding: 10px;
 }
-
+.comments_title {
+  margin: 20px 0;
+}
 .comments_wrapper {
   max-height: calc(100% - 100px);
   overflow-x: hidden;
@@ -142,11 +144,13 @@ export default {
   display: flex;
   position: relative;
   flex-direction: column;
-  background: rgb(250, 250, 250);
+  border: $border;
   margin-bottom: 10px;
   font-size: 0.9em;
   max-height: fit-content;
   border-radius: 10px;
+  background: rgb(252, 252, 252);
+
   &:hover {
     .comment_footer {
       display: initial;
@@ -193,6 +197,7 @@ export default {
   right: 0;
   background: $grey;
   padding-right: 20px;
+  margin: 10px;
 }
 .comment_avatar {
   margin-right: 10px;

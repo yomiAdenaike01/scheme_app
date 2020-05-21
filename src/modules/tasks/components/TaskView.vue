@@ -14,7 +14,7 @@
           class="new_task_input"
         />
 
-        <h4 class="grey">{{ boardData.name }}</h4>
+        <h2 class="grey capitalize">{{ boardData.name }}</h2>
       </div>
       <div class="arrow_container right" @click="viewNextTask">
         <i class="bx bx-right-arrow-alt grey"></i>
@@ -24,17 +24,9 @@
     <!-- Task content -->
     <div class="task_content_body">
       <div class="task_main_content_wrapper">
-        <h3 class="task_title_unit grey">Task description</h3>
-        <textarea
-          v-model="task.description"
-          class="task_description"
-          :placeholder="task.description"
-          :disabled="!hasAccess"
-        ></textarea>
-
         <div class="task_details_grid">
           <!-- Assigned to -->
-          <div class="assigned_to_container">
+          <div class="assigned_to_container unit">
             <h3 class="task_title_unit grey">Assigned team members</h3>
             <div class="avatar_container grouped">
               <Avatar
@@ -48,7 +40,7 @@
               />
             </div>
           </div>
-          <div class="due_date_display_container">
+          <div class="due_date_display_container unit">
             <!-- Due date -->
             <h3 class="task_title_unit grey">Due date</h3>
             <p
@@ -58,7 +50,7 @@
               {{ makePretty(dueDateXref[true]) }}
             </p>
           </div>
-          <div class="labels_display_container">
+          <div class="labels_display_container unit">
             <!-- Labels -->
             <h3 class="task_title_unit grey">Labels</h3>
             <div v-if="task.labels.length > 0" class="labels_grid">
@@ -79,19 +71,22 @@
             <h3 v-else class="grey">No labels</h3>
           </div>
         </div>
-        <template v-if="hasAccess">
-          <h3 class="task_title_unit grey">
-            Comments ({{ task.comments.length }})
-          </h3>
-
-          <Comments
-            :comments="task.comments"
-            :can-interact="hasAccess"
-            @createComment="createComment"
-            @deleteComment="deleteComment"
-          />
-        </template>
+        <h3 class="task_title_unit grey">Task description</h3>
+        <textarea
+          v-model="task.description"
+          class="task_description"
+          :placeholder="task.description"
+          :disabled="!hasAccess"
+        ></textarea>
       </div>
+      <template v-if="hasAccess">
+        <Comments
+          :comments="task.comments"
+          :can-interact="hasAccess"
+          @createComment="createComment"
+          @deleteComment="deleteComment"
+        />
+      </template>
 
       <!-- Task sidebar -->
       <div class="task_sidebar_content_wrapper">
@@ -352,6 +347,7 @@ export default {
         name: "",
         colour: ""
       },
+      hasChanged: false,
       assignedToEvent: false
     };
   },
@@ -426,9 +422,10 @@ export default {
         : false;
     },
     filteredTeam() {
-      return this.team.filter(x =>
+      let filteredTeam = this.team.filter(x =>
         x.name.toLowerCase().includes(this.teamNameSearch.toLowerCase())
       );
+      return filteredTeam.length > 0 ? filteredTeam : this.team;
     },
     isNewTask() {
       return this.task.newTask ?? false;
@@ -505,6 +502,7 @@ export default {
   destroyed() {
     this.destoryComponent();
   },
+
   methods: {
     ...mapActions(["request"]),
     ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
@@ -683,6 +681,9 @@ export default {
         localStorage.setItem("newTask", JSON.stringify(this.task));
       }
       this.$emit("toggle");
+      if (this.hasChanged) {
+        this.saveTask();
+      }
       window.removeEventListener("keyup", this.toggleDisplay);
     },
     viewNextTask() {
@@ -767,7 +768,6 @@ $due_date_ref: (
   display: flex;
   flex-direction: row;
   flex: 1;
-  margin: 30px;
   max-height: calc(100% - 150px);
   background: white;
 }
@@ -775,34 +775,36 @@ $due_date_ref: (
   display: flex;
   flex: 1;
   padding: 30px;
-  overflow-x: hidden;
-  max-height: 100%;
   flex-direction: column;
 }
 .task_details_grid {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   padding: 10px;
+  .unit {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0 20px;
+  }
 }
 
 .task_description {
   outline: none;
   border: $border;
-  min-height: 100px;
+  flex: 1;
   border-radius: 10px;
   padding: 10px;
   font-size: 1em;
+  background: rgb(250, 250, 250);
 }
-.avatar_container {
-  display: flex;
-  align-items: center;
-}
+
 .task_sidebar_content_wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 0.2;
+  flex: 0.4;
   border-left: $border;
 }
 .add_items_container {
@@ -862,6 +864,7 @@ $due_date_ref: (
 .team_search {
   position: sticky;
   top: 0px;
+  border-radius: 0px;
 }
 
 .team_member {
@@ -901,9 +904,7 @@ $due_date_ref: (
 .message_container {
   padding: 20px;
 }
-.labels_display_container {
-  max-width: 10%;
-}
+
 .labels_nav {
   display: flex;
   justify-content: space-between;
@@ -930,7 +931,7 @@ $due_date_ref: (
 
 .label {
   flex: 1;
-
+  max-height: 31px;
   white-space: nowrap;
   border: none;
   outline: none;

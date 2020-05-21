@@ -1,6 +1,7 @@
-import { methods } from "@/mixins/genID";
+import genID from "@/mixins/genID";
 export default {
   createStubChat(context) {
+    let methods = genID.methods;
     let isoDate = new Date().toISOString();
     context.commit("UPDATE_CHATS", {
       muted_notifications: [],

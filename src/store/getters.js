@@ -65,7 +65,7 @@ export default {
     return arr;
   },
 
-  getGroupName: ({ clientInformation }) => (groupType, id) => {
+  groupLookup: ({ clientInformation }) => (groupType, id) => {
     let res = {};
 
     if (groupType == "user") {
@@ -75,8 +75,8 @@ export default {
     }
 
     if (Vue.prototype.hasEntries(clientInformation)) {
-      res = clientInformation[groupType].find(({ groupID }) => {
-        return groupID == id;
+      res = clientInformation[groupType].find(({ _id }) => {
+        return _id == id;
       });
     }
     return res;

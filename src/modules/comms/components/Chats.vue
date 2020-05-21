@@ -1,35 +1,32 @@
 <template>
   <div class="chats_container">
     <div v-if="chats.length > 0" class="active_chats">
-      <div class="chats_header">
-        <el-input
+      <header class="filters_container">
+        <i class="bx bx-search grey"></i>
+        <input
           v-model="query"
-          class="flat_input query_chats_container"
+          type="text"
+          class="s_input"
           placeholder="Search chats"
         />
-      </div>
+      </header>
       <fade-transition group>
         <Chat
-          v-for="(chat, index) in chats"
+          v-for="(chat, index) in filteredChats"
           :key="`${index}${genID()}`"
           :chat-index="index"
           :chat-information="chat"
         />
       </fade-transition>
-      <div class="blank_message grey" @click="startNewChat">
+      <div class="grey compose_container">
         <i class="bx bx-plus"></i>
-        <span>Compose</span>
+        <p>Start new chat</p>
       </div>
     </div>
     <div v-else class="text_container all_centre">
       <h2>No previous chats</h2>
       <p>Press the button below to start a new chat</p>
-      <s-button
-        slot="body"
-        class="only_icon secondary"
-        icon="plus"
-        @click="startNewChat"
-      />
+      <s-button class="only_icon secondary" icon="plus" @click="startNewChat" />
     </div>
   </div>
 </template>
@@ -61,9 +58,32 @@ export default {
     ...mapGetters(["userLookup"]),
     hasChats() {
       return this.chats.length > 0;
+    },
+    filteredChats() {
+      let filteredChats = [];
+      let chats = [...this.chats];
+      let query = this.query.toLowerCase();
+
+      for (let i = 0, len = chats.length; i < len; i++) {
+        let chat = chats[i];
+        let { user_two, user_one, date_created } = chat;
+        if (
+          !user_two.name.toLowerCase().includes(query) ||
+          !user_one.name.toLowerCase().includes(query)
+        ) {
+          continue;
+        }
+        filteredChats.push(chat);
+      }
+      return filteredChats.length > 0 ? filteredChats : chats;
     }
   },
-
+  deactivated() {
+    let newChatIndex = this.chats.findIndex(chat => {
+      return chat?.initChat;
+    });
+    this.DELETE_CHAT(newChatIndex);
+  },
   methods: {
     ...mapActions("Comms", ["createStubChat"]),
     ...mapMutations("Comms", ["UPDATE_CHATS", "UPDATE_ACTIVE_CHAT"]),
@@ -104,8 +124,26 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+  height: 100%;
 }
-.blank_message {
+
+.filters_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px;
+  > * {
+    flex: 1;
+  }
+  .bx {
+    flex: 0.05;
+  }
+}
+.query_chats_container /deep/ .el-input__inner {
+  border: none;
+}
+
+.compose_container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,11 +157,9 @@ export default {
   .bx {
     margin-right: 10px;
   }
-}
-.chats_header {
-  margin: 10px;
-}
-.query_chats_container /deep/ .el-input__inner {
-  border: none;
+  p {
+    padding: 0;
+    margin: 0;
+  }
 }
 </style>

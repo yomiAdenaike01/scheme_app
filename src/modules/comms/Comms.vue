@@ -7,7 +7,7 @@
     />
     <div v-else class="no_active_chat">
       <h1>Select a chat to begin</h1>
-      <i class="bx bxl-discourse"></i>
+      <i class="bx bxl-discourse large_icon"></i>
     </div>
   </div>
   <div v-else class="no_content center">
@@ -90,9 +90,5 @@ export default {
   justify-content: center;
   align-items: center;
   color: rgb(220, 220, 220);
-
-  .bx {
-    font-size: 9em;
-  }
 }
 </style>

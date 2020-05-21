@@ -42,25 +42,43 @@
 
       <slide-x-left-transition v-else group>
         <!-- Filters -->
-        <div key="filters_container" class="filters_container">
-          <small class="grey"><strong>Filters</strong></small>
-          <input
-            v-model="filters.name"
-            class="s_input"
-            placeholder="Task name"
-            type="text"
-          />
-          <input
-            v-model="filters.assigned_to"
-            placeholder="Task assigned to"
-            type="text"
-            class="s_input"
-          />
+        <div
+          key="filters_container"
+          v-click-outside="onClickOutside"
+          class="filters_container"
+        >
+          <div
+            class="navigation_container trigger
+"
+            @click="filters.display = !filters.display"
+          >
+            <small class="grey"><strong>Filters</strong></small>
+            <i
+              :class="`bx bx-${filters.display ? 'down' : 'right'}-arrow-alt`"
+            ></i>
+          </div>
+          <collapse-transition>
+            <div v-if="filters.display" class="input_wrapper">
+              <input
+                v-model="filters.name"
+                class="s_input"
+                placeholder="Task name"
+                type="text"
+              />
+              <input
+                v-model="filters.assigned_to"
+                placeholder="Task assigned to"
+                type="text"
+                class="s_input"
+              />
+            </div>
+          </collapse-transition>
         </div>
         <!-- Tasks -->
         <TaskItem
           v-for="(task, index) in filteredTasks"
           :key="`${task._id}${index}`"
+          class="task_item_placeholder"
           :task-information="task"
           :task-index="index"
           :board-index="boardIndex"
@@ -98,7 +116,9 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-import { SlideXLeftTransition } from "vue2-transitions";
+import { SlideXLeftTransition, CollapseTransition } from "vue2-transitions";
+import vClickOutside from "v-click-outside";
+
 import TaskItem from "./TaskItem";
 import SButton from "@/components/SButton";
 import Form from "@/components/Form";
@@ -108,10 +128,13 @@ export default {
   components: {
     TaskItem,
     SlideXLeftTransition,
+    CollapseTransition,
     SButton,
     Form
   },
-
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   props: {
     newBoard: {
       type: Boolean,
@@ -129,7 +152,9 @@ export default {
   data() {
     return {
       taskCap: 10,
+
       filters: {
+        display: false,
         name: "",
         assignedTo: ""
       }
@@ -244,6 +269,11 @@ export default {
       "CREATE_TASK",
       "DELETE_BOARD"
     ]),
+    onClickOutside() {
+      if (this.filters.display) {
+        this.filters.display = false;
+      }
+    },
     updateBoardQuota(action = "minus") {
       let value = this.clientInformation.board_quota + 1;
       if (action == "minus") {
@@ -407,11 +437,21 @@ export default {
     background: darken(#99b898, 14);
   }
 }
+
 .filters_container {
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  border-bottom: $border;
+
+  .navigation_container {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: $border;
+  }
+  .input_wrapper {
+    padding: 10px;
+  }
   .s_input {
     margin-top: 10px;
   }

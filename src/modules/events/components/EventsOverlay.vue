@@ -71,7 +71,8 @@ export default {
       "getUserGroups",
       "getUsersInGroup",
       "adminPermission",
-      "getCurrentTabXref"
+      "getCurrentTabXref",
+      "groupLookup"
     ]),
 
     ...mapGetters("Team", ["getDropdownTeamMembers", "userLookup"]),
@@ -83,6 +84,8 @@ export default {
       };
     },
     eventContent() {
+      let data = null;
+
       // this.loading = true;
       let events = { ...this.events };
       let date = events?.date;
@@ -91,49 +94,64 @@ export default {
       let end_date = this.initMoment(date[1]).toISOString();
       events.start_date = start_date;
       events.end_date = end_date;
-      events.until = this.initMoment(events?.until ?? new Date()).toISOString();
 
       if (this.activeDialogInformation?.length > 0) {
         events.assigned_to = events.assigned_to.concat(
           this.activeDialogInformation
         );
       }
+      if (this.tabXref.name != "create_request") {
+        events.until = this.initMoment(
+          events?.until ?? new Date()
+        ).toISOString();
+        events.is_approved = [
+          this.userInformation._id,
+          ...events?.assigned_to?.filter(assignee => {
+            return (
+              this.userLookup(assignee)?.user_group?.enable_event_rejection ==
+              true
+            );
+          })
+        ];
 
-      events.is_approved = [
-        this.userInformation._id,
-        ...events.assigned_to.filter(assignee => {
-          return (
-            this.userLookup(assignee)?.user_group?.enable_event_rejection ==
-            true
-          );
-        })
-      ];
+        events = {
+          ...events,
+          repeat: {
+            until: events.until,
+            weekdays: events?.weekdays ?? 0
+          }
+        };
 
-      events = {
-        ...events,
-        repeat: {
-          until: events.until,
-          weekdays: events?.weekdays ?? 0
+        if (!this.adminPermission) {
+          events.assigned_to = [this.userInformation._id];
         }
-      };
+        let templates = {
+          content: events
+        };
 
-      if (!this.adminPermission) {
-        events.assigned_to = [this.userInformation._id];
-      }
-      let templates = {
-        content: events
-      };
+        if (events?.user_groups?.length > 0) {
+          // Changed the assigned to to all of the user groups
+          let uGroups = events.user_groups;
+          events.assigned_to = [];
 
-      if (events?.user_groups?.length > 0) {
-        // Changed the assigned to to all of the user groups
-        let uGroups = events.user_groups;
-        events.assigned_to = [];
-
-        for (let i = 0, len = uGroups.length; i < len; i++) {
-          events.assigned_to.push(...this.getUsersInGroup(uGroups[i]));
+          for (let i = 0, len = uGroups.length; i < len; i++) {
+            events.assigned_to.push(...this.getUsersInGroup(uGroups[i]));
+          }
+          data = { events, templates };
         }
+      } else {
+        let group = this.groupLookup("event", events.type);
+        console.log(group);
+        events.assigned_to = [this.userInformation];
+        events.type = { _id: group?._id, label: group?.label };
+        events.status = "sent";
+        events.notes = "yomi adenaike";
+        events.date_created = new Date().toISOString();
+        events.requested_by = this.userInformation;
+
+        data = { events };
       }
-      return { templates, events };
+      return data;
     },
 
     informationDisplay() {
@@ -165,7 +183,7 @@ export default {
     tabs() {
       let tabs = [
         {
-          label: this.adminPermission ? "Create event" : "Create request",
+          label: !this.adminPermission ? "Create event" : "Create request",
           formContent: this.createEventForm,
           displayReset: true,
           emitOnChange: true,
@@ -207,7 +225,7 @@ export default {
 
       // Check if it is an admin or not
 
-      if (this.adminPermission) {
+      if (!this.adminPermission) {
         createEventConfig.unshift(
           {
             placeholder: "Select team members",
@@ -267,7 +285,11 @@ export default {
     ...mapActions(["request", "closeOverlay", "genPromptBox"]),
     ...mapActions("Events", ["createEvent", "createEventTemplate"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
-
+    ...mapMutations("Events", [
+      "CREATE_REQUEST",
+      "UPDATE_ONE_REQUEST",
+      "DELETE_REQUEST"
+    ]),
     eventsCtrl(information) {
       this.events = information;
 
@@ -291,17 +313,20 @@ export default {
     genRequest() {
       this.loading = true;
       let eventInfo = this.eventContent.events;
-      let requestInformation = {
+
+      let requestBody = {
         type: this.eventContent.events.type,
         end_date: eventInfo.end_date,
         start_date: eventInfo.start_date
       };
+      this.CREATE_REQUEST(eventInfo);
+      this.loading = false;
 
-      this.request({
-        method: "POST",
-        url: "events/requests/create",
-        data: requestInformation
-      });
+      // this.request({
+      //   method: "POST",
+      //   url: "events/requests/create",
+      //   data: requestBody
+      // });
     },
     // Submit one event
     genEvent() {
