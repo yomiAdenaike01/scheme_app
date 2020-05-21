@@ -68,7 +68,37 @@
         v-if="Object.keys(selectedRequest).length > 0"
         class="viewing_request_subcontainer"
       >
-        {{ selectedRequest }}
+        <!-- Header -->
+        <header>
+          <h1 class="capitalize">{{ selectedRequest.type.label }}</h1>
+        </header>
+
+        <section>
+          <!-- Details -->
+          <div class="details_grid">
+            <div
+              v-for="(value, index) in viewDataXref"
+              :key="index"
+              class="details_item"
+            >
+              <h2 class="grey capitalize">{{ makePretty(value) }}</h2>
+              <span>{{ selectedRequest[value] }}</span>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline_wrapper">
+            <h3>Status timeline</h3>
+            <div class="timeline">
+              <div
+                v-for="(status, index) in statusOptions"
+                :key="`${status}${index}`"
+              >
+                <div class="time_unit capitalize">{{ status }}</div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
       <div v-else class="grey text_container all_centre">
         <i class="bx bx-pointer large_icon"></i>
@@ -96,9 +126,14 @@ export default {
     ...mapState(["userInformation"]),
     ...mapState("Events", ["eventRequests"]),
     ...mapGetters(["adminPermission"]),
+    actionOptions() {},
+    viewDataXref() {
+      return ["assigned_to", "notes", "requested_by"];
+    },
     statusOptions() {
       return ["sent", "approved", "rejected"];
     },
+
     dateFieldsXref() {
       let dateFormat = "DD-MM YYYY";
       let body = val => {
@@ -159,6 +194,7 @@ $requests: (
 
 .requests_container {
   display: flex;
+  height: 100%;
   flex: 1;
 }
 .requests_list {
@@ -174,6 +210,10 @@ $requests: (
   margin: 10px;
   border: $border;
 }
+.viewing_request_subcontainer {
+  overflow-x: hidden;
+  max-height: 97%;
+}
 .filters_container {
   margin: 10px;
   select {
@@ -181,6 +221,8 @@ $requests: (
   }
 }
 .requests_list_subcontainer {
+  overflow-x: hidden;
+  height: 100%;
   flex: 1;
 }
 .request {
@@ -218,7 +260,29 @@ $requests: (
 ul {
   padding: 10px 0;
 }
-.viewing_request_subcontainer {
+
+header {
+  border-bottom: $border;
   padding: 10px;
+}
+.details_grid {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  overflow-x: hidden;
+}
+.details_item {
+  display: flex;
+  border: $border;
+  flex-direction: column;
+  flex: 1;
+  padding: 2%;
+}
+.timeline {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 30px;
+  border-bottom: $border;
 }
 </style>
