@@ -1,5 +1,6 @@
 <template functional>
   <div
+    :style="props.buttonStyle"
     :class="[
       'button_container',
       data.staticClass,
@@ -30,6 +31,10 @@ export default {
     icon: {
       type: String,
       default: null
+    },
+
+    buttonStyle: {
+      type: Object
     },
 
     onlyIcon: {
@@ -70,6 +75,12 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   white-space: nowrap;
   max-width: fit-content;
   justify-content: space-between;
+  &.pill {
+    .slot_wrapper,
+    .icon_container {
+      padding: 5px;
+    }
+  }
   &.full_width {
     flex: 1;
   }
