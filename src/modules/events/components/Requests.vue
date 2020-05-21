@@ -71,8 +71,9 @@
         {{ selectedRequest }}
       </div>
       <div v-else class="grey text_container all_centre">
-        <i class="bx bx-eye large_icon"></i>
-        <h1>No request selected</h1>
+        <i class="bx bx-pointer large_icon"></i>
+        <br />
+        <h1>Select a request to display</h1>
       </div>
     </div>
   </div>
