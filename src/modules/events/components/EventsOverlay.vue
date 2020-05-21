@@ -184,7 +184,7 @@ export default {
     tabs() {
       let tabs = [
         {
-          label: !this.adminPermission ? "Create event" : "Create request",
+          label: this.adminPermission ? "Create event" : "Create request",
           formContent: this.createEventForm,
           displayReset: true,
           emitOnChange: true,
@@ -226,7 +226,7 @@ export default {
 
       // Check if it is an admin or not
 
-      if (!this.adminPermission) {
+      if (this.adminPermission) {
         createEventConfig.unshift(
           {
             placeholder: "Select team members",
@@ -323,11 +323,11 @@ export default {
       this.CREATE_REQUEST({ _id: this.genID(), ...eventInfo });
       this.loading = false;
 
-      // this.request({
-      //   method: "POST",
-      //   url: "events/requests/create",
-      //   data: requestBody
-      // });
+      this.request({
+        method: "POST",
+        url: "events/requests/create",
+        data: requestBody
+      });
     },
     // Submit one event
     genEvent() {
