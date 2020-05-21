@@ -108,7 +108,6 @@
         </header>
         <!-- Timeline -->
         <div class="timeline_wrapper">
-          <h3>Status timeline</h3>
           <div class="timeline">
             <div
               v-for="(status, index) in statusOptions"
@@ -142,13 +141,22 @@
         <!-- Details -->
         <div class="details_grid">
           <div
-            v-for="(value, index) in viewDataXref"
-            :key="index"
-            class="details_item"
+            v-for="(value, key) in viewDataXref"
+            :key="key"
+            class="details_item col"
           >
-            <h2 class="grey capitalize">{{ makePretty(value) }}</h2>
-            <span>{{ selectedRequest[value] }}</span>
+            <h2 class="grey capitalize">{{ makePretty(key) }}</h2>
+            <span>{{ viewDataXref[key](selectedRequest[key]) }}</span>
           </div>
+        </div>
+
+        <div class="details_item">
+          <h2 class="grey">Notes</h2>
+          <textarea
+            v-model="selectedRequest.notes"
+            :disabled="!hasAccess"
+            class="s_input"
+          ></textarea>
         </div>
 
         <!-- Actions -->
@@ -209,6 +217,13 @@ export default {
 
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["userLookup"]),
+
+    hasAccess() {
+      return (
+        this.selectedRequest.requested_by._id == this.userInformation._id ||
+        this.adminPermission
+      );
+    },
 
     filtersXref() {
       return {
@@ -274,7 +289,24 @@ export default {
       return actions;
     },
     viewDataXref() {
-      return ["assigned_to", "notes", "requested_by"];
+      let dateChange = val => {
+        return this.formatDate(val);
+      };
+
+      return {
+        assigned_to: val => {
+          return val
+            .map(x => {
+              return x.name;
+            })
+            .join(",");
+        },
+        start_date: dateChange,
+        end_date: dateChange,
+        requested_by: val => {
+          return val.name;
+        }
+      };
     },
     statusOptions() {
       let statusOptions = ["sent", "seen", "approved", "rejected"];
@@ -421,6 +453,7 @@ $requests: (
   flex: 0.6;
 }
 .viewing_request {
+  display: flex;
   flex: 1;
 }
 .requests_list,
@@ -435,7 +468,6 @@ $requests: (
   flex-direction: column;
   flex: 1;
   overflow-x: hidden;
-  max-height: 97%;
   position: relative;
 }
 header {
@@ -523,14 +555,21 @@ header {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
-  overflow-x: hidden;
 }
 .details_item {
   display: flex;
-  border: $border;
+
+  border-right: $border;
+  border-bottom: $border;
+  border-top: $border;
+
   flex-direction: column;
   flex: 1;
   padding: 2%;
+  &.col {
+    justify-content: center;
+    align-items: center;
+  }
 }
 .actions_wrapper {
   display: flex;
@@ -541,18 +580,17 @@ header {
   &/deep/ .button_container {
     flex: 1;
     font-size: 1.2em;
-
+    border-radius: 5px;
     margin: 0px 1px;
   }
 }
 .timeline_wrapper {
-  padding: 10px;
+  padding: 20px;
 }
 .timeline {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
-  border-bottom: $border;
   position: relative;
   &::after {
     position: absolute;
