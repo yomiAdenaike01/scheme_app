@@ -40,6 +40,7 @@ import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import QrcodeVue from "qrcode.vue";
 
 import Overlay from "@/components/Overlay";
+import genID from "@/mixins/genID";
 export default {
   name: "EventsOverlay",
   components: {
@@ -48,6 +49,7 @@ export default {
     QrcodeVue,
     Overlay
   },
+  mixins: [genID],
   props: {
     display: {
       type: Boolean,
@@ -141,7 +143,6 @@ export default {
         }
       } else {
         let group = this.groupLookup("event", events.type);
-        console.log(group);
         events.assigned_to = [this.userInformation];
         events.type = { _id: group?._id, label: group?.label };
         events.status = "sent";
@@ -319,7 +320,7 @@ export default {
         end_date: eventInfo.end_date,
         start_date: eventInfo.start_date
       };
-      this.CREATE_REQUEST(eventInfo);
+      this.CREATE_REQUEST({ _id: this.genID(), ...eventInfo });
       this.loading = false;
 
       // this.request({
