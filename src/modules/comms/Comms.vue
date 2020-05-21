@@ -6,8 +6,8 @@
       :user-to-message="userToMessage"
     />
     <div v-else class="no_active_chat">
-      <h1>Select a chat to begin</h1>
       <i class="bx bxl-discourse large_icon"></i>
+      <h1>Select a chat to begin...</h1>
     </div>
   </div>
   <div v-else class="no_content center">

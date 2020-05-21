@@ -30,21 +30,20 @@ export default {
     teamMemberIndex = teamMemberIndex ? teamMemberIndex : state.team.length - 1;
 
     updateBreadCrumbs(state, "teamRef", state.team[teamMemberIndex]);
-
-    Vue.delete(state.team, teamMemberIndex);
+    state.team.splice(teamMemberIndex, 1);
   },
   UPDATE_TEAM(state, payload) {
     if (Array.isArray(payload) && state.team.length == 0) {
       state.team = payload;
     }
     if (Array.isArray(payload) && state.team.length > 0) {
-      for (let i = 0, len = state.team.length; i < len; i++) {
-        let teamMember = state.team[i];
-        let member = payload.find(payloadMember => {
+      for (let i = 0, len = payload; i < len; i++) {
+        let teamMember = payload[i];
+        let member = state.team.find(payloadMember => {
           return payloadMember._id == teamMember._id;
         });
         if (!member) {
-          state.team.push(member);
+          state.team.push(teamMember);
         }
       }
     }

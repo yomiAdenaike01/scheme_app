@@ -175,7 +175,7 @@
       <div v-else class="grey text_container all_centre">
         <i class="bx bx-pointer large_icon"></i>
         <br />
-        <h1>Select a request to display</h1>
+        <h1>Select a request to display...</h1>
       </div>
     </div>
   </div>

@@ -18,7 +18,7 @@
 
           <i
             v-if="hasPermission"
-            class="bx bx-plus"
+            class="bx bx-plus trigger"
             @click="
               displayOverlay = true;
               mode = 'create';
@@ -106,11 +106,20 @@
             class="s_input no_border_radius"
           />
 
-          <RelatedEvent
-            v-for="event in relatedEvents"
-            :key="event._id"
-            :event="event"
-          />
+          <!-- Related events -->
+          <div v-for="event in relatedEvents" :key="event._id" class="event">
+            <div class="date_wrapper">
+              <span>{{ event.start_date }}</span>
+            </div>
+            <div class="details_container" :class="event.time_code.value">
+              <h3 class="capitalize">
+                {{ event.type.label }}
+              </h3>
+              {{ event.start_time }} - {{ event.end_time }}
+              <br />
+              <span class="capitalize">{{ event.time_code.label }}</span>
+            </div>
+          </div>
         </div>
       </div>
       <!-- Anayltics -->
@@ -175,7 +184,6 @@ import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import Analytics from "./components/Analytics";
 import TeamOverlay from "./components/TeamOverlay";
 import ActivityLog from "./components/ActivityLog";
-import RelatedEvent from "./components/RelatedEvent";
 
 import genID from "@/mixins/genID";
 
@@ -194,8 +202,7 @@ export default {
     Analytics,
 
     ActivityLog,
-    TeamOverlay,
-    RelatedEvent
+    TeamOverlay
   },
   mixins: [genID],
   data() {
@@ -299,26 +306,25 @@ export default {
           let _start_date = event.start_date,
             _end_date = event.end_date;
 
-          if (Object.values(event).length > 0) {
-            let isAssingnedToEvent = event.assigned_to.some(assignee => {
-              return assignee._id == this.selectedTeamMember._id;
+          let isAssingnedToEvent = event.assigned_to.some(assignee => {
+            return assignee._id == this.selectedTeamMember._id;
+          });
+
+          if (isAssingnedToEvent) {
+            let timeCode = this.determineTimeCode({
+              start_date: _start_date,
+              end_date: _end_date
             });
 
-            if (isAssingnedToEvent) {
-              let timeCode = this.determineTimeCode({
-                start_date: _start_date,
-                end_date: _end_date
-              });
-              event.time_code = {
-                label: this.makePretty(timeCode),
-                value: timeCode
-              };
+            event.time_code = {
+              label: this.makePretty(timeCode),
+              value: timeCode
+            };
 
-              event.start_time = this.formatDate(_start_date, "hh:mm");
-              event.end_time = this.formatDate(_end_date, "hh:mm");
-
-              relatedEvents.push(event);
-            }
+            event.start_time = this.formatDate(_start_date, "hh:mm");
+            event.end_time = this.formatDate(_end_date, "hh:mm");
+            event.start_date = this.formatDate(_start_date, "DD-MM-YYYY");
+            relatedEvents.push(event);
           }
         }
       }
@@ -396,46 +402,79 @@ export default {
     handleTeamMemberXref() {
       return {
         requestPayloads: {
-          create: {
-            method: "POST",
-            url: "users/register",
-            data: {
-              client_id: this.clientInformation._id,
-              admin_gen: true,
-              ...this.inputtedTeamMemberData
+          create: async ({ success, error }) => {
+            try {
+              let req = await this.request({
+                method: "POST",
+                url: "users/register",
+                data: {
+                  client_id: this.clientInformation._id,
+                  admin_gen: true,
+                  ...this.inputtedTeamMemberData
+                }
+              });
+              success(req);
+            } catch (err) {
+              error(err);
             }
           },
-          update: {
-            method: "PUT",
-            url: "users/update",
-            data: {
-              _id: this.selectedTeamMember._id,
-              update: this.inputtedTeamMemberData
+          update: async ({ success, error }) => {
+            try {
+              let req = await this.request({
+                method: "PUT",
+                url: "users/update",
+                data: {
+                  _id: this.selectedTeamMember._id,
+                  update: this.inputtedTeamMemberData
+                }
+              });
+              success(req);
+            } catch (err) {
+              error(err);
             }
           },
-          delete: {
-            method: "DELETE",
-            url: "users/delete",
-            data: { _id: this.selectedTeamMember._id }
+          delete: async ({ success, error }) => {
+            try {
+              let req = await this.request({
+                method: "DELETE",
+                url: "users/delete",
+                data: { _id: this.selectedTeamMember._id }
+              });
+              success(req);
+            } catch (err) {
+              error(err);
+            }
           }
         },
         methods: {
           create: {
-            mutation: "CREATE_TEAM_MEMBER",
+            mutation: payload => {
+              payload.user_group = this.clientInformation.user_groups.find(
+                group => {
+                  return group._id == payload.user_group;
+                }
+              );
+
+              this.CREATE_TEAM_MEMBER(payload);
+            },
             data: {
-              _id: genID(),
+              _id: this.genID(),
               ...this.inputtedTeamMemberData
             }
           },
           update: {
-            mutation: "UPDATE_ONE_TEAM_MEMBER",
+            mutation: payload => {
+              this.UPDATE_ONE_TEAM_MEMBER(payload);
+            },
             data: {
               index: this.selectedTeamMemberIndex,
               payload: this.inputtedTeamMemberData
             }
           },
           delete: {
-            mutation: "DELETE_TEAM_MEMBER",
+            mutation: payload => {
+              this.DELETE_TEAM_MEMBER(payload);
+            },
             data: { index: this.selectedTeamMemberIndex }
           }
         }
@@ -497,6 +536,9 @@ export default {
       "DELETE_TEAM_MEMBER",
       "CREATE_TEAM_MEMBER"
     ]),
+    toggleOverlay(val) {
+      this.displayOverlay = val;
+    },
     determineTimeCode({ start_date, end_date }) {
       let now = this.initMoment(),
         startDate = this.initMoment(start_date),
@@ -519,28 +561,34 @@ export default {
         this.selectedUserActivity = response;
       });
     },
-    handleTeamMember(e) {
+    async handleTeamMember(e) {
       if (e) {
         this.inputtedTeamMemberData = e;
       }
       // Update team member from form
       let methodXref = this.handleTeamMemberXref.methods[this.mode];
       let requestXref = this.handleTeamMemberXref.requestPayloads[this.mode];
-      this[methodXref.mutation](methodXref.data);
-      this.request(requestXref)
-        .then(response => {
-          // If create mutation replace the team member at the index
-          if (this.mode == "create") {
-            this.UPDATE_ONE_TEAM_MEMBER({
-              index: this.team.length - 1,
-              payload: response
-            });
+
+      // Run xref methods
+      methodXref.mutation(methodXref.data);
+      try {
+        await requestXref({
+          success: res => {
+            if (this.mode == "create") {
+              this.UPDATE_ONE_TEAM_MEMBER({
+                index: this.team.length - 1,
+                payload: res
+              });
+            }
+          },
+          error: err => {
+            console.log(err);
+            this.toggleOverlay(false);
           }
-        })
-        .catch(() => {
-          this.displayOverlay = true;
         });
-      this.closeOverlay();
+      } catch (error) {
+        this.toggleOverlay(false);
+      }
     },
     clearSearch() {
       this.searchTeamMemberName = "";
@@ -752,6 +800,42 @@ p {
 .title_container {
   display: flex;
   align-items: center;
+}
+
+$time_code: (
+  completed: var(--success),
+  upcoming: var(--colour_primary),
+  in_progress: var(--purple)
+);
+
+.event {
+  display: flex;
+  margin: 10px;
+  align-items: center;
+  transition: $default_transition;
+  border: $border;
+}
+.date_wrapper {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4em;
+  max-width: 80px;
+  padding: 10px;
+
+  span {
+    white-space: pre-wrap;
+  }
+}
+.details_container {
+  flex: 1;
+  padding: 30px;
+  @each $key, $value in $time_code {
+    &.#{$key} {
+      background: rgba($value, 0.06);
+      color: rgba($value, 0.9);
+      border-left: 4px solid rgba($value, 0.9);
+    }
+  }
 }
 
 /*
