@@ -7,7 +7,7 @@
       >
         <!-- Filters -->
         <div class="filters_container">
-          <small class="grey">Filters</small>
+          <h3 class="grey">Filters</h3>
           <input
             v-model="filters.label"
             class="s_input no_border_radius"
@@ -39,16 +39,16 @@
           </select>
         </div>
         <!-- Active filters -->
-        <div class="active_filters_container">
+        <fade-transition group tag="div" class="active_filters_container">
           <div v-for="(value, key) in filters" :key="key">
-            <div v-if="value.length > 0" class="filter_unit">
+            <div v-if="value.length > 0" class="filter_unit capitalize">
               <small>{{
                 filtersXref.hasOwnProperty(key) ? filtersXref[key]() : value
               }}</small>
               <i class="bx bx-x-circle trigger" @click="filters[key] = ''"></i>
             </div>
           </div>
-        </div>
+        </fade-transition>
         <!-- Requests -->
         <slide-x-left-transition group>
           <div
@@ -176,12 +176,13 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import SButton from "@/components/SButton";
-import { SlideXLeftTransition } from "vue2-transitions";
+import { SlideXLeftTransition, FadeTransition } from "vue2-transitions";
 export default {
   name: "Requests",
   components: {
     SButton,
-    SlideXLeftTransition
+    SlideXLeftTransition,
+    FadeTransition
   },
   data() {
     return {
@@ -423,7 +424,8 @@ header {
 }
 .filters_container {
   margin: 10px;
-  small {
+  border-bottom: $border;
+  h3 {
     margin: 10px 0;
   }
   select {
@@ -435,7 +437,6 @@ header {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  border-top: $border;
 }
 .filter_unit {
   display: flex;

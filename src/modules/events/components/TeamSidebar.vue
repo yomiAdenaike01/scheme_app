@@ -129,6 +129,7 @@ export default {
 <style lang="scss" scoped>
 .team_container {
   border-left: 1px solid #e6e6e6;
+  background: white;
   flex: 0.1;
   height: 100%;
   display: flex;
