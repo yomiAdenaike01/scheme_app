@@ -131,57 +131,11 @@
 
       <div class="shortcuts_container">
         <i
-          v-if="!isCurrentUser"
-          class="bx bx-question-mark"
-          :style="{ backgroundColor: colours[0] }"
-          @click="
-            $router.push({
-              name: 'events',
-              params: {
-                view: 'requests',
-                teamMember: selectedTeamMember
-              }
-            })
-          "
-        >
-        </i>
-        <i
-          v-if="hasPermission"
-          :style="{ backgroundColor: colours[8] }"
-          class="bx bx-cog"
-          @click="
-            displayOverlay = true;
-            mode = 'update';
-          "
-        ></i>
-        <i
-          v-if="!isCurrentUser"
-          :style="{ backgroundColor: colours[0] }"
-          class="bx bx-task"
-          @click="
-            $router.push({
-              name: 'tasks',
-              params: { user: selectedTeamMember }
-            })
-          "
-        ></i>
-
-        <i
-          v-if="!isCurrentUser"
-          :style="{ backgroundColor: colours[1] }"
-          class="bx bxl-discourse"
-          @click="
-            $router.push({ name: 'comms', params: { toMessage: member } })
-          "
-        ></i>
-        <i
-          v-if="hasPermission"
-          :style="{ backgroundColor: colours[4] }"
-          class="bx bx-trash"
-          @click="
-            mode = 'delete';
-            handleTeamMember();
-          "
+          v-for="(shortcut, index) in shortcuts"
+          :key="index"
+          :class="`bx bx${shortcut.icon}`"
+          :style="{ backgroundColor: shortcut.bg }"
+          @click="shortcut.click"
         ></i>
       </div>
 
@@ -268,6 +222,68 @@ export default {
     ...mapState("Events", ["events"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
     ...mapGetters(["adminPermission"]),
+
+    shortcuts() {
+      let condition = !this.isCurrentUser;
+
+      let shortcuts = [
+        {
+          icon: "-question-mark",
+          condition,
+
+          click: () => {
+            this.$router.push({
+              name: "events",
+              params: {
+                view: "requests",
+                teamMember: this.selectedTeamMember
+              }
+            });
+          }
+        },
+        {
+          icon: "-cog",
+          condition: this.hasPermission,
+
+          click: () => {
+            this.displayOverlay = true;
+            this.mode = "update";
+          }
+        },
+        {
+          icon: "-task",
+          condition,
+          click: () => {
+            this.$router.push({
+              name: "tasks",
+              params: { user: this.selectedTeamMember }
+            });
+          }
+        },
+        {
+          icon: "l-discourse",
+          condition,
+          click: () => {
+            this.$router.push({
+              name: "comms",
+              params: { toMessage: this.selectedTeamMember }
+            });
+          }
+        },
+        {
+          icon: "-trash",
+          condition: this.hasPermission,
+          click: () => {
+            this.mode = "delete";
+            this.handleTeamMember();
+          }
+        }
+      ];
+      return shortcuts.filter((shortcut, index) => {
+        shortcut.bg = this.colours[index];
+        return shortcut.condition;
+      });
+    },
 
     isCurrentUser() {
       return this.selectedTeamMember._id == this.userInformation._id;
