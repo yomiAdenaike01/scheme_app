@@ -4,6 +4,7 @@
     class="task_container"
     :class="{
       disabled: !isassigned_to,
+
       completed: hasEntries(taskInformation) && currState == 'complete'
     }"
     @click="viewTaskController"
@@ -21,41 +22,31 @@
           }}</small>
 
           <div class="info_wrapper">
-            <Comments mode="overview" :comment-count="comments.length" />
-            <AssignedUsers
-              class="user_wrapper"
-              :users="taskInformation.assigned_to"
-              @assignUser="assignToTask"
-            />
-            <el-tag v-if="taskInformation.dueDate">{{
-              formatDate(taskInformation.dueDate)
+            <div class="overview_wrapper">
+              <i class="bx bx-message-rounded grey"></i>
+              <small class="grey">{{ comments.length }}</small>
+            </div>
+            <div class="avatar_container grouped">
+              <Avatar
+                v-for="(user, index) in assignedToFiltered"
+                :key="user._id ? user._id : index"
+                :name="user.name"
+                multiple
+                :size="40"
+              />
+              <span
+                v-if="assignedToFiltered.length == maxAssignedToLen"
+                class="assigned_to_count"
+                >+{{ assignedToLeftCount }}</span
+              >
+            </div>
+
+            <el-tag v-if="taskInformation.due_date">{{
+              formatDate(taskInformation.due_date, "DD-MM-YYYY")
             }}</el-tag>
           </div>
         </div>
 
-        <transition name="el-fade-in">
-          <div v-if="currState == 'complete'" class="completed_overlay">
-            <el-button
-              class="complete_button"
-              circle
-              icon="el-icon-check"
-              type="success"
-            />
-            <el-button
-              size="mini"
-              type="text"
-              @click="
-                updateTask({
-                  boardIndex,
-                  taskIndex,
-                  _id: taskInformation._id,
-                  update: { state: 0 }
-                })
-              "
-              >Undo complete</el-button
-            >
-          </div>
-        </transition>
         <!-- Tag container (date,assigned to, duedate) -->
         <div class="tag_container"></div>
       </div>
@@ -65,14 +56,13 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
-
+import Form from "@/components/Form";
+import Avatar from "@/components/Avatar";
 export default {
   name: "TaskItem",
   components: {
-    Form: () => import("@/components/Form"),
-    Labels: () => import("./Labels"),
-    AssignedUsers: () => import("./AssignedUsers"),
-    Comments: () => import("./Comments")
+    Form,
+    Avatar
   },
   props: {
     taskInformation: {
@@ -96,7 +86,22 @@ export default {
   },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapGetters(["getIsAdmin", "getUserInformation"]),
+    ...mapGetters(["adminPermission", "userLookup"]),
+    maxAssignedToLen() {
+      return 3;
+    },
+    assignedToFiltered() {
+      let assignedTo = [...this.taskInformation.assigned_to];
+
+      return assignedTo.length > this.maxAssignedToLen
+        ? assignedTo.splice(1, this.maxAssignedToLen)
+        : assignedTo;
+    },
+    assignedToLeftCount() {
+      return parseInt(
+        this.taskInformation.assigned_to.length - this.assignedToFiltered.length
+      );
+    },
     comments() {
       return this.taskInformation?.comments ?? [];
     },
@@ -161,7 +166,7 @@ export default {
     isassigned_to() {
       return (
         this.taskInformation?.assigned_to?.indexOf(this.userInformation._id) >
-          -1 || this.getIsAdmin
+          -1 || this.adminPermission
       );
     }
   },
@@ -169,13 +174,11 @@ export default {
     ...mapActions(["request"]),
     ...mapActions("Tasks", ["updateTask"]),
     viewTaskController() {
-      if (this.currState != "complete") {
-        this.$emit("viewTask", {
-          boardIndex: this.boardIndex,
-          taskIndex: this.taskIndex,
-          ...this.taskInformation
-        });
-      }
+      this.$emit("viewTask", {
+        boardIndex: this.boardIndex,
+        taskIndex: this.taskIndex,
+        ...this.taskInformation
+      });
     },
     assignToTask(e) {
       console.log(e);
@@ -193,13 +196,17 @@ export default {
   position: relative;
   cursor: pointer;
   background: white;
-  border-bottom: 2px solid whitesmoke;
+  border-top: $border;
+  border-bottom: $border;
+
   transition: $default_transition;
+  margin: 10px 0;
 
   &:hover {
     box-shadow: $box_shadow;
   }
 }
+
 .labels {
   margin: 10px 0;
 }
@@ -257,5 +264,28 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.overview_wrapper {
+  background: rgb(247, 247, 247);
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 5px 20px;
+  border-radius: 10px;
+  small {
+    margin-left: 5px;
+  }
+}
+.assigned_to_count {
+  border-radius: 50%;
+  padding: 13px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(245, 245, 245);
+  color: #999;
+  margin-left: -10px;
+  z-index: 2;
 }
 </style>

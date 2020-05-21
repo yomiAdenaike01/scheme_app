@@ -23,24 +23,20 @@
       </div>
 
       <div class="current_chat_interaction">
-        <ChatActions
-          @emojiSelection="includeEmoji"
-          @uploadAttachment="addAttachment"
-        />
         <div class="send_message_container">
-          <el-input
+          <input
             v-model="chat.content"
-            class="flat_input"
+            class="s_input"
+            type="text"
             placeholder="Send a message..."
-            @keyup.enter.native="sendChatMessage"
+            @keyup.enter="sendChatMessage"
           />
+
           <s-button
             icon="send"
-            shadow
-            colour-scheme="secondary"
+            class="secondary only_icon"
             @click="sendChatMessage"
-            >Send</s-button
-          >
+          />
         </div>
       </div>
     </div>
@@ -53,7 +49,6 @@ import scrollToBottom from "@/mixins/scrollToBottom";
 export default {
   name: "ActiveChat",
   components: {
-    TextDisplay: () => import("@/components/TextDisplay"),
     ChatActions: () => import("./ChatActions"),
     SButton: () => import("@/components/SButton"),
     ChatMessage: () => import("./ChatMessage"),
@@ -89,18 +84,22 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "messages"]),
-    ...mapState(["team"]),
-    ...mapGetters(["getUserInformation"]),
+    ...mapState("Team", ["team"]),
+    ...mapGetters("Team", ["userLookup"]),
 
     chatMessages() {
-      return [...this.activeChat?.messages].map(message => {
-        return Object.assign(message, {
-          id: message._id,
-          sentAt: this.initMoment(message.sentAt).calendar(),
-          sentBy: message.sender?.name,
-          isSentByUser: message.sender._id == this.userInformation._id
+      let chatMessages = [];
+      if (this.activeChat?.messages) {
+        chatMessages = [...this.activeChat?.messages].map(message => {
+          return Object.assign(message, {
+            id: message._id,
+            sentAt: this.initMoment(message.sentAt).calendar(),
+            sentBy: message.sender?.name,
+            isSentByUser: message.sender._id == this.userInformation._id
+          });
         });
-      });
+      }
+      return chatMessages;
     },
     isNewChat() {
       return this.activeChat.hasOwnProperty("initChat");
@@ -164,7 +163,7 @@ export default {
       cb(queriedTeam.length > 0 ? queriedTeam : this.autoCompleteTeam);
     },
     sendChatMessage() {
-      let userName = this.getUserInformation(this.chat.reciever)?.name;
+      let userName = this.userLookup(this.chat.reciever)?.name;
 
       const createError = message => {
         this.UPDATE_SYSTEM_NOTIFICATION({
@@ -186,7 +185,7 @@ export default {
 
       if (!this.isNewChat) {
         this.chat.reciever = this.activeChat.user_two._id;
-        userName = this.getUserInformation(this.chat.reciever)?.name;
+        userName = this.userLookup(this.chat.reciever)?.name;
       }
       let sendMessage = {
         ...this.chat,
@@ -214,7 +213,7 @@ export default {
   width: 100%;
 }
 .current_chat_header {
-  border-bottom: 2px solid whitesmoke;
+  border-bottom: $border;
   &/deep/ .el-input {
     font-size: 14px;
     padding: 10px;
@@ -250,7 +249,6 @@ export default {
   align-items: center;
   background: white;
   padding: 10px 20px;
-  height: 100px;
   position: absolute;
   bottom: 0;
   left: 0;

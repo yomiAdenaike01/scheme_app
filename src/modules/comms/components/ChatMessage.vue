@@ -44,7 +44,7 @@ export default {
   &:first-of-type {
     border: none;
   }
-  border-top: 2px solid whitesmoke;
+  border-top: $border;
   display: flex;
   height: inherit;
   flex-direction: column;

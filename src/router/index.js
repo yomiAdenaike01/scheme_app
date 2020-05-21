@@ -12,6 +12,7 @@ const Events = () => import("@/modules/events/Events");
 const Team = () => import("@/modules/team/Team");
 const Comms = () => import("@/modules/comms/Comms");
 const Tasks = () => import("@/modules/tasks/Tasks");
+
 // Support
 const Error = () => import("@/modules/support/Error");
 const ReleaseNotes = () => import("@/modules/support/ReleaseNotes");
@@ -46,8 +47,8 @@ const routes = [
     ]
   },
   {
-    path: "/main",
-    name: "main",
+    path: "/common",
+    name: "common",
     component: Common,
 
     children: [
@@ -61,8 +62,8 @@ const routes = [
       },
 
       {
-        path: "user",
-        name: "user",
+        path: "team",
+        name: "team",
         component: Team,
         meta: {
           authRequired: true

@@ -27,7 +27,7 @@ Vue.prototype.hasObjVals = function(elem) {
 
 Vue.prototype.makePretty = function(elem) {
   if (checkType(elem, "string")) {
-    return elem.replace("_", " ");
+    return elem.replace(new RegExp("_", "g"), " ");
   }
 };
 

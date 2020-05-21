@@ -1,79 +1,54 @@
 <template>
-  <div class="comments_container">
-    <div v-if="mode == 'overview'" class="overview_wrapper">
-      <i class="bx bx-message-rounded grey"></i>
-      <small class="grey">{{ commentCount }}</small>
-    </div>
-    <div v-if="mode != 'overview'" class="full_mode_container">
+  <div class="comments">
+    <h3 class="comments_title grey">Comments ({{ comments.length }})</h3>
+    <div
+      v-if="comments.length > 0"
+      ref="comments_wrapper"
+      class="comments_wrapper"
+    >
       <div
-        v-if="comments.length > 0"
-        ref="comments_wrapper"
-        class="comments_wrapper"
+        v-for="(comment, index) in comments"
+        :key="`${comment._id}${index}`"
+        class="comment"
       >
-        <slide-x-left-transition group>
-          <div
-            v-for="(comment, index) in comments"
-            :key="`${comment._id}${index}`"
-            class="comment"
-          >
-            <div class="comment_header">
-              <Avatar :name="comment.assigned_to.name" />
-              <small class="username">{{ comment.assigned_to.name }}</small>
-              <small class="timestamp">{{
-                initMoment(comment.date_created).calendar()
-              }}</small>
-            </div>
+        <div class="comment_header">
+          <Avatar :name="comment.assigned_to.name" />
+          <small class="username">{{ comment.assigned_to.name }}</small>
+          <small class="timestamp">{{
+            initMoment(comment.date_created).calendar()
+          }}</small>
+        </div>
 
-            <div class="comment_message" @click="editMessage = true">
-              <p>{{ comment.message }}</p>
-            </div>
-            <el-button
-              v-show="canInteract"
-              class="delete_comment"
-              icon="el-icon-close"
-              type="danger"
-              circle
-              @click="
-                $emit('deleteComment', {
-                  commentIndex: index,
-                  _id: comment._id
-                })
-              "
-            ></el-button>
-          </div>
-        </slide-x-left-transition>
+        <div class="comment_message" @click="editMessage = true">
+          <p>{{ comment.message }}</p>
+        </div>
+        <i
+          class="delete_comment bx bx-x trigger"
+          @click="deleteComment(index)"
+        ></i>
       </div>
+    </div>
 
-      <div v-else class="no_comments_wrapper">
-        <TextDisplay
-          :display-text="{
-            hasIcon: true,
+    <div v-else class="no_comments_wrapper text_container all_centre">
+      <i class="grey large_icon bx bx-comment-detail"></i>
 
-            content: 'Be the first to comment on this task'
-          }"
-        >
-          <i slot="header" class="grey large_icon bx bx-comment-detail"></i>
-        </TextDisplay>
-      </div>
+      <h4 class="grey">Be the first to comment on this task</h4>
+    </div>
 
-      <div v-if="canInteract" class="create_comment_wrapper">
-        <Avatar class="comment_avatar" :name="userInformation.name" />
-        <el-input
-          v-model="newMessage"
-          class="input_comment"
-          placeholder="Write a comment..."
-          @keyup.enter.native="createComment"
-        ></el-input>
-        <s-button
-          type="text"
-          shadow
-          colour-scheme="secondary"
-          icon="send"
-          :disabled="newMessage.length == 0"
-          @click="createComment"
-          >Post</s-button
-        >
-      </div>
+    <div v-if="canInteract" class="create_comment_wrapper">
+      <input
+        v-model="newMessage"
+        placeholder="Write a comment..."
+        class="s_input input_comment"
+        @keyup.enter="createComment"
+      />
+
+      <s-button
+        class="rounded only_icon"
+        :class="{ disabled: newMessage.length == 0 }"
+        icon="send"
+        @click="createComment"
+      />
     </div>
   </div>
 </template>
@@ -81,28 +56,27 @@
 <script>
 import { mapGetters, mapState } from "vuex";
 import { SlideXLeftTransition } from "vue2-transitions";
+
+import scrollToBottom from "@/mixins/scrollToBottom";
+import SButton from "@/components/SButton";
+import Avatar from "@/components/Avatar";
+import ActionIcon from "@/components/ActionIcon";
+
 export default {
   name: "Comments",
   components: {
-    ActionIcon: () => import("@/components/ActionIcon"),
-    Avatar: () => import("@/components/Avatar"),
-    TextDisplay: () => import("@/components/TextDisplay"),
+    ActionIcon,
+    Avatar,
     SlideXLeftTransition,
-    SButton: () => import("@/components/SButton")
+    SButton
   },
+  mixins: [scrollToBottom],
   props: {
-    mode: {
-      type: String,
-      default: "overview"
-    },
     comments: {
       type: Array,
       default: () => []
     },
-    commentCount: {
-      type: Number,
-      default: 0
-    },
+
     canInteract: {
       type: Boolean,
       default: false
@@ -117,7 +91,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["adminPermission"]),
     ...mapState(["userInformation"])
   },
 
@@ -129,25 +103,18 @@ export default {
       }),
         this.reset();
     },
+    deleteComment(index) {
+      this.$emit("deleteComment", index);
+    },
     reset() {
       this.newMessage = "";
       this.commentMessage = "";
       this.editMessage = false;
+      this.scrollToBottom(this.$refs.comments_wrapper);
     },
     handleDisplayActions(userID) {
-      if (this.getIsAdmin || userID == this.userInformation._id) {
+      if (this.adminPermission || userID == this.userInformation._id) {
         this.displayActions = true;
-      }
-    },
-
-    updateMessage(message, _id) {
-      if (
-        message.toLowerCase().trim() != this.commentMessage.toLowerCase().trim()
-      ) {
-        this.$emit("updateComment", { comment: this.commentMessage, _id });
-        this.editMessage = false;
-      } else {
-        this.editMessage = false;
       }
     }
   }
@@ -155,31 +122,35 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.overview_wrapper {
+.comments {
   display: flex;
-  align-items: center;
-  .bx {
-    margin-right: 10px;
-  }
+  flex: 0.3;
+  flex-direction: column;
+  position: relative;
+  max-height: 100%;
+  overflow: hidden;
+  border-left: $border;
+  padding: 10px;
 }
-.full_mode_container {
-  height: 100%;
-}
-.comments_container {
-  height: 100%;
+.comments_title {
+  margin: 20px 0;
 }
 .comments_wrapper {
-  max-height: calc(100% - 750px);
+  max-height: calc(100% - 100px);
   overflow-x: hidden;
+  position: relative;
 }
 .comment {
   display: flex;
   position: relative;
   flex-direction: column;
-  background: rgb(250, 250, 250);
+  border: $border;
   margin-bottom: 10px;
+  font-size: 0.9em;
   max-height: fit-content;
   border-radius: 10px;
+  background: rgb(252, 252, 252);
+
   &:hover {
     .comment_footer {
       display: initial;
@@ -187,7 +158,11 @@ export default {
   }
 }
 .input_comment {
+  padding: 20px;
+
+  flex: 1;
   margin-right: 10px;
+  background: transparent;
 }
 .update_comment_container {
   display: flex;
@@ -216,17 +191,19 @@ export default {
 .create_comment_wrapper {
   display: flex;
   align-items: center;
-  padding: 20px;
   position: absolute;
+  bottom: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  background: $grey;
+  padding-right: 20px;
+  margin: 10px;
 }
 .comment_avatar {
   margin-right: 10px;
 }
 .no_comments_wrapper {
-  background: rgb(250, 250, 250);
+  border-radius: 20px;
 }
 
 .delete_comment {

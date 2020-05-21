@@ -1,62 +1,52 @@
 <template>
   <div class="chats_container">
     <div v-if="chats.length > 0" class="active_chats">
-      <div class="chats_header">
-        <el-input
+      <header class="filters_container">
+        <i class="bx bx-search grey"></i>
+        <input
           v-model="query"
-          class="flat_input query_chats_container"
+          type="text"
+          class="s_input"
           placeholder="Search chats"
         />
-      </div>
+      </header>
       <fade-transition group>
         <Chat
-          v-for="(chat, index) in chats"
-          :key="
-            `${index}${Math.random()
-              .toString(16)
-              .slice(2)}`
-          "
+          v-for="(chat, index) in filteredChats"
+          :key="`${index}${genID()}`"
           :chat-index="index"
           :chat-information="chat"
         />
       </fade-transition>
-      <div class="blank_message grey" @click="startNewChat">
+      <div class="grey compose_container">
         <i class="bx bx-plus"></i>
-        <span>Compose</span>
+        <p>Start new chat</p>
       </div>
     </div>
-
-    <TextDisplay
-      v-else
-      class="no_content"
-      :display-text="{
-        heading: 'No previous chats',
-        content: 'Press the button below to start a new chat',
-        icon: 'bx bx-message-group',
-        hasIcon: true
-      }"
-    >
-      <el-button
-        slot="body"
-        circle
-        type="text"
-        icon="el-icon-plus"
-        @click="startNewChat"
-      ></el-button>
-    </TextDisplay>
+    <div v-else class="text_container all_centre">
+      <h2>No previous chats</h2>
+      <p>Press the button below to start a new chat</p>
+      <s-button class="only_icon secondary" icon="plus" @click="startNewChat" />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import { FadeTransition } from "vue2-transitions";
+import Chat from "./Chat";
+
+import genID from "@/mixins/genID";
+import SButton from "@/components/SButton";
+
 export default {
   name: "Chats",
   components: {
-    TextDisplay: () => import("@/components/TextDisplay"),
-    Chat: () => import("./Chat"),
+    Chat,
+    SButton,
     FadeTransition
   },
+  mixins: [genID],
   data() {
     return {
       query: ""
@@ -65,12 +55,35 @@ export default {
   computed: {
     ...mapState("Comms", ["chats"]),
     ...mapState(["userInformation"]),
-    ...mapGetters(["getUserInformation"]),
+    ...mapGetters(["userLookup"]),
     hasChats() {
       return this.chats.length > 0;
+    },
+    filteredChats() {
+      let filteredChats = [];
+      let chats = [...this.chats];
+      let query = this.query.toLowerCase();
+
+      for (let i = 0, len = chats.length; i < len; i++) {
+        let chat = chats[i];
+        let { user_two, user_one, date_created } = chat;
+        if (
+          !user_two.name.toLowerCase().includes(query) ||
+          !user_one.name.toLowerCase().includes(query)
+        ) {
+          continue;
+        }
+        filteredChats.push(chat);
+      }
+      return filteredChats.length > 0 ? filteredChats : chats;
     }
   },
-
+  deactivated() {
+    let newChatIndex = this.chats.findIndex(chat => {
+      return chat?.initChat;
+    });
+    this.DELETE_CHAT(newChatIndex);
+  },
   methods: {
     ...mapActions("Comms", ["createStubChat"]),
     ...mapMutations("Comms", ["UPDATE_CHATS", "UPDATE_ACTIVE_CHAT"]),
@@ -97,8 +110,8 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  flex: 0.2;
-  border-right: 2px solid whitesmoke;
+  flex: 0.4;
+  border-right: $border;
   position: relative;
   overflow-x: hidden;
   &.no_content {
@@ -111,8 +124,26 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+  height: 100%;
 }
-.blank_message {
+
+.filters_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px;
+  > * {
+    flex: 1;
+  }
+  .bx {
+    flex: 0.05;
+  }
+}
+.query_chats_container /deep/ .el-input__inner {
+  border: none;
+}
+
+.compose_container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,11 +157,9 @@ export default {
   .bx {
     margin-right: 10px;
   }
-}
-.chats_header {
-  margin: 10px;
-}
-.query_chats_container /deep/ .el-input__inner {
-  border: none;
+  p {
+    padding: 0;
+    margin: 0;
+  }
 }
 </style>

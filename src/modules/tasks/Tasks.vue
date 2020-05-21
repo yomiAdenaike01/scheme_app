@@ -1,55 +1,68 @@
 <template>
   <div class="task_boards_container">
-    <CreateTask
-      :create-task-information="createTaskInformation"
-      :display="display"
-      @toggleDisplay="display = $event"
-    />
-    <div class="boards_wrapper">
-      <TaskBoard
-        v-for="board in boards"
-        :key="board._id"
-        :board-data="board"
-        @createTask="toggleCreateTask"
-        @viewTask="viewTask"
-      />
+    <slide-x-right-transition mode="out-in">
+      <div v-if="!display" class="boards_wrapper">
+        <div class="tasks_boards">
+          <TaskBoard
+            v-for="(board, boardIndex) in boards"
+            :key="`${board._id}${boardIndex}`"
+            :board-data="board"
+            @createTask="createTask"
+            @viewTask="viewTask"
+          />
+          <TaskBoard
+            v-for="(board, index) in calcBoardsLeft"
+            :key="index"
+            :board-index="index"
+            new-board
+          />
+        </div>
+      </div>
 
-      <TaskBoard
-        v-for="(board, index) in calcBoardsLeft"
-        :key="index"
-        :board-index="index"
-        new-board
+      <TaskView
+        v-else
+        :task-information="task"
+        :board-index="boardIndex"
+        @toggle="
+          task = {};
+          display = false;
+        "
+        @viewNextTask="loadNextTask"
       />
-    </div>
-    <TaskDrawer
-      v-if="displayTask"
-      :display="displayTask"
-      :task-information="viewTaskInformation"
-      @toggle="displayTask = $event"
-    />
+    </slide-x-right-transition>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
+import { SlideXRightTransition } from "vue2-transitions";
+
 import TaskBoard from "./components/TaskBoard";
+import TaskView from "./components/TaskView";
+
 export default {
   name: "TasksModule",
   components: {
     TaskBoard,
-    CreateTask: () => import("./components/CreateTask"),
-    TaskDrawer: () => import("./components/TaskDrawer")
+    TaskView,
+    SlideXRightTransition
   },
   data() {
     return {
       display: false,
-      createTaskInformation: {},
+      routedTaskData: {},
       displayTask: false,
-      viewTaskInformation: {}
+      boardIndex: 0,
+      task: {},
+      filters: {
+        name: "",
+        date: ""
+      }
     };
   },
+
   computed: {
-    ...mapState(["clientInformation"]),
+    ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Tasks", ["boards"]),
 
     boardCount() {
@@ -60,31 +73,83 @@ export default {
       return parseInt(this.clientInformation?.maxBoard ?? 5 - this.boardCount);
     }
   },
+  activated() {
+    if (this.$route.params?.user) {
+      // Select a board
+      // Force create task with auto assignement
+    }
+    if (this.$route.params?.task) {
+      this.routedTaskData = this.$route.params.task;
+      this.display = true;
+    }
+  },
   methods: {
-    toggleCreateTask(e) {
-      this.display = e.display;
-      this.createTaskInformation = {
-        boardData: e.boardData,
-        boardIndex: e.boardIndex
-      };
+    ...mapActions(["request"]),
+    ...mapMutations("Tasks", ["CREATE_TASK"]),
+
+    loadNextTask() {
+      let { boardIndex, taskIndex } = this.task;
+      // if last task in board go to next board if there is a next board
+      let tasks = this.boards[boardIndex].tasks;
+      let canLoadOnBoard = taskIndex + 1 > tasks.length;
+      if (canLoadOnBoard) {
+        this.task = tasks[taskIndex + 1];
+      } else {
+        // has next board
+        if (this.boards[boardIndex + 1]) {
+          this.task = this.boards[boardIndex + 1].tasks[0];
+        }
+      }
+    },
+    alterTask({ key, value }) {
+      this.task[key] = value;
+    },
+
+    createTask({ boardIndex }) {
+      this.boardIndex = boardIndex;
+      this.display = true;
     },
     viewTask(task) {
-      this.displayTask = true;
-      this.viewTaskInformation = task;
+      this.task = task;
+      this.display = true;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.filters_container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  justify-content: space-between;
+}
+.tasks_boards {
+  display: flex;
+  flex: 1;
+}
+.task_input_filter {
+  padding: 15px;
+  background: rgb(245, 245, 245);
+  flex: 1;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 1.1em;
+  margin: 10px 0;
+}
 .task_boards_container {
   display: flex;
-  flex-direction: column;
   flex: 1;
   padding: 10px;
+}
+.task_boards_wrapper {
+  display: flex;
+  flex: 1;
 }
 .boards_wrapper {
   display: flex;
   flex: 1;
+  flex-direction: column;
 }
 </style>

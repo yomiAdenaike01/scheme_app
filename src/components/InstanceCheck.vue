@@ -9,8 +9,8 @@
   >
     <s-button
       v-if="!loading"
-      class="disabled button_display"
-      :colour-scheme="checkResult.healthy ? 'secondary' : 'tertiary'"
+      class="disabled button_display rounded "
+      :class="checkResult.healthy ? 'secondary' : 'tertiary'"
       :icon="checkResult.healthy ? 'check' : 'x'"
     >
       {{ displayText }}

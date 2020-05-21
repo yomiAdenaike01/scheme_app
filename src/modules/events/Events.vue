@@ -15,10 +15,10 @@
           />
         </div>
 
-        <Requests v-if="view == 'requests'" />
+        <Requests v-if="view == 'requests'" :prop-filters="requests.filters" />
       </div>
     </slide-x-right-transition>
-    <TeamSidebar />
+    <TeamSidebar @changeView="updateView" />
   </div>
 </template>
 
@@ -44,10 +44,24 @@ export default {
   data() {
     return {
       view: "events",
+      requests: {
+        filters: {}
+      },
       overlays: {
         events: false
       }
     };
+  },
+  created() {
+    if (Object.keys(this.$route?.params).length > 0) {
+      this.updateView(this.$route.params);
+    }
+  },
+  methods: {
+    updateView({ view, teamMember }) {
+      this.view = view;
+      this.requests.filters.requested_by = teamMember._id;
+    }
   }
 };
 </script>

@@ -7,11 +7,10 @@
     <NprogressContainer />
     <CommonBar />
 
-    <ProfileOverlay v-if="overlayIndex.profile.view" />
     <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
 
     <div class="notification_container">
-      <slide-x-right-transition group mode="out-in">
+      <slide-x-right-transition group>
         <div
           v-for="(notification, notificationIndex) in systemNotifications"
           :key="notification._id"
@@ -44,6 +43,7 @@
 
     <div class="common_wrapper">
       <Menu />
+
       <keep-alive>
         <slide-x-left-transition mode="out-in">
           <router-view></router-view>
@@ -59,7 +59,6 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import NprogressContainer from "vue-nprogress/src/NprogressContainer";
 import { SlideXLeftTransition, SlideXRightTransition } from "vue2-transitions";
 
-import ProfileOverlay from "./../team/Profile/ProfileOverlay";
 import ViewEventOverlay from "./../events/components/ViewEventOverlay";
 
 import CommonBar from "./components/CommonBar";
@@ -73,7 +72,6 @@ export default {
     NprogressContainer,
     SlideXLeftTransition,
     SlideXRightTransition,
-    ProfileOverlay,
     ViewEventOverlay,
 
     CommonBar,
@@ -83,7 +81,8 @@ export default {
   data() {
     return {
       loading: true,
-      display: true
+      display: true,
+      botDisplay: true
     };
   },
   computed: {
@@ -91,16 +90,35 @@ export default {
       "userInformation",
       "apiNotifications",
       "systemNotifications",
-      "requestIntervals",
+      "globalIntervals",
       "overlayIndex"
     ]),
     ...mapState(["team"]),
-    ...mapGetters(["getDeviceInformation", "getIsAdmin"]),
+    ...mapState("Tasks", ["boards"]),
+    ...mapGetters(["getDeviceInformation", "adminPermission"]),
 
     keymap() {
       return {
         "ctrl+shift+space": this.toggleDisplaySearch
       };
+    },
+    taskDueToday() {
+      // Find tasks that are due today
+      let taskBoards = this.boards;
+      let tasksDueToday = [];
+
+      for (let i = 0, len = taskBoards.length; i < len; i++) {
+        let { tasks } = taskBoards[i];
+
+        for (let j = 0, jlen = tasks.length; j < jlen; j++) {
+          let { name, due_date, _id } = tasks[j];
+
+          if (this.initMoment(due_date).isSame(this.initMoment(), "day")) {
+            tasksDueToday.push({ name, _id });
+          }
+        }
+      }
+      return tasksDueToday;
     }
   },
 
@@ -111,7 +129,7 @@ export default {
       immediateCallback: () => {
         this.loading = false;
       },
-      duration: this.requestIntervals.admin,
+      duration: this.globalIntervals.admin,
       id: "adminIntervals",
       method: () => {
         return new Promise((resolve, reject) => {
@@ -139,7 +157,10 @@ export default {
         type: "info",
         icon: "shield-x",
         title: "Activate account",
-        message: "Open settings to activate account.",
+        message: "Click to activate account.",
+        route: {
+          name: "Common"
+        },
         methods: [
           {
             label: "Activate",
@@ -180,10 +201,10 @@ export default {
       "CREATE_GLOBAL_INTERVAL",
       "DELETE_GLOBAL_INTERVAL",
       "UPDATE_API_NOTIFICATIONS",
-      "UPDATE_TEAM",
       "UPDATE_USER"
     ]),
     ...mapMutations("Tasks", ["UPDATE_BOARDS"]),
+    ...mapMutations("Team", ["UPDATE_TEAM"]),
     ...mapMutations("Events", ["UPDATE_EVENT_TEMPLATES", "UPDATE_EVENTS"]),
     ...mapMutations("Requests", ["UPDATE_REQUESTS"]),
     excecuteNotification(method, notificationIndex) {
@@ -191,6 +212,7 @@ export default {
         this.DELETE_SYSTEM_NOTIFICATION(notificationIndex);
       });
     },
+
     getEvents(params = {}) {
       return new Promise((resolve, reject) => {
         const payload = {
@@ -351,21 +373,20 @@ export default {
 .notification_container {
   position: fixed;
   top: 2%;
-  right: 0;
-  left: 85%;
+  right: 20px;
   z-index: 999995;
 }
 .notification {
   background: white;
   box-shadow: $box_shadow;
   display: flex;
-  min-width: 300px;
+  min-width: 410px;
   max-width: fit-content;
   align-items: center;
   justify-content: center;
   border-radius: 5px;
   min-height: fit-content;
-  border-left: 4px solid var(--colour_primary);
+  border-left: 4px solid rgba(var(--colour_primary), 1);
   &.message,
   .icon_container {
     border-left-color: var(--colour_secondary);
@@ -399,7 +420,7 @@ export default {
 .notification .icon_container {
   flex: 0.3;
   font-size: 2.3em;
-  color: var(--colour_primary);
+  color: rgba(var(--colour_primary), 1);
 }
 
 .functions_container {
@@ -411,7 +432,7 @@ export default {
 
   .function {
     cursor: pointer;
-    border-top: 2px solid whitesmoke;
+    border-top: $border;
     text-align: center;
     text-transform: capitalize;
     &:first-of-type {

@@ -1,5 +1,5 @@
 <template>
-  <SlideYUpTransition>
+  <SlideYDownTransition>
     <div
       v-if="display"
       :class="[
@@ -7,7 +7,7 @@
         { light: backdropType == 'blur', dark: backdropType == 'dark' }
       ]"
     >
-      <div v-click-outside="onClickOutside" class="overlay">
+      <div v-show="display" v-click-outside="onClickOutside" class="overlay">
         <div class="close_button" @click="$emit('close')">
           <i class="bx bx-x"></i>
         </div>
@@ -15,7 +15,7 @@
           <p class="overlay_header_title">{{ title }}</p>
           <slot name="header" />
         </header>
-        <section>
+        <section class="slot_wrapper">
           <slot />
         </section>
         <footer v-if="$slots.footer">
@@ -23,17 +23,17 @@
         </footer>
       </div>
     </div>
-  </SlideYUpTransition>
+  </SlideYDownTransition>
 </template>
 
 <script>
-import { SlideYUpTransition } from "vue2-transitions";
+import { SlideYDownTransition } from "vue2-transitions";
 import vClickOutside from "v-click-outside";
 
 export default {
   name: "Overlay",
   components: {
-    SlideYUpTransition
+    SlideYDownTransition
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -44,7 +44,8 @@ export default {
   },
   props: {
     display: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     title: {
       type: String,
@@ -91,24 +92,22 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-y: auto;
   &.light {
     backdrop-filter: saturate(180%) blur(15px);
     background: rgba(0, 0, 0, 0.1);
   }
   &.dark {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.5);
   }
 }
 .overlay {
   background: white;
   position: relative;
-  border-radius: 10px;
+  border-radius: 5px;
   z-index: 11;
   min-width: 40%;
-  max-height: 60%;
-  padding: 1%;
-  min-height: 60%;
-  overflow-x: hidden;
+  padding-top: 1%;
 }
 section {
   max-height: fit-content;
@@ -124,7 +123,6 @@ header {
   position: absolute;
   top: 0px;
   right: 0px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 1.5em;

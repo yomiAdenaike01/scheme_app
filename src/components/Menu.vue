@@ -1,5 +1,5 @@
 <template>
-  <nav :class="{ nav_sidebar: mode == 'main' }">
+  <nav :class="{ flex: mode == 'tabs', nav_sidebar: mode == 'main' }">
     <ul v-if="mode == 'main'">
       <router-link
         v-for="route in routes"
@@ -29,6 +29,26 @@
         </div>
       </div>
     </slide-y-down-transition>
+    <div v-if="mode == 'tabs'" class="tabs_container">
+      <div
+        v-for="(tab, index) in tabItems"
+        :key="index"
+        class="tab"
+        :class="{
+          active: activeTab == tab && Object.values(activeStyle).length == 0
+        }"
+        :style="
+          activeTab == tab && Object.values(activeStyle).length > 0
+            ? activeStyle
+            : Object.values(customStyle).length > 0
+            ? customStyle
+            : {}
+        "
+        @click="$emit('changeTab', makeUgly(tab))"
+      >
+        <p>{{ makePretty(tab) }}</p>
+      </div>
+    </div>
   </nav>
 </template>
 
@@ -49,12 +69,32 @@ export default {
       type: String,
       default: "main",
       validator(type) {
-        return ["main", "contextmenu"].indexOf(type) > -1;
+        return ["main", "contextmenu", "tabs"].indexOf(type) > -1;
       }
     },
     menuItems: {
       type: Array,
       default: () => []
+    },
+    tabItems: {
+      type: Array,
+      default: () => []
+    },
+    activeTab: {
+      type: String,
+      default: ""
+    },
+    activeStyle: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    customStyle: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     },
     displayMenu: {
       type: Boolean,
@@ -68,13 +108,12 @@ export default {
   },
   computed: {
     ...mapState(["clientInformation", "localSettings"]),
-    ...mapGetters(["getDefaultColour", "getIsAdmin"]),
+    ...mapGetters(["getDefaultColour", "adminPermission"]),
 
     routes() {
       let allowedRoutes = [
         {
           name: "events",
-          path: "/admin/events",
           icon: "bx bxs-dashboard"
         },
         {
@@ -86,9 +125,9 @@ export default {
           icon: "bx bxl-discourse"
         }
       ];
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         allowedRoutes.push({
-          name: "user",
+          name: "team",
           icon: "bx bx-group"
         });
       }
@@ -113,7 +152,9 @@ export default {
       this.closeContextMenu();
     },
     closeContextMenu() {
-      this.$emit("close");
+      if (this.mode == "contextmenu") {
+        this.$emit("close");
+      }
     },
     onContextMenu(e) {
       e.preventDefault();
@@ -129,7 +170,7 @@ export default {
 
 <style lang="scss" scoped>
 .nav_sidebar {
-  background: var(--colour_primary);
+  background: rgba(var(--colour_primary), 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -161,7 +202,7 @@ export default {
 
   &.router-link-active {
     background: white;
-    color: var(--colour_primary);
+    color: rgba(var(--colour_primary), 1);
   }
   &:hover {
     cursor: pointer;
@@ -192,7 +233,7 @@ export default {
     position: absolute;
     top: -35%;
     content: "";
-    left: 0%;
+    left: 0.9%;
     border-right: 15px solid transparent;
     border-left: 15px solid transparent;
     border-top: 15px solid transparent;
@@ -206,6 +247,38 @@ export default {
   transition: $default_transition;
   &:hover {
     transform: translateX(2px);
+  }
+}
+.tabs_container {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  border-bottom: $border;
+  background: rgb(250, 250, 250);
+}
+.tab {
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+  padding: 0px 15px;
+  text-transform: capitalize;
+  border-right: 1px solid rgb(230, 230, 230);
+  position: relative;
+  transition: $default_transition;
+  &.active {
+    &::after {
+      position: absolute;
+      top: 0;
+      height: 2px;
+      left: 0;
+      right: 0;
+      content: "";
+      background: rgba(var(--colour_secondary), 1);
+    }
+    background: rgba(var(--success), 0.1);
+  }
+  &:hover {
+    background: rgba(var(--colour_secondary), 0.1);
   }
 }
 </style>

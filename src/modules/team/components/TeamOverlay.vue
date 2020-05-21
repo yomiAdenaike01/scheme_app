@@ -1,187 +1,289 @@
 <template>
-  <Overlay v-model="view" :display="view">
-    <Tabs v-model.number="currentTab" :tabs="tabs" @val="userModuleController">
-      <div slot="header">
-        <TextDisplay
-          :display-text="{
-            heading: 'Manage team',
-            content: 'Manage all team members and groups here.'
-          }"
-          mode="title"
-        />
+  <Overlay :display="displayOverlay" @close="closeOverlay">
+    <div class="team_overlay">
+      <div class="navigation_container">
+        <strong class="capitalize"> {{ makePretty(langXref[view]) }}</strong>
+        <i
+          :class="
+            `bx bx-${
+              view == 'create_group' ? 'left' : 'right'
+            }-arrow-alt trigger`
+          "
+          @click="updateView"
+        ></i>
       </div>
-    </Tabs>
+
+      <Form
+        v-if="view == 'create_user'"
+        :headings="headings"
+        all-optional
+        :config="teamMemberFormConfig"
+        emit-on-change
+        :submit-button="{
+          text: mode == 'update' ? 'Update team member' : 'Create team member'
+        }"
+        @val="$emit('handleTeamMember', inputtedTeamMemberData)"
+        @change="updateTeamMemberObject"
+      >
+        <div slot="header" class="text_container team_overlay_body">
+          <div class="text_display_header">
+            <SlideYUpTransition>
+              <div v-if="mode == 'update'">
+                <Avatar
+                  :size="100"
+                  :name="
+                    inputtedTeamMemberData.name
+                      ? inputtedTeamMemberData.name
+                      : selectedTeamMember.name
+                  "
+                />
+                <div v-if="Object.values(selectedTeamMember).length > 0">
+                  <p
+                    v-for="(item, index) in teamMemberFormConfig"
+                    :key="`${item.model}${index}`"
+                    :class="[
+                      `${item.model}_item`,
+                      {
+                        grey: item.model != 'name',
+                        'bold capitalize': item.model == 'name'
+                      }
+                    ]"
+                  >
+                    {{
+                      item.model == "user_group"
+                        ? userGroupXref
+                        : !inputtedTeamMemberData[item.model]
+                        ? selectedTeamMember[item.model]
+                        : inputtedTeamMemberData[item.model]
+                    }}
+                  </p>
+                </div>
+              </div>
+              <div v-else>
+                <SlideYUpTransition>
+                  <Avatar
+                    v-if="inputtedTeamMemberData.name"
+                    :size="100"
+                    :name="inputtedTeamMemberData.name"
+                  />
+                </SlideYUpTransition>
+                <div v-if="Object.values(inputtedTeamMemberData).length > 0">
+                  <p
+                    v-for="(item, index) in teamMemberFormConfig"
+                    :key="`${item.model}${index}`"
+                    :class="[
+                      `${item.model}_item`,
+                      {
+                        grey: item.model != 'name',
+                        'bold capitalize': item.model == 'name'
+                      }
+                    ]"
+                  >
+                    {{
+                      item.model == "user_group"
+                        ? userGroupXref
+                        : inputtedTeamMemberData[item.model]
+                    }}
+                  </p>
+                </div>
+              </div>
+            </SlideYUpTransition>
+          </div>
+        </div>
+      </Form>
+
+      <UpdateGroups v-else group-type="user_groups" />
+    </div>
   </Overlay>
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
-
-import Tabs from "@/components/Tabs";
-import TextDisplay from "@/components/TextDisplay";
-import UpdateGroups from "@/components/UpdateGroups";
+import { mapGetters } from "vuex";
+import Avatar from "@/components/Avatar";
 import Overlay from "@/components/Overlay";
+import Form from "@/components/Form";
+import UpdateGroups from "@/components/UpdateGroups";
+
+import { SlideYUpTransition } from "vue2-transitions";
+
 export default {
-  name: "TeamOverlay",
   components: {
-    TextDisplay,
-    Tabs,
-    UpdateGroups,
-    Overlay
+    Overlay,
+    Form,
+    SlideYUpTransition,
+    Avatar,
+    UpdateGroups
   },
-
   props: {
-    display: Boolean
-  },
+    mode: {
+      type: String,
+      default: "create"
+    },
 
+    selectedTeamMember: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    displayOverlay: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
-      currentTab: 0,
-      convertedData: {},
-      createUserForm: {}
+      inputtedTeamMemberData: {},
+      view: "create_user"
     };
   },
   computed: {
-    ...mapState(["clientInformation", "teamRef", "team"]),
     ...mapGetters(["getUserGroups"]),
 
-    genPwd() {
-      return this.createUserForm.name
-        .trim()
-        .toLowerCase()
-        .replace(/\s/g, "");
+    langXref() {
+      return {
+        create_group: "manage groups",
+        create_user: "create new user"
+      };
     },
 
-    tabs() {
-      return [
-        {
-          label: "Manage team groups",
-          view: {
-            component: UpdateGroups,
-            props: { groupType: "user_groups" }
-          }
-        },
-        {
-          label: "Create team member",
-          formContent: this.formItems
-        }
-      ];
+    userGroupXref() {
+      let group = this.getUserGroups.find(group => {
+        return group.value == this.inputtedTeamMemberData.user_group;
+      })?.label;
+      if (this.mode == "create") {
+        return group;
+      } else {
+        return this.selectedTeamMember.user_group.label;
+      }
     },
+    headings() {
+      return {
+        name: `
+        <h3>Personal information</h3>
+        `,
+        phoneNumber: `
+        <h3>Contact information</h3>
+        `,
 
-    formItems() {
+        user_group: `<h3>Misc information</h3/>`
+      };
+    },
+    teamMemberFormConfig() {
       return [
         {
-          name: "name",
           "component-type": "text",
-          clearable: true,
-          placeholder: "Name",
-          model: "name"
-        },
-        {
-          name: "gender",
-          placeholder: "Gender",
-          model: "gender",
-          "component-type": "select",
-          options: [
-            {
-              value: "male",
-              name: "Male"
-            },
-            {
-              value: "female",
-              name: "Female"
-            },
-            {
-              value: "other",
-              name: "Other"
-            }
-          ]
+          model: "name",
+          placeholder: "First and lastname",
+          noLabel: true
         },
 
         {
-          name: "email",
+          "component-type": "text",
+          model: "phoneNumber",
+          placeholder: "Phone number",
+          noLabel: true
+        },
+        {
           "component-type": "text",
           model: "email",
-          clearable: true,
-          placeholder: "Email"
+          placeholder: "Email address",
+          noLabel: true
         },
         {
-          name: "phone_number",
-          "component-type": "text",
-          model: "phone_number",
-          clearable: true,
-          placeholder: "Phone Number"
-        },
-        {
-          placeholder: "Group",
           model: "user_group",
           "component-type": "select",
-          clearable: true,
-          options: this.getUserGroups
+          options: this.getUserGroups,
+          noLabel: true,
+          placeholder: "Assign to user group"
+        },
+        {
+          "component-type": "text",
+          "input-type": "textarea",
+          model: "notes",
+          placeholder: "Notes",
+          noLabel: true
         }
       ];
-    },
-
-    view: {
-      get() {
-        return this.display;
-      },
-      set(val) {
-        this.$emit("close", val);
-      }
     }
   },
-
   methods: {
-    ...mapActions(["request"]),
-    ...mapMutations([
-      "DELETE_TEAM_MEMBER",
-      "ADD_TEAM_MEMBER",
-      "UPDATE_ONE_TEAM_MEMBER",
-      "UPDATE_SYSTEM_NOTIFICATION"
-    ]),
-    updateNewUser(response) {
-      this.UPDATE_ONE_TEAM_MEMBER({
-        index: this.team.length - 1,
-        payload: response
-      });
-      this.view = false;
+    updateTeamMemberObject(e) {
+      this.inputtedTeamMemberData = e;
     },
-    userModuleController(val) {
-      switch (this.currentTab) {
-        case 1: {
-          this.createOneUser(val);
-          break;
-        }
-        default: {
-          break;
-        }
+
+    updateView() {
+      if (this.view == "create_user") {
+        this.view = "create_group";
+      } else {
+        this.view = "create_user";
       }
     },
 
-    createOneUser(employee) {
-      let uGroup = this.clientInformation.user_groups.find(group => {
-        return group._id == employee.user_group;
-      });
-      let _employee = { ...employee, user_group: uGroup };
-
-      this.ADD_TEAM_MEMBER(_employee);
-      this.request({
-        method: "POST",
-        url: "users/register/one",
-        data: {
-          ...employee,
-          client_id: this.clientInformation._id,
-          admin_gen: true
-        }
-      })
-        .then(response => {
-          this.updateNewUser(response);
-        })
-        .catch(() => {
-          this.DELETE_USER(this.teamRef?.index);
-        });
+    closeOverlay(clearSearch) {
+      this.$emit("close");
+      this.inputtedTeamMemberData = {};
+      if (clearSearch) {
+        this.$emit("clearSearch");
+      }
     }
   }
 };
 </script>
+
+<style scoped lang="scss">
+.navigation_container {
+  background: rgb(250, 250, 250);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.team_overlay {
+  display: flex;
+  flex-direction: column;
+  &/deep/ .text_display_container .headings_wrapper {
+    padding-bottom: 0;
+  }
+}
+p {
+  margin: 0;
+}
+
+.text_display_header {
+  margin-top: 30px;
+}
+.user_info_item {
+  margin: 0;
+  &:first-of-type {
+    margin-top: 10px;
+  }
+}
+.user_info_item.firstname {
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-bottom: 5px;
+}
+.selected_user_avatar {
+  margin: 0 40px;
+}
+.edit_user_wrapper {
+  display: flex;
+  padding: 10px;
+  > * {
+    flex: 1;
+  }
+}
+.name_item,
+.notes_item {
+  margin-top: 10px;
+}
+.name_item {
+  font-size: 1.3em;
+  margin-bottom: 5px;
+}
+.text_container {
+  padding: 20px;
+}
+</style>

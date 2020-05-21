@@ -16,41 +16,69 @@
             <div class="content">
               <Form
                 class="full_width"
+                :heading="heading"
                 :config="formConfig"
                 :submit-button="{ text: 'Update board' }"
                 @val="updateBoard"
               />
               <hr />
 
-              <s-button colour-scheme="tertiary" shadow icon="x"
+              <s-button class="rounded tertiary shadow" icon="x"
                 >Delete Board</s-button
               >
             </div>
           </el-popover>
         </div>
         <el-progress
-          v-if="tasks.length > 0"
+          v-if="filteredTasks.length > 0"
           :status="progressCount.status"
           :percentage="progressCount.percentage"
         ></el-progress>
       </div>
-      <div v-if="!tasks.length > 0" class="no_tasks_container">
-        <TextDisplay
-          :display-text="{
-            hasIcon: true,
-            heading: 'No tasks found',
-            content:
-              'Press the button below to create a task assigned to this board'
-          }"
-        >
-          <i slot="heading" class="bx bx-task"></i>
-          <el-button circle icon="el-icon-plus" @click="createTask" />
-        </TextDisplay>
+      <div v-if="filteredTasks.length == 0" class="text_container all_centre">
+        <h3>No tasks found</h3>
+        <p>Press the button below to create a task assigned to this board</p>
       </div>
-      <slide-x-left-transition group>
+
+      <slide-x-left-transition v-else group>
+        <!-- Filters -->
+        <div
+          key="filters_container"
+          v-click-outside="onClickOutside"
+          class="filters_container"
+        >
+          <div
+            class="navigation_container trigger
+"
+            @click="filters.display = !filters.display"
+          >
+            <small class="grey"><strong>Filters</strong></small>
+            <i
+              :class="`bx bx-${filters.display ? 'down' : 'right'}-arrow-alt`"
+            ></i>
+          </div>
+          <collapse-transition>
+            <div v-if="filters.display" class="input_wrapper">
+              <input
+                v-model="filters.name"
+                class="s_input"
+                placeholder="Task name"
+                type="text"
+              />
+              <input
+                v-model="filters.assigned_to"
+                placeholder="Task assigned to"
+                type="text"
+                class="s_input"
+              />
+            </div>
+          </collapse-transition>
+        </div>
+        <!-- Tasks -->
         <TaskItem
-          v-for="(task, index) in boardData.tasks"
+          v-for="(task, index) in filteredTasks"
           :key="`${task._id}${index}`"
+          class="task_item_placeholder"
           :task-information="task"
           :task-index="index"
           :board-index="boardIndex"
@@ -58,10 +86,7 @@
         />
       </slide-x-left-transition>
 
-      <div
-        class="create_new_task_wrapper grey"
-        @click="$emit('createTask', { boardData, boardIndex, display: true })"
-      >
+      <div class="create_new_item grey" @click="createTask">
         <span> <i class="bx bx-plus"></i> Create new task</span>
       </div>
     </div>
@@ -70,44 +95,46 @@
       class="new_board_container"
       :class="{ disabled: boardIndex != 0 }"
     >
-      <TextDisplay
-        class="info_display"
-        :display-text="{
-          hasIcon: true,
-          ...computeText
-        }"
-      >
+      <div class="text_container all_centre">
+        <h3>{{ computeText.heading }}</h3>
+        <p>{{ computeText.content }}</p>
+
         <el-popover
-          v-if="boardIndex == 0 && getIsAdmin"
-          slot="header"
+          v-if="boardIndex == 0 && adminPermission"
           position="top"
           trigger="click"
         >
           <div slot="reference">
-            <s-button colour-scheme="secondary" only-icon icon="plus" shadow />
+            <s-button class="only_icon secondary" icon="plus" />
           </div>
           <Form class="full_width" :config="formConfig" @val="createBoard" />
         </el-popover>
-      </TextDisplay>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-import { SlideXLeftTransition } from "vue2-transitions";
+import { SlideXLeftTransition, CollapseTransition } from "vue2-transitions";
+import vClickOutside from "v-click-outside";
+
 import TaskItem from "./TaskItem";
+import SButton from "@/components/SButton";
+import Form from "@/components/Form";
 
 export default {
   name: "TaskBoard",
   components: {
-    Form: () => import("@/components/Form"),
-    TextDisplay: () => import("@/components/TextDisplay"),
     TaskItem,
     SlideXLeftTransition,
-    SButton: () => import("@/components/SButton")
+    CollapseTransition,
+    SButton,
+    Form
   },
-
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   props: {
     newBoard: {
       type: Boolean,
@@ -124,12 +151,45 @@ export default {
   },
   data() {
     return {
-      taskCap: 10
+      taskCap: 10,
+
+      filters: {
+        display: false,
+        name: "",
+        assignedTo: ""
+      }
     };
   },
   computed: {
     ...mapState(["clientInformation"]),
-    ...mapGetters(["getIsAdmin"]),
+    ...mapGetters(["adminPermission"]),
+    filteredTasks() {
+      let tasks = this.tasks,
+        filters = this.filters,
+        filteredTasks = [];
+      for (let i = 0, len = tasks.length; i < len; i++) {
+        let task = tasks[i];
+
+        if (!task.name.toLowerCase().includes(filters.name.toLowerCase())) {
+          continue;
+        }
+
+        let hasAssignedUser = task.assigned_to.some(member => {
+          return member.name
+            .toLowerCase()
+            .includes(filters.assignedTo.toLowerCase());
+        });
+
+        if (!hasAssignedUser) {
+          continue;
+        }
+
+        filteredTasks.push(task);
+      }
+
+      return filteredTasks.length > 0 ? filteredTasks : tasks;
+    },
+
     description() {
       return this.boardData?.description ?? "";
     },
@@ -165,27 +225,35 @@ export default {
         content: "Initialise the board before to enable this board."
       };
       let heading = "Create task board";
-      if (index == 0 && this.getIsAdmin) {
+      if (index == 0 && this.adminPermission) {
         displayText.heading = heading;
         displayText.content = "Press the button above to initialse this board";
       }
-      if (!this.getIsAdmin && index == 0) {
+      if (!this.adminPermission && index == 0) {
         displayText.heading = heading;
         displayText.content =
           "Only system administrators can create a task board";
       }
       return displayText;
     },
+    heading() {
+      return {
+        name: "<h3>Board information</h3>"
+      };
+    },
     formConfig() {
       return [
         {
           "component-type": "text",
+          noLabel: true,
           placeholder: "Board name",
           model: "name"
         },
         {
           "component-type": "text",
           textarea: true,
+          noLabel: true,
+
           placeholder: "Board desciprtion",
           model: "description"
         }
@@ -201,6 +269,11 @@ export default {
       "CREATE_TASK",
       "DELETE_BOARD"
     ]),
+    onClickOutside() {
+      if (this.filters.display) {
+        this.filters.display = false;
+      }
+    },
     updateBoardQuota(action = "minus") {
       let value = this.clientInformation.board_quota + 1;
       if (action == "minus") {
@@ -221,10 +294,10 @@ export default {
         this.request({
           method: "DELETE",
           url: "tasks/boards/delete",
-          data: { _id: payload.boardID }
+          data: { _id: payload.board_id }
         }).catch(() => {
           this.UPDATE_BOARDS({ data: payload, action: "create" });
-          this.DELETE_BOARD(payload.boardID);
+          this.DELETE_BOARD(payload.board_id);
           this.updateBoardQuota("minus");
         });
       });
@@ -241,7 +314,7 @@ export default {
       };
 
       this.request(payload).catch(() => {
-        this.DELETE_BOARD(payload.boardID);
+        this.DELETE_BOARD(payload.board_id);
         this.updateBoardQuota("plus");
       });
     },
@@ -259,10 +332,9 @@ export default {
       });
     },
     createTask() {
-      this.UPDATE_OVERLAY_INDEX({
-        overlay: "task",
-        view: true,
-        data: this.boardID
+      this.$emit("createTask", {
+        boardIndex: this.boardIndex,
+        taskIndex: this.boardData.tasks.length + 1
       });
     }
   }
@@ -276,7 +348,7 @@ export default {
   flex-direction: column;
   margin: 0 10px;
   border-radius: 16px;
-  border: 2px solid whitesmoke;
+  border: $border;
   height: 100%;
   background: white;
 }
@@ -291,10 +363,9 @@ export default {
 .board_header {
   display: flex;
   flex-direction: column;
-  padding-left: 20px;
+  padding: 10px;
   text-transform: capitalize;
-  padding-bottom: 20px;
-  border-bottom: 2px solid whitesmoke;
+  border-bottom: $border;
   h1,
   h2,
   h3 {
@@ -332,13 +403,8 @@ export default {
   margin: 10px 0;
   text-transform: initial;
 }
-.no_tasks_container {
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-}
-.create_new_task_wrapper {
+
+.create_new_item {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -369,6 +435,25 @@ export default {
   cursor: pointer;
   &:hover {
     background: darken(#99b898, 14);
+  }
+}
+
+.filters_container {
+  display: flex;
+  flex-direction: column;
+
+  .navigation_container {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: $border;
+  }
+  .input_wrapper {
+    padding: 10px;
+  }
+  .s_input {
+    margin-top: 10px;
   }
 }
 </style>

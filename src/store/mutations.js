@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "../router";
 import updateBreadCrumbs from "./helpers";
+import mixins from "@/mixins/genID";
 
 const deleteStateInterval = (state, intervalID) => {
   if (!intervalID) {
@@ -12,81 +13,11 @@ const deleteStateInterval = (state, intervalID) => {
     clearTimeout(state.runningIntervals[intervalID]);
     Vue.set(state.runningIntervals, intervalID, null);
   }
-  console.log(state.runningIntervals);
 };
 const deleteSystemNotification = (state, notificationIndex) => {
   Vue.delete(state.systemNotifications, notificationIndex);
 };
 export default {
-  // Team
-  ADD_TEAM_MEMBER(state, payload) {
-    let teamMemberIndex = state.team.findIndex(x => {
-      return x.email == payload.email;
-    });
-    if (teamMemberIndex == -1) {
-      state.team.push(payload);
-      updateBreadCrumbs(state, "teamRef", {
-        payload,
-        index: state.team.length - 1
-      });
-    }
-  },
-  REASSIGN_TEAM_MEMBERS(state, { assignment = "team", group }) {
-    let groupedElements = [],
-      groupKey = assignment == "team" ? "groupID" : "type";
-    for (let i = 0, len = state[assignment].length; i < len; i++) {
-      let { groupID } = state[assignment][i];
-      if (groupID == group) {
-        groupedElements.push({ index: i, groupID });
-        Vue.set(state[assignment][i], groupKey, 0);
-      }
-    }
-    updateBreadCrumbs(state, "groupRef", { group: group, groupedElements });
-  },
-  DELETE_TEAM_MEMBER(state, teamMemberIndex) {
-    teamMemberIndex = teamMemberIndex ? teamMemberIndex : state.team.length - 1;
-
-    updateBreadCrumbs(state, "teamRef", state.team[teamMemberIndex]);
-
-    Vue.delete(state.team, teamMemberIndex);
-  },
-  UPDATE_TEAM(state, payload) {
-    if (Array.isArray(payload) && state.team.length == 0) {
-      state.team = payload;
-    }
-    if (Array.isArray(payload) && state.team.length > 0) {
-      for (let i = 0, len = state.team.length; i < len; i++) {
-        let teamMember = state.team[i];
-        let member = payload.find(payloadMember => {
-          return payloadMember._id == teamMember._id;
-        });
-        if (!member) {
-          state.team.push(member);
-        }
-      }
-    }
-  },
-  UPDATE_TEAM_MEMBER_GROUP(state, { index, groupType, payload }) {
-    updateBreadCrumbs(state, "teamRef", {
-      index,
-      payload: state.team[index]
-    });
-
-    state.team[index][groupType] = {
-      ...state.team[index][groupType],
-      ...payload
-    };
-  },
-
-  UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
-    updateBreadCrumbs(state, "teamRef", {
-      index,
-      payload: state.team[index]
-    });
-
-    state.team[index] = Object.assign(state.team[index], payload);
-  },
-
   UPDATE_OVERLAY_INDEX(state, payload) {
     payload = payload
       ? payload
@@ -94,7 +25,6 @@ export default {
     for (let property in state.overlayIndex[payload.overlay]) {
       Vue.set(state.overlayIndex[payload.overlay], property, payload[property]);
     }
-    console.log(state.overlayIndex[payload.overlay]);
     state.overlayHistory = payload;
   },
 
@@ -143,9 +73,7 @@ export default {
       : {
           duration: 3000,
           method: () => {},
-          id: Math.random()
-            .toString(16)
-            .slice(2),
+          id: mixins.methods.genID(),
           immediate: false
         };
     if (payload.immediate) {
@@ -249,7 +177,7 @@ export default {
     if (VueRouter.currentRoute.name != "signIn") {
       VueRouter.push({ name: "signIn" });
     }
-    for (let property in state.runningIntervals) {
+    for (let property in state.globalIntervals) {
       if (property != "client") {
         deleteStateInterval(state, property);
       }
@@ -284,9 +212,7 @@ export default {
       annoucement: "user-voice",
       info: "mail-send"
     };
-    notification._id = Math.random()
-      .toString(16)
-      .slice(2);
+    notification._id = mixins.methods.genID();
 
     let closeNotificationObject = {
       label: "Close",
@@ -326,17 +252,24 @@ export default {
       }
     }
 
-    if (notification?.desktop) {
+    if (document.visibilityState == "hidden") {
       //  params:  // 'To do list', { body: text, icon: img }
-      let desktopNotification;
-      let desktop = notification.desktop;
-      let { content, title } = desktop;
-      desktopNotification = new Notification(title, content);
-      if ("click" in desktop) {
-        desktopNotification.onclick = () => {
-          desktop.click();
-        };
-      }
+
+      let desktopNotification = new Notification(notification.title, {
+        icon: "",
+        body: notification.message
+      });
+      desktopNotification.onclick = () => {
+        window.focus();
+        if (notification?.methods) {
+          notification.methods[0].body();
+        } else {
+          if (!notification?.route) {
+            VueRouter.push({ name: "Common" });
+          }
+          VueRouter.push(notification.route);
+        }
+      };
     }
 
     let notificationIndex = state.systemNotifications.findIndex(
@@ -351,7 +284,7 @@ export default {
       clearTimeout(removeNotificationTimeout);
       let removeNotificationTimeout = setTimeout(() => {
         state.systemNotifications.pop();
-      }, 9000);
+      }, 5000);
     }
   }
 };

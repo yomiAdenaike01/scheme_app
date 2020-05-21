@@ -1,6 +1,6 @@
 import UAParser from "ua-parser-js";
 import Vue from "vue";
-const genUUID = require("uuid-by-string");
+import { methods } from "@/mixins/genID";
 
 export default {
   getUserGroups({ clientInformation }) {
@@ -28,13 +28,11 @@ export default {
         return _id;
       });
   },
-  getFilteredTeam: ({ team }, getters, { userInformation }) => {
-    return team.filter(({ _id }) => {
-      return _id != userInformation._id;
-    });
-  },
 
-  getValidEventTypes({ clientInformation, userInformation }, { getIsAdmin }) {
+  getValidEventTypes(
+    { clientInformation, userInformation },
+    { adminPermission }
+  ) {
     let hasValues = Vue.prototype.hasEntries(clientInformation);
     let arr = [];
     if (hasValues) {
@@ -42,7 +40,7 @@ export default {
       let {
         user_group: { _id }
       } = userInformation;
-      if (!getIsAdmin) {
+      if (!adminPermission) {
         for (let i = 0, len = event_groups.length; i < len; i++) {
           let eventGroup = event_groups[i];
           let user_groupIndex = eventGroup.enabled_for.indexOf(_id);
@@ -67,17 +65,7 @@ export default {
     return arr;
   },
 
-  getDropdownTeamMembers({ team }) {
-    team = [...team];
-    return team.map(({ name, _id }) => {
-      return {
-        label: name,
-        value: _id
-      };
-    });
-  },
-
-  getGroupName: ({ clientInformation }) => (groupType, id) => {
+  groupLookup: ({ clientInformation }) => (groupType, id) => {
     let res = {};
 
     if (groupType == "user") {
@@ -87,28 +75,13 @@ export default {
     }
 
     if (Vue.prototype.hasEntries(clientInformation)) {
-      res = clientInformation[groupType].find(({ groupID }) => {
-        return groupID == id;
+      res = clientInformation[groupType].find(({ _id }) => {
+        return _id == id;
       });
     }
     return res;
   },
-  getUserInformation: ({ team, userInformation }) => (
-    match,
-    params = "_id"
-  ) => {
-    let userInfo = null;
-    if (match == userInformation[params]) {
-      userInfo = userInformation;
-    } else {
-      if (Vue.prototype.hasEntries(team)) {
-        userInfo = team.find(member => {
-          return member[params] == match;
-        });
-      }
-    }
-    return userInfo;
-  },
+
   getUA() {
     return new UAParser();
   },
@@ -145,7 +118,7 @@ export default {
   getDeviceInformation(state, { getUA }) {
     return {
       system: getUA.getOS(),
-      id: genUUID(window.navigator.userAgent.toString().trim())
+      id: methods.genID()
     };
   },
 
@@ -157,7 +130,7 @@ export default {
     }
   },
 
-  getIsAdmin({ userInformation: { user_group } }) {
+  adminPermission({ userInformation: { user_group } }) {
     if (user_group) {
       return user_group.is_admin == true;
     } else {

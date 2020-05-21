@@ -2,7 +2,7 @@
   <div class="team_container">
     <!-- Display if in mobile view -->
 
-    <div v-if="getFilteredTeam.length > 0" class="users_container">
+    <div v-if="getFilteredTeam.length > 0" class="team_members_container">
       <div
         v-for="(member, index) in team"
         :key="index"
@@ -21,40 +21,34 @@
         </Dropdown>
       </div>
     </div>
-    <div v-else class="information_container">
-      <TextDisplay
-        :display-text="{
-          heading: 'No team members found',
-          headingAlign: 'center',
-          textAlign: 'center',
-          tag: 'h3',
-          hasIcon: true,
-          content:
-            'To create a team member please navigate to user management and manage users to create team members'
-        }"
-        mode="title"
+    <div v-else class="text_container all_centre">
+      <i class="bx bx-user flex_center"></i>
+      <h3>No team members found</h3>
+      <p>
+        To create a team member please navigate to user management and manage
+        users to create team members
+      </p>
+
+      <s-button class="rounded primary" @click="$router.push({ name: 'user' })"
+        >Go to user management</s-button
       >
-        <i slot="header" class="bx bx-user flex_center"></i>
-        <el-button slot="body" round @click="$router.push({ name: 'user' })"
-          >Go to user management</el-button
-        >
-      </TextDisplay>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
-import TextDisplay from "@/components/TextDisplay";
 import Dropdown from "@/components/Dropdown.vue";
 import Avatar from "@/components/Avatar.vue";
+import OnlineIndicator from "@/components/OnlineIndicator";
+import SButton from "@/components/SButton";
 export default {
   name: "TeamSidebar",
   components: {
     Dropdown,
     Avatar,
-    TextDisplay,
-    OnlineIndicator: () => import("@/components/OnlineIndicator")
+    OnlineIndicator,
+    SButton
   },
 
   data() {
@@ -65,17 +59,24 @@ export default {
     };
   },
   computed: {
-    ...mapState(["team"]),
-    ...mapGetters(["getIsAdmin", "getFilteredTeam"]),
+    ...mapState("Team", ["team"]),
+    ...mapGetters(["adminPermission"]),
+    ...mapGetters("Team", ["getFilteredTeam"]),
     items() {
       return [
         {
-          name: "Message",
-          command: "message"
+          name: "<i class='bx bxl-discourse'></i> Message",
+          command: "message",
+          divider: true
+        },
+
+        {
+          name: "<i class='bx bxs-calendar-check'></i> View events",
+          command: "view_team_member_events"
         },
         {
-          name: "View",
-          command: "view_team_member"
+          name: "<i class='bx bx-question-mark'></i> View Requests ",
+          command: "view_team_member_requests"
         }
       ];
     }
@@ -86,6 +87,13 @@ export default {
 
     handleEvents(event) {
       switch (event) {
+        case "view_team_member_requests": {
+          this.$emit("changeView", {
+            view: "requests",
+            teamMember: this.selectedTeamMember
+          });
+          break;
+        }
         case "message": {
           this.$router.push({
             name: "comms",
@@ -99,11 +107,14 @@ export default {
           this.createStubChat();
           break;
         }
-        case "view_team_member": {
-          this.UPDATE_OVERLAY_INDEX({
-            overlay: "profile",
-            view: true,
-            data: this.selectedTeamMember
+
+        case "view_team_member_events": {
+          this.$router.push({
+            name: "team",
+            params: {
+              user: this.selectedTeamMember?.name,
+              tab: "events_timeline"
+            }
           });
           break;
         }
@@ -119,6 +130,7 @@ export default {
 <style lang="scss" scoped>
 .team_container {
   border-left: 1px solid #e6e6e6;
+  background: white;
   flex: 0.1;
   height: 100%;
   display: flex;
@@ -136,7 +148,7 @@ export default {
     background-color: darken($color: #ffff, $amount: 2);
   }
 }
-.users_container {
+.team_members_container {
   display: flex;
   flex-direction: column;
 }
@@ -145,13 +157,6 @@ export default {
   align-items: center;
   display: flex;
   justify-content: center;
-}
-.information_container {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
 }
 
 /**

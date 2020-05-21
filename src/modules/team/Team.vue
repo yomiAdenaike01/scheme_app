@@ -1,25 +1,34 @@
 <template>
   <div class="team_container">
-    <TeamOverlay
-      :display="overlays.manageTeam"
-      @close="overlays.manageTeam = false"
-    />
+    <div class="team_sidebar">
+      <div v-if="team.length > 0" class="team_group_container">
+        <div class="filter_team_members">
+          <i class="bx bx-search"></i>
+          <input
+            v-model="searchTeamMemberName"
+            class="s_input no_border_radius"
+            type="text"
+            placeholder="Search team members"
+          />
+          <i
+            v-if="searchTeamMemberName.length > 0"
+            class="bx bx-x trigger"
+            @click="clearSearch"
+          ></i>
 
-    <TeamGroup add-new @createTeamGroup="overlays.manageTeam = $event" />
+          <i
+            v-if="hasPermission"
+            class="bx bx-plus trigger"
+            @click="
+              displayOverlay = true;
+              mode = 'create';
+            "
+          ></i>
+        </div>
 
-    <TeamGroup v-if="team.length > 0">
-      <div class="team_group_container">
-        <TextDisplay
-          :display-text="{
-            heading: 'All teams',
-            content:
-              'Here is a list of all users, select one to view their information'
-          }"
-        />
-
-        <div class="row_wrapper">
+        <div v-if="groupedTeamMembers.length > 0" class="row_wrapper">
           <div
-            v-for="(count, i) in filteredGroupsWithUsers"
+            v-for="(count, i) in groupedTeamMembers"
             :key="`${count}${i}`"
             class="user_group_row"
           >
@@ -28,66 +37,362 @@
               :key="`${group.groupID}${index}`"
               class="user_group_col"
             >
-              <div
-                :key="
-                  `${group.groupID}${Math.random()
-                    .toString(16)
-                    .slice(2)}`
-                "
-                class="team_wrapper"
-              >
+              <div :key="`${group.groupID}${genID()}`" class="team_wrapper">
                 <div class="icon_text_container">
-                  <div class="flex_center">
-                    <i class="bx bx-user user_group_icon"></i>
-                    <span class="capitalize">{{ group.label }}</span>
+                  <div class="divider"></div>
+                  <span class="capitalize">{{ group.label }}</span>
+                  <div class="divider"></div>
+                </div>
+                <div v-if="group.teamMembers.length > 0">
+                  <div
+                    v-for="(member, index) in group.teamMembers"
+                    :key="member._id"
+                    :class="{
+                      active: selectedTeamMember._id == member._id
+                    }"
+                    class="team_member_container"
+                    @click="setTeamMember(member, index)"
+                  >
+                    <Avatar :name="member.name" :size="40">
+                      <OnlineIndicator :is-online="member.is_online" />
+                    </Avatar>
+                    <div class="text_content">
+                      <p class="member_name">{{ member.name }}</p>
+                      <small class="grey">{{ member.email }}</small>
+                    </div>
+                    <i
+                      v-if="member._id == userInformation._id"
+                      class="is_user_badge bx bxs-badge-check"
+                    ></i>
                   </div>
                 </div>
-
-                <TeamMember
-                  v-for="member in group.teamMembers"
-                  :key="member._id"
-                  :member-information="{ ...member, groupID: group.groupID }"
-                />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </TeamGroup>
+    </div>
+
+    <div class="view_team_member">
+      <Menu
+        mode="tabs"
+        :tab-items="tabItems"
+        :active-tab="selectedTab"
+        @changeTab="selectedTab = $event"
+      />
+      <!-- Related events -->
+      <div
+        v-if="selectedTab == 'events_timeline'"
+        class="tab_content_container"
+      >
+        <div
+          v-if="relatedEvents.length == 0"
+          class="grey no_related_events text_container all_centre"
+        >
+          <i class="bx bx-calendar large_icon"></i>
+          <h2>
+            {{
+              isCurrentUser
+                ? "You have no events assigned to you"
+                : "No events for this user"
+            }}
+          </h2>
+        </div>
+        <div v-else>
+          <input
+            v-model="filters.userGroup"
+            type="text"
+            placeholder="Filter by event type"
+            class="s_input no_border_radius"
+          />
+
+          <!-- Related events -->
+          <div v-for="event in relatedEvents" :key="event._id" class="event">
+            <div class="date_wrapper">
+              <span>{{ event.start_date }}</span>
+            </div>
+            <div class="details_container" :class="event.time_code.value">
+              <h3 class="capitalize">
+                {{ event.type.label }}
+              </h3>
+              {{ event.start_time }} - {{ event.end_time }}
+              <br />
+              <span class="capitalize">{{ event.time_code.label }}</span>
+              <br />
+              <span class="capitalize"
+                >End date {{ formatDate(event.end_date) }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Anayltics -->
+      <Analytics
+        v-if="selectedTab == 'analytics'"
+        :selected-team-member="selectedTeamMember"
+      />
+    </div>
+    <!-- View the user details -->
+    <div
+      v-if="Object.values(selectedTeamMember).length > 0"
+      class="user_sidebar"
+    >
+      <Avatar :name="selectedTeamMember.name" :size="80" />
+      <h3>{{ selectedTeamMember.name }}</h3>
+      <small class="grey">{{ selectedTeamMember.user_group.label }}</small>
+      <small class="grey">{{ selectedTeamMember.email }}</small>
+
+      <div class="shortcuts_container">
+        <i
+          v-for="(shortcut, index) in shortcuts"
+          :key="index"
+          :class="`bx bx${shortcut.icon}`"
+          :style="{ backgroundColor: shortcut.bg }"
+          @click="shortcut.click"
+        ></i>
+      </div>
+
+      <hr />
+      <div
+        class="activity_wrapper"
+        :class="{ display_center: selectedUserActivity.length == 0 }"
+      >
+        <div v-if="selectedUserActivity.length > 0" v-loading="loading">
+          <h3>Activity feed</h3>
+          <ActivityLog
+            v-for="activity in selectedUserActivity"
+            :key="activity._id"
+            :activity="activity"
+            :date-created="initMoment(activity.date_created).calendar()"
+          />
+        </div>
+        <div v-else class="text_container all_centre">
+          <h3>No recent activity found</h3>
+        </div>
+      </div>
+      <TeamOverlay
+        :mode="mode"
+        :display-overlay="displayOverlay"
+        :selected-team-member="selectedTeamMember"
+        @close="displayOverlay = false"
+        @clearSearch="clearSearch"
+        @handleTeamMember="handleTeamMember"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 
-import TeamGroup from "./components/TeamGroup";
-import TeamMember from "./components/TeamMember";
+import Analytics from "./components/Analytics";
 import TeamOverlay from "./components/TeamOverlay";
-import TextDisplay from "@/components/TextDisplay";
+import ActivityLog from "./components/ActivityLog";
+
+import genID from "@/mixins/genID";
+
+import Avatar from "@/components/Avatar";
+import OnlineIndicator from "@/components/OnlineIndicator";
+import Menu from "@/components/Menu";
+import SButton from "@/components/SButton";
 
 export default {
   name: "Team",
   components: {
-    TeamMember,
-    TeamGroup,
-    TeamOverlay,
-    TextDisplay
+    Avatar,
+    OnlineIndicator,
+    Menu,
+    SButton,
+    Analytics,
+
+    ActivityLog,
+    TeamOverlay
   },
+  mixins: [genID],
   data() {
     return {
-      globalOverlayName: "profile",
-      overlays: {
-        manageTeam: false
-      },
-      viewUser: false
+      displayOverlay: false,
+      mode: "create",
+      searchTeamMemberName: "",
+      viewUser: false,
+      selectedTab: "events_timeline",
+      selectedTeamMember: {},
+      inputtedTeamMemberData: {},
+      selectedTeamMemberIndex: 0,
+      selectedUserActivity: [],
+      loading: false,
+      filters: {
+        userGroup: ""
+      }
     };
   },
-  computed: {
-    ...mapState(["userInformation", "clientInformation"]),
-    ...mapState(["team"]),
-    ...mapGetters(["getFilteredTeam"]),
 
-    filteredGroupsWithUsers() {
+  computed: {
+    ...mapState(["colours", "theme", "userInformation", "clientInformation"]),
+    ...mapState("Team", ["team"]),
+    ...mapState("Events", ["events"]),
+    ...mapGetters("Team", ["getFilteredTeam"]),
+    ...mapGetters(["adminPermission"]),
+
+    shortcuts() {
+      let condition = !this.isCurrentUser;
+
+      let shortcuts = [
+        {
+          icon: "-question-mark",
+          condition,
+
+          click: () => {
+            this.$router.push({
+              name: "events",
+              params: {
+                view: "requests",
+                teamMember: this.selectedTeamMember
+              }
+            });
+          }
+        },
+        {
+          icon: "-cog",
+          condition: this.hasPermission,
+
+          click: () => {
+            this.displayOverlay = true;
+            this.mode = "update";
+          }
+        },
+        {
+          icon: "-task",
+          condition,
+          click: () => {
+            this.$router.push({
+              name: "tasks",
+              params: { user: this.selectedTeamMember }
+            });
+          }
+        },
+        {
+          icon: "l-discourse",
+          condition,
+          click: () => {
+            this.$router.push({
+              name: "comms",
+              params: { toMessage: this.selectedTeamMember }
+            });
+          }
+        },
+        {
+          icon: "-trash",
+          condition: this.hasPermission,
+          click: () => {
+            this.mode = "delete";
+            this.handleTeamMember();
+          }
+        }
+      ];
+      return shortcuts.filter((shortcut, index) => {
+        shortcut.bg = this.colours[index];
+        return shortcut.condition;
+      });
+    },
+
+    isCurrentUser() {
+      return this.selectedTeamMember._id == this.userInformation._id;
+    },
+
+    relatedEvents() {
+      let events = [...this.events];
+      let relatedEvents = [];
+
+      if (events.length > 0) {
+        for (let i = 0, len = events.length; i < len; i++) {
+          let event = Object.assign({}, events[i]);
+          let _start_date = event.start_date,
+            _end_date = event.end_date;
+
+          let isAssingnedToEvent = event.assigned_to.some(assignee => {
+            return assignee._id == this.selectedTeamMember._id;
+          });
+
+          if (isAssingnedToEvent) {
+            let timeCode = this.determineTimeCode({
+              start_date: _start_date,
+              end_date: _end_date
+            });
+
+            event.time_code = {
+              label: this.makePretty(timeCode),
+              value: timeCode
+            };
+
+            event.start_time = this.formatDate(_start_date, "hh:mm");
+            event.end_time = this.formatDate(_end_date, "hh:mm");
+            event.start_date = this.formatDate(event.start_date, "DD-MM YYYY");
+            relatedEvents.push(event);
+          }
+        }
+      }
+      return relatedEvents;
+    },
+
+    hasPermission() {
+      return this.isCurrentUser || this.adminPermission;
+    },
+
+    headings() {
+      return {
+        name: `
+        <h3>Personal information</h3>
+        `,
+        phoneNumber: `
+        <h3>Contact information</h3>
+        `,
+        user_group: `<h3>Misc information</h3/>`
+      };
+    },
+    teamMemberFormConfig() {
+      return [
+        {
+          "component-type": "text",
+          model: "name",
+          placeholder: "First and lastname",
+          noLabel: true
+        },
+
+        {
+          "component-type": "text",
+          model: "phoneNumber",
+          placeholder: "Phone number",
+          noLabel: true
+        },
+        {
+          "component-type": "text",
+          model: "email",
+          placeholder: "Email address",
+          noLabel: true
+        },
+        {
+          model: "user_group",
+          "component-type": "select",
+          options: this.getUserGroups,
+          noLabel: true,
+          placeholder: "Assign to user group"
+        },
+        {
+          "component-type": "text",
+          "input-type": "textarea",
+          model: "notes",
+          placeholder: "Notes",
+          noLabel: true
+        }
+      ];
+    },
+
+    tabItems() {
+      return ["events_timeline", "analytics"];
+    },
+
+    groupedTeamMembers() {
       let groups = this.groupsWithUsers.filter(({ teamMembers }) => {
         return teamMembers.length > 0;
       });
@@ -95,23 +400,210 @@ export default {
       return [groups];
     },
 
+    firstTeamMember() {
+      return this.groupedTeamMembers[0][0]?.teamMembers[0];
+    },
+    handleTeamMemberXref() {
+      return {
+        requestPayloads: {
+          create: async ({ success, error }) => {
+            try {
+              let req = await this.request({
+                method: "POST",
+                url: "users/register",
+                data: {
+                  client_id: this.clientInformation._id,
+                  admin_gen: true,
+                  ...this.inputtedTeamMemberData
+                }
+              });
+              success(req);
+            } catch (err) {
+              error(err);
+            }
+          },
+          update: async ({ success, error }) => {
+            try {
+              let req = await this.request({
+                method: "PUT",
+                url: "users/update",
+                data: {
+                  _id: this.selectedTeamMember._id,
+                  update: this.inputtedTeamMemberData
+                }
+              });
+              success(req);
+            } catch (err) {
+              error(err);
+            }
+          },
+          delete: async ({ success, error }) => {
+            try {
+              let req = await this.request({
+                method: "DELETE",
+                url: "users/delete",
+                data: { _id: this.selectedTeamMember._id }
+              });
+              success(req);
+            } catch (err) {
+              error(err);
+            }
+          }
+        },
+        methods: {
+          create: {
+            mutation: payload => {
+              payload.user_group = this.clientInformation.user_groups.find(
+                group => {
+                  return group._id == payload.user_group;
+                }
+              );
+
+              this.CREATE_TEAM_MEMBER(payload);
+            },
+            data: {
+              _id: this.genID(),
+              ...this.inputtedTeamMemberData
+            }
+          },
+          update: {
+            mutation: payload => {
+              this.UPDATE_ONE_TEAM_MEMBER(payload);
+            },
+            data: {
+              index: this.selectedTeamMemberIndex,
+              payload: this.inputtedTeamMemberData
+            }
+          },
+          delete: {
+            mutation: payload => {
+              this.DELETE_TEAM_MEMBER(payload);
+            },
+            data: { index: this.selectedTeamMemberIndex }
+          }
+        }
+      };
+    },
+
     groupsWithUsers() {
       let { user_groups } = { ...this.clientInformation };
       let userGroupArr = [];
-      let team = [...this.team];
+      let team = [...this.team, this.userInformation];
+      let nameFilter = this.searchTeamMemberName.toLowerCase();
 
-      for (let j = 0, len = user_groups.length; j < len; j++) {
-        let userGroup = { ...user_groups[j], teamMembers: [] };
+      for (let i = 0, len = user_groups.length; i < len; i++) {
+        let userGroup = { ...user_groups[i], teamMembers: [] };
         let clientGroupID = userGroup?._id;
-
-        team.map(member => {
+        for (let j = 0, jlen = team.length; j < jlen; j++) {
+          let member = team[j];
           if (clientGroupID == member.user_group._id) {
+            if (!member.name.toLowerCase().includes(nameFilter)) {
+              continue;
+            }
             userGroup.teamMembers.push(member);
           }
-        });
+        }
         userGroupArr.push(userGroup);
       }
       return userGroupArr;
+    }
+  },
+  watch: {
+    selectedTeamMember() {
+      this.getAuditLog();
+    },
+    searchTeamMemberName: {
+      immediate: false,
+      handler() {
+        this.setTeamMember();
+      }
+    }
+  },
+
+  created() {
+    let routeTeamMember = this.$route.params?.user;
+    let routeTab = this.$route.params?.tab;
+    if (routeTeamMember) {
+      this.searchTeamMemberName = routeTeamMember;
+    } else {
+      this.setTeamMember();
+    }
+    if (routeTab) {
+      this.selectedTab = routeTab;
+    }
+    this.loading = true;
+  },
+  methods: {
+    ...mapActions(["request"]),
+    ...mapMutations("Team", [
+      "UPDATE_ONE_TEAM_MEMBER",
+      "DELETE_TEAM_MEMBER",
+      "CREATE_TEAM_MEMBER"
+    ]),
+    toggleOverlay(val) {
+      this.displayOverlay = val;
+    },
+    determineTimeCode({ start_date, end_date }) {
+      let now = this.initMoment(),
+        startDate = this.initMoment(start_date),
+        endDate = this.initMoment(end_date);
+
+      let timeXref = {
+        [endDate.isAfter(now)]: "completed",
+        [startDate.isAfter(now)]: "upcoming"
+      };
+      return timeXref[true] ? timeXref[true] : "in_progress";
+    },
+    getAuditLog() {
+      this.loading = true;
+      this.request({
+        method: "GET",
+        url: "services/logs",
+        params: { user_id: this.selectedTeamMember._id }
+      }).then(response => {
+        this.loading = false;
+        this.selectedUserActivity = response;
+      });
+    },
+    async handleTeamMember(e) {
+      if (e) {
+        this.inputtedTeamMemberData = e;
+      }
+      // Update team member from form
+      let methodXref = this.handleTeamMemberXref.methods[this.mode];
+      let requestXref = this.handleTeamMemberXref.requestPayloads[this.mode];
+
+      // Run xref methods
+      methodXref.mutation(methodXref.data);
+      try {
+        await requestXref({
+          success: res => {
+            if (this.mode == "create") {
+              this.UPDATE_ONE_TEAM_MEMBER({
+                index: this.team.length - 1,
+                payload: res
+              });
+            }
+          },
+          error: err => {
+            console.log(err);
+            this.toggleOverlay(false);
+          }
+        });
+      } catch (error) {
+        this.toggleOverlay(false);
+      }
+    },
+    clearSearch() {
+      this.searchTeamMemberName = "";
+    },
+    setTeamMember(teamMember = this.firstTeamMember, index = 0) {
+      if (teamMember) {
+        this.selectedTeamMember = teamMember;
+        this.selectedTeamMemberIndex = this.team.findIndex(member => {
+          return member._id == teamMember._id;
+        });
+      }
     }
   }
 };
@@ -122,15 +614,35 @@ export default {
   display: flex;
   flex: 1;
   font-size: 0.9em;
-  padding: 20px;
   max-height: 100%;
+  background: white;
+}
+.team_sidebar {
+  border-right: $border;
 }
 .team_group_container {
   display: flex;
-  flex: 1;
+  flex: 0.2;
+  min-width: 300px;
   flex-direction: column;
-  height: calc(100% - 100px);
+  height: 100%;
   overflow-x: hidden;
+}
+.filter_team_members {
+  display: flex;
+  align-items: center;
+  border-bottom: $border;
+  padding: 10px;
+  .bx {
+    font-size: 1.4em;
+    color: #999;
+    flex: 0.01;
+  }
+}
+.s_input {
+  padding: 10px;
+  flex: 1;
+  border: none;
 }
 .row_wrapper {
   padding-top: 20px;
@@ -142,6 +654,10 @@ export default {
   flex-direction: column;
   flex: 1;
 }
+.is_user_badge {
+  font-size: 1.3em;
+  margin-left: 20px;
+}
 .team_wrapper {
   display: flex;
   flex: 1;
@@ -150,8 +666,7 @@ export default {
 }
 .user_group_col {
   display: flex;
-  flex: 1;
-  margin-top: 20px;
+  padding: 10px;
 }
 
 .button {
@@ -181,11 +696,150 @@ export default {
   margin-right: 10px;
 }
 .icon_text_container {
-  background: rgb(250, 250, 250);
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  .divider {
+    flex: 1;
+    height: 2px;
+    background: whitesmoke;
+  }
+  span {
+    text-transform: capitalize;
+    justify-content: flex-start;
+    padding: 0 10px;
+  }
   color: #222;
   font-size: 0.9em;
   padding: 10px 0px;
+}
+
+.team_member_container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-height: 50px;
+  max-height: fit-content;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: $default_transition background;
+  &:hover,
+  &.active {
+    background: rgb(248, 248, 248);
+  }
+}
+.text_content {
+  margin-left: 20px;
+}
+p {
+  padding: 0;
+  margin: 0;
+}
+.member_name {
+  text-transform: capitalize;
+}
+.view_team_member {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.data_field {
+  flex: 1;
+}
+.user_sidebar {
+  display: flex;
+  flex: 0.2;
+  flex-direction: column;
+  border-left: $border;
+  padding: 20px;
+  h5,
+  h4,
+  h3 {
+    margin: 0;
+  }
+  h3 {
+    margin-top: 10px;
+  }
+  &:first-child {
+    margin: 10px 0 50px 0;
+  }
+}
+.no_related_events {
+  p {
+    margin-bottom: 5px;
+  }
+}
+.shortcuts_container {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: $border;
+  * {
+    cursor: pointer;
+    margin: 0 5px;
+  }
+  i {
+    opacity: 0.9;
+
+    border-radius: 50%;
+    padding: 10px;
+    color: white;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.activity_wrapper {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  background: rgb(250, 250, 250);
+  &.display_center {
+    justify-content: center;
+    align-items: center;
+  }
+}
+.title_container {
+  display: flex;
+  align-items: center;
+}
+
+$time_code: (
+  completed: var(--dark),
+  upcoming: var(--colour_primary),
+  in_progress: var(--purple)
+);
+
+.event {
+  display: flex;
+  margin: 10px;
+  align-items: center;
+  transition: $default_transition;
+  border: $border;
+}
+.date_wrapper {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4em;
+  max-width: 80px;
+  padding: 10px;
+
+  span {
+    white-space: pre-wrap;
+  }
+}
+.details_container {
+  flex: 1;
+  padding: 30px;
+  @each $key, $value in $time_code {
+    &.#{$key} {
+      background: rgba($value, 0.06);
+      color: rgba($value, 0.9);
+      border-left: 4px solid rgba($value, 0.9);
+    }
+  }
 }
 
 /*

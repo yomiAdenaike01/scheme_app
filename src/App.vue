@@ -15,11 +15,15 @@
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
-import refactorLocation from "@/mixins/refactorLocation";
 import { FadeTransition } from "vue2-transitions";
+
+import SButton from "@/components/SButton";
+import refactorLocation from "@/mixins/refactorLocation";
+
 export default {
   name: "App",
   components: {
+    SButton,
     FadeTransition
   },
   mixins: [refactorLocation],
@@ -30,18 +34,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(["requestIntervals", "clientInformation"]),
+    ...mapState(["globalIntervals", "clientInformation"]),
     ...mapState(["team", "overlayIndex"]),
-    ...mapGetters(["getIsIE"]),
-
-    isValidClient() {
-      return Object.values(this.clientInformation).length > 0;
-    }
+    ...mapGetters(["getIsIE"])
   },
 
   created() {
-    console.log(document.styleSheets);
-
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
@@ -84,7 +82,7 @@ export default {
             });
         });
       },
-      duration: this.requestIntervals.client
+      duration: this.globalIntervals.client
     });
   },
 
@@ -106,6 +104,15 @@ export default {
 };
 </script>
 <style lang="scss">
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.inner_cookies_container {
+  padding: 20px;
+  line-height: 1.7em;
+}
 .flat_input {
   &/deep/ .el-input__inner {
     padding: 15px;
@@ -117,94 +124,32 @@ export default {
 }
 :root {
   // Primary
-  --color-h-primary: 213;
-  --color-s-primary: 15%;
-  --color-l-primary: 34%;
-
-  // Secondary
-  --color-h-secondary: 145;
-  --color-s-secondary: 59%;
-  --color-l-secondary: 59%;
-
-  // Tertiary
-  --color-h-tertiary: 0;
-  --color-s-tertiary: 100%;
-  --color-l-tertiary: 65%;
-
-  // Grey 1
-  --color-h-gdark: 210;
-  --color-s-gdark: 18%;
-  --color-l-gdark: 83%;
-
-  // Grey 2
-  --color-h-glight: 213;
-  --color-s-glight: 18%;
-  --color-l-glight: 88%;
-
-  --colour_grey: hsl(
-    var(--color-h-gdark),
-    var(--color-s-gdark),
-    var(--color-l-gdark)
-  );
-
+  --colour_primary: 74, 85, 100;
+  --colour_grey: 250, 250, 250;
+  --colour_secondary: 89, 212, 140;
   --colour_grey_light: hsl(0, 0%, 98%);
-
-  // Primary colour (blue)
-
-  --colour_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    var(--color-l-primary)
-  );
-
-  --colour_darker_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    56%
-  );
-  --colour_dark_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    40%
-  );
-
-  --colour_lighter_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    55%
-  );
-  --colour_even_lighter_primary: hsl(
-    var(--color-h-primary),
-    var(--color-s-primary),
-    80%
-  );
-  // Secondary colour
-
-  --colour_secondary: hsl(
-    var(--color-h-secondary),
-    var(--color-s-secondary),
-    var(--color-l-secondary)
-  );
-  --colour_secondary_lighter: hsl(
-    var(--color-h-secondary),
-    var(--color-s-secondary),
-    75%
-  );
-
-  // tertiary colour (green)
-  --colour_tertiary: hsl(
-    var(--color-h-tertiary),
-    var(--color-s-tertiary),
-    var(--color-l-tertiary)
-  );
-
-  --colour_tertiary_lighter: hsl(
-    var(--color-h-tertiary),
-    var(--color-s-tertiary),
-    87%
-  );
-
   --colour_yellow: hsl(23, 100%, 63%);
+  --blue: 1, 104, 250;
+  --indigo: 91, 71, 251;
+  --purple: 111, 66, 193;
+  --pink: 241, 0, 117;
+  --red: 220, 53, 69;
+  --orange: 253, 126, 20;
+  --yellow: 255, 193, 7;
+  --green: 16, 183, 89;
+  --teal: 0, 204, 204;
+  --cyan: 0, 184, 212;
+  --white: 255, 255, 255;
+  --gray: 121, 135, 161;
+  --gray-dark: 59, 72, 99;
+  --primary: 1, 104, 250;
+  --secondary: 59, 72, 99;
+  --success: 16, 183, 89;
+  --info: 0, 184, 212;
+  --warning: 255, 193, 7;
+  --danger: 220, 53, 69;
+  --light: 244, 245, 248;
+  --dark: 59, 72, 99;
 }
 /* width */
 ::-webkit-scrollbar {
@@ -228,6 +173,9 @@ export default {
   background: rgb(210, 210, 210);
   cursor: pointer;
 }
+.large_icon {
+  font-size: 9em;
+}
 .input_pill {
   display: flex;
   align-items: center;
@@ -235,7 +183,7 @@ export default {
   padding: 10px;
   justify-content: space-evenly;
   max-width: fit-content;
-  border: 2px solid $grey;
+  border: $border;
   border-radius: 40px;
   margin: 10px;
   cursor: pointer;
@@ -245,13 +193,34 @@ export default {
     cursor: default;
   }
 }
+.s_input {
+  border: none;
+  background: rgb(249, 249, 249);
+  padding: 10px;
+  display: flex;
+  flex: 1;
+  border-radius: 10px;
+  outline: none;
+  width: 100%;
+  &.no_border_radius {
+    border-radius: 0px;
+  }
+}
 /*
 
 Fonts
 
 
 */
-@import url("https://fonts.googleapis.com/css?family=Jost:400,500,600,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Jost:300,400,500,600&display=swap");
+.tab_content_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  max-height: calc(100% - 60px);
+  overflow-x: hidden;
+}
+
 /*
 
  Default
@@ -259,7 +228,7 @@ Fonts
 
 */
 * {
-  font-family: "Jost", Arial, Helvetica, sans-serif;
+  font-family: "Jost", sans-serif;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   outline: none;
@@ -269,11 +238,21 @@ Fonts
     -webkit-font-smoothing: antialiased;
   }
 }
-.el-drawer__body {
-  height: 100%;
-  box-sizing: border-box;
-  overflow-y: auto;
+.text_container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .large_icon {
+    font-size: 5em;
+  }
+  &.all_centre {
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+  }
 }
+
 body,
 html,
 #app {
@@ -284,11 +263,22 @@ html,
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
+.json_display {
+  white-space: pre;
+}
 #app {
   display: flex;
   flex: 1;
   width: 100%;
   height: 100%;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  padding: 0;
 }
 .no_content {
   display: flex;
@@ -299,13 +289,21 @@ html,
     align-items: center;
   }
 }
-
+.avatar_container {
+  display: flex;
+  align-items: center;
+  &.grouped {
+    &/deep/ .avatar_wrapper {
+      margin-left: -7px;
+    }
+  }
+}
 .grey {
-  color: #999;
+  color: rgb(180, 180, 180);
 }
 
-.capitalise {
-  text-transform: capitalize;
+.bold {
+  font-weight: bold;
 }
 
 .capitalize {
@@ -322,19 +320,6 @@ html,
 }
 .no_padding {
   padding: 0 !important;
-}
-
-.logo {
-  background-image: linear-gradient(
-    340deg,
-    $default_colour 0%,
-    $element_colour 100%
-  );
-  border-radius: 50%;
-
-  color: white;
-  font-weight: bold;
-  padding: 5px 19px;
 }
 
 .rounded {
@@ -364,78 +349,7 @@ html,
     background: darken(#efefef, 4);
   }
 }
-/*
 
- Element UI Configuration
-
-
-*/
-
-.el-drawer {
-  height: 100%;
-}
-.el-drawer__body {
-  height: calc(100% - 39px);
-}
-.long {
-  width: 100%;
-}
-.el-collapse-item__header,
-.el-collapse-item__wrap {
-  border: none !important;
-}
-
-.el-popover_item {
-  &.no_events {
-    opacity: 0.4;
-  }
-  &:hover {
-    background: $hover_grey;
-  }
-}
-
-.el-dialog {
-  border-radius: 10px !important;
-  padding: 10px 0 !important;
-  width: 50% !important;
-  &/deep/ {
-    .el-dialog__body {
-      padding: 0 !important;
-    }
-  }
-}
-.el-card__body {
-  height: 100%;
-  overflow-x: scroll;
-}
-.el-tabs--border-card {
-  background: #ffffff;
-  border-top: 1px solid #dcdfe6;
-  border-bottom: none !important;
-  border-left: none !important;
-  border-right: none !important;
-  box-shadow: none !important;
-}
-
-.el-dialog__wrapper {
-  background: rgba(42, 54, 59, 0.01);
-}
-.el-tabs__item,
-button,
-input,
-select,
-textarea {
-  font-size: 0.9em !important;
-}
-.el-input,
-.el-textarea,
-.el-textarea__inner,
-.el-input__inner {
-  border-color: rgb(200, 200, 200) !important;
-}
-.el-form--label-top {
-  padding: 0 !important;
-}
 /*
 
  Notifications
@@ -456,12 +370,6 @@ textarea {
 */
 .mobile {
   overflow: scroll;
-  .el-dialog {
-    width: 100%;
-  }
-  .el-drawer__body {
-    overflow-y: scroll;
-  }
 }
 .trigger {
   cursor: pointer;

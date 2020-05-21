@@ -7,7 +7,6 @@ import locale from "element-ui/lib/locale";
 locale.use(lang);
 
 import {
-  Dialog,
   Autocomplete,
   Dropdown,
   DropdownMenu,
@@ -31,7 +30,6 @@ import {
   Icon,
   Progress,
   Spinner,
-  Rate,
   Option,
   Collapse,
   CollapseItem,
@@ -45,7 +43,6 @@ import {
   Popover
 } from "element-ui";
 Vue.use(Popover);
-Vue.use(Dialog);
 Vue.use(Autocomplete);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);
@@ -70,7 +67,6 @@ Vue.use(Tag);
 Vue.use(Icon);
 Vue.use(Progress);
 Vue.use(Spinner);
-Vue.use(Rate);
 Vue.use(Collapse);
 Vue.use(CollapseItem);
 Vue.use(Cascader);
@@ -84,5 +80,4 @@ Vue.prototype.$msgbox = MessageBox;
 Vue.prototype.$alert = MessageBox.alert;
 Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$prompt = MessageBox.prompt;
-Vue.prototype.$notify = Notification;
 Vue.prototype.$message = Message;

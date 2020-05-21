@@ -86,7 +86,10 @@ export default {
       const initialBackgroundAndFontStyle = {
         backgroundColor: this.background,
         color: "white",
-        padding: "25px"
+        padding: "25px",
+        font: `${Math.floor(this.size / 2.5)}px/${
+          this.size
+        }px IBM Plex Sans, sans-serif`
       };
       const backgroundAndFontStyle = this.isImage
         ? imgBackgroundAndFontStyle
@@ -102,11 +105,7 @@ export default {
       return "";
     }
   },
-  mounted() {
-    if (!this.isImage) {
-      this.$emit("avatar-initials", this.name, this.userInitial);
-    }
-  },
+
   methods: {
     initial(username) {
       let parts = username.split(/[ -]/);
@@ -117,30 +116,11 @@ export default {
       if (initials.length > 3 && initials.search(/[A-Z]/) !== -1) {
         initials = initials.replace(/[a-z]+/g, "");
       }
-      initials = initials.substr(0, 3).toUpperCase();
+      initials = initials.substr(0, 2).toUpperCase();
       return initials;
     },
     randomBackgroundColor(seed, colors) {
       return colors[seed % colors.length];
-    },
-    lightenColor(hex, amt) {
-      // From https://css-tricks.com/snippets/javascript/lighten-darken-color/
-      var usePound = false;
-      if (hex[0] === "#") {
-        hex = hex.slice(1);
-        usePound = true;
-      }
-      var num = parseInt(hex, 16);
-      var r = (num >> 16) + amt;
-      if (r > 255) r = 255;
-      else if (r < 0) r = 0;
-      var b = ((num >> 8) & 0x00ff) + amt;
-      if (b > 255) b = 255;
-      else if (b < 0) b = 0;
-      var g = (num & 0x0000ff) + amt;
-      if (g > 255) g = 255;
-      else if (g < 0) g = 0;
-      return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
     }
   }
 };

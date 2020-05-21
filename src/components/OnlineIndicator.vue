@@ -23,8 +23,8 @@ export default {
   padding: 0;
   min-width: 26%;
   min-height: 26%;
-  top: 0;
-  right: -4px;
+  top: 70%;
+  right: 0px;
   padding: 3px;
 }
 .online_container {
@@ -32,10 +32,10 @@ export default {
   flex: 1;
   padding: 5px;
   border-radius: 50%;
-  background: $error_colour;
+  background: rgba(var(--danger), 1);
 
   &.online {
-    background: $success_colour;
+    background: rgba(var(--success), 1);
   }
 }
 </style>

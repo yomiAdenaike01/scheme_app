@@ -1,8 +1,6 @@
 <template>
   <div v-loading="loading" class="notifications_container">
-    <div class="title_switch_container ">
-      <h3 class="bold">Notifications</h3>
-    </div>
+    <h3 class="bold">Notifications</h3>
     <div v-if="apiNotifications.length > 0" class="notification_wrapper">
       <Notification
         v-for="(notification, index) in apiNotifications"
@@ -16,17 +14,11 @@
         >
       </div>
     </div>
-    <TextDisplay
-      v-else
-      :display-text="{
-        tag: 'h3',
-        hasIcon: true,
-        heading: 'No notifications found',
-        content: 'Your notifications will appear here once they have come in.'
-      }"
-    >
-      <i slot="header" class="bx bx-bell"></i>
-    </TextDisplay>
+    <div v-else class="text_container all_centre">
+      <i class="bx bx-bell"></i>
+      <h3>No notifications found</h3>
+      <p>Your notifications will appear here once they have come in</p>
+    </div>
   </div>
 </template>
 
@@ -34,13 +26,11 @@
 import { mapState, mapActions, mapMutations } from "vuex";
 
 import Notification from "./components/Notification";
-import TextDisplay from "@/components/TextDisplay";
 
 export default {
   name: "Notifications",
   components: {
-    Notification,
-    TextDisplay
+    Notification
   },
   data() {
     return {
@@ -100,6 +90,8 @@ export default {
 
 <style lang="scss" scoped>
 .notifications_container {
+  display: flex;
+  flex-direction: column;
   position: relative;
   height: 400px;
 }
@@ -113,14 +105,15 @@ export default {
   left: 0;
   right: 0;
 }
-.title_switch_container {
-  border-bottom: $border;
-  display: flex;
-  justify-content: space-between;
-  flex: 1;
-  padding: 10px;
-}
+
 .block_button {
   width: 100%;
+}
+.text_container .bx {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+.text_container p {
+  margin: 0;
 }
 </style>

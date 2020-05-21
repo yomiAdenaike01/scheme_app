@@ -4,10 +4,10 @@
       <s-button
         v-for="(button, index) in config"
         :key="index"
+        class="rounded flat"
         :class="{
           active: button.toLowerCase() == selectedConfig.toLowerCase()
         }"
-        flat
         @click="changeContent(button)"
       >
         {{ `${button} group` }}
@@ -19,6 +19,7 @@
         emit-on-change
         all-optional
         :submit-button="{ text: `${selectedConfig} group` }"
+        :headings="headings"
         @change="groupData = $event"
         @val="handleRequest"
       >
@@ -35,6 +36,7 @@
 
 <script>
 import { mapActions, mapState, mapMutations, mapGetters } from "vuex";
+import genID from "@/mixins/genID";
 import Form from "@/components/Form";
 export default {
   name: "UpdateGroups",
@@ -43,6 +45,7 @@ export default {
     SButton: () => import("@/components/SButton"),
     ColourPicker: () => import("@/components/ColourPicker")
   },
+  mixins: [genID],
   props: {
     groupType: {
       type: String,
@@ -51,15 +54,20 @@ export default {
   },
   data() {
     return {
-      selectedConfig: "",
+      selectedConfig: "Create",
       groupData: {},
-      displayContent: false
+      displayContent: true
     };
   },
   computed: {
     ...mapState(["clientInformation", "rootGroupRef"]),
     ...mapState(["team", "groupRef"]),
     ...mapGetters(["getUserGroups"]),
+    headings() {
+      return {
+        label: "<h3>Group Information</h3>"
+      };
+    },
     langXref() {
       let lang = {
         event_groups: {
@@ -212,7 +220,8 @@ export default {
               form.push({
                 "component-type": "text",
                 placeholder: "Change name",
-                model: "label"
+                model: "label",
+                noLabel: true
               });
               if (vm.groupType == "event_groups") {
                 form.push({
@@ -220,6 +229,7 @@ export default {
                   placeholder: "Enable group for",
                   options: vm.modGroups,
                   multiple: true,
+                  noLabel: true,
                   model: "enabled_for",
                   hint: `Already enabled for the following ${vm.langXref.pluralize()} <strong>${
                     vm.usersText
@@ -261,9 +271,7 @@ export default {
               groupType: this.groupType,
               payload: {
                 ...this.groupData,
-                _id: Math.random()
-                  .toString(16)
-                  .slice(2)
+                _id: this.genID()
               }
             });
           },
@@ -273,6 +281,7 @@ export default {
               "component-type": "text",
               placeholder: `${vm.langXref.capitalize()} group name`,
               required: true,
+              noLabel: true,
               model: "label"
             };
             if (vm.groupType == "user_groups") {
@@ -281,6 +290,7 @@ export default {
                 noLabel: true,
                 placeholder: "Reject event privilages",
                 model: "enable_event_rejection",
+
                 hint:
                   "Events that user's assigned to will not be approved until they have approved it also."
               });
@@ -289,6 +299,7 @@ export default {
                 "component-type": "select",
                 placeholder: `Enable group for user groups`,
                 required: true,
+                noLabel: true,
                 options: vm.getUserGroups,
                 model: "enabled_for",
                 multiple: true
@@ -450,8 +461,5 @@ export default {
   &/deep/ .button_container {
     margin: 10px;
   }
-}
-.group_management_container {
-  padding: 20px;
 }
 </style>

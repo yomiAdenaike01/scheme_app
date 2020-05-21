@@ -8,17 +8,18 @@
       :selected-tab="currentTab"
       :submit-text="tabXref.display"
       @val="eventsCtrl"
-      @change="events = $event"
+      @formChange="events = $event"
     >
-      <div slot="header">
-        <TextDisplay :display-text="informationDisplay" />
+      <div slot="header" class="text_container all_centre">
+        <h2>{{ informationDisplay.heading }}</h2>
+        <p>{{ informationDisplay.content }}</p>
       </div>
       <div
         v-if="
           tabXref.name == 'create_event' &&
             hasEntries(events) &&
             qrCode.length > 0 &&
-            getIsAdmin
+            adminPermission
         "
         slot="body"
         class="body_container"
@@ -38,17 +39,17 @@
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import QrcodeVue from "qrcode.vue";
 
-import TemplateManagement from "./TemplateManagement";
 import Overlay from "@/components/Overlay";
+import genID from "@/mixins/genID";
 export default {
   name: "EventsOverlay",
   components: {
-    TextDisplay: () => import("@/components/TextDisplay"),
     Tabs: () => import("@/components/Tabs"),
     ColourPicker: () => import("@/components/ColourPicker"),
     QrcodeVue,
     Overlay
   },
+  mixins: [genID],
   props: {
     display: {
       type: Boolean,
@@ -68,15 +69,25 @@ export default {
   computed: {
     ...mapState(["clientInformation", "daysOfWeek", "userInformation"]),
     ...mapGetters([
-      "getDropdownTeamMembers",
       "getValidEventTypes",
       "getUserGroups",
-      "getUserInformation",
       "getUsersInGroup",
-      "getIsAdmin",
-      "getCurrentTabXref"
+      "adminPermission",
+      "getCurrentTabXref",
+      "groupLookup"
     ]),
+
+    ...mapGetters("Team", ["getDropdownTeamMembers", "userLookup"]),
+    headings() {
+      return {
+        assigned_to: "<h3>Assign team members</h3>",
+        until:
+          "<h3>Timings & Templating</h3> <small class='grey'>The content of this will be saved as a template, once saved as a template it can be reused with the timings that are entered below</small>"
+      };
+    },
     eventContent() {
+      let data = null;
+
       // this.loading = true;
       let events = { ...this.events };
       let date = events?.date;
@@ -85,56 +96,70 @@ export default {
       let end_date = this.initMoment(date[1]).toISOString();
       events.start_date = start_date;
       events.end_date = end_date;
-      events.until = this.initMoment(events?.until ?? new Date()).toISOString();
 
       if (this.activeDialogInformation?.length > 0) {
         events.assigned_to = events.assigned_to.concat(
           this.activeDialogInformation
         );
       }
+      if (this.tabXref.name != "create_request") {
+        events.until = this.initMoment(
+          events?.until ?? new Date()
+        ).toISOString();
+        events.is_approved = [
+          this.userInformation._id,
+          ...events?.assigned_to?.filter(assignee => {
+            return (
+              this.userLookup(assignee)?.user_group?.enable_event_rejection ==
+              true
+            );
+          })
+        ];
 
-      events.is_approved = [
-        this.userInformation._id,
-        ...events.assigned_to.filter(assignee => {
-          return (
-            this.getUserInformation(assignee)?.user_group
-              ?.enable_event_rejection == true
-          );
-        })
-      ];
+        events = {
+          ...events,
+          repeat: {
+            until: events.until,
+            weekdays: events?.weekdays ?? 0
+          }
+        };
 
-      events = {
-        ...events,
-        repeat: {
-          until: events.until,
-          weekdays: events?.weekdays ?? 0
+        if (!this.adminPermission) {
+          events.assigned_to = [this.userInformation._id];
         }
-      };
+        let templates = {
+          content: events
+        };
 
-      if (!this.getIsAdmin) {
-        events.assigned_to = [this.userInformation._id];
-      }
-      let templates = {
-        content: events
-      };
+        if (events?.user_groups?.length > 0) {
+          // Changed the assigned to to all of the user groups
+          let uGroups = events.user_groups;
+          events.assigned_to = [];
 
-      if (events?.user_groups?.length > 0) {
-        // Changed the assigned to to all of the user groups
-        let uGroups = events.user_groups;
-        events.assigned_to = [];
-
-        for (let i = 0, len = uGroups.length; i < len; i++) {
-          events.assigned_to.push(...this.getUsersInGroup(uGroups[i]));
+          for (let i = 0, len = uGroups.length; i < len; i++) {
+            events.assigned_to.push(...this.getUsersInGroup(uGroups[i]));
+          }
+          data = { events, templates };
         }
+      } else {
+        let group = this.groupLookup("event", events.type);
+        events.assigned_to = [this.userInformation];
+        events.type = { _id: group?._id, label: group?.label };
+        events.status = "sent";
+        events.notes = "yomi adenaike";
+        events.date_created = new Date().toISOString();
+        events.requested_by = this.userInformation;
+
+        data = { events };
       }
-      return { templates, events };
+      return data;
     },
 
     informationDisplay() {
       let content =
           "You can create a request here that will be sent to an admin for approval",
         heading = "Request Management";
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         heading = "Event Management";
         content =
           "As an admin you can create templates to batch create events. You can also create event groups and singular events.";
@@ -146,7 +171,7 @@ export default {
     },
 
     isNotShiftOrHoliday() {
-      return !this.getIsAdmin && this.events.type > 3;
+      return !this.adminPermission && this.events.type > 3;
     },
 
     tabXref() {
@@ -159,25 +184,19 @@ export default {
     tabs() {
       let tabs = [
         {
-          label: this.getIsAdmin ? "Create event" : "Create request",
+          label: this.adminPermission ? "Create event" : "Create request",
           formContent: this.createEventForm,
           displayReset: true,
-          emitOnChange: true
+          emitOnChange: true,
+          headings: this.headings
         }
       ];
 
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         tabs.unshift({
           label: "Manage event groups",
           view: {
             component: () => import("@/components/UpdateGroups")
-          }
-        });
-
-        tabs.push({
-          label: "Manage event templates",
-          view: {
-            component: TemplateManagement
           }
         });
       }
@@ -191,7 +210,8 @@ export default {
           "component-type": "select",
           placeholder: "Select event type",
           options: this.getValidEventTypes,
-          model: "type"
+          model: "type",
+          noLabel: true
         },
         {
           "component-type": "date-picker",
@@ -199,13 +219,14 @@ export default {
           placeholder: "Timings",
           start_placeholder: "Start date & time",
           end_placeholder: "End date & time",
-          model: "date"
+          model: "date",
+          noLabel: true
         }
       ];
 
       // Check if it is an admin or not
 
-      if (this.getIsAdmin) {
+      if (this.adminPermission) {
         createEventConfig.unshift(
           {
             placeholder: "Select team members",
@@ -213,7 +234,9 @@ export default {
             "component-type": "select",
             model: "assigned_to",
             options: this.getDropdownTeamMembers,
-            multiple: true
+            multiple: true,
+            optional: true,
+            noLabel: true
           },
           {
             "component-type": "select",
@@ -222,7 +245,8 @@ export default {
             multiple: true,
             model: "user_groups",
             placeholder: "Assign to a user group",
-            optional: true
+            optional: true,
+            noLabel: true
           },
           {
             "component-type": "select",
@@ -230,7 +254,8 @@ export default {
             options: this.daysOfWeek,
             multiple: true,
             model: "weekdays",
-            optional: true
+            optional: true,
+            noLabel: true
           },
           // Assign to an event group,
 
@@ -239,7 +264,8 @@ export default {
             "input-type": "date-time",
             placeholder: "Repeat until",
             model: "until",
-            optional: true
+            optional: true,
+            noLabel: true
           }
         );
       }
@@ -260,7 +286,11 @@ export default {
     ...mapActions(["request", "closeOverlay", "genPromptBox"]),
     ...mapActions("Events", ["createEvent", "createEventTemplate"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
-
+    ...mapMutations("Events", [
+      "CREATE_REQUEST",
+      "UPDATE_ONE_REQUEST",
+      "DELETE_REQUEST"
+    ]),
     eventsCtrl(information) {
       this.events = information;
 
@@ -284,16 +314,19 @@ export default {
     genRequest() {
       this.loading = true;
       let eventInfo = this.eventContent.events;
-      let requestInformation = {
+
+      let requestBody = {
         type: this.eventContent.events.type,
         end_date: eventInfo.end_date,
         start_date: eventInfo.start_date
       };
+      this.CREATE_REQUEST({ _id: this.genID(), ...eventInfo });
+      this.loading = false;
 
       this.request({
         method: "POST",
         url: "events/requests/create",
-        data: requestInformation
+        data: requestBody
       });
     },
     // Submit one event
@@ -301,7 +334,7 @@ export default {
       this.createEvent(this.eventContent.events)
         .then(response => {
           this.qrCode = response ? response : "";
-          if (this.getIsAdmin) {
+          if (this.adminPermission) {
             this.initSaveTemplate();
           } else {
             this.view = false;
@@ -379,7 +412,7 @@ export default {
   align-items: center;
   padding: 40px;
   flex-direction: column;
-  border: 2px solid whitesmoke;
+  border: $border;
   max-height: fit-content;
 }
 </style>

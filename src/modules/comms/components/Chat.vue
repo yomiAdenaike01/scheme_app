@@ -17,12 +17,12 @@
     </div>
     <div class="chat_extension_container">
       <div v-if="isActive" class="delete_chat_container">
-        <el-button
+        <s-button
           type="text"
-          icon="el-icon-delete"
-          circle
+          icon="trash"
+          class="only_icon tertiary"
           @click="deleteChat"
-        ></el-button>
+        ></s-button>
       </div>
     </div>
   </div>
@@ -30,10 +30,13 @@
 
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import Avatar from "@/components/Avatar";
+import SButton from "@/components/SButton";
 export default {
   name: "Chat",
   components: {
-    Avatar: () => import("@/components/Avatar")
+    Avatar,
+    SButton
   },
   props: {
     chatIndex: {
@@ -48,7 +51,7 @@ export default {
   computed: {
     ...mapState(["userInformation"]),
     ...mapState("Comms", ["activeChat", "chats"]),
-    ...mapGetters(["getUserInformation"]),
+    ...mapGetters(["userLookup"]),
     oppositeUser() {
       if (this.chatInformation.user_two._id == this.userInformation._id) {
         return this.chatInformation.user_one.name;
@@ -73,20 +76,20 @@ export default {
     ...mapActions(["request"]),
     ...mapActions("Comms", ["getChats"]),
     ...mapMutations(["REMOVE_GLOBAL_INTERVAL"]),
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT", "DELETE_CHAT"]),
-    updateScrollPos() {
-      if (this.isNewChat) {
-        this.$emit("scroll");
-      }
-    },
+    ...mapMutations("Comms", [
+      "UPDATE_ACTIVE_CHAT",
+      "DELETE_CHAT",
+      "CLEAR_ACTIVE_CHAT"
+    ]),
+
     updateActiveChat() {
-      this.updateScrollPos();
       this.UPDATE_ACTIVE_CHAT({
         index: this.chatIndex,
         ...this.chatInformation
       });
     },
-    deleteChat() {
+    deleteChat(e) {
+      e.stopPropagation();
       this.DELETE_CHAT(this.chatIndex);
       if (!this.chatInformation?.initChat) {
         this.request({

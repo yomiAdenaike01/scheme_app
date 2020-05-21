@@ -3,7 +3,7 @@
     <el-popover v-model="displayPopover" trigger="click">
       <div slot="reference" class="sortby input_pill">
         <div class="icon_container">
-          <i class="bx bx-filter"></i>
+          <i :class="`bx ${icon}`"></i>
         </div>
         <p class="sortby_body">
           {{ !selectedItem ? filterText : selectedItem }}
@@ -33,6 +33,10 @@ export default {
     prop: "selectedItem"
   },
   props: {
+    icon: {
+      type: String,
+      default: "bx-filter"
+    },
     items: {
       type: Array,
       default: () => []
@@ -55,6 +59,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.sortby_container {
+  font-size: 1.2em;
+}
 .grey {
   padding: 0 20px;
 }
@@ -64,7 +71,7 @@ export default {
 .icon_container {
   display: flex;
   align-items: center;
-  background: var(--colour_primary);
+  background: rgba(var(--colour_primary), 1);
   border-radius: 50%;
   color: white;
   font-size: 1.5em;

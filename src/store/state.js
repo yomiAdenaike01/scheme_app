@@ -1,3 +1,17 @@
+let baseStyle = getComputedStyle(document.body);
+const getStyle = cssVar => {
+  return baseStyle.getPropertyValue(cssVar);
+};
+const genTheme = () => {
+  let theme = {};
+  let themeVars = ["colour_primary", "colour_secondary", "danger"];
+  for (let i = 0, len = themeVars.length; i < len; i++) {
+    let themeItem = `--${themeVars[i]}`;
+    theme[themeVars[i]] = getStyle(themeItem);
+  }
+  return theme;
+};
+
 export default {
   team: [],
 
@@ -6,7 +20,7 @@ export default {
   groupRef: {},
   teamRef: {},
 
-  requestIntervals: {
+  globalIntervals: {
     admin: 60000,
     client: 20000,
     chatMessages: 3000,
@@ -14,7 +28,7 @@ export default {
     templates: 30000
   },
 
-  token: localStorage.getItem("token") ? localStorage.getItem("token") : {},
+  token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
 
   clientInformation: {},
   userInformation: {},
@@ -28,25 +42,26 @@ export default {
 
   overlayHistory: {},
   overlayIndex: {
-    profile: { view: false, data: {} },
     viewEvent: { view: false, data: {} },
-    eventModule: { view: false, data: {} },
-    tutorial: { view: false, data: {} },
-    prevEvents: { view: false, data: {} },
-    task: { view: false, data: {} }
+    eventModule: { view: false, data: {} }
   },
 
   colours: [
-    "#6ca5d8",
-    "#c9249e",
-    "#6f3e9e",
-    "#232323",
-    "#ec305c",
-    "#ff8840",
-    "#f3c43a",
-    "#cccccc",
-    "#44a954"
+    "#0168fa",
+    "#5b47fb",
+    "#6f42c1",
+    "#f10075",
+    "#fd7e14",
+    "#00cccc",
+    "#7987a1",
+    "#10b759",
+    "#00b8d4",
+    "#ffc107",
+    "#dc3545",
+    "#3b4863"
   ],
+
+  theme: genTheme(),
 
   daysOfWeek: [
     {

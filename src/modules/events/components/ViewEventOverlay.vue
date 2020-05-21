@@ -14,15 +14,14 @@
         }"
       ></TextDisplay>
       <div class="info_button_container">
-        <s-button no-trigger shadow colour-scheme="secondary" icon="check">{{
+        <s-button class="rounded secondary" icon="check">{{
           approvalButtonConfig.content
         }}</s-button>
 
         <s-button
           v-if="hasPermissions"
-          colour-scheme="tertiary"
+          class="shadow rounded tertiary"
           icon="x"
-          shadow
           @click="deleteEvent('Are you sure you want to delete this event ? ')"
           >Delete Event</s-button
         >
@@ -36,13 +35,11 @@
         <h3>Actions</h3>
         <!-- Reject event -->
         <div class="info_unit">
-          <el-button
-            :disabled="noticePeriodExceeded"
-            round
-            class="full_width"
-            plain
+          <s-button
+            :class="{ disabled: noticePeriodExceeded }"
+            class="flat rounded"
             @click="rejectEvent"
-            >Reject event</el-button
+            >Reject event</s-button
           >
         </div>
       </div>
@@ -102,8 +99,7 @@
             />
             <s-button
               slot="reference"
-              size="mini"
-              plain
+              class="plain"
               @click="selectedConfig = 'date'"
               >Update date information</s-button
             >
@@ -127,7 +123,10 @@
               class="full_width"
               @val="updateEvent"
             />
-            <s-button slot="reference" plain @click="selectedConfig = 'type'"
+            <s-button
+              slot="reference"
+              class="plain"
+              @click="selectedConfig = 'type'"
               >Update event type information</s-button
             >
           </el-popover>
@@ -183,9 +182,11 @@ export default {
   },
 
   computed: {
-    ...mapState(["team", "userInformation", "overlayIndex"]),
+    ...mapState(["userInformation", "overlayIndex"]),
     ...mapState("Events", ["events", "eventRef"]),
-    ...mapGetters(["getFilteredTeam", "getValidEventTypes", "getIsAdmin"]),
+    ...mapState("Team", ["team"]),
+    ...mapGetters(["getValidEventTypes", "adminPermission"]),
+    ...mapGetters("Team", ["getFilteredTeam"]),
 
     assignedTo() {
       return this.event?.assigned_to ?? [];
@@ -207,7 +208,7 @@ export default {
         buttonConfig.type = "success";
         buttonConfig.content = "Approved";
       }
-      if (!this.getIsAdmin && this.noticePeriodExceeded) {
+      if (!this.adminPermission && this.noticePeriodExceeded) {
         buttonConfig.disabled = true;
         buttonConfig.content =
           "You cannot disapprove this event as it is past the notice period";
@@ -315,7 +316,7 @@ export default {
       });
     },
     hasPermissions() {
-      return this.getIsAdmin;
+      return this.adminPermission;
     }
   },
   methods: {
@@ -323,10 +324,10 @@ export default {
       "request",
       "genEmail",
       "genPromptBox",
-      "closeOverlay",
       "getApiNotification"
     ]),
     ...mapActions("Events", ["getEvents"]),
+    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
     ...mapMutations("Events", [
       "UPDATE_EVENT",
       "ADD_USER_TO_EVENT",
@@ -336,7 +337,6 @@ export default {
       "UPDATE_APPROVE_EVENT",
       "UPDATE_REJECT_EVENT"
     ]),
-    ...mapMutations(["UPDATE_OVERLAY_INDEX", "UPDATE_SYSTEM_NOTIFICATION"]),
 
     hasAdminApproved() {
       return this.event.is_approved.find(approvee => {
@@ -407,7 +407,7 @@ export default {
           this.UPDATE_EVENT(this.eventRef);
         });
       } else {
-        return this.UPDATE_SYSTEM_NOTIFICATION({
+        return this.CREATE_SYSTEM_NOTIFICATION({
           message: "You must add data to the inputs to make changes to an event"
         });
       }
@@ -469,14 +469,10 @@ export default {
           data: {
             _id: this.event._id
           }
-        })
-          .then(() => {
-            this.notifyAssignees();
-          })
-          .catch(() => {
-            this.CREATE_EVENT({ restore: true, ...this.eventRef });
-          });
-        this.closeOverlay("viewEvent");
+        }).catch(() => {
+          this.CREATE_EVENT({ restore: true, ...this.eventRef });
+        });
+        this.deactivateOverlay();
       });
     },
     notifyAssignees() {
@@ -554,7 +550,7 @@ export default {
   padding: 20px;
 }
 .view_event_container_item {
-  border: 1.2px solid whitesmoke;
+  border: 1$border;
   border-radius: 5px;
   margin: 1em;
   max-width: 100%;

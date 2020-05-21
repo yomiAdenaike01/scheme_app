@@ -1,34 +1,18 @@
-<template>
-  <div class="information_display_container">
+<template functional>
+  <div class="text_display_container" :class="[data.class, data.staticClass]">
     <!-- Title display -->
-    <div
-      v-if="mode == 'title' || mode == 'both'"
-      :class="displayText.class"
-      class="headings_wrapper"
-    >
+    <div v-if="mode == 'title' || mode == 'both'" class="headings_wrapper">
       <div
         v-if="$slots.header"
-        :class="{ center_icon: displayText.hasIcon }"
+        :class="{ center_icon: props.displayText.hasIcon }"
         class="slot_container"
       >
         <slot name="header"></slot>
       </div>
 
-      <component
-        :is="displayText.tag ? displayText.tag : 'h2'"
-        class="heading"
-        :class="{ txt_center: displayCenter.heading }"
-        v-html="displayText.heading"
-      />
+      <h2 class="heading" v-html="props.displayText.heading" />
 
-      <div
-        :class="{ txt_center: displayCenter.text }"
-        class="heading_text_content"
-        v-html="displayText.content"
-      ></div>
-      <div v-if="$slots.body" class="slot_body_container">
-        <slot name="body"></slot>
-      </div>
+      <p class="heading_text_content" v-html="props.displayText.content"></p>
     </div>
   </div>
 </template>
@@ -54,15 +38,6 @@ export default {
         };
       }
     }
-  },
-
-  computed: {
-    displayCenter() {
-      return {
-        heading: this.displayText?.headingAlign ?? true,
-        text: this.displayText?.textAlign ?? true
-      };
-    }
   }
 };
 </script>
@@ -72,9 +47,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.bx {
-  font-size: 2.3em;
-}
+
 .headings_wrapper {
   padding: 30px;
   &.align_left {
@@ -85,6 +58,7 @@ export default {
   }
   .heading {
     font-weight: 500;
+    margin-bottom: 5px;
   }
   .slot_container {
     &.center_icon {
@@ -115,10 +89,6 @@ export default {
 }
 .heading_text_content {
   font-size: 0.9em;
-}
-.slot_body_container {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
+  max-width: 600px;
 }
 </style>
