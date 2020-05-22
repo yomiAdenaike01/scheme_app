@@ -16,9 +16,6 @@
 
         <h2 class="grey capitalize">{{ boardData.name }}</h2>
       </div>
-      <div class="arrow_container right" @click="viewNextTask">
-        <i class="bx bx-right-arrow-alt grey"></i>
-      </div>
     </div>
 
     <!-- Task content -->
@@ -584,11 +581,12 @@ export default {
             taskData.description = "Blank description";
           }
 
-          this.CREATE_TASK({
-            boardIndex: this.boardIndex,
-            local: true,
-            ...taskData
-          });
+          this.CREATE_TASK(
+            Object.assign({}, taskData, {
+              boardIndex: this.boardIndex,
+              local: true
+            })
+          );
         }
 
         taskData.assigned_to = taskData.assigned_to.map(assignee => {
@@ -604,6 +602,10 @@ export default {
             boardIndex: this.boardIndex,
             taskIndex: this.boards[this.boardIndex].tasks.length - 1,
             update: res
+          });
+          this.CREATE_SYSTEM_NOTIFICATION({
+            message: "Task successfully updated",
+            type: "success"
           });
         }
       } catch (error) {
@@ -634,7 +636,7 @@ export default {
         _id: this.genID(),
         name: "",
         description: "",
-        due_date: new Date(),
+        due_date: null,
         assigned_to: [this.userInformation],
         labels: [],
         comments: [],
@@ -729,9 +731,7 @@ export default {
       }
       window.removeEventListener("keyup", this.keyListener);
     },
-    viewNextTask() {
-      this.$emit("nextTask");
-    },
+
     checkDrawer(label, match) {
       return (
         label.toLowerCase() == match && this.selectedItem.toLowerCase() == match

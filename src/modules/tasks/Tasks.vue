@@ -7,6 +7,7 @@
             v-for="(board, boardIndex) in boards"
             :key="`${board._id}${boardIndex}`"
             :board-data="board"
+            :board-index="boardIndex"
             @createTask="createTask"
             @viewTask="viewTask"
           />
@@ -27,7 +28,6 @@
           task = {};
           display = false;
         "
-        @viewNextTask="loadNextTask"
       />
     </slide-x-right-transition>
   </div>
@@ -86,24 +86,6 @@ export default {
   methods: {
     ...mapActions(["request"]),
     ...mapMutations("Tasks", ["CREATE_TASK"]),
-
-    loadNextTask() {
-      let { boardIndex, taskIndex } = this.task;
-      // if last task in board go to next board if there is a next board
-      let tasks = this.boards[boardIndex].tasks;
-      let canLoadOnBoard = taskIndex + 1 > tasks.length;
-      if (canLoadOnBoard) {
-        this.task = tasks[taskIndex + 1];
-      } else {
-        // has next board
-        if (this.boards[boardIndex + 1]) {
-          this.task = this.boards[boardIndex + 1].tasks[0];
-        }
-      }
-    },
-    alterTask({ key, value }) {
-      this.task[key] = value;
-    },
 
     createTask({ boardIndex }) {
       this.boardIndex = boardIndex;
