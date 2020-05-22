@@ -177,11 +177,7 @@ export default {
     if (VueRouter.currentRoute.name != "signIn") {
       VueRouter.push({ name: "signIn" });
     }
-    for (let property in state.globalIntervals) {
-      if (property != "client") {
-        deleteStateInterval(state, property);
-      }
-    }
+    deleteStateInterval(state);
   },
 
   UPDATE_USER(state, payload) {
@@ -282,9 +278,10 @@ export default {
     }
     if (state.systemNotifications.length > 0) {
       clearTimeout(removeNotificationTimeout);
+      let timeOut = state.systemNotifications.length * 5000;
       let removeNotificationTimeout = setTimeout(() => {
         state.systemNotifications.pop();
-      }, 5000);
+      }, timeOut);
     }
   }
 };

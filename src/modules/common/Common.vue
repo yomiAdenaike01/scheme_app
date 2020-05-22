@@ -21,9 +21,9 @@
               <i :class="`bx bx-${notification.icon}`"></i>
             </div>
             <div class="text_container">
-              <h4 class="title">
+              <strong class="title">
                 {{ notification.title }}
-              </h4>
+              </strong>
               <p>{{ notification.message }}</p>
             </div>
           </div>
@@ -129,7 +129,7 @@ export default {
       immediateCallback: () => {
         this.loading = false;
       },
-      duration: this.globalIntervals.admin,
+      duration: 3000,
       id: "adminIntervals",
       method: () => {
         return new Promise((resolve, reject) => {
@@ -381,6 +381,8 @@ export default {
   box-shadow: $box_shadow;
   display: flex;
   min-width: 410px;
+  margin-bottom: 20px;
+  padding: 10px;
   max-width: fit-content;
   align-items: center;
   justify-content: center;

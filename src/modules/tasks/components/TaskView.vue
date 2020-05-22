@@ -515,6 +515,7 @@ export default {
         icon: "timer"
       });
     },
+
     async deleteTask() {
       try {
         let { _id } = this.task;
@@ -533,11 +534,13 @@ export default {
         console.error(error);
       }
     },
+
     increaseTime(timeGap) {
       this.task.due_date = this.initMoment(this.task.due_date)
         .add(1, timeGap)
         .toISOString();
     },
+
     async saveTask() {
       try {
         this.loading = "save_task";
@@ -564,27 +567,48 @@ export default {
             update
           });
         } else {
-          let validationFields = ["name", "description"];
-
-          for (let i = 0, len = validationFields.length; i < len; i++) {
-            let validationItem = validationFields[i];
-
-            if (!this.task[validationItem]) {
-              this.task[validationItem] = this.defaultTaskXref[validationItem];
-            }
+          if (!this.task.name) {
+            this.task.name = "Blank name";
+            taskData.name = "Blank name";
+          }
+          if (!this.task.description) {
+            this.task.description = "Blank description";
+            taskData.description = "Blank description";
           }
 
-          this.CREATE_TASK({ boardIndex: this.boardIndex, ...taskData });
+          this.CREATE_TASK({
+            boardIndex: this.boardIndex,
+            local: true,
+            ...taskData
+          });
         }
+
         taskData.assigned_to = taskData.assigned_to.map(assignee => {
           return assignee._id;
         });
-        await this.request(taskPayload);
+
+        let res = await this.request(taskPayload);
         this.loading = "";
         this.selectedItem = "";
+
+        if (this.isNewTask) {
+          this.UPDATE_TASKS({
+            boardIndex: this.boardIndex,
+            taskIndex: this.boards[this.boardIndex].tasks.length - 1,
+            update: res
+          });
+        }
       } catch (error) {
         this.loading = "";
         this.selectedItem = "";
+
+        if (this.isNewTask) {
+          // Remove the new task
+          this.DELETE_TASK({
+            boardIndex: this.boardIndex,
+            taskIndex: this.boards[this.boardIndex].tasks.length - 1
+          });
+        }
 
         console.warn(error);
       }

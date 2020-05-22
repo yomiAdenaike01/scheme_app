@@ -1,5 +1,4 @@
 import updateBreadCrumbs from "../helpers";
-import Vue from "vue";
 
 export default {
   UPDATE_BOARDS(state, { data, action = "update" }) {
@@ -8,16 +7,35 @@ export default {
       if (Array.isArray(data)) {
         for (let i = 0, len = data.length; i < len; i++) {
           let apiBoard = data[i];
+
+          // If the board is not local then add it
           let foundBoard = state.boards.find(board => {
             return board._id == apiBoard._id;
           });
+
           if (!foundBoard) {
             state.boards.splice(i, 1, apiBoard);
+          } else {
+            // Push the tasks that arent there
+            let localBoardTasks = state.boards[i].tasks;
+            let apiBoardTasks = apiBoard.tasks;
+
+            apiBoardTasks.map(apiTask => {
+              let apiTaskIndex = localBoardTasks.findIndex(
+                x => x._id == apiTask._id
+              );
+              if (apiTaskIndex == -1) {
+                localBoardTasks.push(apiBoardTasks[apiTaskIndex]);
+              }
+            });
+            state.boards[i].tasks = apiBoard.tasks;
           }
         }
       } else {
         let { name, description } = data;
+
         let boardIndex = data.boardIndex;
+
         if (state.boards[boardIndex]) {
           state.boards.push(data);
         } else {
@@ -51,19 +69,25 @@ export default {
   UPDATE_TASKS(state, payload) {
     let { boardIndex, taskIndex, update } = payload;
     // Update task at index
-    let task = state.boards[boardIndex].tasks[taskIndex];
+    let tasks = state.boards[boardIndex].tasks;
+    let task = tasks[taskIndex];
+
     updateBreadCrumbs(state, "taskRef", { boardIndex, task, taskIndex });
-    state.boards[boardIndex].tasks.splice(taskIndex, 1, update);
+
+    tasks.splice(taskIndex, 1, update);
+    console.log(task);
   },
 
   DELETE_TASK(state, { boardIndex, taskIndex }) {
     let tasks = state.boards[boardIndex].tasks,
       task = tasks[taskIndex];
+
     updateBreadCrumbs(state, "taskRef", {
       boardIndex,
       taskIndex,
       task
     });
+
     tasks.splice(taskIndex, 1);
   },
 
