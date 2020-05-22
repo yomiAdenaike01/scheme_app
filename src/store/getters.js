@@ -65,7 +65,7 @@ export default {
     return arr;
   },
 
-  groupLookup: ({ clientInformation }) => (groupType, id) => {
+  groupLookup: ({ clientInformation }) => (groupType = "user", id) => {
     let res = {};
 
     if (groupType == "user") {

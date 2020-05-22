@@ -44,6 +44,8 @@ export default {
         });
         if (!member) {
           state.team.push(teamMember);
+        } else {
+          state.team.splice(i, 1, member);
         }
       }
     }
@@ -61,13 +63,17 @@ export default {
     };
   },
   UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
+    let teamMember = state.team[index];
+
     updateBreadCrumbs(state, "teamRef", {
       index,
-      payload: state.team[index]
+      payload: teamMember
     });
-    for (let property in state.team[index]) {
-      if (payload[property]) {
-        Vue.set(state.team[index], property, payload[property]);
+
+    for (let property in payload) {
+      let updatedVal = payload[property];
+      if (teamMember[property]) {
+        Vue.set(teamMember, property, updatedVal);
       }
     }
   }

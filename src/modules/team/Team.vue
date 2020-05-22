@@ -117,7 +117,9 @@
               </h3>
               {{ event.start_time }} - {{ event.end_time }}
               <br />
-              <span class="capitalize">{{ event.time_code.label }}</span>
+              <span class="capitalize"
+                ><strong>{{ event.time_code.label }}</strong></span
+              >
               <br />
               <span class="capitalize"
                 >End date {{ formatDate(event.end_date) }}</span
@@ -157,7 +159,11 @@
         class="activity_wrapper"
         :class="{ display_center: selectedUserActivity.length == 0 }"
       >
-        <div v-if="selectedUserActivity.length > 0" v-loading="loading">
+        <div
+          v-if="selectedUserActivity.length > 0"
+          v-loading="loading"
+          class="activity_subcontainer"
+        >
           <h3>Activity feed</h3>
           <ActivityLog
             v-for="activity in selectedUserActivity"
@@ -232,7 +238,7 @@ export default {
     ...mapState("Team", ["team"]),
     ...mapState("Events", ["events"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-    ...mapGetters(["adminPermission"]),
+    ...mapGetters(["adminPermission", "groupLookup"]),
 
     shortcuts() {
       let condition = !this.isCurrentUser;
@@ -467,8 +473,15 @@ export default {
             }
           },
           update: {
-            mutation: payload => {
-              this.UPDATE_ONE_TEAM_MEMBER(payload);
+            mutation: ({ index, payload }) => {
+              if (payload?.user_group) {
+                payload.user_group = this.groupLookup(
+                  "user",
+                  payload.user_group
+                );
+              }
+
+              this.UPDATE_ONE_TEAM_MEMBER({ index, payload });
             },
             data: {
               index: this.selectedTeamMemberIndex,
@@ -800,6 +813,10 @@ p {
     justify-content: center;
     align-items: center;
   }
+}
+.activity_wrapper {
+  overflow-x: hidden;
+  max-height: calc(100% - 200px);
 }
 .title_container {
   display: flex;

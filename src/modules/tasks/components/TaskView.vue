@@ -278,7 +278,7 @@
                     </p>
                     <!-- Assign deadline to end of event -->
                   </div>
-                  <div v-else>
+                  <div v-if="!assignedToEvent && eventsToAssign.length > 0">
                     <div
                       v-for="(event, eventIndex) in eventsToAssign"
                       :key="eventIndex"
@@ -288,6 +288,13 @@
                       <small> {{ event.label }} </small>
                       <small> End date: {{ event.end_date.label }} </small>
                     </div>
+                  </div>
+                  <!-- No events to assign -->
+                  <div
+                    v-if="eventsToAssign.length == 0 && !assignedToEvent"
+                    class="text_container all_centre"
+                  >
+                    <p class="grey">No event to assign</p>
                   </div>
                 </div>
               </div>
@@ -488,7 +495,7 @@ export default {
   },
 
   created() {
-    window.addEventListener("keyup", this.toggleDisplay);
+    window.addEventListener("keyup", this.keyListener);
     this.loadTask();
 
     for (let i = 0, len = this.edittableProperties.length; i < len; i++) {
@@ -536,7 +543,8 @@ export default {
     },
 
     increaseTime(timeGap) {
-      this.task.due_date = this.initMoment(this.task.due_date)
+      let currentTime = this.task.due_date ? this.task.due_date : new Date();
+      this.task.due_date = this.initMoment(currentTime)
         .add(1, timeGap)
         .toISOString();
     },
@@ -626,7 +634,7 @@ export default {
         _id: this.genID(),
         name: "",
         description: "",
-        due_date: null,
+        due_date: new Date(),
         assigned_to: [this.userInformation],
         labels: [],
         comments: [],
@@ -695,9 +703,20 @@ export default {
         this.task.assigned_to.push(teamMember);
       }
     },
-    toggleDisplay(e) {
-      if (e.key == "Escape") {
-        this.$emit("toggle");
+    keyListener(e) {
+      switch (e.key) {
+        case "Escape": {
+          this.$emit("toggle");
+          break;
+        }
+
+        case "Enter": {
+          this.saveTask();
+          break;
+        }
+
+        default:
+          break;
       }
     },
     destoryComponent() {
@@ -708,7 +727,7 @@ export default {
       if (this.hasChanged) {
         this.saveTask();
       }
-      window.removeEventListener("keyup", this.toggleDisplay);
+      window.removeEventListener("keyup", this.keyListener);
     },
     viewNextTask() {
       this.$emit("nextTask");

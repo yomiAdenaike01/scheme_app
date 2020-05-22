@@ -17,17 +17,6 @@ export default {
             state.boards.splice(i, 1, apiBoard);
           } else {
             // Push the tasks that arent there
-            let localBoardTasks = state.boards[i].tasks;
-            let apiBoardTasks = apiBoard.tasks;
-
-            apiBoardTasks.map(apiTask => {
-              let apiTaskIndex = localBoardTasks.findIndex(
-                x => x._id == apiTask._id
-              );
-              if (apiTaskIndex == -1) {
-                localBoardTasks.push(apiBoardTasks[apiTaskIndex]);
-              }
-            });
             state.boards[i].tasks = apiBoard.tasks;
           }
         }
