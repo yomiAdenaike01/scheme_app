@@ -122,14 +122,6 @@ export default {
     };
   },
 
-  getClient({ clientInformation }, { isValidClient }) {
-    if (isValidClient) {
-      return clientInformation;
-    } else {
-      return {};
-    }
-  },
-
   adminPermission({ userInformation: { user_group } }) {
     if (user_group) {
       return user_group.is_admin == true;

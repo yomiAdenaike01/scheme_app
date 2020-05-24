@@ -52,15 +52,16 @@ export default {
   },
 
   UPDATE_TEAM_MEMBER_GROUP(state, { index, groupType, payload }) {
+    let teamMember = state.team[index][groupType];
+
     updateBreadCrumbs(state, "teamRef", {
       index,
-      payload: state.team[index]
+      payload: teamMember
     });
-
-    state.team[index][groupType] = {
-      ...state.team[index][groupType],
-      ...payload
-    };
+    for (let property in payload) {
+      let payloadVal = payload[property];
+      Vue.set(teamMember, property, payloadVal);
+    }
   },
   UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
     let teamMember = state.team[index];

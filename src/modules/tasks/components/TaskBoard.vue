@@ -8,25 +8,31 @@
             <span>{{ truncate(description) }}</span>
           </div>
 
-          <el-popover trigger="click" position="right">
+          <el-popover
+            v-model="displayEditBoard"
+            trigger="click"
+            position="right"
+          >
             <i
               slot="reference"
               class="trigger bx bx-dots-horizontal-rounded grey"
             ></i>
-            <div class="content">
-              <Form
-                class="full_width"
-                :heading="heading"
-                :config="formConfig"
-                :submit-button="{ text: 'Update board' }"
-                @val="updateBoard"
-              />
-              <hr />
-
-              <s-button class="rounded tertiary shadow" icon="x"
-                >Delete Board</s-button
-              >
+            <div class="popover_title">
+              <strong>Edit board</strong>
+              <i class="bx bx-x trigger" @click="displayEditBoard = false"></i>
             </div>
+            <span></span>
+
+            <Form
+              v-model="boardData"
+              :heading="heading"
+              :config="formConfig"
+              :submit-button="{
+                class: 'bordered primary rounded',
+                text: 'Update board'
+              }"
+              @val="updateBoard"
+            />
           </el-popover>
         </div>
         <el-progress
@@ -152,7 +158,7 @@ export default {
   data() {
     return {
       taskCap: 10,
-
+      displayEditBoard: false,
       filters: {
         display: false,
         name: "",
@@ -244,13 +250,13 @@ export default {
     formConfig() {
       return [
         {
-          "component-type": "text",
+          component_type: "text",
           noLabel: true,
           placeholder: "Board name",
           model: "name"
         },
         {
-          "component-type": "text",
+          component_type: "text",
           textarea: true,
           noLabel: true,
 

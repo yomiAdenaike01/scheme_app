@@ -137,10 +137,30 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
   @each $key, $value in $sbutton_config {
     &.#{$key} {
       background: rgba($value, 1);
+
       &.shadow {
         box-shadow: -2px 11px 21px rgba($value, 0.5);
       }
+      &.bordered {
+        border: 1px solid rgba($value, 1);
+        background: transparent;
+        color: rgba($value, 1);
+      }
+      &.text {
+        padding: 5px;
+        background: transparent;
+        color: rgba($value, 1);
+      }
     }
+  }
+
+  &.small {
+    font-size: 0.9em;
+    padding: 3px;
+  }
+  &.mini {
+    font-size: 0.8em;
+    padding: 0px;
   }
 
   .icon_container {

@@ -226,8 +226,8 @@ export default {
     updateConfigs() {
       return [
         {
-          "component-type": "date-picker",
-          "input-type": "date-time",
+          component_type: "date-picker",
+          input_type: "date-time",
           placeholder: "Start date time",
           model: "start_date",
           optional: true,
@@ -235,8 +235,8 @@ export default {
           tag: "date"
         },
         {
-          "component-type": "date-picker",
-          "input-type": "date-time",
+          component_type: "date-picker",
+          input_type: "date-time",
           placeholder: "End date time",
           model: "end_date",
           optional: true,
@@ -244,7 +244,7 @@ export default {
           tag: "date"
         },
         {
-          "component-type": "select",
+          component_type: "select",
           placeholder: "Select event type",
           options: this.getValidEventTypes,
           model: "type",

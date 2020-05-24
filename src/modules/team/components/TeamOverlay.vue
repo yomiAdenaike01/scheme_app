@@ -15,79 +15,24 @@
 
       <Form
         v-if="view == 'create_user'"
+        v-model="inputtedTeamMemberData"
         :headings="headings"
         all-optional
         :config="teamMemberFormConfig"
-        emit-on-change
         :submit-button="{
           text: mode == 'update' ? 'Update team member' : 'Create team member'
         }"
         @val="$emit('handleTeamMember', inputtedTeamMemberData)"
-        @change="updateTeamMemberObject"
       >
-        <div slot="header" class="text_container team_overlay_body">
-          <div class="text_display_header">
-            <SlideYUpTransition>
-              <div v-if="mode == 'update'">
-                <Avatar
-                  :size="100"
-                  :name="
-                    inputtedTeamMemberData.name
-                      ? inputtedTeamMemberData.name
-                      : selectedTeamMember.name
-                  "
-                />
-                <div v-if="Object.values(selectedTeamMember).length > 0">
-                  <p
-                    v-for="(item, index) in teamMemberFormConfig"
-                    :key="`${item.model}${index}`"
-                    :class="[
-                      `${item.model}_item`,
-                      {
-                        grey: item.model != 'name',
-                        'bold capitalize': item.model == 'name'
-                      }
-                    ]"
-                  >
-                    {{
-                      item.model == "user_group"
-                        ? userGroupXref
-                        : !inputtedTeamMemberData[item.model]
-                        ? selectedTeamMember[item.model]
-                        : inputtedTeamMemberData[item.model]
-                    }}
-                  </p>
-                </div>
-              </div>
-              <div v-else>
-                <SlideYUpTransition>
-                  <Avatar
-                    v-if="inputtedTeamMemberData.name"
-                    :size="100"
-                    :name="inputtedTeamMemberData.name"
-                  />
-                </SlideYUpTransition>
-                <div v-if="Object.values(inputtedTeamMemberData).length > 0">
-                  <p
-                    v-for="(item, index) in teamMemberFormConfig"
-                    :key="`${item.model}${index}`"
-                    :class="[
-                      `${item.model}_item`,
-                      {
-                        grey: item.model != 'name',
-                        'bold capitalize': item.model == 'name'
-                      }
-                    ]"
-                  >
-                    {{
-                      item.model == "user_group"
-                        ? userGroupXref
-                        : inputtedTeamMemberData[item.model]
-                    }}
-                  </p>
-                </div>
-              </div>
-            </SlideYUpTransition>
+        <div slot="header" class="text_container">
+          <UpdateView
+            v-if="Object.values(inputtedTeamMemberData).length > 0"
+            :mode="mode"
+            :user-group="userGroupXref"
+            :inputs="inputtedTeamMemberData"
+          />
+          <div v-else class="profile_view all_centre">
+            <h1>Profile view</h1>
           </div>
         </div>
       </Form>
@@ -103,7 +48,7 @@ import Avatar from "@/components/Avatar";
 import Overlay from "@/components/Overlay";
 import Form from "@/components/Form";
 import UpdateGroups from "@/components/UpdateGroups";
-
+import UpdateView from "./UpdateView";
 import { SlideYUpTransition } from "vue2-transitions";
 
 export default {
@@ -112,7 +57,8 @@ export default {
     Form,
     SlideYUpTransition,
     Avatar,
-    UpdateGroups
+    UpdateGroups,
+    UpdateView
   },
   props: {
     mode: {
@@ -148,14 +94,9 @@ export default {
     },
 
     userGroupXref() {
-      let group = this.getUserGroups.find(group => {
+      return this.getUserGroups.find(group => {
         return group.value == this.inputtedTeamMemberData.user_group;
       })?.label;
-      if (this.mode == "create") {
-        return group;
-      } else {
-        return this.selectedTeamMember.user_group.label;
-      }
     },
     headings() {
       return {
@@ -172,42 +113,74 @@ export default {
     teamMemberFormConfig() {
       return [
         {
-          "component-type": "text",
+          component_type: "text",
           model: "name",
-          placeholder: "First and lastname",
-          noLabel: true
+          placeholder: "First and lastname"
         },
 
         {
-          "component-type": "text",
+          component_type: "text",
           model: "phoneNumber",
-          placeholder: "Phone number",
-          noLabel: true
+          placeholder: "Phone number"
         },
         {
-          "component-type": "text",
+          component_type: "text",
           model: "email",
-          placeholder: "Email address",
-          noLabel: true
+          placeholder: "Email address"
         },
         {
           model: "user_group",
-          "component-type": "select",
+          component_type: "select",
           options: this.getUserGroups,
-          noLabel: true,
           placeholder: "Assign to user group"
         },
         {
-          "component-type": "text",
-          "input-type": "textarea",
+          component_type: "textarea",
           model: "notes",
-          placeholder: "Notes",
-          noLabel: true
+          placeholder: "Notes"
         }
       ];
     }
   },
+  watch: {
+    mode: {
+      immediate: true,
+      handler() {
+        this.load();
+      }
+    },
+    selectedTeamMember() {
+      this.load();
+    }
+  },
+
   methods: {
+    load() {
+      let val = this.mode;
+      const properties = ["name", "email", "user_group", "notes"];
+      const extensions = {
+        user_group: "_id"
+      };
+      const teamMember = Object.assign({}, this.selectedTeamMember);
+
+      if (val == "update") {
+        let formattedMember = {};
+
+        for (let i = 0, len = properties.length; i < len; i++) {
+          let property = properties[i];
+
+          if (extensions[property]) {
+            let extension = extensions[property];
+            formattedMember[property] = teamMember[property][extension];
+          } else {
+            formattedMember[property] = teamMember[property];
+          }
+        }
+        this.inputtedTeamMemberData = Object.assign({}, formattedMember);
+      } else {
+        this.inputtedTeamMemberData = {};
+      }
+    },
     updateTeamMemberObject(e) {
       this.inputtedTeamMemberData = e;
     },
@@ -238,6 +211,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 10px;
+  font-size: 1.2em;
   margin-bottom: 10px;
 }
 .team_overlay {
@@ -250,7 +224,9 @@ export default {
 p {
   margin: 0;
 }
-
+.team_overlay_body {
+  padding: 10px;
+}
 .text_display_header {
   margin-top: 30px;
 }
@@ -285,5 +261,13 @@ p {
 }
 .text_container {
   padding: 20px;
+  .profile_view {
+    border: 3px dashed rgb(220, 220, 220);
+    padding: inherit;
+    color: rgb(220, 220, 220);
+
+    display: flex;
+    justify-content: center;
+  }
 }
 </style>

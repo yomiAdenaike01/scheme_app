@@ -52,6 +52,8 @@ export default {
   },
 
   UPDATE_GROUP(state, { groupType, groupIndex, payload }) {
+    let group = state.clientInformation[groupType][groupIndex];
+
     updateBreadCrumbs(state, "groupRef", {
       groupType,
       groupIndex,
@@ -59,11 +61,9 @@ export default {
     });
 
     for (let property in payload) {
-      Vue.set(
-        state.clientInformation[groupType][groupIndex],
-        property,
-        payload[property]
-      );
+      if (group?.[property] && group[property] != payload[property]) {
+        Vue.set(group, property, payload[property]);
+      }
     }
   },
 

@@ -24,7 +24,7 @@
               <strong class="title">
                 {{ notification.title }}
               </strong>
-              <p>{{ notification.message }}</p>
+              <p v-html="notification.message"></p>
             </div>
           </div>
           <div class="functions_container">

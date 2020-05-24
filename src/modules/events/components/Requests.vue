@@ -382,8 +382,8 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations("Events", [
       "CREATE_REQUEST",
-      "UPDATE_ONE_REQUEST",
-      "DELETE_REQUEST"
+      "UPDATE_EVENT_REQUEST",
+      "DELETE_EVENT_REQUEST"
     ]),
     assignFilters(val = this.propFilters) {
       if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
@@ -404,7 +404,7 @@ export default {
       };
 
       if (request?.status == "sent") {
-        this.UPDATE_ONE_REQUEST({
+        this.UPDATE_EVENT_REQUEST({
           ...mergedObject,
           status: "seen"
         });
@@ -414,7 +414,7 @@ export default {
       this.selectedRequest = mergedObject;
     },
     deleteRequest() {
-      this.DELETE_REQUEST(this.selectedRequest.index);
+      this.DELETE_EVENT_REQUEST(this.selectedRequest.index);
       if (this.selectedRequest.index == 0) {
         this.selectedRequest = {};
       }
@@ -430,7 +430,7 @@ export default {
     },
     updateRequest(update) {
       let updatedRequest = Object.assign(this.selectedRequest, update);
-      this.UPDATE_ONE_REQUEST(updatedRequest);
+      this.UPDATE_EVENT_REQUEST(updatedRequest);
     }
   }
 };

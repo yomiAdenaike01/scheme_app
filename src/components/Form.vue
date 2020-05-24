@@ -1,78 +1,115 @@
 <template>
   <div class="form_wrapper" @keyup.enter="submitForm">
-    <slot name="header"></slot>
-    <el-form
-      ref="form"
-      class="form"
-      :inline="inline"
-      :disabled="disableForm"
-      :rules="form.validate"
-      :model="formContent"
-      label-position="top"
-    >
-      <el-form-item
-        v-for="(input, index) in form.formData"
+    <header v-if="$slots.header">
+      <slot name="header"></slot>
+    </header>
+    <div class="form">
+      <div
+        v-for="(input, index) in config"
         :key="`${index}${input.name}`"
-        :prop="input.name"
-        :label="
-          input.noLabel
-            ? ''
-            : input.optional || (allOptional && !input.noLabel)
-            ? `(Optional) ${input.placeholder}`
-            : input.placeholder
-        "
+        class="form_item"
       >
-        <span
+        <small v-if="input.label" class="form_item_label grey">
+          {{
+            input.optional || allOptional
+              ? `(Optional) ${input.label}`
+              : input.label
+          }}
+        </small>
+        <p
           v-if="
             Object.values(headings).length > 0 &&
               headings.hasOwnProperty(input.model)
           "
-          slot="label"
           class="form_item_heading"
           v-html="headings[input.model]"
-        ></span>
+        ></p>
+        <small
+          v-if="
+            Object.values(rules).length > 0 && rules.hasOwnProperty(input.model)
+          "
+          class="error_message"
+          >* {{ rules[input.model] }}</small
+        >
+
+        <!-- NATIVE INPUTS -->
+
+        <input
+          v-if="inputTypes.indexOf(input.component_type) > -1"
+          v-model="formContent[input.model]"
+          :disabled="input.disabled"
+          class="s_input"
+          :placeholder="input.placeholder"
+          :type="input.component_type"
+          :class="[
+            's_input',
+            input.component_type,
+            { input_error: rules.hasOwnProperty(input.model) }
+          ]"
+        />
+
+        <select
+          v-if="input.component_type == 'select'"
+          v-model="formContent[input.model]"
+          :class="[
+            's_input',
+            input.component_type,
+            {
+              multiple: input.multiple,
+              input_error: rules.hasOwnProperty(input.model)
+            }
+          ]"
+          :disabled="input.disabled"
+          :multiple="input.multiple ? true : false"
+        >
+          <option class="first_option" disabled value=""
+            >Please select...</option
+          >
+
+          <option
+            v-for="(option, index) in input.options"
+            :key="index"
+            class="form_option"
+            :value="option._id || option.value"
+            >{{ option.text || option.name || option.label }}</option
+          >
+        </select>
+
+        <textarea
+          v-if="input.compoent_type == 'textarea'"
+          v-model="formContent[input.model]"
+          class="s_input"
+        />
+        <!-- DYNAMIC INPUTS -->
+
         <component
           :is="
-            input['component-type'] == 'text' ||
-            input['component-type'] == 'password'
-              ? 'el-input'
-              : input['component-type'] == 'select'
-              ? 'el-select'
-              : input['component-type'] == 'date-picker'
+            input.component_type == 'date-picker'
               ? 'el-date-picker'
-              : input['component-type'] == 'number'
-              ? 'el-input-number'
-              : input['component-type'] == 'time-picker'
+              : input.component_type == 'time-picker'
               ? 'el-time-picker'
-              : input['component-type'] == 'switch'
-              ? 'el-switch'
               : null
           "
+          v-else
           v-model="formContent[input.model]"
-          class="dialog_item"
-          :value-key="input.text || input.name"
-          :show-password="input['component-type'] == 'password'"
+          :class="[
+            input.component_type,
+            { input_error: rules.hasOwnProperty(input.model) }
+          ]"
           :min="input.min"
           :max="input.max"
-          filterable
-          :option="input.options"
-          :props="input.cascaderProps"
-          :picker-options="input.pickerOptions"
           :is-range="input.isRange"
           :type="
-            input['input-type'] == 'date'
+            input.input_type == 'date'
               ? 'date'
-              : input['input-type'] == 'date-time-range'
+              : input.input_type == 'date-time-range'
               ? 'datetimerange'
-              : input['input-type'] == 'textarea'
-              ? 'textarea'
-              : input['input-type'] == 'date-time'
+              : input.input_type == 'date-time'
               ? 'datetime'
-              : input['input-type'] == 'dates'
+              : input.input_type == 'dates'
               ? 'dates'
               : null
           "
-          v-bind="input"
           :active-text="
             input.optional || allOptional
               ? `(Optional) ${input.placeholder}`
@@ -81,31 +118,22 @@
           :disabled="input.disabled"
           :start-placeholder="input.start_placeholder"
           :end-placeholder="input.end_placeholder"
-          :multiple="input.multiple"
-          :clearable="true"
-          @change="input.onChange ? input.onChange : null"
-        >
-          <el-option
-            v-for="option in input.options"
-            :key="option.value"
-            :label="option.text || option.name || option.label"
-            :value="option.value ? option.value : option.text"
-          />
-        </component>
+        />
+
         <!-- Hint -->
         <small
           v-if="input.hint"
           class="description"
           v-html="input.hint"
         ></small>
-      </el-form-item>
+      </div>
 
       <slot name="footer"></slot>
-    </el-form>
+    </div>
     <!-- Submit button -->
     <div v-if="!disable" class="button_container">
       <s-button
-        class="rounded primary"
+        :class="submitButton.class ? submitButton.class : 'primary rounded'"
         :icon="submitButton.icon"
         @click="submitForm"
       >
@@ -116,25 +144,24 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import SButton from "@/components/SButton";
 export default {
   name: "Form",
   components: {
     SButton
   },
+  model: {
+    prop: "formContent",
+    event: "input"
+  },
+
   props: {
-    displayReset: {
-      type: Boolean,
-      default: false
+    formContent: {
+      type: Object,
+      default: () => {}
     },
-    inline: {
-      type: Boolean,
-      default: false
-    },
-    disableForm: {
-      type: Boolean,
-      default: false
-    },
+
     disable: {
       type: Boolean,
       default: false
@@ -149,10 +176,7 @@ export default {
       type: Object,
       default: () => {
         return {
-          text: "Submit",
-          plain: false,
-          type: "primary",
-          size: "mini"
+          text: "Submit"
         };
       }
     },
@@ -165,149 +189,100 @@ export default {
       type: Boolean,
       default: false
     },
-    customMethod: {
-      type: Function,
-      default: null
-    },
 
-    emitOnChange: {
-      type: Boolean,
-      default: false
-    },
-    size: {
-      type: String,
-      default: "mini"
+    validations: {
+      type: Array,
+      default: () => []
     }
-  },
-  data() {
-    return {
-      formContent: {}
-    };
   },
   computed: {
-    form() {
-      let validate = {};
-      let form = [...this.config];
-      for (let i = 0, len = form.length; i < len; i++) {
-        let formItem = form[i];
-        let formItemName = formItem?.name ?? formItem.model;
+    inputTypes() {
+      return ["text", "checkbox", "password"];
+    },
+    rules() {
+      let validationsObject = {};
+      for (let i = 0, len = this.validations.length; i < len; i++) {
+        let validation = this.validations[i];
 
-        if (!formItem?.optional && !this.allOptional && !formItem?.disabled) {
-          let validArr = [];
-          let compType = formItem["component-type"];
-          let inputType = formItem["input-type"];
-          let trigger = "blur",
-            type;
-          if (compType == "date-picker" || compType == "select") {
-            trigger = "change";
-          }
-
-          if (
-            (compType == "select" && formItem?.multiple) ||
-            inputType == "dates" ||
-            formItem?.isRange ||
-            inputType == "date-time-range"
-          ) {
-            type = "array";
-          } else if (compType == "select" && formItem?.validType == "number") {
-            type = "number";
-          }
-
-          if (inputType == "date-time" || inputType == "date") {
-            type = "date";
-          }
-
-          let validObj = {
-            required: true,
-            trigger,
-            message: "Please fill in the following",
-            name: formItemName,
-            type
-          };
-
-          if (!formItem?.name) {
-            formItem.name = formItem.model;
-          }
-
-          validArr.push(validObj);
-
-          validate[formItem.name] = validArr;
+        if (
+          !this.formContent[validation] ||
+          this.formContent[validation].length == 0
+        ) {
+          validationsObject[validation] = "Please fill in the following";
         }
       }
-      return {
-        formData: this.config,
-        validate
-      };
+      return validationsObject;
     }
   },
-  watch: {
-    formContent: {
-      deep: true,
-      handler(val) {
-        if (this.emitOnChange) {
-          this.$emit("change", val);
-        }
+  created() {
+    for (let i = 0, len = this.config.length; i < len; i++) {
+      let item = this.config[i];
+      if (item?.multiple) {
+        this.$set(this.formContent, item.model, []);
       }
     }
   },
-
   methods: {
-    resetForm() {
-      this.$refs.form.resetFields();
-    },
-    runValidation() {
-      return new Promise((resolve, reject) => {
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            resolve(valid);
-          } else {
-            reject(false);
-          }
-        });
-      });
-    },
-    completeForm() {
-      this.$emit("val", this.formContent);
-      this.formContent = {};
-      if (this.customMethod) {
-        this.customMethod();
+    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
+    selectProperties(input) {
+      input = Object.assign({}, input);
+      if (input?.multiple) {
+        input.multiple = true;
       }
+      delete input.options;
 
-      if (this.nextTab) {
-        this.$emit("changeTab");
-      }
+      return input;
     },
     submitForm() {
-      this.runValidation()
-        .then(() => {
-          this.completeForm();
-        })
-        .catch(error => {
-          return error;
+      if (Object.keys(this.rules).length == 0) {
+        this.$emit("val");
+
+        if (this.nextTab) {
+          this.$emit("changeTab");
+        }
+      } else {
+        this.CREATE_SYSTEM_NOTIFICATION({
+          type: "error",
+          message: `Failed to submit form missing fields <strong>${this.makePretty(
+            Object.keys(this.rules).join(",")
+          )}</strong>`
         });
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.form_wrapper {
-  &.full_width {
-    width: 100%;
-    .dialog_item {
-      max-width: 100%;
-    }
-    .el-button {
-      width: 100%;
-    }
+header {
+  position: relative;
+  &::after {
+    position: absolute;
+    content: "";
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgb(240, 240, 240);
+    height: 1px;
   }
-  .dialog_item {
-    min-width: 70%;
-    max-width: 70%;
+}
+.form_wrapper {
+  &.no_padding {
+    padding: 0;
   }
 }
 .form {
-  padding: 20px;
+  padding: 2%;
+}
+.form_item {
+  padding: 10px 0;
+}
+.form_item_label {
+  padding: 5px 0;
+  margin: 0px;
+}
+.error_message {
+  color: rgba(var(--danger), 1);
 }
 .button_container {
   display: flex;
@@ -316,6 +291,8 @@ export default {
   margin-top: 20px;
   position: relative;
   padding: 20px;
+  background: rgb(250, 250, 250);
+
   &:after {
     content: "";
     position: absolute;
@@ -340,5 +317,30 @@ export default {
   p {
     margin: 0;
   }
+}
+.input_error {
+  border: 1px solid rgba(var(--danger), 0.3);
+}
+.form_option {
+  padding: 10px;
+  transition: $default_transition;
+  border-top: 1px solid whitesmoke;
+  border-bottom: 1px solid whitesmoke;
+
+  &:hover {
+    background: rgb(250, 250, 250);
+    cursor: pointer;
+    transform: translateX(3px);
+  }
+  &:active {
+    background: rgb(250, 250, 250);
+  }
+}
+.first_option {
+  padding: 15px;
+  cursor: not-allowed;
+}
+small {
+  display: block;
 }
 </style>

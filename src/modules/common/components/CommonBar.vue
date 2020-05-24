@@ -13,12 +13,11 @@
       </Dropdown>
       <el-popover :options="{ placement: 'right' }" trigger="click">
         <Notifications />
-        <el-button
+        <s-button
           slot="reference"
-          size="small"
-          circle
-          icon="el-icon-bell trigger"
-        ></el-button>
+          class="small only_icon rounded"
+          icon="bell"
+        ></s-button>
       </el-popover>
     </div>
   </div>
@@ -30,13 +29,15 @@ import { mapState, mapMutations, mapActions } from "vuex";
 import Avatar from "@/components/Avatar";
 import Notifications from "@/modules/notifications/Notifications";
 import Dropdown from "@/components/Dropdown";
+import SButton from "@/components/SButton";
 
 export default {
   name: "CommonBar",
   components: {
     Avatar,
     Dropdown,
-    Notifications
+    Notifications,
+    SButton
   },
   computed: {
     ...mapState(["userInformation", "viewMobileMenu", "apiNotifications"]),

@@ -132,7 +132,7 @@ export default {
     updateTaskStateConfig() {
       return [
         {
-          "component-type": "select",
+          component_type: "select",
           options: this.stateOptions,
           placeholder: "Change task state",
           model: "state"

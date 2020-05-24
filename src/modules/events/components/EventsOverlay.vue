@@ -1,55 +1,89 @@
 <template>
-  <Overlay v-model="view" backdrop-type="dark">
-    <Tabs
-      v-model="currentTab"
-      v-loading="loading"
-      :tabs="tabs"
-      :disable="currentTab > 1"
-      :selected-tab="currentTab"
-      :submit-text="tabXref.display"
-      @val="eventsCtrl"
-      @formChange="events = $event"
+  <Overlay v-model="view">
+    <Menu
+      mode="tabs"
+      :tab-items="tabItems"
+      :active-tab="selectedTab"
+      @changeTab="selectedTab = $event"
+    />
+
+    <Form
+      v-if="selectedTab == 'create_event'"
+      v-model="formData"
+      :config="config"
+      :validations="['assigned_to', 'dates', 'type']"
+      :headings="{
+        assigned_to: '<strong>Assigned to</strong>'
+      }"
+      :submit-button="{ text: 'Create event' }"
+      @val="handler"
     >
-      <div slot="header" class="text_container all_centre">
-        <h2>{{ informationDisplay.heading }}</h2>
-        <p>{{ informationDisplay.content }}</p>
-      </div>
-      <div
-        v-if="
-          tabXref.name == 'create_event' &&
-            hasEntries(events) &&
-            qrCode.length > 0 &&
-            adminPermission
-        "
-        slot="body"
-        class="body_container"
-      >
-        <div class="qr_container">
-          <qrcode-vue :value="qrCode" />
+      <!-- Templates -->
+      <div slot="header" class="templates_container">
+        <div
+          class="display_filters_container trigger"
+          @click="displayTemplates = !displayTemplates"
+        >
+          <strong> View templates </strong>
+          <i
+            :class="`bx bx-${!displayTemplates ? 'right' : 'down'}-arrow-alt`"
+          ></i>
         </div>
-        <p>
-          This is QR code for users to clock in with
-        </p>
+        <!-- Displayed filters -->
+
+        <collapse-transition>
+          <div v-if="displayTemplates" class="templates_sub_container">
+            <!-- Filter templates -->
+            <input
+              v-model="searchTemplates"
+              type="text"
+              class="s_input"
+              placeholder="Search templates"
+            />
+
+            <!-- Each template -->
+            <EventTemplate
+              v-for="(template, index) in filteredTemplates"
+              :key="index"
+              :template="event"
+              :index="index"
+              @useTemplate="createEvent"
+              @updateTemplate="updateTemplate"
+              @deleteTemplate="deleteTemplate"
+            />
+          </div>
+        </collapse-transition>
       </div>
-    </Tabs>
+    </Form>
+
+    <UpdateGroups v-else group-type="event_groups" />
   </Overlay>
 </template>
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
-import QrcodeVue from "qrcode.vue";
+import { CollapseTransition } from "vue2-transitions";
 
+import Menu from "@/components/Menu";
 import Overlay from "@/components/Overlay";
 import genID from "@/mixins/genID";
+import cleanObject from "@/mixins/cleanObject";
+import EventTemplate from "./EventTemplate";
+
+import Form from "@/components/Form";
+import UpdateGroups from "@/components/UpdateGroups";
+
 export default {
   name: "EventsOverlay",
   components: {
-    Tabs: () => import("@/components/Tabs"),
-    ColourPicker: () => import("@/components/ColourPicker"),
-    QrcodeVue,
-    Overlay
+    Menu,
+    Form,
+    Overlay,
+    UpdateGroups,
+    CollapseTransition,
+    EventTemplate
   },
-  mixins: [genID],
+  mixins: [genID, cleanObject],
   props: {
     display: {
       type: Boolean,
@@ -58,221 +92,82 @@ export default {
   },
   data() {
     return {
-      events: {},
-      templates: {},
-      loading: false,
-      currentTab: 0,
-      qrCode: ""
+      tabItems: ["manage_groups", "create_event"],
+      selectedTab: "manage_groups",
+      formData: {},
+      searchTemplates: "",
+      displayTemplates: false
     };
   },
-
   computed: {
-    ...mapState(["clientInformation", "daysOfWeek", "userInformation"]),
-    ...mapGetters([
-      "getValidEventTypes",
-      "getUserGroups",
-      "getUsersInGroup",
-      "adminPermission",
-      "getCurrentTabXref",
-      "groupLookup"
-    ]),
+    ...mapState(["clientInformation", "userInformation"]),
+    ...mapState("Team", ["team"]),
+    ...mapState("Events", ["events", "eventRequests", "eventTemplates"]),
+    ...mapGetters(["adminPermission", "groupLookup"]),
+    ...mapGetters("Team", ["userLookup"]),
 
-    ...mapGetters("Team", ["getDropdownTeamMembers", "userLookup"]),
-    headings() {
-      return {
-        assigned_to: "<h3>Assign team members</h3>",
-        until:
-          "<h3>Timings & Templating</h3> <small class='grey'>The content of this will be saved as a template, once saved as a template it can be reused with the timings that are entered below</small>"
-      };
-    },
-    eventContent() {
-      let data = null;
+    filteredTemplates() {
+      let templates = [];
+      let searchTerm = this.searchTemplates.toLowerCase();
 
-      // this.loading = true;
-      let events = { ...this.events };
-      let date = events?.date;
-
-      let start_date = this.initMoment(date[0]).toISOString();
-      let end_date = this.initMoment(date[1]).toISOString();
-      events.start_date = start_date;
-      events.end_date = end_date;
-
-      if (this.activeDialogInformation?.length > 0) {
-        events.assigned_to = events.assigned_to.concat(
-          this.activeDialogInformation
-        );
-      }
-      if (this.tabXref.name != "create_request") {
-        events.until = this.initMoment(
-          events?.until ?? new Date()
-        ).toISOString();
-        events.is_approved = [
-          this.userInformation._id,
-          ...events?.assigned_to?.filter(assignee => {
-            return (
-              this.userLookup(assignee)?.user_group?.enable_event_rejection ==
-              true
-            );
-          })
-        ];
-
-        events = {
-          ...events,
-          repeat: {
-            until: events.until,
-            weekdays: events?.weekdays ?? 0
-          }
-        };
-
-        if (!this.adminPermission) {
-          events.assigned_to = [this.userInformation._id];
+      for (let i = 0, len = this.eventTemplates.length; i < len; i++) {
+        let template = this.eventTemplates[i];
+        if (!template.name.toLowerCase().includes(searchTerm)) {
+          continue;
         }
-        let templates = {
-          content: events
-        };
-
-        if (events?.user_groups?.length > 0) {
-          // Changed the assigned to to all of the user groups
-          let uGroups = events.user_groups;
-          events.assigned_to = [];
-
-          for (let i = 0, len = uGroups.length; i < len; i++) {
-            events.assigned_to.push(...this.getUsersInGroup(uGroups[i]));
-          }
-          data = { events, templates };
-        }
-      } else {
-        let group = this.groupLookup("event", events.type);
-        events.assigned_to = [this.userInformation];
-        events.type = { _id: group?._id, label: group?.label };
-        events.status = "sent";
-        events.notes = "yomi adenaike";
-        events.date_created = new Date().toISOString();
-        events.requested_by = this.userInformation;
-
-        data = { events };
+        templates.push(template);
       }
-      return data;
+
+      return templates.length > 0 ? templates : this.eventTemplates;
     },
 
-    informationDisplay() {
-      let content =
-          "You can create a request here that will be sent to an admin for approval",
-        heading = "Request Management";
-      if (this.adminPermission) {
-        heading = "Event Management";
-        content =
-          "As an admin you can create templates to batch create events. You can also create event groups and singular events.";
-      }
+    dates() {
       return {
-        heading,
-        content
+        start_date: new Date(this.formData?.dates[0]).toISOString(),
+        end_date: new Date(this.formData?.dates[1]).toISOString()
       };
     },
 
-    isNotShiftOrHoliday() {
-      return !this.adminPermission && this.events.type > 3;
-    },
+    config() {
+      let condition = this.adminPermission;
 
-    tabXref() {
-      return this.getCurrentTabXref({
-        tabs: this.tabs,
-        currentTab: this.currentTab
-      });
-    },
+      let dateTimeFormItem = {
+        component_type: "date-picker",
+        input_type: "date-time-range",
+        model: "dates",
+        label: "Timings",
+        start_placeholder: "Start datetime",
+        end_placeholder: "End datetime"
+      };
 
-    tabs() {
-      let tabs = [
-        {
-          label: this.adminPermission ? "Create event" : "Create request",
-          formContent: this.createEventForm,
-          displayReset: true,
-          emitOnChange: true,
-          headings: this.headings
-        }
-      ];
+      let eventTypeFormItem = {
+        label: "Event type",
+        component_type: "select",
+        options: this.clientInformation["event_groups"],
+        model: "type"
+      };
 
-      if (this.adminPermission) {
-        tabs.unshift({
-          label: "Manage event groups",
-          view: {
-            component: () => import("@/components/UpdateGroups")
-          }
-        });
-      }
-
-      return tabs;
-    },
-
-    createEventForm() {
-      let createEventConfig = [
-        {
-          "component-type": "select",
-          placeholder: "Select event type",
-          options: this.getValidEventTypes,
-          model: "type",
-          noLabel: true
-        },
-        {
-          "component-type": "date-picker",
-          "input-type": "date-time-range",
-          placeholder: "Timings",
-          start_placeholder: "Start date & time",
-          end_placeholder: "End date & time",
-          model: "date",
-          noLabel: true
-        }
-      ];
-
-      // Check if it is an admin or not
-
-      if (this.adminPermission) {
-        createEventConfig.unshift(
+      let form = {
+        [condition]: [
           {
-            placeholder: "Select team members",
-            disabled: this.events?.user_groups?.length > 0,
-            "component-type": "select",
+            component_type: "select",
             model: "assigned_to",
-            options: this.getDropdownTeamMembers,
             multiple: true,
-            optional: true,
-            noLabel: true
-          },
-          {
-            "component-type": "select",
-            options: this.getUserGroups,
-            disabled: this.events?.assigned_to?.length > 0,
-            multiple: true,
-            model: "user_groups",
-            placeholder: "Assign to a user group",
-            optional: true,
-            noLabel: true
-          },
-          {
-            "component-type": "select",
-            placeholder: "Repeat for (days of week)",
-            options: this.daysOfWeek,
-            multiple: true,
-            model: "weekdays",
-            optional: true,
-            noLabel: true
-          },
-          // Assign to an event group,
-
-          {
-            "component-type": "date-picker",
-            "input-type": "date-time",
-            placeholder: "Repeat until",
-            model: "until",
-            optional: true,
-            noLabel: true
+            options: this.team,
+            disabled: this.formData?.user_group?.length > 0
           }
-        );
-      }
-
-      return createEventConfig;
+        ],
+        [!condition]: [
+          {
+            component_type: "textarea",
+            placeholder: "Reason for request",
+            model: "notes"
+          }
+        ]
+      };
+      form[true].push(dateTimeFormItem, eventTypeFormItem);
+      return form[true];
     },
-    //  control the current view
     view: {
       get() {
         return this.display;
@@ -280,139 +175,236 @@ export default {
       set() {
         this.$emit("close");
       }
+    },
+    requestPayload() {
+      let excludeProperties = ["is_approved"];
+
+      return {
+        request: this.cleanObject(excludeProperties, this.eventPayload.request),
+        mutation: this.cleanObject(
+          excludeProperties,
+          this.eventPayload.mutation
+        )
+      };
+    },
+    localData() {
+      return {
+        date_created: new Date().toISOString(),
+        _id: this.genID(),
+        assigned_to: this.formData.assigned_to.map(assignee => {
+          return this.userLookup(assignee);
+        }),
+        type: this.groupLookup("event", this.formData.type)
+      };
+    },
+
+    eventPayload() {
+      const isApproved = (populate = false) => {
+        let approved = [];
+        let assignedTo = this.formData.assigned_to;
+
+        for (let i = 0, len = assignedTo.length; i < len; i++) {
+          let member = assignedTo[i];
+          if (!member.enable_event_rejection) {
+            if (populate) {
+              approved.push(this.userLookup(member));
+            } else {
+              approved.push(member);
+            }
+          }
+        }
+        return approved;
+      };
+
+      let { start_date, end_date } = this.dates;
+      return {
+        request: {
+          assigned_to: this.formData.assigned_to,
+          is_approved: isApproved(),
+          start_date,
+          end_date,
+          notes: this.formData.notes,
+          type: this.formData.type
+        },
+        mutation: {
+          notes: this.formData.notes,
+          is_approved: isApproved(true),
+          start_date,
+          end_date
+        }
+      };
     }
   },
   methods: {
-    ...mapActions(["request", "closeOverlay", "genPromptBox"]),
-    ...mapActions("Events", ["createEvent", "createEventTemplate"]),
-    ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
+    ...mapActions(["request", "genPromptBox"]),
     ...mapMutations("Events", [
-      "CREATE_REQUEST",
-      "UPDATE_ONE_REQUEST",
-      "DELETE_REQUEST"
+      "CREATE_EVENT",
+      "DELETE_EVENT",
+      "DELETE_EVENT_TEMPLATE",
+      "CREATE_EVENT_TEMPLATE"
     ]),
-    eventsCtrl(information) {
-      this.events = information;
 
-      switch (this.tabXref.name) {
-        case "create_event_group": {
-          break;
-        }
-        case "create_event": {
-          this.genEvent();
-          break;
-        }
-        case "create_request": {
-          this.genRequest();
-          break;
+    async createEvent(event) {
+      try {
+        return console.log(event);
+        let lastEventIndex = this.events.length - 1;
+
+        let apiPayload = Object.assign(
+          { data: this.eventPayload.request },
+          {
+            method: "POST",
+            url: "events/create"
+          }
+        );
+
+        let localPayload = Object.assign(this.localData, this.dates);
+
+        this.CREATE_EVENT(localPayload);
+
+        let apiResponse = await this.request(apiPayload);
+
+        if (apiResponse) {
+          apiResponse = Object.assign(apiResponse, { index: lastEventIndex });
+
+          this.UPDATE_EVENT(apiResponse);
         }
 
-        default:
-          break;
+        await this.createTemplate(localPayload, apiPayload);
+      } catch (e) {
+        this.DELETE_EVENT();
+        console.error(e);
       }
     },
-    genRequest() {
-      this.loading = true;
-      let eventInfo = this.eventContent.events;
+    async createTemplate(eventPayload, apiPayload) {
+      try {
+        // Use the event content to create a template
+        let boxPayload = {
+          boxType: "prompt",
+          title: "Create template",
+          text:
+            "Would you like to save this event as a template, If so enter the name of the template below ?"
+        };
 
-      let requestBody = {
-        type: this.eventContent.events.type,
-        end_date: eventInfo.end_date,
-        start_date: eventInfo.start_date
-      };
-      this.CREATE_REQUEST({ _id: this.genID(), ...eventInfo });
-      this.loading = false;
+        let defaultName = `template_${new Date().toISOString()}`;
+        let owners = [this.userInformation];
 
-      this.request({
-        method: "POST",
-        url: "events/requests/create",
-        data: requestBody
-      });
-    },
-    // Submit one event
-    genEvent() {
-      this.createEvent(this.eventContent.events)
-        .then(response => {
-          this.qrCode = response ? response : "";
-          if (this.adminPermission) {
-            this.initSaveTemplate();
-          } else {
-            this.view = false;
-          }
-        })
-        .catch(() => {});
-    },
+        let name = await this.genPromptBox(boxPayload)?.value;
+        if (!name) {
+          name = defaultName;
+        }
 
-    initSaveTemplate() {
-      this.genPromptBox({
-        boxType: "prompt",
-        title: "Save template",
-        text:
-          "Would you like to save this event as a template to use for later.",
-        type: "info"
-      })
-        .then(({ value }) => {
-          this.resolveSaveTemplate(value);
-          this.view = false;
-        })
-        .catch(() => {
-          this.view = false;
+        let localTemplatePayload = {
+          content: eventPayload,
+          owners,
+          name
+        };
+
+        this.CREATE_EVENT_TEMPLATE(localTemplatePayload);
+
+        // Create request to template
+        let apiTemplatePayload = {
+          data: this.cleanObject(["notes"], apiPayload.data),
+          method: "POST",
+          url: "events/templates/create"
+        };
+
+        let apiResponse = await this.request(apiTemplatePayload);
+
+        this.UPDATE_EVENT_TEMPLATE({
+          index: this.eventTemplates.length - 1,
+          data: apiResponse
         });
+      } catch (error) {
+        this.DELETE_EVENT_TEMPLATE();
+        console.error(error);
+      }
+    },
+    async createRequest() {
+      try {
+        let { request, mutation } = this.requestPayload;
+        // Create local request
+        let localRequestPayload = Object.assign(mutation, this.dates);
+
+        this.CREATE_REQUEST(localRequestPayload);
+
+        // Create api request
+        let apiRequstPayload = {
+          data: request,
+          url: "events/create/request",
+          method: "POST"
+        };
+
+        let apiResponse = await this.request(apiRequstPayload);
+
+        if (apiResponse) {
+          this.UPDATE_EVENT_REQUEST({
+            index: this.eventRequests.length - 1,
+            payload: apiResponse
+          });
+        }
+      } catch (error) {
+        this.DELETE_EVENT_REQUEST();
+        console.error(error);
+      }
+    },
+    async handler() {
+      try {
+        if (this.adminPermission) {
+          await this.createEvent();
+        } else {
+          await this.createRequest();
+        }
+      } catch (error) {
+        return Promise.reject(error);
+      }
     },
 
-    resolveSaveTemplate(value) {
-      let localTemplateInformation = {
-        ...this.eventContent.templateInformation,
-        name: value
-      };
-      this.createEventTemplate(localTemplateInformation).catch(() => {
-        this.initSaveTemplate();
-      });
-    },
+    async deleteTemplate({ _id, index }) {
+      try {
+        this.DELETE_EVENT_TEMPLATE(index);
 
-    createEventGroup() {
-      let events = {
-        ...this.events,
-        value: this.clientInformation.event_groups.length + 1
-      };
-      this.request({
-        method: "POST",
-        url: "clients/group",
-        data: { name: "event_groups", value: events }
-      })
-        .then(() => {
-          this.loading = false;
-          this.view = false;
-        })
-        .catch(() => {
-          this.loading = false;
-          this.view = false;
-        });
+        let apiDeleteTemplatePayload = {
+          data: { _id },
+          url: "events/templates/delete",
+          method: "DELETE"
+        };
+        await this.request(apiDeleteTemplatePayload);
+      } catch (error) {
+        this.CREATE_EVENT_TEMPLATE(this.eventTemplateRef);
+      }
+    },
+    async updateTemplate({ template, index }) {
+      try {
+        let localUpdatePayload = {
+          index,
+          data: template
+        };
+
+        this.UPDATE_EVENT_TEMPLATE(localUpdatePayload);
+
+        let apiUpdatePayload = {
+          method: "PUT",
+          url: "events/templates/update",
+          data: { _id: template._id, update: template.content }
+        };
+
+        await this.request(apiUpdatePayload);
+      } catch (error) {
+        this.UPDATE_EVENT_TEMPLATE(this.eventTemplateRef);
+      }
     }
   }
 };
 </script>
-
 <style lang="scss" scoped>
-.create_event_group_container {
+.display_filters_container {
+  border-bottom: $border;
+  padding: 10px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin: 20px 0;
 }
-.colour_unit_label {
-  margin-left: 10px;
-}
-.body_container {
-  display: flex;
-  justify-content: center;
-}
-.qr_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  flex-direction: column;
-  border: $border;
-  max-height: fit-content;
+.templates_sub_container {
+  padding: 10px;
 }
 </style>

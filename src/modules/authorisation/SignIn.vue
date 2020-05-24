@@ -1,16 +1,24 @@
 <template>
   <div class="login_container">
     <Form
+      v-model="credentials"
+      :form-content="credentials"
       class="form_container"
       :config="formConfig"
-      :submit-text="submitText"
+      :validations="['email', 'password']"
       :submit-button="{ text: 'Sign in', icon: 'right-arrow-alt' }"
-      @val="submitController"
+      @val="submit"
     >
+      <div slot="header" class="header_container">
+        <h1>Sign in</h1>
+      </div>
       <div slot="footer" class="new_client_button_container">
-        <el-button size="small" @click="selectedForm = 'forgotPassword'">
+        <s-button
+          class="rounded plain mini"
+          @click="selectedForm = 'forgotPassword'"
+        >
           Forgot password ?
-        </el-button>
+        </s-button>
       </div>
     </Form>
   </div>
@@ -21,10 +29,12 @@ import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
 
 import validateInput from "@/mixins/validateInput";
+import SButton from "@/components/SButton";
 export default {
   name: "SignIn",
   components: {
-    Form
+    Form,
+    SButton
   },
   mixins: [validateInput],
   data() {
@@ -43,9 +53,6 @@ export default {
       return this.selectedForm == "login" ? "Login" : "Submit new password";
     },
 
-    returnForm() {
-      return this.formConfig[this.selectedForm];
-    },
     formConfig() {
       return this.forms[this.selectedForm];
     },
@@ -54,19 +61,19 @@ export default {
         forgotPassword: [
           {
             name: "email",
-            "component-type": "text",
+            component_type: "text",
             placeholder: "Email",
             model: "fp_email"
           },
           {
             name: "password",
-            "component-type": "password",
+            component_type: "password",
             placeholder: "Password",
             model: "fp_password"
           },
           {
             name: "password",
-            "component-type": "password",
+            component_type: "password",
             placeholder: "Retype-Password",
             model: "fp_reentered_password"
           }
@@ -74,13 +81,13 @@ export default {
         login: [
           {
             name: "email",
-            "component-type": "text",
+            component_type: "text",
             placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-            "component-type": "password",
+            component_type: "password",
             placeholder: "Password",
             model: "password"
           }
@@ -103,8 +110,8 @@ export default {
       "CREATE_SYSTEM_NOTIFICATION"
     ]),
 
-    submitController(formInformation) {
-      this.credentials = formInformation;
+    submit() {
+      console.log("submit");
       switch (this.selectedForm) {
         case "login": {
           this.login();
@@ -155,6 +162,7 @@ export default {
      */
     login() {
       this.loading = true;
+      console.log(this.credentials);
       this.request({
         method: "POST",
         data: {
@@ -198,11 +206,16 @@ export default {
   justify-content: center;
   align-items: center;
 }
+
 .logo_wrapper {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
+.header_container {
+  padding: 10px;
+}
+
 .form_container {
   display: flex;
   flex-direction: column;

@@ -9,14 +9,18 @@
       </h3>
       {{ props.event.start_time }} - {{ props.event.end_time }}
       <br />
-      <span class="capitalize">{{ props.event.time_code.label }}</span>
+      <span class="capitalize"
+        ><strong>{{ props.event.time_code.label }}</strong></span
+      >
+      <br />
+      <span class="capitalize">End date {{ props.event.end_date }}</span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "RelatedEvent",
+  name: "RelatedEvents",
   props: {
     event: {
       type: Object,
@@ -26,9 +30,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 $time_code: (
-  completed: var(--success),
+  completed: var(--dark),
   upcoming: var(--colour_primary),
   in_progress: var(--purple)
 );

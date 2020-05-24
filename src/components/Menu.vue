@@ -46,7 +46,7 @@
         "
         @click="$emit('changeTab', makeUgly(tab))"
       >
-        <p>{{ makePretty(tab) }}</p>
+        <span>{{ makePretty(tab) }}</span>
       </div>
     </div>
   </nav>
@@ -253,14 +253,13 @@ export default {
   display: flex;
   flex: 1;
   justify-content: space-between;
-  border-bottom: $border;
   background: rgb(250, 250, 250);
 }
 .tab {
   cursor: pointer;
   flex: 1;
   text-align: center;
-  padding: 0px 15px;
+  padding: 10px;
   text-transform: capitalize;
   border-right: 1px solid rgb(230, 230, 230);
   position: relative;
@@ -269,7 +268,7 @@ export default {
     &::after {
       position: absolute;
       top: 0;
-      height: 2px;
+      height: 1.3px;
       left: 0;
       right: 0;
       content: "";

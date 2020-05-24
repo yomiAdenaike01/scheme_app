@@ -1,7 +1,7 @@
 import updateBreadCrumbs from "../helpers";
 import Vue from "vue";
 export default {
-  DELETE_REQUEST(state, index) {
+  DELETE_EVENT_REQUEST(state, index) {
     updateBreadCrumbs(state, "requestRef", {
       index,
       request: state.requests[index]

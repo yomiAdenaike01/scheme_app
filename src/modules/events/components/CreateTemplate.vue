@@ -83,13 +83,13 @@ export default {
       let templateConfig = [
         {
           model: "name",
-          "component-type": "text",
+          component_type: "text",
           placeholder: "Template name",
           optional: true
         },
         {
           model: "type",
-          "component-type": "select",
+          component_type: "select",
           placeholder: "Select event type",
           options: [...this.clientInformation.event_groups].map(group => {
             return { label: group.label, value: group.groupID };
@@ -99,7 +99,7 @@ export default {
         },
         {
           model: "weekdays",
-          "component-type": "select",
+          component_type: "select",
           options: this.daysOfWeek,
           placeholder: "Select repeat for",
           multiple: true,
@@ -108,7 +108,7 @@ export default {
         },
         {
           model: "timeRange",
-          "component-type": "time-picker",
+          component_type: "time-picker",
           start_placeholder: "Start Time",
           end_placeholder: "End time",
           isRange: true
@@ -119,7 +119,7 @@ export default {
         templateConfig.unshift({
           placeholder: "Select team members",
           id: "assigned_to",
-          "component-type": "select",
+          component_type: "select",
           model: "assigned_to",
           clearable: true,
           options: this.getDropdownTeamMembers,
@@ -129,7 +129,7 @@ export default {
       if (this.adminPermission && this.contains("individualUserGroups")) {
         templateConfig.unshift({
           model: "user_group",
-          "component-type": "select",
+          component_type: "select",
           placeholder: "Select user group",
           options: this.getUserGroups,
           optional: true,
