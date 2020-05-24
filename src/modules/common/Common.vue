@@ -206,7 +206,7 @@ export default {
     ...mapMutations("Tasks", ["UPDATE_BOARDS"]),
     ...mapMutations("Team", ["UPDATE_TEAM"]),
     ...mapMutations("Events", ["UPDATE_EVENT_TEMPLATES", "UPDATE_EVENTS"]),
-    ...mapMutations("Requests", ["UPDATE_REQUESTS"]),
+    ...mapMutations("Events", ["UPDATE_EVENT_REQUESTS"]),
     excecuteNotification(method, notificationIndex) {
       method.body()?.finally(() => {
         this.DELETE_SYSTEM_NOTIFICATION(notificationIndex);
@@ -230,23 +230,16 @@ export default {
           });
       });
     },
-    getRequests(userID) {
-      let _id = this.userInformation._id;
+    getRequests() {
       return new Promise((resolve, reject) => {
-        if (userID) {
-          _id = userID;
-        }
         const payload = {
           method: "GET",
-          url: "events/requests/all",
-          params: { _id }
+          url: "events/requests/all"
         };
         this.request(payload)
           .then(response => {
-            if (!userID) {
-              this.UPDATE_REQUESTS(response);
-              resolve();
-            }
+            this.UPDATE_EVENT_REQUESTS(response);
+            resolve();
           })
           .catch(err => {
             reject(err);

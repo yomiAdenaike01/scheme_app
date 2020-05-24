@@ -2,7 +2,7 @@
   <div
     :style="props.buttonStyle"
     :class="[
-      'button_container',
+      'button_container capitalize',
       data.staticClass,
       data.class,
       {

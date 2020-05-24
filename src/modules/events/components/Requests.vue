@@ -51,38 +51,15 @@
         </fade-transition>
         <!-- Requests -->
         <slide-x-left-transition group>
-          <div
+          <Request
             v-for="(request, index) in filteredRequests"
             :key="request._id"
-            :class="[
-              `request trigger `,
-              { active: selectedRequest._id == request._id }
-            ]"
-            @click="setSelectedRequest(request, index)"
-          >
-            <!-- Dates -->
-            <div class="dates_container">
-              <span>{{ formatDate(request.start_date, "DD-MM YYYY") }}</span>
-            </div>
-
-            <!-- Details -->
-            <div :class="`details_container ${request.status}`">
-              <h2 class="capitalize">{{ request.type.label }}</h2>
-              <strong class="status capitalize">{{ request.status }}</strong>
-
-              <p v-if="request.requested_by._id != userInformation._id">
-                {{ request.requested_by.name }}
-              </p>
-
-              <ul>
-                <li v-for="(value, key) in dateFieldsXref" :key="key">
-                  <span class="capitalize">{{ makePretty(key) }}</span> :{{
-                    value(request[key])
-                  }}
-                </li>
-              </ul>
-            </div>
-          </div>
+            :request="request"
+            :index="index"
+            :selected="selectedRequest"
+            :user="userInformation._id"
+            @setRequest="setSelectedRequest"
+          />
         </slide-x-left-transition>
       </div>
       <div v-else class="text_container grey all_centre">
@@ -184,13 +161,15 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import SButton from "@/components/SButton";
+import Request from "./Request";
 import { SlideXLeftTransition, FadeTransition } from "vue2-transitions";
 export default {
   name: "Requests",
   components: {
     SButton,
     SlideXLeftTransition,
-    FadeTransition
+    FadeTransition,
+    Request
   },
   props: {
     propFilters: {
@@ -319,19 +298,6 @@ export default {
       return statusOptions;
     },
 
-    dateFieldsXref() {
-      let dateFormat = "DD-MM YYYY";
-      let body = val => {
-        return this.formatDate(val, dateFormat);
-      };
-      let dateKeys = ["start_date", "end_date", "date_created"];
-      let dateXref = {};
-      for (let i = 0, len = dateKeys.length; i < len; i++) {
-        dateXref[dateKeys[i]] = body;
-      }
-      return dateXref;
-    },
-
     filteredRequests() {
       let filteredRequests = [];
       let filterLabel = this.filters.label.toLowerCase();
@@ -366,25 +332,23 @@ export default {
       handler(val) {
         this.assignFilters(val);
       }
-    },
-    filteredRequests: {
-      immediate: true,
-      handler(val) {
-        if (val.length > 0) {
-          let index = 0;
-          this.setSelectedRequest(val[index], index);
-        }
-      }
+    }
+  },
+
+  created() {
+    if (this.filteredRequests.length > 0) {
+      this.setSelectedRequest({ request: this.filteredRequests[0], index: 0 });
     }
   },
 
   methods: {
     ...mapActions(["request"]),
     ...mapMutations("Events", [
-      "CREATE_REQUEST",
+      "CREATE_EVENT_REQUEST",
       "UPDATE_EVENT_REQUEST",
       "DELETE_EVENT_REQUEST"
     ]),
+
     assignFilters(val = this.propFilters) {
       if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
         for (let property in val) {
@@ -397,53 +361,80 @@ export default {
         this.filters[property] = "";
       }
     },
-    setSelectedRequest(request, index) {
-      let mergedObject = {
-        ...request,
+    setSelectedRequest({ request, index }) {
+      this.selectedRequest = Object.assign(this.selectedRequest, request, {
         index
-      };
+      });
 
+      // If status is sent update to seen
       if (request?.status == "sent") {
-        this.UPDATE_EVENT_REQUEST({
-          ...mergedObject,
-          status: "seen"
-        });
-        this.selectedRequest = { status: "seen", ...mergedObject };
+        this.updateRequest({ status: "seen" });
       }
-
-      this.selectedRequest = mergedObject;
     },
-    deleteRequest() {
-      this.DELETE_EVENT_REQUEST(this.selectedRequest.index);
+    async deleteRequest() {
+      try {
+        this.DELETE_EVENT_REQUEST(this.selectedRequest.index);
+
+        //  API request
+        let apiPayload = {
+          method: "DELETE",
+          url: "events/requests/delete",
+          data: {
+            _id: this.selectedRequest._id
+          }
+        };
+        await this.request(apiPayload);
+        this.loadNextRequest();
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    loadNextRequest() {
       if (this.selectedRequest.index == 0) {
         this.selectedRequest = {};
+        return;
       }
       // If there is a request above
-      let aboveIndex = this.selectedRequest.index - 1,
-        belowIndex = this.selectedRequest.index + 1;
+      let aboveIndex = this.selectedRequest.index - 1;
+      let belowIndex = this.selectedRequest.index + 1;
+
       if (this.filteredRequests[aboveIndex]) {
         this.selectedRequest = this.filteredRequests[aboveIndex];
       }
+
       if (this.filteredRequests[belowIndex]) {
         this.selectedRequest = this.filteredRequests[belowIndex];
       }
     },
-    updateRequest(update) {
-      let updatedRequest = Object.assign(this.selectedRequest, update);
-      this.UPDATE_EVENT_REQUEST(updatedRequest);
+
+    async updateRequest(update) {
+      try {
+        let updatedRequest = Object.assign(this.selectedRequest, update);
+        this.UPDATE_EVENT_REQUEST(updatedRequest);
+        let assignedTo = this.selectedRequest.assigned_to.map(assignee => {
+          return assignee._id;
+        });
+
+        //  API request
+        const apiPayload = {
+          method: "PUT",
+          url: "events/requests/update",
+          data: {
+            _id: this.selectedRequest._id,
+            update,
+            assigned_to: assignedTo
+          }
+        };
+        await this.request(apiPayload);
+      } catch (error) {
+        return Promise.reject(error);
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-$requests: (
-  sent: var(--purple),
-  seen: var(--blue),
-  rejected: var(--danger),
-  approved: var(--success)
-);
-
 .requests_container {
   display: flex;
   height: 100%;
@@ -510,41 +501,6 @@ header {
   overflow-x: hidden;
   height: 100%;
   flex: 1;
-}
-.request {
-  flex: 1;
-  border-top: $border;
-
-  border-bottom: $border;
-  transition: $default_transition;
-  margin: 20px 0;
-  display: flex;
-}
-.dates_container {
-  font-size: 1.3em;
-  padding: 10px;
-  flex: 0.1;
-}
-.details_container {
-  flex: 1;
-  padding: 10px;
-  @each $key, $value in $requests {
-    &.#{$key} {
-      background: rgba($value, 0.08);
-      border-left: 5px solid rgba($value, 1);
-
-      &:hover,
-      &.active {
-        background: rgba($value, 0.1);
-      }
-      .status {
-        color: rgba($value, 1);
-      }
-    }
-  }
-}
-ul {
-  padding: 10px 0;
 }
 
 header {

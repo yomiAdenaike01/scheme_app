@@ -8,17 +8,17 @@
     />
 
     <Form
-      v-if="selectedTab == 'create_event'"
+      v-if="displayForEvents"
       v-model="formData"
       :config="config"
-      :validations="['assigned_to', 'dates', 'type']"
+      :validations="validations"
       :headings="{
         assigned_to: '<strong>Assigned to</strong>'
       }"
-      :submit-button="{ text: 'Create event' }"
+      :submit-button="{ text: makePretty(selectedTab) }"
       @val="handler"
     >
-      <div slot="header">
+      <div v-if="displayForEvents" slot="header">
         <!-- Templates -->
 
         <div
@@ -48,7 +48,7 @@
               :key="index"
               :template="template"
               :index="index"
-              @useTemplate="createEvent"
+              @useTemplate="populateForm"
               @updateTemplate="updateTemplate"
               @deleteTemplate="deleteTemplate"
             />
@@ -65,7 +65,10 @@
       </div>
     </Form>
 
-    <UpdateGroups v-else group-type="event_groups" />
+    <UpdateGroups
+      v-if="selectedTab == 'manage_groups'"
+      group-type="event_groups"
+    />
   </Overlay>
 </template>
 
@@ -102,8 +105,7 @@ export default {
   },
   data() {
     return {
-      tabItems: ["manage_groups", "create_event"],
-      selectedTab: "manage_groups",
+      selectedTab: "",
       formData: {},
       searchTemplates: "",
       displayTemplates: false,
@@ -117,6 +119,26 @@ export default {
     ...mapGetters(["adminPermission", "groupLookup"]),
     ...mapGetters("Team", ["userLookup"]),
 
+    displayForEvents() {
+      return ["create_event", "create_request"].indexOf(this.selectedTab) > -1;
+    },
+
+    validations() {
+      let validations = {
+        [this.adminPermission]: ["assigned_to", "dates", "type"],
+        [!this.adminPermission]: ["dates", "type"]
+      };
+      return validations[true];
+    },
+    tabItems() {
+      let tabItems = [];
+      if (this.adminPermission) {
+        tabItems.unshift("manage_groups", "create_event");
+      } else {
+        tabItems.unshift("create_request");
+      }
+      return tabItems;
+    },
     filteredTemplates() {
       let templates = [];
       let eventTemplates = [...this.eventTemplates];
@@ -191,21 +213,41 @@ export default {
       }
     },
     requestPayload() {
-      let excludeProperties = ["is_approved"];
+      let excludeProperties = ["is_approved", "assigned_to"];
+      // Get admins for assigned to request
+      let admins = {
+        request: this.getAdmins(false),
+        mutation: this.getAdmins(true)
+      };
+
+      let mutation = Object.assign(
+        this.cleanObject(excludeProperties, this.eventPayload.mutation),
+        {
+          _id: this.genID(),
+          assigned_to: admins.mutation,
+          requested_by: this.userInformation,
+          date_created: new Date().toISOString(),
+          status: "sent"
+        }
+      );
+
+      let request = Object.assign(
+        this.cleanObject(excludeProperties, this.eventPayload.request),
+        {
+          assigned_to: admins.request
+        }
+      );
 
       return {
-        request: this.cleanObject(excludeProperties, this.eventPayload.request),
-        mutation: this.cleanObject(
-          excludeProperties,
-          this.eventPayload.mutation
-        )
+        request,
+        mutation
       };
     },
     localData() {
       return {
         date_created: new Date().toISOString(),
         _id: this.genID(),
-        assigned_to: this.formData.assigned_to.map(assignee => {
+        assigned_to: this.formData?.assigned_to.map(assignee => {
           return this.userLookup(assignee);
         }),
         type: this.groupLookup("event", this.formData.type)
@@ -215,19 +257,22 @@ export default {
     eventPayload() {
       const isApproved = (populate = false) => {
         let approved = [];
-        let assignedTo = this.formData.assigned_to;
+        let assignedTo = this.formData?.assigned_to;
 
-        for (let i = 0, len = assignedTo.length; i < len; i++) {
-          let member = assignedTo[i];
-          if (!member.enable_event_rejection) {
-            if (populate) {
-              approved.push(this.userLookup(member));
-            } else {
-              approved.push(member);
+        if (assignedTo) {
+          for (let i = 0, len = assignedTo.length; i < len; i++) {
+            let member = assignedTo[i];
+            if (!member.enable_event_rejection) {
+              if (populate) {
+                approved.push(this.userLookup(member));
+              } else {
+                approved.push(member);
+              }
             }
           }
+
+          return approved;
         }
-        return approved;
       };
 
       let { start_date, end_date } = this.dates;
@@ -249,17 +294,42 @@ export default {
       };
     }
   },
+  created() {
+    if (Object.keys(this.$route.params).length > 0) {
+      this.populateForm(this.$route.params.eventParams);
+    }
+    this.selectedTab = this.tabItems[0];
+  },
+
   methods: {
     ...mapActions(["request", "genPromptBox"]),
+    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
     ...mapMutations("Events", [
       "CREATE_EVENT",
       "DELETE_EVENT",
       "UPDATE_EVENT",
       "DELETE_EVENT_TEMPLATE",
       "CREATE_EVENT_TEMPLATE",
-      "UPDATE_EVENT_TEMPLATE"
+      "UPDATE_EVENT_TEMPLATE",
+      "DELETE_EVENT_REQUEST",
+      "CREATE_EVENT_REQUEST",
+      "UPDATE_EVENT_REQUEST"
     ]),
 
+    populateForm(data) {
+      data = this.cleanObject(["start_date", "end_date"], data);
+      this.formData = Object.assign({}, this.formData, data);
+
+      if (this.displayTemplates) {
+        this.displayTemplates = false;
+      }
+
+      this.CREATE_SYSTEM_NOTIFICATION({
+        title: "Event form populated",
+        message: "Your form has been auto populated",
+        type: "info"
+      });
+    },
     async createEvent() {
       try {
         let apiPayload = Object.assign(
@@ -280,8 +350,9 @@ export default {
           this.newEventID = apiResponse._id;
           this.UPDATE_EVENT({ payload: apiResponse });
         }
-
-        await this.createTemplate(localPayload, apiPayload);
+        if (!event) {
+          await this.createTemplate(localPayload, apiPayload);
+        }
       } catch (e) {
         this.DELETE_EVENT();
         console.error(e);
@@ -354,17 +425,15 @@ export default {
       try {
         let { request, mutation } = this.requestPayload;
         // Create local request
-        let localRequestPayload = Object.assign(mutation, this.dates);
 
-        this.CREATE_REQUEST(localRequestPayload);
+        this.CREATE_EVENT_REQUEST(mutation);
 
         // Create api request
         let apiRequstPayload = {
           data: request,
-          url: "events/create/request",
+          url: "events/requests/create",
           method: "POST"
         };
-
         let apiResponse = await this.request(apiRequstPayload);
 
         if (apiResponse) {
@@ -373,6 +442,24 @@ export default {
             payload: apiResponse
           });
         }
+
+        this.CREATE_SYSTEM_NOTIFICATION({
+          title: "Request created",
+          message:
+            "Your request has been sent and will be updated in real-time.",
+          methods: [
+            {
+              label: "View request",
+              body: () => {
+                // Close overlay and go to requests with params
+                this.$emit("changeView", {
+                  view: "requests",
+                  teamMember: this.userInformation
+                });
+              }
+            }
+          ]
+        });
       } catch (error) {
         this.DELETE_EVENT_REQUEST();
         console.error(error);
@@ -380,7 +467,7 @@ export default {
     },
     async handler() {
       try {
-        if (this.adminPermission) {
+        if (!this.adminPermission) {
           await this.createEvent();
         } else {
           await this.createRequest();
@@ -424,6 +511,28 @@ export default {
       } catch (error) {
         this.UPDATE_EVENT_TEMPLATE(this.eventTemplateRef);
       }
+    },
+
+    getAdmins(populated) {
+      let admins = [];
+      for (let i = 0, len = this.team; i < len; i++) {
+        let member = this.team[i];
+        if (member.is_admin) {
+          if (populated) {
+            admins.push(member);
+          } else {
+            admins.push(member._id);
+          }
+        }
+      }
+      if (admins.length == 0) {
+        if (populated) {
+          admins.push(this.userInformation);
+        } else {
+          admins.push(this.userInformation._id);
+        }
+      }
+      return admins;
     }
   }
 };

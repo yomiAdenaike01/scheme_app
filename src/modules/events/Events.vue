@@ -12,6 +12,7 @@
           <EventsOverlay
             :display="overlays.events"
             @close="overlays.events = false"
+            @changeView="updateView"
           />
         </div>
 
@@ -58,7 +59,15 @@ export default {
     }
   },
   methods: {
+    closeOverlays() {
+      for (let property in this.overlays) {
+        if (this.overlays[property]) {
+          this.$set(this.overlays, property, false);
+        }
+      }
+    },
     updateView({ view, teamMember }) {
+      this.closeOverlays();
       this.view = view;
       this.requests.filters.requested_by = teamMember._id;
     }

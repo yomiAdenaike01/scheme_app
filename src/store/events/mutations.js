@@ -36,7 +36,7 @@ export default {
   UPDATE_EVENTS(state, payload) {
     state.events = payload;
   },
-  CREATE_REQUEST(state, payload) {
+  CREATE_EVENT_REQUEST(state, payload) {
     state.eventRequests.push(payload);
 
     updateBreadCrumbs(state, "eventRequestRef", {
@@ -46,7 +46,7 @@ export default {
   },
   DELETE_EVENT_REQUEST(state, index) {
     if (!index) {
-      state.eventRequest.pop();
+      state.eventRequests.pop();
     }
     updateBreadCrumbs(state, "eventRequestRef", state.eventRequests[index]);
     state.eventRequests.splice(index, 1);
@@ -58,6 +58,9 @@ export default {
       ...state.eventRequests[index]
     });
     state.eventRequests.splice(index, 1, data);
+  },
+  UPDATE_EVENT_REQUESTS(state, payload) {
+    state.eventRequests = payload;
   },
   CREATE_EVENT(state, payload) {
     // Get the data

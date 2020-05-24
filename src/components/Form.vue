@@ -9,13 +9,13 @@
         :key="`${index}${input.name}`"
         class="form_item"
       >
-        <small v-if="input.label" class="form_item_label grey">
+        <span v-if="input.label" class="form_item_label">
           {{
             input.optional || allOptional
               ? `(Optional) ${input.label}`
               : input.label
           }}
-        </small>
+        </span>
         <p
           v-if="
             Object.values(headings).length > 0 &&
@@ -280,9 +280,11 @@ header {
 .form_item_label {
   padding: 5px 0;
   margin: 0px;
+  display: block;
 }
 .error_message {
   color: rgba(var(--danger), 1);
+  display: block;
 }
 .button_container {
   display: flex;
@@ -339,8 +341,5 @@ header {
 .first_option {
   padding: 15px;
   cursor: not-allowed;
-}
-small {
-  display: block;
 }
 </style>

@@ -78,12 +78,14 @@ export default {
         },
 
         {
-          label: "create_event",
+          label: "use_template",
           icon: "plus",
           body: () => {
+            let { start_date, end_date } = this.template.content;
+            let dates = [start_date, end_date];
             this.$emit("useTemplate", {
-              template: this.template,
-              index: this.index
+              dates,
+              ...this.template.content
             });
           }
         }
@@ -125,7 +127,7 @@ export default {
     background: rgba(var(--danger), 0.1);
     color: rgba(var(--danger), 1);
   }
-  &.create_event {
+  &.use_template {
     background: rgba(var(--success), 0.1);
     color: rgba(var(--success), 1);
   }
