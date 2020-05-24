@@ -1,30 +1,34 @@
 <template>
   <div class="event_template_container">
-    <!-- Properties -->
     <div class="properties_container">
-      <p
+      <h4 :class="`property_item name capitalize`">
+        {{ template.name }}
+      </h4>
+      <small
         v-for="(property, propertyIndex) in propertiesDisplay"
         :key="propertyIndex"
+        :class="`property_item ${property}`"
       >
-        {{ formattedTemplate.content[property] }}
-      </p>
+        {{ formattedContent[property] }}
+      </small>
     </div>
-    <!-- Actions -->
+
     <div class="actions_container">
       <div
         v-for="(action, actionIndex) in actions"
         :key="actionIndex"
-        class="template_action"
+        :class="`template_action trigger ${action.label}`"
         @click="action.body"
       >
-        <span>{{ action.label }}</span>
-        <i :class="`bx bx-${action.icon}`"></i>
+        <small class="capitalize">{{ makePretty(action.label) }}</small>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "EventTemplate",
   props: {
@@ -38,18 +42,33 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("Team", ["userLookup"]),
     propertiesDisplay() {
-      return ["assigned_to", "start_date", "end_date"];
+      return ["name", "assigned_to", "start_date", "end_date"];
     },
-    formattedTemplate() {
-      return Object.assign({}, this.template, {
-        assigned_to: this.template.assigned_to.join(",")
+
+    assignedTo() {
+      return this.template.content.assigned_to.map(assignee => {
+        return this.userLookup(assignee)?.name;
       });
     },
+
+    formattedContent() {
+      let content = this.template.content;
+      return {
+        ...content,
+        assigned_to: this.assignedTo.join(", "),
+        start_date: this.formatDate(content.start_date),
+        end_date: this.formatDate(content.end_date)
+      };
+    },
+
     actions() {
       return [
         {
-          label: "Delete",
+          label: "delete",
+          icon: "trash",
+
           body: () => {
             this.$emit("deleteTemplate", {
               _id: this.template._id,
@@ -57,14 +76,10 @@ export default {
             });
           }
         },
+
         {
-          label: "Edit",
-          body: () => {
-            this.$emit("updateTemplate", this.template.content);
-          }
-        },
-        {
-          label: "Use",
+          label: "create_event",
+          icon: "plus",
           body: () => {
             this.$emit("useTemplate", {
               template: this.template,
@@ -80,28 +95,44 @@ export default {
 
 <style lang="scss" scoped>
 .event_template_container {
-  padding: 10px;
+  margin: 10px;
   display: flex;
-  align-items: center;
   border: $border;
   border-radius: 5px;
+  flex: 1;
+  justify-content: space-between;
 }
 .properties_container {
   display: flex;
   flex-direction: column;
   line-height: 2em;
   flex: 1;
+  padding: 10px;
 }
 .actions_container {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex: 0.5;
 }
 .template_action {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
-  background: rgb(250, 250, 250);
+  height: 100%;
+  background: rgb(252, 252, 252);
+
+  &.delete {
+    background: rgba(var(--danger), 0.1);
+    color: rgba(var(--danger), 1);
+  }
+  &.create_event {
+    background: rgba(var(--success), 0.1);
+    color: rgba(var(--success), 1);
+  }
+}
+.property_item {
+  &.assigned_to {
+    font-weight: bold;
+  }
 }
 </style>

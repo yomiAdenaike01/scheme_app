@@ -88,22 +88,10 @@
             </el-popover>
           </div>
         </div>
+        <!-- Event dates -->
         <div class="view_dialog_information_container">
           <h3>Event date information</h3>
-          <el-popover trigger="click">
-            <Form
-              :config="configXref"
-              submit-text="Update"
-              class="full_width"
-              @val="updateEvent"
-            />
-            <s-button
-              slot="reference"
-              class="plain"
-              @click="selectedConfig = 'date'"
-              >Update date information</s-button
-            >
-          </el-popover>
+          <!-- INSERT FORM HERE -->
 
           <div class="info_unit">
             <span class="info_label">Event start:</span>
@@ -114,22 +102,10 @@
             <span>{{ dates.end }}</span>
           </div>
         </div>
+        <!-- Event duration type -->
         <div class="view_dialog_information_container">
           <h3>Event type & duration</h3>
-          <el-popover trigger="click">
-            <Form
-              :config="configXref"
-              submit-text="Update"
-              class="full_width"
-              @val="updateEvent"
-            />
-            <s-button
-              slot="reference"
-              class="plain"
-              @click="selectedConfig = 'type'"
-              >Update event type information</s-button
-            >
-          </el-popover>
+          <!-- INSERT FORM HERE -->
 
           <div class="info_unit">
             <span class="info_label">Event duration:</span>

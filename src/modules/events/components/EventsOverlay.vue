@@ -18,13 +18,14 @@
       :submit-button="{ text: 'Create event' }"
       @val="handler"
     >
-      <!-- Templates -->
-      <div slot="header" class="templates_container">
+      <div slot="header">
+        <!-- Templates -->
+
         <div
           class="display_filters_container trigger"
           @click="displayTemplates = !displayTemplates"
         >
-          <strong> View templates </strong>
+          <strong> View templates ({{ filteredTemplates.length }})</strong>
           <i
             :class="`bx bx-${!displayTemplates ? 'right' : 'down'}-arrow-alt`"
           ></i>
@@ -37,7 +38,7 @@
             <input
               v-model="searchTemplates"
               type="text"
-              class="s_input"
+              class="s_input filter_input"
               placeholder="Search templates"
             />
 
@@ -45,7 +46,7 @@
             <EventTemplate
               v-for="(template, index) in filteredTemplates"
               :key="index"
-              :template="event"
+              :template="template"
               :index="index"
               @useTemplate="createEvent"
               @updateTemplate="updateTemplate"
@@ -53,6 +54,14 @@
             />
           </div>
         </collapse-transition>
+
+        <!-- QR Code -->
+        <div v-if="newEventID.length > 0" class="qr_container">
+          <small class="grey">
+            Scan this code with the companion app to clock in.
+          </small>
+          <qrcode-vue :value="newEventID" level="H"></qrcode-vue>
+        </div>
       </div>
     </Form>
 
@@ -63,7 +72,7 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import { CollapseTransition } from "vue2-transitions";
-
+import QrcodeVue from "qrcode.vue";
 import Menu from "@/components/Menu";
 import Overlay from "@/components/Overlay";
 import genID from "@/mixins/genID";
@@ -81,7 +90,8 @@ export default {
     Overlay,
     UpdateGroups,
     CollapseTransition,
-    EventTemplate
+    EventTemplate,
+    QrcodeVue
   },
   mixins: [genID, cleanObject],
   props: {
@@ -96,7 +106,8 @@ export default {
       selectedTab: "manage_groups",
       formData: {},
       searchTemplates: "",
-      displayTemplates: false
+      displayTemplates: false,
+      newEventID: ""
     };
   },
   computed: {
@@ -108,17 +119,20 @@ export default {
 
     filteredTemplates() {
       let templates = [];
+      let eventTemplates = [...this.eventTemplates];
+
       let searchTerm = this.searchTemplates.toLowerCase();
 
-      for (let i = 0, len = this.eventTemplates.length; i < len; i++) {
-        let template = this.eventTemplates[i];
+      for (let i = 0, len = eventTemplates.length; i < len; i++) {
+        let template = eventTemplates[i];
+
         if (!template.name.toLowerCase().includes(searchTerm)) {
           continue;
         }
         templates.push(template);
       }
 
-      return templates.length > 0 ? templates : this.eventTemplates;
+      return templates.length > 0 ? templates : eventTemplates;
     },
 
     dates() {
@@ -240,15 +254,14 @@ export default {
     ...mapMutations("Events", [
       "CREATE_EVENT",
       "DELETE_EVENT",
+      "UPDATE_EVENT",
       "DELETE_EVENT_TEMPLATE",
-      "CREATE_EVENT_TEMPLATE"
+      "CREATE_EVENT_TEMPLATE",
+      "UPDATE_EVENT_TEMPLATE"
     ]),
 
-    async createEvent(event) {
+    async createEvent() {
       try {
-        return console.log(event);
-        let lastEventIndex = this.events.length - 1;
-
         let apiPayload = Object.assign(
           { data: this.eventPayload.request },
           {
@@ -264,9 +277,8 @@ export default {
         let apiResponse = await this.request(apiPayload);
 
         if (apiResponse) {
-          apiResponse = Object.assign(apiResponse, { index: lastEventIndex });
-
-          this.UPDATE_EVENT(apiResponse);
+          this.newEventID = apiResponse._id;
+          this.UPDATE_EVENT({ payload: apiResponse });
         }
 
         await this.createTemplate(localPayload, apiPayload);
@@ -275,50 +287,69 @@ export default {
         console.error(e);
       }
     },
-    async createTemplate(eventPayload, apiPayload) {
+    async createTemplate(eventPayload, apiEventPayload) {
       try {
         // Use the event content to create a template
         let boxPayload = {
           boxType: "prompt",
           title: "Create template",
           text:
-            "Would you like to save this event as a template, If so enter the name of the template below ?"
+            "Would you like to save this event as a template, If so enter the name of the template below ?",
+          inputPlaceholder: "Template name"
         };
 
         let defaultName = `template_${new Date().toISOString()}`;
         let owners = [this.userInformation];
 
-        let name = await this.genPromptBox(boxPayload)?.value;
-        if (!name) {
-          name = defaultName;
-        }
+        let promptResponse = await this.genPromptBox(boxPayload)
+          .then(({ value }) => {
+            return value;
+          })
+          .catch(() => {
+            return Promise.reject("Cancelled");
+          });
 
         let localTemplatePayload = {
           content: eventPayload,
           owners,
-          name
+          name: promptResponse
         };
 
         this.CREATE_EVENT_TEMPLATE(localTemplatePayload);
 
-        // Create request to template
+        // Create api template
+
+        let apiTemplateData = {
+          owners: [this.userInformation._id],
+          name,
+          content: this.cleanObject(
+            ["notes", "is_approved"],
+            apiEventPayload.data
+          )
+        };
+
         let apiTemplatePayload = {
-          data: this.cleanObject(["notes"], apiPayload.data),
+          data: apiTemplateData,
           method: "POST",
           url: "events/templates/create"
         };
 
         let apiResponse = await this.request(apiTemplatePayload);
 
-        this.UPDATE_EVENT_TEMPLATE({
-          index: this.eventTemplates.length - 1,
-          data: apiResponse
-        });
+        if (apiResponse) {
+          // Update local template
+          this.UPDATE_EVENT_TEMPLATE({
+            index: this.eventTemplates.length - 1,
+            data: apiResponse
+          });
+        }
       } catch (error) {
+        // Delete local template
         this.DELETE_EVENT_TEMPLATE();
         console.error(error);
       }
     },
+
     async createRequest() {
       try {
         let { request, mutation } = this.requestPayload;
@@ -358,7 +389,7 @@ export default {
         return Promise.reject(error);
       }
     },
-
+    // Delete template
     async deleteTemplate({ _id, index }) {
       try {
         this.DELETE_EVENT_TEMPLATE(index);
@@ -370,9 +401,10 @@ export default {
         };
         await this.request(apiDeleteTemplatePayload);
       } catch (error) {
-        this.CREATE_EVENT_TEMPLATE(this.eventTemplateRef);
+        console.log(error);
       }
     },
+    // Update template
     async updateTemplate({ template, index }) {
       try {
         let localUpdatePayload = {
@@ -405,6 +437,18 @@ export default {
   align-items: center;
 }
 .templates_sub_container {
+  max-height: 350px;
+  overflow: auto;
+}
+.filter_input {
+  position: sticky;
+  top: 0;
+  background: white;
+}
+.qr_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 10px;
 }
 </style>

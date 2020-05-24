@@ -4,15 +4,7 @@ import updateBreadCrumbs from "../helpers";
 export default {
   // Event templates
   UPDATE_EVENT_TEMPLATES(state, payload) {
-    for (let i = 0, len = payload.length; i < len; i++) {
-      let payloadTemplate = payload[i];
-      let stateTemplate = state.eventTemplates.find(template => {
-        return template._id == payloadTemplate._id;
-      });
-      if (!stateTemplate) {
-        state.eventTemplates.push(payloadTemplate);
-      }
-    }
+    state.eventTemplates = payload;
   },
   CREATE_EVENT_TEMPLATE(state, payload) {
     state.eventTemplates.push(payload);
@@ -25,10 +17,11 @@ export default {
   DELETE_EVENT_TEMPLATE(state, index) {
     if (!index) {
       state.eventTemplates.pop();
-      index = state.eventTemplates.length - 1;
     }
-    updateBreadCrumbs(state, state.eventTemplates[index]);
-    Vue.delete(state.eventTemplates, index);
+    updateBreadCrumbs(state, {
+      payload: state.eventTemplates[state.eventTemplates.length - 1]
+    });
+    state.eventTemplates.splice(index, 1);
   },
   UPDATE_EVENT_TEMPLATE(state, payload) {
     if (!payload.index) {
@@ -41,15 +34,7 @@ export default {
 
   // Events
   UPDATE_EVENTS(state, payload) {
-    for (let i = 0, len = payload.length; i < len; i++) {
-      let event = payload[i];
-      let isDuplicateEvent = state.events.findIndex(payloadEvent => {
-        return payloadEvent._id == event._id;
-      });
-      if (isDuplicateEvent == -1) {
-        state.events.push(event);
-      }
-    }
+    state.events = payload;
   },
   CREATE_REQUEST(state, payload) {
     state.eventRequests.push(payload);
@@ -81,16 +66,14 @@ export default {
       index: state.events.length - 1
     });
   },
-  UPDATE_EVENT(state, { index, payload }) {
+  UPDATE_EVENT(state, { index = state.events.length - 1, payload }) {
     let event = state.events[index];
     updateBreadCrumbs(state, "eventRef", {
       index,
       payload: event
     });
 
-    for (let property in payload) {
-      Vue.set(event[property], property, payload[property]);
-    }
+    state.events.splice(index, 1, payload);
   },
   DELETE_EVENT(state, index) {
     if (!index) {
