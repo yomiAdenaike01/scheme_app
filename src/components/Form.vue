@@ -193,6 +193,10 @@ export default {
     validations: {
       type: Array,
       default: () => []
+    },
+    resetOnSubmit: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -215,15 +219,18 @@ export default {
     }
   },
   created() {
-    for (let i = 0, len = this.config.length; i < len; i++) {
-      let item = this.config[i];
-      if (item?.multiple && !this.formContent?.[item.model]) {
-        this.$set(this.formContent, item.model, []);
-      }
-    }
+    this.initForm();
   },
   methods: {
     ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
+    initForm() {
+      for (let i = 0, len = this.config.length; i < len; i++) {
+        let item = this.config[i];
+        if (item?.multiple && !this.formContent?.[item.model]) {
+          this.$set(this.formContent, item.model, []);
+        }
+      }
+    },
     selectProperties(input) {
       input = Object.assign({}, input);
       if (input?.multiple) {
@@ -236,9 +243,8 @@ export default {
     submitForm() {
       if (Object.keys(this.rules).length == 0) {
         this.$emit("val");
-
-        if (this.nextTab) {
-          this.$emit("changeTab");
+        if (this.resetOnSubmit) {
+          this.initForm();
         }
       } else {
         this.CREATE_SYSTEM_NOTIFICATION({

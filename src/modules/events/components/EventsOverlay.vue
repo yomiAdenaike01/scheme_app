@@ -12,6 +12,7 @@
       v-model="formData"
       :config="config"
       :validations="validations"
+      reset-on-submit
       :headings="{
         assigned_to: '<strong>Assigned to</strong>'
       }"

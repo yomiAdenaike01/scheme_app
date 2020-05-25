@@ -166,6 +166,13 @@ export default {
      *
      */
     login() {
+      const goToEvents = () => {
+        if (this.$route.name != "events") {
+          this.$router.push({
+            name: "events"
+          });
+        }
+      };
       this.loading = true;
       this.request({
         method: "POST",
@@ -187,10 +194,9 @@ export default {
                 "Use the forgot password functionality to reset you password."
             });
 
-            this.$router.push({ name: "events" });
+            goToEvents();
           }
-
-          this.$router.push({ name: "events" });
+          goToEvents();
 
           this.loading = false;
         })

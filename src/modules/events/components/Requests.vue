@@ -148,7 +148,7 @@
           <p
             v-for="(action, index) in actionOptions"
             :key="index"
-            :class="[`action_item capitalize ${action.class}`]"
+            :class="[`action_item capitalize ${action.buttonLabel}`]"
             @click="action.body"
           >
             {{ action.buttonLabel }}
@@ -319,7 +319,6 @@ export default {
       let requests = [...this.eventRequests];
       for (let i = 0, len = requests.length; i < len; i++) {
         let request = requests[i];
-        console.log(request);
         if (!filterLabel.includes(request?.type?.label.toLowerCase())) {
           continue;
         }
@@ -584,9 +583,30 @@ header {
 .actions_wrapper {
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
 }
+$actionitems: (
+  approve: var(--success),
+  reject: var(--danger)
+);
+
 .action_item {
+  text-align: center;
+  flex: 1;
   font-weight: bold;
+  margin: 0;
+  padding: 20px 0;
+  cursor: pointer;
+  transition: $default_transition;
+  @each $key, $value in $actionitems {
+    &.#{$key} {
+      background: rgba($value, 0.03);
+      color: rgba($value, 1);
+      &:hover {
+        background: rgba($value, 0.1);
+      }
+    }
+  }
 }
 .timeline_wrapper {
   padding: 20px;

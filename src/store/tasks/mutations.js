@@ -1,6 +1,16 @@
 import updateBreadCrumbs from "../helpers";
-
+import Vue from "vue";
 export default {
+  UPDATE_BOARD(state, payload) {
+    let board = state.boards[payload.index];
+    updateBreadCrumbs(state, "boardRef", {
+      index: payload.index,
+      update: state.boards[payload.index]
+    });
+    for (let property in payload.update) {
+      Vue.set(board, property, payload.update[property]);
+    }
+  },
   UPDATE_BOARDS(state, { data, action = "update" }) {
     // Update board at an index and create a reference
     if (action == "update") {
@@ -38,9 +48,15 @@ export default {
     } else {
       // Push a new board this is so that it can be removed if the creation goes wrong
       let boardIndex = state.boards.length - 1;
-      let { name, description, _id } = data;
-      updateBreadCrumbs(state, "boardRef", { boardIndex, ...data });
-      state.boards.push({ name, description, _id, tasks: [] });
+      let { name, description, _id, date_created } = data;
+      updateBreadCrumbs(state, "boardRef", {
+        boardIndex,
+        name,
+        description,
+        _id,
+        date_created
+      });
+      state.boards.push({ name, description, date_created, _id, tasks: [] });
     }
   },
   CREATE_TASK(state, data) {

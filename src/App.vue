@@ -134,6 +134,9 @@ ul {
   align-items: center;
   padding: 10px;
 }
+.popover_form /deep/ .form_wrapper .form {
+  padding: 12px;
+}
 :root {
   // Primary
   --colour_primary: 74, 85, 100;
@@ -225,6 +228,12 @@ ul {
   }
   &.multiple {
     padding: 0;
+  }
+  &.no_border {
+    border: none;
+  }
+  &.bold {
+    font-weight: bold;
   }
 }
 /*

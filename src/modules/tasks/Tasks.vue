@@ -11,17 +11,19 @@
             @createTask="createTask"
             @viewTask="viewTask"
           />
-          <TaskBoard
-            v-for="(board, index) in calcBoardsLeft"
-            :key="index"
-            :board-index="index"
-            new-board
-          />
+          <template v-if="calcBoardsLeft > 0">
+            <TaskBoard
+              v-for="(board, index) in calcBoardsLeft"
+              :key="index"
+              :board-index="index"
+              new-board
+            />
+          </template>
         </div>
       </div>
 
       <TaskView
-        v-else
+        v-if="display"
         :task-information="task"
         :board-index="boardIndex"
         @toggle="
@@ -41,7 +43,7 @@ import TaskBoard from "./components/TaskBoard";
 import TaskView from "./components/TaskView";
 
 export default {
-  name: "TasksModule",
+  name: "Tasks",
   components: {
     TaskBoard,
     TaskView,

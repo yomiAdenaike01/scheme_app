@@ -131,22 +131,15 @@
                   :class="[
                     'team_member',
                     {
-                      assigned:
-                        task.assigned_to.findIndex(
-                          assignee => assignee._id == member._id
-                        ) > -1
+                      assigned: checkIsAssigned(member) > -1
                     }
                   ]"
-                  @click="toggleAssignedTeamMember($event, member)"
+                  @click="toggleAssignedTeamMember(member)"
                 >
                   <p>
                     <span>{{ member.name }}</span>
                     <i
-                      v-if="
-                        task.assigned_to.findIndex(
-                          assignee => assignee._id == member._id
-                        ) > -1
-                      "
+                      v-if="checkIsAssigned(member) > -1"
                       class="bx bx-check"
                     />
                   </p>
@@ -209,7 +202,10 @@
                         placeholder="Click to create new label"
                         type="text"
                         class="label_placeholder_input"
-                        @keyup.enter="saveLabel"
+                        @keyup.enter="
+                          $event.stopPropagation();
+                          saveLabel();
+                        "
                       />
                       <el-popover v-model="displayPopover">
                         <i
@@ -426,8 +422,9 @@ export default {
         : false;
     },
     filteredTeam() {
+      let search = this.teamNameSearch.toLowerCase();
       let filteredTeam = this.team.filter(x =>
-        x.name.toLowerCase().includes(this.teamNameSearch.toLowerCase())
+        x.name.toLowerCase().includes(search)
       );
       return filteredTeam.length > 0 ? filteredTeam : this.team;
     },
@@ -582,7 +579,7 @@ export default {
           }
 
           this.CREATE_TASK(
-            Object.assign({}, taskData, {
+            Object.assign(taskData, {
               boardIndex: this.boardIndex,
               local: true
             })
@@ -651,13 +648,18 @@ export default {
       ) {
         task = this.taskInformation;
       }
-      Object.assign(this.task, task);
+      this.task = Object.assign({}, this.task, task);
     },
     deleteLabel(id) {
       let labelIndex = this.task.labels.findIndex(x => x._id == id);
       if (labelIndex > -1) {
         this.task.labels.splice(labelIndex, 1);
       }
+    },
+    checkIsAssigned(member) {
+      return this.task.assigned_to.findIndex(x => {
+        return x._id == member._id;
+      });
     },
     saveLabel() {
       let newLabel = {
@@ -694,10 +696,8 @@ export default {
         item.function();
       }
     },
-    toggleAssignedTeamMember(e, teamMember) {
-      let assignedIndex = this.task.assigned_to.findIndex(
-        assignee => assignee._id == teamMember._id
-      );
+    toggleAssignedTeamMember(teamMember) {
+      let assignedIndex = this.checkIsAssigned(teamMember);
 
       if (assignedIndex > -1) {
         this.task.assigned_to.splice(assignedIndex, 1);
@@ -908,6 +908,7 @@ $due_date_ref: (
   position: sticky;
   top: 0px;
   border-radius: 0px;
+  background: white;
 }
 
 .team_member {

@@ -1,7 +1,7 @@
 <template>
   <!-- CHANGE TO FUNCTIONAL -->
   <div
-    :class="[`request trigger `, { active: selected._id == request._id }]"
+    :class="[`request trigger`, { active: selected._id == request._id }]"
     @click="$emit('setRequest', { request, index })"
   >
     <!-- Dates -->
@@ -81,6 +81,10 @@ $requests: (
   transition: $default_transition;
   margin: 20px 0;
   display: flex;
+  opacity: 0.5;
+  &.active {
+    opacity: 1;
+  }
 }
 
 .details_container {

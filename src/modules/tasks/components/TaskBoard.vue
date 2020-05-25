@@ -2,45 +2,39 @@
   <div class="board_container">
     <div v-if="!newBoard && boardData" class="inner_board_container">
       <div class="board_header">
+        <!-- Update board name and description -->
         <div class="update_board_container">
           <div class="text_container">
-            <h2>{{ boardData.name }}</h2>
-            <span>{{ truncate(description) }}</span>
-          </div>
-
-          <el-popover
-            v-model="displayEditBoard"
-            trigger="click"
-            position="right"
-          >
-            <i
-              slot="reference"
-              class="trigger bx bx-dots-horizontal-rounded grey"
-            ></i>
-            <div class="popover_title">
-              <strong>Edit board</strong>
-              <i class="bx bx-x trigger" @click="displayEditBoard = false"></i>
-            </div>
-            <span></span>
-
-            <Form
-              v-model="boardData"
-              :heading="heading"
-              :config="formConfig"
-              :submit-button="{
-                class: 'bordered primary rounded',
-                text: 'Update board'
-              }"
-              @val="updateBoard"
+            <input
+              v-model="boardData.name"
+              type="text"
+              :placeholder="boardData.name"
+              :disabled="!adminPermission"
+              class="s_input capitalize no_border bold board_name_input"
             />
-          </el-popover>
+            <input
+              v-model="boardData.description"
+              type="text"
+              :placeholder="boardData.description"
+              class="s_input capitalize no_border board_name_input description"
+              :disabled="!adminPermission"
+            />
+          </div>
         </div>
+        <!-- Save changes  -->
+        <i
+          v-if="boardChanged"
+          class="bx bx-down-arrow-circle grey trigger save_board"
+          @click="updateBoard"
+        ></i>
+        <!-- Task progress -->
         <el-progress
           v-if="filteredTasks.length > 0"
           :status="progressCount.status"
           :percentage="progressCount.percentage"
         ></el-progress>
       </div>
+      <!-- No tasks found -->
       <div v-if="filteredTasks.length == 0" class="text_container all_centre">
         <h3>No tasks found</h3>
         <p>Press the button below to create a task assigned to this board</p>
@@ -107,13 +101,25 @@
 
         <el-popover
           v-if="boardIndex == 0 && adminPermission"
+          v-model="displayNewBoardForm"
           position="top"
           trigger="click"
+          popper-class="popover_form"
         >
           <div slot="reference">
             <s-button class="only_icon secondary" icon="plus" />
           </div>
-          <Form class="full_width" :config="formConfig" @val="createBoard" />
+          <Form
+            v-model="createBoardData"
+            class="full_width"
+            :validations="['name', 'description']"
+            :submit-button="{
+              class: 'mini bordered rounded',
+              text: 'Create board'
+            }"
+            :config="formConfig"
+            @val="createBoard"
+          />
         </el-popover>
       </div>
     </div>
@@ -128,6 +134,7 @@ import vClickOutside from "v-click-outside";
 import TaskItem from "./TaskItem";
 import SButton from "@/components/SButton";
 import Form from "@/components/Form";
+import genID from "@/mixins/genID";
 
 export default {
   name: "TaskBoard",
@@ -141,6 +148,7 @@ export default {
   directives: {
     clickOutside: vClickOutside.directive
   },
+  mixins: [genID],
   props: {
     newBoard: {
       type: Boolean,
@@ -163,7 +171,10 @@ export default {
         display: false,
         name: "",
         assignedTo: ""
-      }
+      },
+      boardChanged: false,
+      createBoardData: {},
+      displayNewBoardForm: false
     };
   },
   computed: {
@@ -253,7 +264,8 @@ export default {
           component_type: "text",
           noLabel: true,
           placeholder: "Board name",
-          model: "name"
+          model: "name",
+          label: "Name"
         },
         {
           component_type: "text",
@@ -261,7 +273,8 @@ export default {
           noLabel: true,
 
           placeholder: "Board desciprtion",
-          model: "description"
+          model: "description",
+          label: "Description"
         }
       ];
     }
@@ -271,6 +284,7 @@ export default {
     ...mapMutations(["UPDATE_CLIENT_INFORMATION"]),
     ...mapMutations("Tasks", [
       "UPDATE_BOARDS",
+      "UPDATE_BOARD",
       "RESTORE_BOARD",
       "CREATE_TASK",
       "DELETE_BOARD"
@@ -308,27 +322,39 @@ export default {
         });
       });
     },
-    createBoard(payload) {
-      this.UPDATE_BOARDS({ data: payload, action: "create" });
+    createBoard() {
+      let localBoardStub = Object.assign(this.createBoardData, {
+        _id: this.genID(),
+        date_created: new Date().toISOString()
+      });
+      this.UPDATE_BOARDS({ data: localBoardStub, action: "create" });
       this.updateBoardQuota("minus");
-      let { _id, ...data } = payload;
 
-      payload = {
-        data,
+      let apiPayload = {
+        data: this.createBoardData,
         method: "POST",
         url: "tasks/boards/create"
       };
 
-      this.request(payload).catch(() => {
-        this.DELETE_BOARD(payload.board_id);
+      this.request(apiPayload).catch(() => {
+        this.DELETE_BOARD(apiPayload.board_id);
         this.updateBoardQuota("plus");
       });
+      this.displayNewBoardForm = false;
     },
 
-    updateBoard(payload) {
-      this.UPDATE_BOARDS({ action: "update", ...payload });
-      payload = {
-        data: { ...payload },
+    updateBoard() {
+      // Only extract the changes
+      let update = {
+        name: this.boardData.name,
+        desciprtion: this.boardData.description
+      };
+      this.UPDATE_BOARD({
+        index: this.boardIndex,
+        update
+      });
+      let payload = {
+        data: update,
         method: "PUT",
         url: "tasks/boards/update"
       };
@@ -336,12 +362,25 @@ export default {
       this.request(payload).catch(() => {
         this.RESTORE_BOARD();
       });
+      this.boardChanged = false;
     },
     createTask() {
       this.$emit("createTask", {
         boardIndex: this.boardIndex,
         taskIndex: this.boardData.tasks.length + 1
       });
+    }
+  },
+  watch: {
+    "boardData.name"(oldVal, newVal) {
+      if (!this.boardChanged && oldVal != newVal) {
+        this.boardChanged = true;
+      }
+    },
+    "boardData.description"(oldVal, newVal) {
+      if (!this.boardChanged && oldVal != newVal) {
+        this.boardChanged = true;
+      }
     }
   }
 };
@@ -368,8 +407,9 @@ export default {
 }
 .board_header {
   display: flex;
-  flex-direction: column;
   padding: 10px;
+  align-items: center;
+  justify-content: space-between;
   text-transform: capitalize;
   border-bottom: $border;
   h1,
@@ -391,6 +431,14 @@ export default {
     align-items: center;
   }
 }
+.board_name_input {
+  font-size: 1.3em;
+  padding: 0;
+  margin: 0;
+  &.description {
+    font-size: initial;
+  }
+}
 .new_board_container {
   display: flex;
   flex-direction: column;
@@ -399,12 +447,6 @@ export default {
   flex: 1;
 }
 
-.el-popover_form {
-  &/deep/ .el-form-item__content,
-  .dialog_item {
-    width: 100%;
-  }
-}
 .progress_alt {
   margin: 10px 0;
   text-transform: initial;
@@ -461,5 +503,8 @@ export default {
   .s_input {
     margin-top: 10px;
   }
+}
+.save_board {
+  font-size: 1.8em;
 }
 </style>
