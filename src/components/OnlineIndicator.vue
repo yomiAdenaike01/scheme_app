@@ -35,12 +35,9 @@ export default {
   flex: 1;
   padding: 5px;
   border-radius: 50%;
-
+  background: rgba(var(--danger), 1);
   &.online {
     background: rgba(var(--success), 1);
-  }
-  &.not_online {
-    background: rgba(var(--danger), 1);
   }
 }
 </style>

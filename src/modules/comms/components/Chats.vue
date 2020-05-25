@@ -86,7 +86,11 @@ export default {
   },
   methods: {
     ...mapActions("Comms", ["createStubChat"]),
-    ...mapMutations("Comms", ["UPDATE_CHATS", "UPDATE_ACTIVE_CHAT"]),
+    ...mapMutations("Comms", [
+      "UPDATE_CHATS",
+      "UPDATE_ACTIVE_CHAT",
+      "DELETE_CHAT"
+    ]),
     startNewChat() {
       if (this.chats.length == 0) {
         this.createStubChat();

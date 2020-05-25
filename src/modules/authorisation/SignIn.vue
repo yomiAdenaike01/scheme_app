@@ -11,6 +11,7 @@
     >
       <div slot="header" class="header_container">
         <h1>Sign in</h1>
+        <small class="grey">Fill in the form to login</small>
         <collapse-transition>
           <p v-if="errorMessage.length > 0" class="error">{{ errorMessage }}</p>
         </collapse-transition>
