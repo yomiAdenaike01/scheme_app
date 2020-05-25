@@ -129,7 +129,7 @@ export default {
       immediateCallback: () => {
         this.loading = false;
       },
-      duration: 10000,
+      duration: this.globalIntervals.admin,
       id: "adminIntervals",
       method: () => {
         return new Promise((resolve, reject) => {
