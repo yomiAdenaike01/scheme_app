@@ -418,7 +418,11 @@ export default {
                 );
               }
 
-              this.UPDATE_ONE_TEAM_MEMBER({ index, payload });
+              if (this.selectedTeamMember._id != this.userInformation._id) {
+                this.UPDATE_ONE_TEAM_MEMBER({ index, payload });
+              } else {
+                this.UPDATE_USER_INFORMATION(payload);
+              }
             },
             data: {
               index: this.selectedTeamMemberIndex,

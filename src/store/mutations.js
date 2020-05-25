@@ -28,41 +28,6 @@ export default {
     state.overlayHistory = payload;
   },
 
-  CREATE_GROUP(state, { groupType, payload }) {
-    let group = state.clientInformation[groupType];
-
-    let groupExists =
-      state.clientInformation[groupType].findIndex(group => {
-        return group?.label?.toLowerCase() == payload?.label?.toLowerCase();
-      }) > -1;
-
-    if (!groupExists) {
-      group.push(payload);
-      updateBreadCrumbs(state, "groupRef", { groupType, payload });
-    }
-  },
-
-  DELETE_GROUP(state, { groupType, groupIndex }) {
-    updateBreadCrumbs(state, "groupRef", {
-      groupType,
-      payload: state.clientInformation[groupType][groupIndex]
-    });
-
-    Vue.delete(state.clientInformation[groupType], groupIndex);
-  },
-
-  UPDATE_GROUP(state, { groupType, groupIndex, payload }) {
-    let group = state.clientInformation[groupType][groupIndex];
-
-    updateBreadCrumbs(state, "groupRef", {
-      groupType,
-      groupIndex,
-      payload
-    });
-
-    Object.assign(group, payload);
-  },
-
   CREATE_GLOBAL_INTERVAL(state, payload) {
     payload = payload
       ? payload
@@ -107,7 +72,7 @@ export default {
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    Object.assign(state.clientInformation, payload);
+    state.clientInformation = payload;
   },
 
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {

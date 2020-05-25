@@ -14,18 +14,7 @@ export default {
       });
     }
   },
-  REASSIGN_TEAM_MEMBERS(state, { assignment = "team", group }) {
-    let groupedElements = [],
-      groupKey = assignment == "team" ? "groupID" : "type";
-    for (let i = 0, len = state[assignment].length; i < len; i++) {
-      let { groupID } = state[assignment][i];
-      if (groupID == group) {
-        groupedElements.push({ index: i, groupID });
-        Vue.set(state[assignment][i], groupKey, 0);
-      }
-    }
-    updateBreadCrumbs(state, "groupRef", { group: group, groupedElements });
-  },
+
   DELETE_TEAM_MEMBER(state, teamMemberIndex) {
     teamMemberIndex = teamMemberIndex ? teamMemberIndex : state.team.length - 1;
 
@@ -51,15 +40,6 @@ export default {
     }
   },
 
-  UPDATE_TEAM_MEMBER_GROUP(state, { index, groupType, payload }) {
-    let teamMember = state.team[index][groupType];
-
-    updateBreadCrumbs(state, "teamRef", {
-      index,
-      payload: teamMember
-    });
-    Object.assign(teamMember, payload);
-  },
   UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
     let teamMember = state.team[index];
 

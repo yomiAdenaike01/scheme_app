@@ -37,7 +37,7 @@
         </div>
       </Form>
 
-      <UpdateGroups v-else group-type="user_groups" />
+      <UpdateGroups v-else group-type="user_groups" @close="closeOverlay" />
     </div>
   </Overlay>
 </template>

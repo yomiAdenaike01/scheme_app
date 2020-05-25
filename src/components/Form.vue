@@ -7,9 +7,12 @@
       <div
         v-for="(input, index) in config"
         :key="`${index}${input.name}`"
-        class="form_item"
+        :class="`form_item ${input.component_type}`"
       >
-        <span v-if="input.label" class="form_item_label">
+        <span
+          v-if="input.label || input.component_type == 'checkbox'"
+          class="form_item_label"
+        >
           {{
             input.optional || allOptional
               ? `(Optional) ${input.label}`
@@ -38,7 +41,6 @@
           v-if="inputTypes.indexOf(input.component_type) > -1"
           v-model="formContent[input.model]"
           :disabled="input.disabled"
-          class="s_input"
           :placeholder="input.placeholder"
           :type="input.component_type"
           :class="[
@@ -226,8 +228,11 @@ export default {
     initForm() {
       for (let i = 0, len = this.config.length; i < len; i++) {
         let item = this.config[i];
-        if (item?.multiple && !this.formContent?.[item.model]) {
-          this.$set(this.formContent, item.model, []);
+        let hasVal = this.formContent?.[item.model];
+        if (!hasVal) {
+          if (item?.multiple) {
+            this.$set(this.formContent, item.model, []);
+          }
         }
       }
     },
@@ -282,6 +287,12 @@ header {
 }
 .form_item {
   padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  &.checkbox {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 .form_item_label {
   padding: 5px 0;

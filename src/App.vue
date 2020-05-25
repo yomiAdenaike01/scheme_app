@@ -219,6 +219,11 @@ ul {
   width: 100%;
   border: 1px solid rgba(var(--colour_primary), 0.17);
 
+  &.checkbox {
+    width: initial;
+    flex: initial;
+  }
+
   &.no_border_radius {
     border-radius: 0px;
   }
