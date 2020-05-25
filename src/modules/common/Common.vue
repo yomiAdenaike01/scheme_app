@@ -395,6 +395,7 @@ export default {
   display: flex;
   align-items: center;
   flex: 1;
+  padding: 10px 0;
   position: relative;
 }
 .notification .text_container {
