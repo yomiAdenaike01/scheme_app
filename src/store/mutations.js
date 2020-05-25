@@ -238,9 +238,9 @@ export default {
         state.criticalNetworkError = true;
         state.errorInformation = notification.message;
 
-        if (VueRouter.currentRoute.name != "error") {
-          VueRouter.push({ name: "error" });
-        }
+        // if (VueRouter.currentRoute.name != "error") {
+        //   VueRouter.push({ name: "error" });
+        // }
       }
     }
 

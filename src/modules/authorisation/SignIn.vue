@@ -11,6 +11,9 @@
     >
       <div slot="header" class="header_container">
         <h1>Sign in</h1>
+        <collapse-transition>
+          <p v-if="errorMessage.length > 0" class="error">{{ errorMessage }}</p>
+        </collapse-transition>
       </div>
       <div slot="footer" class="new_client_button_container">
         <s-button
@@ -30,11 +33,13 @@ import Form from "@/components/Form";
 
 import validateInput from "@/mixins/validateInput";
 import SButton from "@/components/SButton";
+import { CollapseTransition } from "vue2-transitions";
 export default {
   name: "SignIn",
   components: {
     Form,
-    SButton
+    SButton,
+    CollapseTransition
   },
   mixins: [validateInput],
   data() {
@@ -42,7 +47,8 @@ export default {
       newUser: false,
       loading: false,
       credentials: {},
-      selectedForm: "login"
+      selectedForm: "login",
+      errorMessage: ""
     };
   },
   computed: {
@@ -111,7 +117,6 @@ export default {
     ]),
 
     submit() {
-      console.log("submit");
       switch (this.selectedForm) {
         case "login": {
           this.login();
@@ -162,7 +167,6 @@ export default {
      */
     login() {
       this.loading = true;
-      console.log(this.credentials);
       this.request({
         method: "POST",
         data: {
@@ -191,6 +195,7 @@ export default {
           // this.changeTab("login");
         })
         .catch(err => {
+          this.errorMessage = err;
           this.loading = false;
         });
     }
@@ -213,13 +218,18 @@ export default {
   margin-bottom: 20px;
 }
 .header_container {
+  padding: 20px;
+}
+.error {
   padding: 10px;
+  border-radius: 5px;
+  background: rgba(var(--danger), 0.05);
+  color: rgba(var(--danger), 1);
 }
 
 .form_container {
   display: flex;
   flex-direction: column;
-  width: 400px;
   border: $border;
 }
 </style>

@@ -82,6 +82,7 @@
 
       <hr />
       <div
+        v-loading="activityLoading"
         class="activity_wrapper"
         :class="{ display_center: selectedUserActivity.length == 0 }"
       >
@@ -90,7 +91,10 @@
           v-loading="loading"
           class="activity_subcontainer"
         >
-          <h3>Activity feed</h3>
+          <div class="title_bar">
+            <h3>Activity feed</h3>
+            <i class="bx bx-x" @click="deleteActivityLog"></i>
+          </div>
           <ActivityLog
             v-for="activity in selectedUserActivity"
             :key="activity._id"
@@ -157,6 +161,7 @@ export default {
       selectedTeamMemberIndex: 0,
       selectedUserActivity: [],
       loading: false,
+      activityLoading: false,
       filters: {
         userGroup: ""
       }
@@ -485,6 +490,20 @@ export default {
       "DELETE_TEAM_MEMBER",
       "CREATE_TEAM_MEMBER"
     ]),
+    deleteActivityLog() {
+      this.activityLoading = true;
+      let apiPayload = {
+        method: "DELETE",
+        url: "services/logs/delete/all"
+      };
+      this.request(apiPayload)
+        .then(() => {
+          this.activityLoading = false;
+        })
+        .catch(() => {
+          this.activityLoading = false;
+        });
+    },
     toggleOverlay(val) {
       this.displayOverlay = val;
     },
