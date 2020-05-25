@@ -12,9 +12,17 @@
           type="text"
           :placeholder="isNewTask ? 'Task name...' : task.name"
           class="new_task_input"
+          :class="{ disabled: isComplete }"
         />
 
         <h2 class="grey capitalize">{{ boardData.name }}</h2>
+      </div>
+      <div class="mark_as_complete trigger">
+        <i
+          class="bx bx-check"
+          :class="{ active: isComplete, disabled: isComplete }"
+          @click="completeTask"
+        ></i>
       </div>
     </div>
 
@@ -358,6 +366,10 @@ export default {
     ...mapState("Events", ["events"]),
     ...mapGetters(["adminPermission"]),
 
+    isComplete() {
+      return this.task.state == 3;
+    },
+
     eventsToAssign() {
       let filteredEvents = [];
       for (let i = 0, len = this.events.length; i < len; i++) {
@@ -468,6 +480,17 @@ export default {
             }
           }
         });
+      }
+
+      if (this.isComplete) {
+        let saveActionIndex = quickActions.length - 2;
+        let saveAction = quickActions[saveActionIndex];
+
+        quickActions[saveActionIndex] = Object.assign(saveAction, {
+          icon: "bx bx-check",
+          label: "Task already completed"
+        });
+        delete quickActions[saveActionIndex].function;
       }
 
       return quickActions;
@@ -739,6 +762,12 @@ export default {
     },
     deleteComment(commentIndex) {
       this.task.comments.splice(commentIndex, 1);
+    },
+    completeTask() {
+      this.task.state = 3;
+      this.task.complete_date = new Date().toISOString();
+
+      this.saveTask();
     },
     createComment({ message }) {
       let comment = {
@@ -1057,5 +1086,23 @@ $due_date_ref: (
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.mark_as_complete {
+  font-size: 2em;
+  margin-right: 30px;
+  display: flex;
+  align-items: center;
+
+  .bx {
+    border-radius: 50%;
+    border: $border;
+    padding: 20px;
+    transition: $default_transition;
+    &.active,
+    &:hover {
+      background: rgba(var(--success), 0.7);
+      color: white;
+    }
+  }
 }
 </style>
