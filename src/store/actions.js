@@ -184,7 +184,7 @@ export default {
             }
             resolve(response.content);
           }
-          if (response) {
+          if (response?.error) {
             handleError(response.content);
             reject(response.content);
           }

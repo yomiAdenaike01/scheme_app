@@ -231,5 +231,6 @@ export default {
   display: flex;
   flex-direction: column;
   border: $border;
+  width: 16%;
 }
 </style>
