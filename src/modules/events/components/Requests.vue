@@ -75,6 +75,12 @@
         <!-- Header -->
         <header>
           <h1 class="capitalize">{{ selectedRequest.type.label }}</h1>
+          <s-button
+            v-if="selectedRequest.status == 'approved' && adminPermission"
+            class="plain"
+            @click="handleApprove"
+            >Create event</s-button
+          >
           <i
             v-if="
               adminPermission ||
@@ -138,7 +144,7 @@
         </div>
 
         <!-- Actions -->
-        <div class="actions_wrapper">
+        <div v-if="!displayActions" class="actions_wrapper">
           <p
             v-for="(action, index) in actionOptions"
             :key="index"
@@ -198,6 +204,12 @@ export default {
 
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["userLookup"]),
+    displayActions() {
+      let ignore = ["approved", "rejected"];
+      let { status } = this.selectedRequest;
+
+      return ignore.indexOf(status) > -1;
+    },
 
     hasAccess() {
       return (
@@ -220,13 +232,6 @@ export default {
 
       if (this.adminPermission) {
         actionOptions = ["rejected", "approved"];
-
-        if (this.selectedRequest.status == "approved") {
-          actionOptions = ["rejected"];
-        }
-        if (this.selectedRequest.status == "rejected") {
-          actionOptions = ["approved"];
-        }
       }
 
       let buttonLabelXref = {
@@ -314,14 +319,15 @@ export default {
       let requests = [...this.eventRequests];
       for (let i = 0, len = requests.length; i < len; i++) {
         let request = requests[i];
-        if (!filterLabel.includes(request.type.label.toLowerCase())) {
+        console.log(request);
+        if (!filterLabel.includes(request?.type?.label.toLowerCase())) {
           continue;
         }
-        if (filterRequestedBy != request.requested_by._id) {
+        if (filterRequestedBy != request?.requested_by?._id) {
           continue;
         }
 
-        if (!filterStatus.includes(request.status.toLowerCase())) {
+        if (!filterStatus.includes(request?.status?.toLowerCase())) {
           continue;
         }
 
@@ -351,6 +357,9 @@ export default {
   created() {
     this.initRequests(this.filteredRequests);
   },
+  destroyed() {
+    this.selectedRequest = {};
+  },
 
   methods: {
     ...mapActions(["request"]),
@@ -361,15 +370,38 @@ export default {
     ]),
 
     initRequests(requests) {
+      let hasSelected = Object.keys(this.selectedRequest).length > 0;
+
       if (requests.length > 0) {
-        this.setSelectedRequest({ request: requests[0], index: 0 });
+        if (!hasSelected) {
+          this.setSelectedRequest({ request: requests[0], index: 0 });
+        } else {
+          let selectedIndex = requests.findIndex(request => {
+            return request._id == this.selectedRequest._id;
+          });
+          if (selectedIndex > -1) {
+            this.setSelectedRequest({
+              request: requests[selectedIndex],
+              index: selectedIndex
+            });
+          }
+        }
+      } else {
+        if (hasSelected) {
+          this.selectedRequest = {};
+        }
       }
     },
 
     assignFilters(val = this.propFilters) {
       if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
         for (let property in val) {
-          this.filters[property] = val[property];
+          if (
+            property != "assigned_to" &&
+            val[property] != this.userInformation._id
+          ) {
+            this.filters[property] = val[property];
+          }
         }
       }
     },
@@ -379,14 +411,13 @@ export default {
       }
     },
     setSelectedRequest({ request, index }) {
-      Object.assign(this.selectedRequest, request, {
-        index
-      });
-
       // If status is sent update to seen
-      if (request?.status == "sent") {
+      if (request?.status == "sent" && this.adminPermission) {
         this.updateRequest({ status: "seen" });
       }
+      this.selectedRequest = Object.assign({}, this.selectedRequest, request, {
+        index
+      });
     },
     async deleteRequest() {
       try {
@@ -401,35 +432,18 @@ export default {
           }
         };
         await this.request(apiPayload);
-        this.loadNextRequest();
+        this.selectedRequest = {};
       } catch (error) {
         return Promise.reject(error);
       }
     },
-    loadNextRequest() {
-      if (this.selectedRequest.index == 0) {
-        this.selectedRequest = {};
-        return;
-      }
-      // If there is a request above
-      let aboveIndex = this.selectedRequest.index - 1;
-      let belowIndex = this.selectedRequest.index + 1;
 
-      if (this.filteredRequests[aboveIndex]) {
-        this.selectedRequest = this.filteredRequests[aboveIndex];
-      }
-
-      if (this.filteredRequests[belowIndex]) {
-        this.selectedRequest = this.filteredRequests[belowIndex];
-      }
-    },
-    handleApprove(update) {
+    handleApprove() {
       let formPayload = {
         assigned_to: [this.selectedRequest.requested_by._id],
         type: this.selectedRequest.type._id,
         dates: [this.selectedRequest.start_date, this.selectedRequest.end_date]
       };
-
       this.$emit("changeView", {
         view: "events"
       });
@@ -448,18 +462,12 @@ export default {
           this.handleApprove();
         }
 
-        let updateWithIndex = Object.assign(update, {
+        this.selectedRequest = Object.assign({}, this.selectedRequest, update);
+
+        this.UPDATE_EVENT_REQUEST({
+          update,
           index: this.selectedRequest.index
         });
-
-        this.selectedRequest = Object.assign(
-          {},
-          this.selectedRequest,
-          updateWithIndex
-        );
-
-        this.UPDATE_EVENT_REQUEST(updateWithIndex);
-        return;
 
         //  API request
         const apiPayload = {

@@ -21,7 +21,7 @@ export default {
   teamRef: {},
 
   globalIntervals: {
-    admin: 60000,
+    admin: 6000,
     client: 20000,
     chat: 30000
   },

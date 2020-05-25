@@ -10,6 +10,7 @@
         <div v-if="view == 'events'" class="events_wrapper">
           <EventsCalendar />
           <EventsOverlay
+            v-if="overlays.events"
             :display="overlays.events"
             :params="params"
             @close="updateOverlays({ overlay: 'events', display: false })"

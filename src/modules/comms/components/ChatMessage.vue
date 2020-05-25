@@ -57,7 +57,7 @@ export default {
     align-items: flex-end;
     .message {
       color: white;
-      background: var(--colour_secondary);
+      background: rgba(var(--colour_secondary), 1);
       border-bottom-right-radius: 0px;
     }
   }

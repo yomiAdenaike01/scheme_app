@@ -217,7 +217,7 @@ export default {
   created() {
     for (let i = 0, len = this.config.length; i < len; i++) {
       let item = this.config[i];
-      if (item?.multiple) {
+      if (item?.multiple && !this.formContent?.[item.model]) {
         this.$set(this.formContent, item.model, []);
       }
     }

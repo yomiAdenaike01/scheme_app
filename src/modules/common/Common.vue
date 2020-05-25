@@ -97,11 +97,6 @@ export default {
     ...mapState("Tasks", ["boards"]),
     ...mapGetters(["getDeviceInformation", "adminPermission"]),
 
-    keymap() {
-      return {
-        "ctrl+shift+space": this.toggleDisplaySearch
-      };
-    },
     taskDueToday() {
       // Find tasks that are due today
       let taskBoards = this.boards;
@@ -123,7 +118,6 @@ export default {
   },
 
   activated() {
-    this.checkDevice();
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
       immediateCallback: () => {
@@ -150,42 +144,6 @@ export default {
         });
       }
     });
-
-    let isVerified = this.userInformation.verified;
-    if (!isVerified) {
-      this.CREATE_SYSTEM_NOTIFICATION({
-        type: "info",
-        icon: "shield-x",
-        title: "Activate account",
-        message: "Click to activate account.",
-        route: {
-          name: "Common"
-        },
-        methods: [
-          {
-            label: "Activate",
-            body() {
-              return new Promise((resolve, reject) => {
-                this.UPDATE_USER({ verified: true });
-                this.request({
-                  method: "POST",
-                  data: {
-                    _id: this.userInformation._id,
-                    update: { verified: false }
-                  }
-                })
-                  .then(() => {
-                    resolve();
-                  })
-                  .catch(err => {
-                    reject(err);
-                  });
-              });
-            }
-          }
-        ]
-      });
-    }
 
     if (window.Notification.permission != "granted") {
       // request notification permission
@@ -324,28 +282,6 @@ export default {
             reject(err);
           });
       });
-    },
-    toggleDisplaySearch() {
-      this.displaySearch = !this.displaySearch;
-    },
-    triggerDeviceNotification() {
-      this.CREATE_SYSTEM_NOTIFICATION({
-        message:
-          "Would you like this device to be added to your library  (click to confirm) ?",
-        click: () => {
-          this.updateDevices();
-        },
-        type: "info"
-      });
-    },
-
-    checkDevice() {
-      if (this.userInformation?.devices_information?.length === 0) {
-        this.triggerDeviceNotification();
-      } else {
-        // Find in array
-        console.log("Find device in array or add a new one");
-      }
     }
   }
 };
@@ -366,8 +302,8 @@ export default {
 .notification_container {
   position: fixed;
   top: 2%;
-  right: 42px;
-  left: 83%;
+  right: 32px;
+
   z-index: 999995;
 }
 .notification {
@@ -375,12 +311,10 @@ export default {
   box-shadow: $box_shadow;
   display: flex;
   margin-bottom: 20px;
-  width: 100%;
-
-  align-items: center;
-  justify-content: center;
+  width: 450px;
   border-radius: 5px;
   border-left: 4px solid rgba(var(--colour_primary), 1);
+  overflow: hidden;
   &.message,
   .icon_container {
     border-left-color: var(--colour_secondary);
@@ -394,21 +328,22 @@ export default {
 .notification .body_container {
   display: flex;
   align-items: center;
-  flex: 1;
   padding: 10px 0;
+  flex: 1;
   position: relative;
+  border-right: $border;
 }
 .notification .text_container {
   display: flex;
   flex: 1;
   flex-direction: column;
+  padding: 10px;
   p {
     margin: 0;
     font-size: 0.9em;
   }
-  h4 {
-    margin: 0;
-    font-weight: 500;
+  strong {
+    margin: 3px 0;
   }
 }
 .notification .icon_container {
@@ -422,10 +357,13 @@ export default {
   display: flex;
   flex: 0.4;
   flex-direction: column;
-  height: 100%;
-  border-left: 2px solid rgb(240, 240, 240);
 
   .function {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    flex: 1;
+    justify-content: center;
     cursor: pointer;
     border-top: $border;
     text-align: center;

@@ -169,6 +169,7 @@ export default {
       this.loading = true;
       this.request({
         method: "POST",
+        disableNotifications: true,
         data: {
           client_id: this.clientInformation._id,
           ...this.credentials
@@ -192,7 +193,6 @@ export default {
           this.$router.push({ name: "events" });
 
           this.loading = false;
-          // this.changeTab("login");
         })
         .catch(err => {
           this.errorMessage = err;

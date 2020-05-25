@@ -14,7 +14,7 @@
 
         <s-button
           v-if="hasPermissions"
-          class="shadow rounded tertiary"
+          class="rounded tertiary"
           icon="x"
           @click="deleteEvent('Are you sure you want to delete this event ? ')"
           >Delete Event</s-button

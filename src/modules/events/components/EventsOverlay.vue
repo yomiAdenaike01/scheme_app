@@ -57,10 +57,11 @@
 
         <!-- QR Code -->
         <div v-if="newEventID.length > 0" class="qr_container">
-          <small class="grey">
-            Scan this code with the companion app to clock in.
-          </small>
           <qrcode-vue :value="newEventID" level="H"></qrcode-vue>
+
+          <p class="grey">
+            Scan this code with the companion app to clock in.
+          </p>
         </div>
       </div>
     </Form>
@@ -113,7 +114,8 @@ export default {
       formData: {},
       searchTemplates: "",
       displayTemplates: false,
-      newEventID: ""
+      newEventID: "",
+      populated: false
     };
   },
   computed: {
@@ -251,7 +253,7 @@ export default {
       return {
         date_created: new Date().toISOString(),
         _id: this.genID(),
-        assigned_to: this.formData?.assigned_to.map(assignee => {
+        assigned_to: this.formData?.assigned_to?.map(assignee => {
           return this.userLookup(assignee);
         }),
         type: this.groupLookup("event", this.formData.type)
@@ -322,30 +324,32 @@ export default {
     ]),
 
     populateForm(data) {
-      console.log(data);
-      this.selectedTab = this.tabItems[1];
-      if (data?.start_date || data?.end_date) {
-        data = this.cleanObject(["start_date", "end_date"], data);
-      }
-      this.formData = data;
+      if (!this.populated) {
+        this.selectedTab = this.tabItems[1];
+        if (data?.start_date || data?.end_date) {
+          data = this.cleanObject(["start_date", "end_date"], data);
+        }
+        this.formData = data;
 
-      if (this.displayTemplates) {
-        this.displayTemplates = false;
-      }
+        if (this.displayTemplates) {
+          this.displayTemplates = false;
+        }
 
-      this.CREATE_SYSTEM_NOTIFICATION({
-        title: "Event form populated",
-        message: "Your form has been auto populated",
-        type: "info",
-        methods: [
-          {
-            label: "Create event",
-            body: async () => {
-              await this.createEvent();
+        this.CREATE_SYSTEM_NOTIFICATION({
+          title: "Event form populated",
+          message: "Your form has been auto populated",
+          type: "info",
+          methods: [
+            {
+              label: "Create event",
+              body: async () => {
+                await this.createEvent();
+              }
             }
-          }
-        ]
-      });
+          ]
+        });
+        this.populated = true;
+      }
     },
     async createEvent() {
       try {
@@ -367,9 +371,7 @@ export default {
           this.newEventID = apiResponse._id;
           this.UPDATE_EVENT({ payload: apiResponse });
         }
-        if (!event) {
-          await this.createTemplate(localPayload, apiPayload);
-        }
+        await this.createTemplate(localPayload, apiPayload);
       } catch (e) {
         this.DELETE_EVENT();
         console.error(e);
@@ -389,47 +391,47 @@ export default {
         let defaultName = `template_${new Date().toISOString()}`;
         let owners = [this.userInformation];
 
-        let promptResponse = await this.genPromptBox(boxPayload)
-          .then(({ value }) => {
-            return value;
-          })
-          .catch(() => {
-            return Promise.reject("Cancelled");
-          });
+        let { value } = await this.genPromptBox(boxPayload);
 
-        let localTemplatePayload = {
-          content: eventPayload,
-          owners,
-          name: promptResponse
-        };
+        if (value) {
+          let localTemplatePayload = {
+            content: eventPayload,
+            owners,
+            name: value ? value : defaultName,
+            _id: this.localData._id
+          };
 
-        this.CREATE_EVENT_TEMPLATE(localTemplatePayload);
+          localTemplatePayload.content.assigned_to =
+            apiEventPayload.data.assigned_to;
 
-        // Create api template
+          this.CREATE_EVENT_TEMPLATE(localTemplatePayload);
 
-        let apiTemplateData = {
-          owners: [this.userInformation._id],
-          name,
-          content: this.cleanObject(
-            ["notes", "is_approved"],
-            apiEventPayload.data
-          )
-        };
+          // Create api template
 
-        let apiTemplatePayload = {
-          data: apiTemplateData,
-          method: "POST",
-          url: "events/templates/create"
-        };
+          let apiTemplateData = {
+            owners: [this.userInformation._id],
+            name: localTemplatePayload.name,
+            content: this.cleanObject(
+              ["notes", "is_approved"],
+              apiEventPayload.data
+            )
+          };
 
-        let apiResponse = await this.request(apiTemplatePayload);
+          let apiTemplatePayload = {
+            data: apiTemplateData,
+            method: "POST",
+            url: "events/templates/create"
+          };
 
-        if (apiResponse) {
-          // Update local template
-          this.UPDATE_EVENT_TEMPLATE({
-            index: this.eventTemplates.length - 1,
-            data: apiResponse
-          });
+          let apiResponse = await this.request(apiTemplatePayload);
+
+          if (apiResponse) {
+            // Update local template
+            this.UPDATE_EVENT_TEMPLATE({
+              index: this.eventTemplates.length - 1,
+              data: apiResponse
+            });
+          }
         }
       } catch (error) {
         // Delete local template
@@ -456,7 +458,7 @@ export default {
         if (apiResponse) {
           this.UPDATE_EVENT_REQUEST({
             index: this.eventRequests.length - 1,
-            payload: apiResponse
+            ...apiResponse
           });
         }
 
@@ -469,6 +471,7 @@ export default {
               label: "View request",
               body: () => {
                 // Close overlay and go to requests with params
+                this.$emit("close");
                 this.$emit("changeView", {
                   view: "requests",
                   teamMember: this.userInformation
@@ -484,7 +487,7 @@ export default {
     },
     async handler() {
       try {
-        if (!this.adminPermission) {
+        if (this.adminPermission) {
           await this.createEvent();
         } else {
           await this.createRequest();
@@ -532,9 +535,9 @@ export default {
 
     getAdmins(populated) {
       let admins = [];
-      for (let i = 0, len = this.team; i < len; i++) {
+      for (let i = 0, len = this.team.length; i < len; i++) {
         let member = this.team[i];
-        if (member.is_admin) {
+        if (member.user_group.is_admin) {
           if (populated) {
             admins.push(member);
           } else {
@@ -542,13 +545,7 @@ export default {
           }
         }
       }
-      if (admins.length == 0) {
-        if (populated) {
-          admins.push(this.userInformation);
-        } else {
-          admins.push(this.userInformation._id);
-        }
-      }
+
       return admins;
     }
   }
@@ -573,8 +570,9 @@ export default {
 }
 .qr_container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 20px 0;
 }
 </style>

@@ -35,7 +35,7 @@ export default {
       }
       // Add fake message
       commit("UPDATE_MESSAGES", payload);
-      console.log(payload);
+
       dispatch(
         "request",
         {

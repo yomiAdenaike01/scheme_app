@@ -7,6 +7,7 @@ export default {
     state.eventTemplates = payload;
   },
   CREATE_EVENT_TEMPLATE(state, payload) {
+    console.log(payload);
     state.eventTemplates.push(payload);
     updateBreadCrumbs(
       state,
@@ -17,19 +18,21 @@ export default {
   DELETE_EVENT_TEMPLATE(state, index) {
     if (!index) {
       state.eventTemplates.pop();
+    } else {
+      updateBreadCrumbs(state, {
+        payload: state.eventTemplates[state.eventTemplates.length - 1]
+      });
+      state.eventTemplates.splice(index, 1);
     }
-    updateBreadCrumbs(state, {
-      payload: state.eventTemplates[state.eventTemplates.length - 1]
-    });
-    state.eventTemplates.splice(index, 1);
   },
   UPDATE_EVENT_TEMPLATE(state, payload) {
-    if (!payload.index) {
-      var index = state.eventTemplates.length - 1;
-    }
-    updateBreadCrumbs(state, { index, update: state.eventTemplates[index] });
+    let { index, ...data } = payload;
+    index = index ? index : state.eventTemplates.length - 1;
+    let template = state.eventTemplates[index];
 
-    state.eventTemplates.splice(index, 1, payload.data);
+    updateBreadCrumbs(state, { index, ...template });
+
+    state.eventTemplates[index] = Object.assign({}, template, data);
   },
 
   // Events
@@ -45,20 +48,24 @@ export default {
     });
   },
   DELETE_EVENT_REQUEST(state, index) {
-    if (!index) {
+    if (typeof index == "undefined") {
       state.eventRequests.pop();
+    } else {
+      updateBreadCrumbs(state, "eventRequestRef", state.eventRequests[index]);
+      state.eventRequests.splice(index, 1);
     }
-    updateBreadCrumbs(state, "eventRequestRef", state.eventRequests[index]);
-    state.eventRequests.splice(index, 1);
   },
-  UPDATE_EVENT_REQUEST(state, payload) {
-    let { index, ...data } = payload;
+  UPDATE_EVENT_REQUEST(state, { index, update }) {
     let request = state.eventRequests[index];
     updateBreadCrumbs(state, "eventRequestRef", {
       index,
       ...request
     });
-    Object.assign(request, data);
+    if (update) {
+      for (let property in update) {
+        Vue.set(state.eventRequests[index], property, update[property]);
+      }
+    }
   },
   UPDATE_EVENT_REQUESTS(state, payload) {
     state.eventRequests = payload;
@@ -76,19 +83,22 @@ export default {
       index,
       payload: event
     });
-    Object.assign(event, payload);
+    for (let property in payload) {
+      Vue.set(event, property, payload[property]);
+    }
   },
   DELETE_EVENT(state, index) {
     if (!index) {
       state.events.pop();
-    }
-    if (state.events[index]) {
-      let eventAtIndex = state.events[index];
-      updateBreadCrumbs(state, "eventRef", {
-        index,
-        payload: eventAtIndex
-      });
-      state.events.splice(index, 1);
+    } else {
+      if (state.events[index]) {
+        var eventAtIndex = state.events[index];
+        updateBreadCrumbs(state, "eventRef", {
+          index,
+          payload: eventAtIndex
+        });
+        state.events.splice(index, 1);
+      }
     }
   },
 

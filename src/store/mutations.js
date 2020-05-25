@@ -177,7 +177,7 @@ export default {
   },
 
   UPDATE_USER(state, payload) {
-    state.userInformation = Object.assign(state.userInformation, payload);
+    state.userInformation = Object.assign({}, state.userInformation, payload);
   },
 
   UPDATE_USER_SESSION(state, payload) {
