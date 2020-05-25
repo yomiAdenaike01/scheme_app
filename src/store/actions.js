@@ -152,6 +152,25 @@ export default {
     if (payload?.disableNotification) {
       enableNotifications = false;
     }
+
+    const handleError = error => {
+      const status = error?.request?.status;
+      // Web token error
+      if (status === 401) {
+        exitApplication(context, false, true);
+      }
+
+      if (error?.data) {
+        error = error.data.content;
+      }
+      if (enableNotifications) {
+        context.commit("CREATE_SYSTEM_NOTIFICATION", {
+          message: error,
+          type: "error"
+        });
+      }
+      // exitApplication(context, true);
+    };
     return new Promise((resolve, reject) => {
       axios(payload)
         .then(response => {
@@ -166,27 +185,12 @@ export default {
             resolve(response.content);
           }
           if (response?.error) {
+            handleError(response.content);
             reject(response.content);
           }
         })
         .catch(error => {
-          const status = error?.request?.status;
-          // Web token error
-          console.log(error);
-          if (status === 401) {
-            exitApplication(context, false, true);
-          }
-
-          if (error?.data) {
-            error = error.data.content;
-          }
-          if (enableNotifications) {
-            context.commit("CREATE_SYSTEM_NOTIFICATION", {
-              error,
-              type: "error"
-            });
-          }
-          exitApplication(context, true);
+          handleError(error);
           reject(error);
         });
     });

@@ -5,17 +5,26 @@
         <Toolbar
           :current-view="view"
           @changeView="view = $event"
-          @updateOverlays="overlays[$event] = true"
+          @updateOverlays="updateOverlays"
         />
         <div v-if="view == 'events'" class="events_wrapper">
           <EventsCalendar />
           <EventsOverlay
+            v-if="overlays.events"
             :display="overlays.events"
-            @close="overlays.events = false"
+            :params="params"
+            @close="updateOverlays({ overlay: 'events', display: false })"
+            @changeView="updateView"
           />
         </div>
 
-        <Requests v-if="view == 'requests'" :prop-filters="requests.filters" />
+        <Requests
+          v-if="view == 'requests'"
+          :prop-filters="requests.filters"
+          @changeView="updateView"
+          @updateOverlays="updateOverlays"
+          @approveRequest="updateParams"
+        />
       </div>
     </slide-x-right-transition>
     <TeamSidebar @changeView="updateView" />
@@ -49,7 +58,8 @@ export default {
       },
       overlays: {
         events: false
-      }
+      },
+      params: {}
     };
   },
   created() {
@@ -58,9 +68,24 @@ export default {
     }
   },
   methods: {
-    updateView({ view, teamMember }) {
+    updateParams(payload) {
+      this.params = payload;
+    },
+    updateOverlays({ overlay, display }) {
+      this.overlays[overlay] = display;
+    },
+    closeOverlays() {
+      for (let property in this.overlays) {
+        if (this.overlays[property]) {
+          this.overlays[property] = false;
+        }
+      }
+    },
+    updateView({ view, teamMember = null }) {
       this.view = view;
-      this.requests.filters.requested_by = teamMember._id;
+      if (teamMember) {
+        this.requests.filters.requested_by = teamMember._id;
+      }
     }
   }
 };

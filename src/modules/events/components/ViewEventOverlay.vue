@@ -7,12 +7,6 @@
       @close="displayMenu = false"
     />
     <div class="view_event_container">
-      <TextDisplay
-        class="view_event_title"
-        :display-text="{
-          heading: event.heading
-        }"
-      ></TextDisplay>
       <div class="info_button_container">
         <s-button class="rounded secondary" icon="check">{{
           approvalButtonConfig.content
@@ -20,7 +14,7 @@
 
         <s-button
           v-if="hasPermissions"
-          class="shadow rounded tertiary"
+          class="rounded tertiary"
           icon="x"
           @click="deleteEvent('Are you sure you want to delete this event ? ')"
           >Delete Event</s-button
@@ -88,22 +82,10 @@
             </el-popover>
           </div>
         </div>
+        <!-- Event dates -->
         <div class="view_dialog_information_container">
           <h3>Event date information</h3>
-          <el-popover trigger="click">
-            <Form
-              :config="configXref"
-              submit-text="Update"
-              class="full_width"
-              @val="updateEvent"
-            />
-            <s-button
-              slot="reference"
-              class="plain"
-              @click="selectedConfig = 'date'"
-              >Update date information</s-button
-            >
-          </el-popover>
+          <!-- INSERT FORM HERE -->
 
           <div class="info_unit">
             <span class="info_label">Event start:</span>
@@ -114,22 +96,10 @@
             <span>{{ dates.end }}</span>
           </div>
         </div>
+        <!-- Event duration type -->
         <div class="view_dialog_information_container">
           <h3>Event type & duration</h3>
-          <el-popover trigger="click">
-            <Form
-              :config="configXref"
-              submit-text="Update"
-              class="full_width"
-              @val="updateEvent"
-            />
-            <s-button
-              slot="reference"
-              class="plain"
-              @click="selectedConfig = 'type'"
-              >Update event type information</s-button
-            >
-          </el-popover>
+          <!-- INSERT FORM HERE -->
 
           <div class="info_unit">
             <span class="info_label">Event duration:</span>
@@ -149,7 +119,6 @@ import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 
 import overlayEvents from "@/mixins/overlayEvents";
 
-import TextDisplay from "@/components/TextDisplay";
 import Avatar from "@/components/Avatar";
 import Form from "@/components/Form";
 import SButton from "@/components/SButton";
@@ -159,7 +128,6 @@ import Menu from "@/components/Menu";
 export default {
   name: "ViewEventOverlay",
   components: {
-    TextDisplay,
     Avatar,
     Form,
     SButton,
@@ -226,8 +194,8 @@ export default {
     updateConfigs() {
       return [
         {
-          "component-type": "date-picker",
-          "input-type": "date-time",
+          component_type: "date-picker",
+          input_type: "date-time",
           placeholder: "Start date time",
           model: "start_date",
           optional: true,
@@ -235,8 +203,8 @@ export default {
           tag: "date"
         },
         {
-          "component-type": "date-picker",
-          "input-type": "date-time",
+          component_type: "date-picker",
+          input_type: "date-time",
           placeholder: "End date time",
           model: "end_date",
           optional: true,
@@ -244,7 +212,7 @@ export default {
           tag: "date"
         },
         {
-          "component-type": "select",
+          component_type: "select",
           placeholder: "Select event type",
           options: this.getValidEventTypes,
           model: "type",

@@ -1,214 +1,140 @@
 <template>
-  <div
-    v-loading="loading"
-    class="event_template_container p-4"
-    @click="displayDetails = !displayDetails"
-  >
-    <div class="template_title_container flex flex--space-between align-center">
-      <h3 class="capitalize mr-3">{{ data.name }}</h3>
-      <div class="button_container">
-        <el-button round type="danger" size="mini" @click="deleteTemplate"
-          >Delete</el-button
-        >
-      </div>
-    </div>
-    <div v-if="displayDetails" class="mt-3">
-      <h3><strong>Details</strong></h3>
-      {{ getEventassigned_to(data.content.assigned_to).text }}
-      <p>Event Type: {{ groupLookup("event", data.content.type).name }}</p>
-      <span>Start Date: </span>{{ formatDate(data.content.start_date) }}
-      <br />
-      <span>End Date: </span>{{ formatDate(data.content.end_date) }}
-      <br />
-      <br />
-      <h3><strong>Repeat on</strong></h3>
-      {{ formattedWeekdays }}
-      <br />
-      <el-button class="w-100 mt-3" plain type="primary" @click="applyTemplate"
-        >Apply</el-button
+  <div class="event_template_container">
+    <div class="properties_container">
+      <h4 :class="`property_item name capitalize`">
+        {{ template.name }}
+      </h4>
+      <small
+        v-for="(property, propertyIndex) in propertiesDisplay"
+        :key="propertyIndex"
+        :class="`property_item ${property}`"
       >
+        {{ formattedContent[property] }}
+      </small>
+    </div>
+
+    <div class="actions_container">
+      <div
+        v-for="(action, actionIndex) in actions"
+        :key="actionIndex"
+        :class="`template_action trigger ${action.label}`"
+        @click="action.body"
+      >
+        <small class="capitalize">{{ makePretty(action.label) }}</small>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
+
 export default {
   name: "EventTemplate",
   props: {
-    data: {
+    template: {
       type: Object,
       default: () => {}
+    },
+    index: {
+      type: Number,
+      default: 0
     }
   },
-  data() {
-    return {
-      loading: false,
-      displayDetails: false
-    };
-  },
-
   computed: {
-    ...mapGetters([
-      "groupLookup",
-      "getDropdownTeamMembers",
-      "getEventassigned_to",
-      "getValidEventTypes"
-    ]),
-    updateTemplateConfig() {
+    ...mapGetters("Team", ["userLookup"]),
+    propertiesDisplay() {
+      return ["name", "assigned_to", "start_date", "end_date"];
+    },
+
+    assignedTo() {
+      return this.template.content.assigned_to.map(assignee => {
+        return this.userLookup(assignee)?.name;
+      });
+    },
+
+    formattedContent() {
+      let content = this.template.content;
+      return {
+        ...content,
+        assigned_to: this.assignedTo.join(", "),
+        start_date: this.formatDate(content.start_date),
+        end_date: this.formatDate(content.end_date)
+      };
+    },
+
+    actions() {
       return [
         {
-          "component-type": "text",
-          placeholder: "Template name",
-          model: "name",
-          optional: true
+          label: "delete",
+          icon: "trash",
+
+          body: () => {
+            this.$emit("deleteTemplate", {
+              _id: this.template._id,
+              index: this.index
+            });
+          }
         },
 
         {
-          "component-type": "select",
-          placeholder: "Repeat for",
-          options: this.daysOfWeek,
-          model: "repeat",
-          multiple: true,
-          optional: true
-        },
-        {
-          "component-type": "select",
-          placeholder: "Event type",
-          options: this.getValidEventTypes,
-          model: "type",
-          optional: true
-        },
-        {
-          "component-type": "select",
-          placeholder: "Assign event to users",
-          options: this.getDropdownTeamMembers,
-          model: "assingedTo",
-          optional: true
-        },
-        {
-          "component-type": "select",
-          placeholder: "Assign event to user groups",
-          options: this.getDropdownTeamMembers,
-          model: "assingedTo",
-          optional: true
-        },
-        {
-          "component-type": "date-picker",
-          "input-type": "date-time-range",
-          start_placeholder: "Event start date time",
-          end_placeholder: "Event end date time",
-          model: "date",
-          optional: true
-        },
-        {
-          "component-type": "date-picker",
-          "input-type": "date-time",
-          placeholder: "Expire at",
-          model: "until",
-          optional: true
+          label: "use_template",
+          icon: "plus",
+          body: () => {
+            let { start_date, end_date } = this.template.content;
+            let dates = [start_date, end_date];
+            this.$emit("useTemplate", {
+              dates,
+              ...this.template.content
+            });
+          }
         }
       ];
-    },
-    content() {
-      return this.data.content;
-    },
-    formattedWeekdays() {
-      let _daysOfWeek = [...this.content.repeat.weekdays];
-      return _daysOfWeek
-        .map(days => {
-          days = days - 1;
-          return this.daysOfWeek[days].text;
-        })
-        .join(", ");
-    }
-  },
-  methods: {
-    ...mapActions(["request"]),
-    ...mapActions("Events", ["createEvent", "getTemplates"]),
-    /**
-     * @name applyTemplate
-     * @description Apply a template to the calendar
-     */
-    applyTemplate(e) {
-      e.stopPropagation();
-      // Create an event as many times as there is on the template
-      this.loading = true;
-      this.createEvent(this.data.content)
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-    /**
-     * @name updateTemplate
-     * @description update a template
-     */
-    updateTemplate(templateInformation) {
-      let update = { ...templateInformation, ...this.data };
-      update.content = {
-        ...this.data.content,
-        type: templateInformation.type
-      };
-      update.content.repeat = {
-        weekdays: templateInformation.content.repeat.weekdays,
-        ...this.data.content.repeat
-      };
-      delete templateInformation.date;
-      return console.log(update);
-      this.request({
-        method: "PUT",
-        url: "events/templates/update",
-        data: { _id: this.data._id, update }
-      })
-        .then(response => {
-          this.loading = false;
-          this.getTemplates();
-        })
-        .catch(err => {
-          this.loading = false;
-          this.getTemplates();
-        });
-    },
-    /**
-     *@name deleteTemplate
-     */
-    deleteTemplate(e) {
-      e.stopPropagation();
-
-      this.request({
-        method: "DELETE",
-        url: "events/templates/delete",
-        data: { _id: this.data._id }
-      })
-        .then(response => {
-          this.loading = false;
-          this.getTemplates();
-          this.$emit("toggle", false);
-        })
-        .catch(err => {
-          this.loading = false;
-          this.getTemplates();
-        });
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.template_title_container {
-  cursor: pointer;
-}
-strong {
-  font-weight: bold;
-}
 .event_template_container {
-  border: 1px solid #efefef;
-  border-radius: 10px;
+  margin: 10px;
+  display: flex;
+  border: $border;
+  border-radius: 5px;
+  flex: 1;
+  justify-content: space-between;
 }
-.button_container > * {
-  margin-right: 10px;
+.properties_container {
+  display: flex;
+  flex-direction: column;
+  line-height: 2em;
+  flex: 1;
+  padding: 10px;
+}
+.actions_container {
+  display: flex;
+  flex: 0.5;
+}
+.template_action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  background: rgb(252, 252, 252);
+
+  &.delete {
+    background: rgba(var(--danger), 0.1);
+    color: rgba(var(--danger), 1);
+  }
+  &.use_template {
+    background: rgba(var(--success), 0.1);
+    color: rgba(var(--success), 1);
+  }
+}
+.property_item {
+  &.assigned_to {
+    font-weight: bold;
+  }
 }
 </style>

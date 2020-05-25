@@ -1,77 +1,17 @@
 <template>
   <div class="team_container">
-    <div class="team_sidebar">
-      <div v-if="team.length > 0" class="team_group_container">
-        <div class="filter_team_members">
-          <i class="bx bx-search"></i>
-          <input
-            v-model="searchTeamMemberName"
-            class="s_input no_border_radius"
-            type="text"
-            placeholder="Search team members"
-          />
-          <i
-            v-if="searchTeamMemberName.length > 0"
-            class="bx bx-x trigger"
-            @click="clearSearch"
-          ></i>
-
-          <i
-            v-if="hasPermission"
-            class="bx bx-plus trigger"
-            @click="
-              displayOverlay = true;
-              mode = 'create';
-            "
-          ></i>
-        </div>
-
-        <div v-if="groupedTeamMembers.length > 0" class="row_wrapper">
-          <div
-            v-for="(count, i) in groupedTeamMembers"
-            :key="`${count}${i}`"
-            class="user_group_row"
-          >
-            <div
-              v-for="(group, index) in count"
-              :key="`${group.groupID}${index}`"
-              class="user_group_col"
-            >
-              <div :key="`${group.groupID}${genID()}`" class="team_wrapper">
-                <div class="icon_text_container">
-                  <div class="divider"></div>
-                  <span class="capitalize">{{ group.label }}</span>
-                  <div class="divider"></div>
-                </div>
-                <div v-if="group.teamMembers.length > 0">
-                  <div
-                    v-for="(member, index) in group.teamMembers"
-                    :key="member._id"
-                    :class="{
-                      active: selectedTeamMember._id == member._id
-                    }"
-                    class="team_member_container"
-                    @click="setTeamMember(member, index)"
-                  >
-                    <Avatar :name="member.name" :size="40">
-                      <OnlineIndicator :is-online="member.is_online" />
-                    </Avatar>
-                    <div class="text_content">
-                      <p class="member_name">{{ member.name }}</p>
-                      <small class="grey">{{ member.email }}</small>
-                    </div>
-                    <i
-                      v-if="member._id == userInformation._id"
-                      class="is_user_badge bx bxs-badge-check"
-                    ></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <TeamMembers
+      v-if="team.length > 0"
+      :team-members="groupedTeamMembers"
+      :selected="selectedTeamMember"
+      :has-permission="hasPermission"
+      @selected="setTeamMember($event.member, $event.index)"
+      @search="searchTeamMemberName = $event"
+      @view="
+        mode = $event.mode;
+        displayOverlay = $event.displayOverlay;
+      "
+    />
 
     <div class="view_team_member">
       <Menu
@@ -107,23 +47,11 @@
           />
 
           <!-- Related events -->
-          <div v-for="event in relatedEvents" :key="event._id" class="event">
-            <div class="date_wrapper">
-              <span>{{ event.start_date }}</span>
-            </div>
-            <div class="details_container" :class="event.time_code.value">
-              <h3 class="capitalize">
-                {{ event.type.label }}
-              </h3>
-              {{ event.start_time }} - {{ event.end_time }}
-              <br />
-              <span class="capitalize">{{ event.time_code.label }}</span>
-              <br />
-              <span class="capitalize"
-                >End date {{ formatDate(event.end_date) }}</span
-              >
-            </div>
-          </div>
+          <RelatedEvent
+            v-for="event in relatedEvents"
+            :key="event._id"
+            :event="event"
+          />
         </div>
       </div>
       <!-- Anayltics -->
@@ -154,11 +82,19 @@
 
       <hr />
       <div
+        v-loading="activityLoading"
         class="activity_wrapper"
         :class="{ display_center: selectedUserActivity.length == 0 }"
       >
-        <div v-if="selectedUserActivity.length > 0" v-loading="loading">
-          <h3>Activity feed</h3>
+        <div
+          v-if="selectedUserActivity.length > 0"
+          v-loading="loading"
+          class="activity_subcontainer"
+        >
+          <div class="title_bar">
+            <h3>Activity feed</h3>
+            <i class="bx bx-x" @click="deleteActivityLog"></i>
+          </div>
           <ActivityLog
             v-for="activity in selectedUserActivity"
             :key="activity._id"
@@ -187,6 +123,8 @@ import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 
 import Analytics from "./components/Analytics";
 import TeamOverlay from "./components/TeamOverlay";
+import TeamMembers from "./components/TeamMembers";
+import RelatedEvent from "./components/RelatedEvent";
 import ActivityLog from "./components/ActivityLog";
 
 import genID from "@/mixins/genID";
@@ -204,8 +142,10 @@ export default {
     Menu,
     SButton,
     Analytics,
+    RelatedEvent,
 
     ActivityLog,
+    TeamMembers,
     TeamOverlay
   },
   mixins: [genID],
@@ -221,6 +161,7 @@ export default {
       selectedTeamMemberIndex: 0,
       selectedUserActivity: [],
       loading: false,
+      activityLoading: false,
       filters: {
         userGroup: ""
       }
@@ -232,7 +173,7 @@ export default {
     ...mapState("Team", ["team"]),
     ...mapState("Events", ["events"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-    ...mapGetters(["adminPermission"]),
+    ...mapGetters(["adminPermission", "groupLookup"]),
 
     shortcuts() {
       let condition = !this.isCurrentUser;
@@ -328,6 +269,8 @@ export default {
             event.start_time = this.formatDate(_start_date, "hh:mm");
             event.end_time = this.formatDate(_end_date, "hh:mm");
             event.start_date = this.formatDate(event.start_date, "DD-MM YYYY");
+            event.end_date = this.formatDate(event.start_date, "DD-MM YYYY");
+
             relatedEvents.push(event);
           }
         }
@@ -353,34 +296,34 @@ export default {
     teamMemberFormConfig() {
       return [
         {
-          "component-type": "text",
+          component_type: "text",
           model: "name",
           placeholder: "First and lastname",
           noLabel: true
         },
 
         {
-          "component-type": "text",
+          component_type: "text",
           model: "phoneNumber",
           placeholder: "Phone number",
           noLabel: true
         },
         {
-          "component-type": "text",
+          component_type: "text",
           model: "email",
           placeholder: "Email address",
           noLabel: true
         },
         {
           model: "user_group",
-          "component-type": "select",
+          component_type: "select",
           options: this.getUserGroups,
           noLabel: true,
           placeholder: "Assign to user group"
         },
         {
-          "component-type": "text",
-          "input-type": "textarea",
+          component_type: "text",
+          input_type: "textarea",
           model: "notes",
           placeholder: "Notes",
           noLabel: true
@@ -467,8 +410,19 @@ export default {
             }
           },
           update: {
-            mutation: payload => {
-              this.UPDATE_ONE_TEAM_MEMBER(payload);
+            mutation: ({ index, payload }) => {
+              if (payload?.user_group) {
+                payload.user_group = this.groupLookup(
+                  "user",
+                  payload.user_group
+                );
+              }
+
+              if (this.selectedTeamMember._id != this.userInformation._id) {
+                this.UPDATE_ONE_TEAM_MEMBER({ index, payload });
+              } else {
+                this.UPDATE_USER_INFORMATION(payload);
+              }
             },
             data: {
               index: this.selectedTeamMemberIndex,
@@ -540,6 +494,20 @@ export default {
       "DELETE_TEAM_MEMBER",
       "CREATE_TEAM_MEMBER"
     ]),
+    deleteActivityLog() {
+      this.activityLoading = true;
+      let apiPayload = {
+        method: "DELETE",
+        url: "services/logs/delete/all"
+      };
+      this.request(apiPayload)
+        .then(() => {
+          this.activityLoading = false;
+        })
+        .catch(() => {
+          this.activityLoading = false;
+        });
+    },
     toggleOverlay(val) {
       this.displayOverlay = val;
     },
@@ -567,7 +535,7 @@ export default {
     },
     async handleTeamMember(e) {
       if (e) {
-        this.inputtedTeamMemberData = e;
+        this.inputtedTeamMemberData = Object.assign({}, e);
       }
       // Update team member from form
       let methodXref = this.handleTeamMemberXref.methods[this.mode];
@@ -617,56 +585,10 @@ export default {
   max-height: 100%;
   background: white;
 }
-.team_sidebar {
-  border-right: $border;
-}
-.team_group_container {
-  display: flex;
-  flex: 0.2;
-  min-width: 300px;
-  flex-direction: column;
-  height: 100%;
-  overflow-x: hidden;
-}
-.filter_team_members {
-  display: flex;
-  align-items: center;
-  border-bottom: $border;
-  padding: 10px;
-  .bx {
-    font-size: 1.4em;
-    color: #999;
-    flex: 0.01;
-  }
-}
-.s_input {
-  padding: 10px;
-  flex: 1;
-  border: none;
-}
-.row_wrapper {
-  padding-top: 20px;
-  display: flex;
-  flex: 1;
-}
-.user_group_row {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
+
 .is_user_badge {
   font-size: 1.3em;
   margin-left: 20px;
-}
-.team_wrapper {
-  display: flex;
-  flex: 1;
-  max-height: fit-content;
-  flex-direction: column;
-}
-.user_group_col {
-  display: flex;
-  padding: 10px;
 }
 
 .button {
@@ -695,49 +617,7 @@ export default {
   font-size: 1.2em;
   margin-right: 10px;
 }
-.icon_text_container {
-  display: flex;
-  align-items: center;
-  .divider {
-    flex: 1;
-    height: 2px;
-    background: whitesmoke;
-  }
-  span {
-    text-transform: capitalize;
-    justify-content: flex-start;
-    padding: 0 10px;
-  }
-  color: #222;
-  font-size: 0.9em;
-  padding: 10px 0px;
-}
 
-.team_member_container {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  min-height: 50px;
-  max-height: fit-content;
-  border-radius: 10px;
-  padding: 10px;
-  cursor: pointer;
-  transition: $default_transition background;
-  &:hover,
-  &.active {
-    background: rgb(248, 248, 248);
-  }
-}
-.text_content {
-  margin-left: 20px;
-}
-p {
-  padding: 0;
-  margin: 0;
-}
-.member_name {
-  text-transform: capitalize;
-}
 .view_team_member {
   display: flex;
   flex-direction: column;
@@ -801,45 +681,13 @@ p {
     align-items: center;
   }
 }
+.activity_wrapper {
+  overflow-x: hidden;
+  max-height: calc(100% - 200px);
+}
 .title_container {
   display: flex;
   align-items: center;
-}
-
-$time_code: (
-  completed: var(--dark),
-  upcoming: var(--colour_primary),
-  in_progress: var(--purple)
-);
-
-.event {
-  display: flex;
-  margin: 10px;
-  align-items: center;
-  transition: $default_transition;
-  border: $border;
-}
-.date_wrapper {
-  display: flex;
-  flex-direction: column;
-  font-size: 1.4em;
-  max-width: 80px;
-  padding: 10px;
-
-  span {
-    white-space: pre-wrap;
-  }
-}
-.details_container {
-  flex: 1;
-  padding: 30px;
-  @each $key, $value in $time_code {
-    &.#{$key} {
-      background: rgba($value, 0.06);
-      color: rgba($value, 0.9);
-      border-left: 4px solid rgba($value, 0.9);
-    }
-  }
 }
 
 /*

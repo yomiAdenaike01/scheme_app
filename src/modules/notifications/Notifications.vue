@@ -50,7 +50,7 @@ export default {
     ...mapActions(["request"]),
     ...mapMutations([
       "UPDATE_ALL_NOTIFICATIONS",
-      "UPDATE_SYSTEM_NOTIFICATION",
+      "CREATE_SYSTEM_NOTIFICATION",
       "UPDATE_API_NOTIFICATION"
     ]),
     notificationController(notification, notificationIndex) {

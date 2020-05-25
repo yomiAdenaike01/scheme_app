@@ -65,7 +65,7 @@ export default {
     return arr;
   },
 
-  groupLookup: ({ clientInformation }) => (groupType, id) => {
+  groupLookup: ({ clientInformation }) => (groupType = "user", id) => {
     let res = {};
 
     if (groupType == "user") {
@@ -120,14 +120,6 @@ export default {
       system: getUA.getOS(),
       id: methods.genID()
     };
-  },
-
-  getClient({ clientInformation }, { isValidClient }) {
-    if (isValidClient) {
-      return clientInformation;
-    } else {
-      return {};
-    }
   },
 
   adminPermission({ userInformation: { user_group } }) {

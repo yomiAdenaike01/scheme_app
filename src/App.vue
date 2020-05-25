@@ -122,6 +122,21 @@ ul {
     background: rgb(249, 249, 249);
   }
 }
+.el-popover,
+.el-popper {
+  padding: 0px !important;
+}
+.popover_title {
+  background: rgb(250, 250, 250);
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+.popover_form /deep/ .form_wrapper .form {
+  padding: 12px;
+}
 :root {
   // Primary
   --colour_primary: 74, 85, 100;
@@ -195,15 +210,35 @@ ul {
 }
 .s_input {
   border: none;
-  background: rgb(249, 249, 249);
+  background: transparent;
   padding: 10px;
   display: flex;
   flex: 1;
-  border-radius: 10px;
+  border-radius: 6px;
   outline: none;
   width: 100%;
+  border: 1px solid rgba(var(--colour_primary), 0.17);
+
+  &.checkbox {
+    width: initial;
+    flex: initial;
+  }
+
   &.no_border_radius {
     border-radius: 0px;
+  }
+  &.fill {
+    background: rgb(249, 249, 249);
+    border: none;
+  }
+  &.multiple {
+    padding: 0;
+  }
+  &.no_border {
+    border: none;
+  }
+  &.bold {
+    font-weight: bold;
   }
 }
 /*

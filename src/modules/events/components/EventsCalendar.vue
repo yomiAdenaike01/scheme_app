@@ -112,7 +112,7 @@ export default {
   },
   methods: {
     ...mapActions(["request", "genPromptBox"]),
-    ...mapMutations(["UPDATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
+    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["DELETE_EVENT"]),
     createEventHere({ date }) {
       return console.log(date);

@@ -1,4 +1,5 @@
 <template>
+  <!-- NEED TO CHANGE CONTENT OF REQUEST -->
   <div class="requests_container">
     <div class="requests_list">
       <div
@@ -51,38 +52,15 @@
         </fade-transition>
         <!-- Requests -->
         <slide-x-left-transition group>
-          <div
+          <Request
             v-for="(request, index) in filteredRequests"
             :key="request._id"
-            :class="[
-              `request trigger `,
-              { active: selectedRequest._id == request._id }
-            ]"
-            @click="setSelectedRequest(request, index)"
-          >
-            <!-- Dates -->
-            <div class="dates_container">
-              <span>{{ formatDate(request.start_date, "DD-MM YYYY") }}</span>
-            </div>
-
-            <!-- Details -->
-            <div :class="`details_container ${request.status}`">
-              <h2 class="capitalize">{{ request.type.label }}</h2>
-              <strong class="status capitalize">{{ request.status }}</strong>
-
-              <p v-if="request.requested_by._id != userInformation._id">
-                {{ request.requested_by.name }}
-              </p>
-
-              <ul>
-                <li v-for="(value, key) in dateFieldsXref" :key="key">
-                  <span class="capitalize">{{ makePretty(key) }}</span> :{{
-                    value(request[key])
-                  }}
-                </li>
-              </ul>
-            </div>
-          </div>
+            :request="request"
+            :index="index"
+            :selected="selectedRequest"
+            :user="userInformation._id"
+            @setRequest="setSelectedRequest"
+          />
         </slide-x-left-transition>
       </div>
       <div v-else class="text_container grey all_centre">
@@ -97,6 +75,12 @@
         <!-- Header -->
         <header>
           <h1 class="capitalize">{{ selectedRequest.type.label }}</h1>
+          <s-button
+            v-if="selectedRequest.status == 'approved' && adminPermission"
+            class="plain"
+            @click="handleApprove"
+            >Create event</s-button
+          >
           <i
             v-if="
               adminPermission ||
@@ -160,16 +144,15 @@
         </div>
 
         <!-- Actions -->
-        <div class="actions_wrapper">
-          <s-button
+        <div v-if="!displayActions" class="actions_wrapper">
+          <p
             v-for="(action, index) in actionOptions"
             :key="index"
-            :class="[`expanded capitalize ${action.class}`]"
-            :icon="action.icon"
-            @click="action.body()"
+            :class="[`action_item capitalize ${action.buttonLabel}`]"
+            @click="action.body"
           >
             {{ action.buttonLabel }}
-          </s-button>
+          </p>
         </div>
       </div>
       <div v-else class="grey text_container all_centre">
@@ -184,14 +167,18 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import SButton from "@/components/SButton";
+import Request from "./Request";
 import { SlideXLeftTransition, FadeTransition } from "vue2-transitions";
+import cleanObject from "@/mixins/cleanObject";
 export default {
   name: "Requests",
   components: {
     SButton,
     SlideXLeftTransition,
-    FadeTransition
+    FadeTransition,
+    Request
   },
+  mixins: [cleanObject],
   props: {
     propFilters: {
       type: Object,
@@ -217,6 +204,12 @@ export default {
 
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["userLookup"]),
+    displayActions() {
+      let ignore = ["approved", "rejected"];
+      let { status } = this.selectedRequest;
+
+      return ignore.indexOf(status) > -1;
+    },
 
     hasAccess() {
       return (
@@ -239,13 +232,6 @@ export default {
 
       if (this.adminPermission) {
         actionOptions = ["rejected", "approved"];
-
-        if (this.selectedRequest.status == "approved") {
-          actionOptions = ["rejected"];
-        }
-        if (this.selectedRequest.status == "rejected") {
-          actionOptions = ["approved"];
-        }
       }
 
       let buttonLabelXref = {
@@ -318,18 +304,10 @@ export default {
       }
       return statusOptions;
     },
-
-    dateFieldsXref() {
-      let dateFormat = "DD-MM YYYY";
-      let body = val => {
-        return this.formatDate(val, dateFormat);
-      };
-      let dateKeys = ["start_date", "end_date", "date_created"];
-      let dateXref = {};
-      for (let i = 0, len = dateKeys.length; i < len; i++) {
-        dateXref[dateKeys[i]] = body;
-      }
-      return dateXref;
+    leanAssignedTo() {
+      return this.selectedRequest.assigned_to.map(assignee => {
+        return assignee._id;
+      });
     },
 
     filteredRequests() {
@@ -341,14 +319,14 @@ export default {
       let requests = [...this.eventRequests];
       for (let i = 0, len = requests.length; i < len; i++) {
         let request = requests[i];
-        if (!filterLabel.includes(request.type.label.toLowerCase())) {
+        if (!filterLabel.includes(request?.type?.label.toLowerCase())) {
           continue;
         }
-        if (filterRequestedBy != request.requested_by._id) {
+        if (filterRequestedBy != request?.requested_by?._id) {
           continue;
         }
 
-        if (!filterStatus.includes(request.status.toLowerCase())) {
+        if (!filterStatus.includes(request?.status?.toLowerCase())) {
           continue;
         }
 
@@ -368,27 +346,61 @@ export default {
       }
     },
     filteredRequests: {
-      immediate: true,
+      deep: true,
       handler(val) {
-        if (val.length > 0) {
-          let index = 0;
-          this.setSelectedRequest(val[index], index);
-        }
+        this.initRequests(val);
       }
     }
+  },
+
+  created() {
+    this.initRequests(this.filteredRequests);
+  },
+  destroyed() {
+    this.selectedRequest = {};
   },
 
   methods: {
     ...mapActions(["request"]),
     ...mapMutations("Events", [
-      "CREATE_REQUEST",
-      "UPDATE_ONE_REQUEST",
-      "DELETE_REQUEST"
+      "CREATE_EVENT_REQUEST",
+      "UPDATE_EVENT_REQUEST",
+      "DELETE_EVENT_REQUEST"
     ]),
+
+    initRequests(requests) {
+      let hasSelected = Object.keys(this.selectedRequest).length > 0;
+
+      if (requests.length > 0) {
+        if (!hasSelected) {
+          this.setSelectedRequest({ request: requests[0], index: 0 });
+        } else {
+          let selectedIndex = requests.findIndex(request => {
+            return request._id == this.selectedRequest._id;
+          });
+          if (selectedIndex > -1) {
+            this.setSelectedRequest({
+              request: requests[selectedIndex],
+              index: selectedIndex
+            });
+          }
+        }
+      } else {
+        if (hasSelected) {
+          this.selectedRequest = {};
+        }
+      }
+    },
+
     assignFilters(val = this.propFilters) {
       if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
         for (let property in val) {
-          this.filters[property] = val[property];
+          if (
+            property != "assigned_to" &&
+            val[property] != this.userInformation._id
+          ) {
+            this.filters[property] = val[property];
+          }
         }
       }
     },
@@ -397,53 +409,85 @@ export default {
         this.filters[property] = "";
       }
     },
-    setSelectedRequest(request, index) {
-      let mergedObject = {
-        ...request,
+    setSelectedRequest({ request, index }) {
+      // If status is sent update to seen
+      if (request?.status == "sent" && this.adminPermission) {
+        this.updateRequest({ status: "seen" });
+      }
+      this.selectedRequest = Object.assign({}, this.selectedRequest, request, {
         index
-      };
-
-      if (request?.status == "sent") {
-        this.UPDATE_ONE_REQUEST({
-          ...mergedObject,
-          status: "seen"
-        });
-        this.selectedRequest = { status: "seen", ...mergedObject };
-      }
-
-      this.selectedRequest = mergedObject;
+      });
     },
-    deleteRequest() {
-      this.DELETE_REQUEST(this.selectedRequest.index);
-      if (this.selectedRequest.index == 0) {
+    async deleteRequest() {
+      try {
+        this.DELETE_EVENT_REQUEST(this.selectedRequest.index);
+
+        //  API request
+        let apiPayload = {
+          method: "DELETE",
+          url: "events/requests/delete",
+          data: {
+            _id: this.selectedRequest._id
+          }
+        };
+        await this.request(apiPayload);
         this.selectedRequest = {};
-      }
-      // If there is a request above
-      let aboveIndex = this.selectedRequest.index - 1,
-        belowIndex = this.selectedRequest.index + 1;
-      if (this.filteredRequests[aboveIndex]) {
-        this.selectedRequest = this.filteredRequests[aboveIndex];
-      }
-      if (this.filteredRequests[belowIndex]) {
-        this.selectedRequest = this.filteredRequests[belowIndex];
+      } catch (error) {
+        return Promise.reject(error);
       }
     },
-    updateRequest(update) {
-      let updatedRequest = Object.assign(this.selectedRequest, update);
-      this.UPDATE_ONE_REQUEST(updatedRequest);
+
+    handleApprove() {
+      let formPayload = {
+        assigned_to: [this.selectedRequest.requested_by._id],
+        type: this.selectedRequest.type._id,
+        dates: [this.selectedRequest.start_date, this.selectedRequest.end_date]
+      };
+      this.$emit("changeView", {
+        view: "events"
+      });
+
+      this.$emit("updateOverlays", {
+        overlay: "events",
+        display: true
+      });
+
+      this.$emit("approveRequest", formPayload);
+    },
+    async updateRequest(update) {
+      try {
+        // Check if clicked approve
+        if (update?.status == "approved" && this.adminPermission) {
+          this.handleApprove();
+        }
+
+        this.selectedRequest = Object.assign({}, this.selectedRequest, update);
+
+        this.UPDATE_EVENT_REQUEST({
+          update,
+          index: this.selectedRequest.index
+        });
+
+        //  API request
+        const apiPayload = {
+          method: "PUT",
+          url: "events/requests/update",
+          data: {
+            _id: this.selectedRequest._id,
+            update,
+            assigned_to: this.leanAssignedTo
+          }
+        };
+        await this.request(apiPayload);
+      } catch (error) {
+        return Promise.reject(error);
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-$requests: (
-  sent: var(--purple),
-  seen: var(--blue),
-  rejected: var(--danger),
-  approved: var(--success)
-);
-
 .requests_container {
   display: flex;
   height: 100%;
@@ -511,41 +555,6 @@ header {
   height: 100%;
   flex: 1;
 }
-.request {
-  flex: 1;
-  border-top: $border;
-
-  border-bottom: $border;
-  transition: $default_transition;
-  margin: 20px 0;
-  display: flex;
-}
-.dates_container {
-  font-size: 1.3em;
-  padding: 10px;
-  flex: 0.1;
-}
-.details_container {
-  flex: 1;
-  padding: 10px;
-  @each $key, $value in $requests {
-    &.#{$key} {
-      background: rgba($value, 0.08);
-      border-left: 5px solid rgba($value, 1);
-
-      &:hover,
-      &.active {
-        background: rgba($value, 0.1);
-      }
-      .status {
-        color: rgba($value, 1);
-      }
-    }
-  }
-}
-ul {
-  padding: 10px 0;
-}
 
 header {
   border-bottom: $border;
@@ -573,15 +582,30 @@ header {
 }
 .actions_wrapper {
   display: flex;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  &/deep/ .button_container {
-    flex: 1;
-    font-size: 1.2em;
-    border-radius: 5px;
-    margin: 0px 1px;
+  align-items: center;
+  justify-content: space-evenly;
+}
+$actionitems: (
+  approve: var(--success),
+  reject: var(--danger)
+);
+
+.action_item {
+  text-align: center;
+  flex: 1;
+  font-weight: bold;
+  margin: 0;
+  padding: 20px 0;
+  cursor: pointer;
+  transition: $default_transition;
+  @each $key, $value in $actionitems {
+    &.#{$key} {
+      background: rgba($value, 0.03);
+      color: rgba($value, 1);
+      &:hover {
+        background: rgba($value, 0.1);
+      }
+    }
   }
 }
 .timeline_wrapper {

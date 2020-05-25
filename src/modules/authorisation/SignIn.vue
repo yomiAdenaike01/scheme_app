@@ -1,16 +1,27 @@
 <template>
   <div class="login_container">
     <Form
+      v-model="credentials"
+      :form-content="credentials"
       class="form_container"
       :config="formConfig"
-      :submit-text="submitText"
+      :validations="['email', 'password']"
       :submit-button="{ text: 'Sign in', icon: 'right-arrow-alt' }"
-      @val="submitController"
+      @val="submit"
     >
+      <div slot="header" class="header_container">
+        <h1>Sign in</h1>
+        <collapse-transition>
+          <p v-if="errorMessage.length > 0" class="error">{{ errorMessage }}</p>
+        </collapse-transition>
+      </div>
       <div slot="footer" class="new_client_button_container">
-        <el-button size="small" @click="selectedForm = 'forgotPassword'">
+        <s-button
+          class="rounded plain mini"
+          @click="selectedForm = 'forgotPassword'"
+        >
           Forgot password ?
-        </el-button>
+        </s-button>
       </div>
     </Form>
   </div>
@@ -21,10 +32,14 @@ import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
 
 import validateInput from "@/mixins/validateInput";
+import SButton from "@/components/SButton";
+import { CollapseTransition } from "vue2-transitions";
 export default {
   name: "SignIn",
   components: {
-    Form
+    Form,
+    SButton,
+    CollapseTransition
   },
   mixins: [validateInput],
   data() {
@@ -32,7 +47,8 @@ export default {
       newUser: false,
       loading: false,
       credentials: {},
-      selectedForm: "login"
+      selectedForm: "login",
+      errorMessage: ""
     };
   },
   computed: {
@@ -43,9 +59,6 @@ export default {
       return this.selectedForm == "login" ? "Login" : "Submit new password";
     },
 
-    returnForm() {
-      return this.formConfig[this.selectedForm];
-    },
     formConfig() {
       return this.forms[this.selectedForm];
     },
@@ -54,19 +67,19 @@ export default {
         forgotPassword: [
           {
             name: "email",
-            "component-type": "text",
+            component_type: "text",
             placeholder: "Email",
             model: "fp_email"
           },
           {
             name: "password",
-            "component-type": "password",
+            component_type: "password",
             placeholder: "Password",
             model: "fp_password"
           },
           {
             name: "password",
-            "component-type": "password",
+            component_type: "password",
             placeholder: "Retype-Password",
             model: "fp_reentered_password"
           }
@@ -74,13 +87,13 @@ export default {
         login: [
           {
             name: "email",
-            "component-type": "text",
+            component_type: "text",
             placeholder: "Email",
             model: "email"
           },
           {
             name: "password",
-            "component-type": "password",
+            component_type: "password",
             placeholder: "Password",
             model: "password"
           }
@@ -100,11 +113,10 @@ export default {
     ...mapMutations([
       "UPDATE_USER",
       "UPDATE_USER_SESSION",
-      "UPDATE_SYSTEM_NOTIFICATION"
+      "CREATE_SYSTEM_NOTIFICATION"
     ]),
 
-    submitController(formInformation) {
-      this.credentials = formInformation;
+    submit() {
       switch (this.selectedForm) {
         case "login": {
           this.login();
@@ -132,7 +144,7 @@ export default {
         this.credentials?.fp_password?.toLowerCase()?.trim() ===
         this.credentials?.fp_reentered_password?.toLowerCase()?.trim();
       if (!isValid && !equalPasswords) {
-        this.UPDATE_SYSTEM_NOTIFICATION({
+        this.CREATE_SYSTEM_NOTIFICATION({
           message:
             "Error processing reset password, please enter your desired password again"
         });
@@ -154,9 +166,17 @@ export default {
      *
      */
     login() {
+      const goToEvents = () => {
+        if (this.$route.name != "events") {
+          this.$router.push({
+            name: "events"
+          });
+        }
+      };
       this.loading = true;
       this.request({
         method: "POST",
+        disableNotifications: true,
         data: {
           client_id: this.clientInformation._id,
           ...this.credentials
@@ -168,21 +188,20 @@ export default {
           this.UPDATE_USER_SESSION(response.token);
 
           if (response.user.admin_gen == true) {
-            this.UPDATE_SYSTEM_NOTIFICATION({
+            this.CREATE_SYSTEM_NOTIFICATION({
               title: "Insecure password detected",
               message:
                 "Use the forgot password functionality to reset you password."
             });
 
-            this.$router.push({ name: "events" });
+            goToEvents();
           }
-
-          this.$router.push({ name: "events" });
+          goToEvents();
 
           this.loading = false;
-          // this.changeTab("login");
         })
         .catch(err => {
+          this.errorMessage = err;
           this.loading = false;
         });
     }
@@ -198,15 +217,26 @@ export default {
   justify-content: center;
   align-items: center;
 }
+
 .logo_wrapper {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
+.header_container {
+  padding: 20px;
+}
+.error {
+  padding: 10px;
+  border-radius: 5px;
+  background: rgba(var(--danger), 0.05);
+  color: rgba(var(--danger), 1);
+}
+
 .form_container {
   display: flex;
   flex-direction: column;
-  width: 400px;
   border: $border;
+  width: 16%;
 }
 </style>

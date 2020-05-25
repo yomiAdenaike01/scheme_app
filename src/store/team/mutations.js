@@ -14,18 +14,7 @@ export default {
       });
     }
   },
-  REASSIGN_TEAM_MEMBERS(state, { assignment = "team", group }) {
-    let groupedElements = [],
-      groupKey = assignment == "team" ? "groupID" : "type";
-    for (let i = 0, len = state[assignment].length; i < len; i++) {
-      let { groupID } = state[assignment][i];
-      if (groupID == group) {
-        groupedElements.push({ index: i, groupID });
-        Vue.set(state[assignment][i], groupKey, 0);
-      }
-    }
-    updateBreadCrumbs(state, "groupRef", { group: group, groupedElements });
-  },
+
   DELETE_TEAM_MEMBER(state, teamMemberIndex) {
     teamMemberIndex = teamMemberIndex ? teamMemberIndex : state.team.length - 1;
 
@@ -44,30 +33,25 @@ export default {
         });
         if (!member) {
           state.team.push(teamMember);
+        } else {
+          state.team.splice(i, 1, member);
         }
       }
     }
   },
 
-  UPDATE_TEAM_MEMBER_GROUP(state, { index, groupType, payload }) {
+  UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
+    let teamMember = state.team[index];
+
     updateBreadCrumbs(state, "teamRef", {
       index,
-      payload: state.team[index]
+      payload: teamMember
     });
 
-    state.team[index][groupType] = {
-      ...state.team[index][groupType],
-      ...payload
-    };
-  },
-  UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
-    updateBreadCrumbs(state, "teamRef", {
-      index,
-      payload: state.team[index]
-    });
-    for (let property in state.team[index]) {
-      if (payload[property]) {
-        Vue.set(state.team[index], property, payload[property]);
+    for (let property in payload) {
+      let updatedVal = payload[property];
+      if (teamMember[property]) {
+        Vue.set(teamMember, property, updatedVal);
       }
     }
   }

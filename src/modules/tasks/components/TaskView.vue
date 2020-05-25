@@ -12,12 +12,17 @@
           type="text"
           :placeholder="isNewTask ? 'Task name...' : task.name"
           class="new_task_input"
+          :class="{ disabled: isComplete }"
         />
 
         <h2 class="grey capitalize">{{ boardData.name }}</h2>
       </div>
-      <div class="arrow_container right" @click="viewNextTask">
-        <i class="bx bx-right-arrow-alt grey"></i>
+      <div class="mark_as_complete trigger">
+        <i
+          class="bx bx-check"
+          :class="{ active: isComplete, disabled: isComplete }"
+          @click="completeTask"
+        ></i>
       </div>
     </div>
 
@@ -134,22 +139,15 @@
                   :class="[
                     'team_member',
                     {
-                      assigned:
-                        task.assigned_to.findIndex(
-                          assignee => assignee._id == member._id
-                        ) > -1
+                      assigned: checkIsAssigned(member) > -1
                     }
                   ]"
-                  @click="toggleAssignedTeamMember($event, member)"
+                  @click="toggleAssignedTeamMember(member)"
                 >
                   <p>
                     <span>{{ member.name }}</span>
                     <i
-                      v-if="
-                        task.assigned_to.findIndex(
-                          assignee => assignee._id == member._id
-                        ) > -1
-                      "
+                      v-if="checkIsAssigned(member) > -1"
                       class="bx bx-check"
                     />
                   </p>
@@ -212,7 +210,10 @@
                         placeholder="Click to create new label"
                         type="text"
                         class="label_placeholder_input"
-                        @keyup.enter="saveLabel"
+                        @keyup.enter="
+                          $event.stopPropagation();
+                          saveLabel();
+                        "
                       />
                       <el-popover v-model="displayPopover">
                         <i
@@ -278,7 +279,7 @@
                     </p>
                     <!-- Assign deadline to end of event -->
                   </div>
-                  <div v-else>
+                  <div v-if="!assignedToEvent && eventsToAssign.length > 0">
                     <div
                       v-for="(event, eventIndex) in eventsToAssign"
                       :key="eventIndex"
@@ -288,6 +289,13 @@
                       <small> {{ event.label }} </small>
                       <small> End date: {{ event.end_date.label }} </small>
                     </div>
+                  </div>
+                  <!-- No events to assign -->
+                  <div
+                    v-if="eventsToAssign.length == 0 && !assignedToEvent"
+                    class="text_container all_centre"
+                  >
+                    <p class="grey">No event to assign</p>
                   </div>
                 </div>
               </div>
@@ -358,6 +366,10 @@ export default {
     ...mapState("Events", ["events"]),
     ...mapGetters(["adminPermission"]),
 
+    isComplete() {
+      return this.task.state == 3;
+    },
+
     eventsToAssign() {
       let filteredEvents = [];
       for (let i = 0, len = this.events.length; i < len; i++) {
@@ -422,8 +434,9 @@ export default {
         : false;
     },
     filteredTeam() {
+      let search = this.teamNameSearch.toLowerCase();
       let filteredTeam = this.team.filter(x =>
-        x.name.toLowerCase().includes(this.teamNameSearch.toLowerCase())
+        x.name.toLowerCase().includes(search)
       );
       return filteredTeam.length > 0 ? filteredTeam : this.team;
     },
@@ -469,6 +482,17 @@ export default {
         });
       }
 
+      if (this.isComplete) {
+        let saveActionIndex = quickActions.length - 2;
+        let saveAction = quickActions[saveActionIndex];
+
+        quickActions[saveActionIndex] = Object.assign(saveAction, {
+          icon: "bx bx-check",
+          label: "Task already completed"
+        });
+        delete quickActions[saveActionIndex].function;
+      }
+
       return quickActions;
     },
     edittableProperties() {
@@ -488,7 +512,7 @@ export default {
   },
 
   created() {
-    window.addEventListener("keyup", this.toggleDisplay);
+    window.addEventListener("keyup", this.keyListener);
     this.loadTask();
 
     for (let i = 0, len = this.edittableProperties.length; i < len; i++) {
@@ -515,6 +539,7 @@ export default {
         icon: "timer"
       });
     },
+
     async deleteTask() {
       try {
         let { _id } = this.task;
@@ -533,11 +558,14 @@ export default {
         console.error(error);
       }
     },
+
     increaseTime(timeGap) {
-      this.task.due_date = this.initMoment(this.task.due_date)
+      let currentTime = this.task.due_date ? this.task.due_date : new Date();
+      this.task.due_date = this.initMoment(currentTime)
         .add(1, timeGap)
         .toISOString();
     },
+
     async saveTask() {
       try {
         this.loading = "save_task";
@@ -564,27 +592,53 @@ export default {
             update
           });
         } else {
-          let validationFields = ["name", "description"];
-
-          for (let i = 0, len = validationFields.length; i < len; i++) {
-            let validationItem = validationFields[i];
-
-            if (!this.task[validationItem]) {
-              this.task[validationItem] = this.defaultTaskXref[validationItem];
-            }
+          if (!this.task.name) {
+            this.task.name = "Blank name";
+            taskData.name = "Blank name";
+          }
+          if (!this.task.description) {
+            this.task.description = "Blank description";
+            taskData.description = "Blank description";
           }
 
-          this.CREATE_TASK({ boardIndex: this.boardIndex, ...taskData });
+          this.CREATE_TASK(
+            Object.assign(taskData, {
+              boardIndex: this.boardIndex,
+              local: true
+            })
+          );
         }
+
         taskData.assigned_to = taskData.assigned_to.map(assignee => {
           return assignee._id;
         });
-        await this.request(taskPayload);
+
+        let res = await this.request(taskPayload);
         this.loading = "";
         this.selectedItem = "";
+
+        if (this.isNewTask) {
+          this.UPDATE_TASKS({
+            boardIndex: this.boardIndex,
+            taskIndex: this.boards[this.boardIndex].tasks.length - 1,
+            update: res
+          });
+          this.CREATE_SYSTEM_NOTIFICATION({
+            message: "Task successfully updated",
+            type: "success"
+          });
+        }
       } catch (error) {
         this.loading = "";
         this.selectedItem = "";
+
+        if (this.isNewTask) {
+          // Remove the new task
+          this.DELETE_TASK({
+            boardIndex: this.boardIndex,
+            taskIndex: this.boards[this.boardIndex].tasks.length - 1
+          });
+        }
 
         console.warn(error);
       }
@@ -617,13 +671,18 @@ export default {
       ) {
         task = this.taskInformation;
       }
-      this.task = Object.assign({}, task);
+      this.task = Object.assign({}, this.task, task);
     },
     deleteLabel(id) {
       let labelIndex = this.task.labels.findIndex(x => x._id == id);
       if (labelIndex > -1) {
         this.task.labels.splice(labelIndex, 1);
       }
+    },
+    checkIsAssigned(member) {
+      return this.task.assigned_to.findIndex(x => {
+        return x._id == member._id;
+      });
     },
     saveLabel() {
       let newLabel = {
@@ -660,10 +719,8 @@ export default {
         item.function();
       }
     },
-    toggleAssignedTeamMember(e, teamMember) {
-      let assignedIndex = this.task.assigned_to.findIndex(
-        assignee => assignee._id == teamMember._id
-      );
+    toggleAssignedTeamMember(teamMember) {
+      let assignedIndex = this.checkIsAssigned(teamMember);
 
       if (assignedIndex > -1) {
         this.task.assigned_to.splice(assignedIndex, 1);
@@ -671,9 +728,20 @@ export default {
         this.task.assigned_to.push(teamMember);
       }
     },
-    toggleDisplay(e) {
-      if (e.key == "Escape") {
-        this.$emit("toggle");
+    keyListener(e) {
+      switch (e.key) {
+        case "Escape": {
+          this.$emit("toggle");
+          break;
+        }
+
+        case "Enter": {
+          this.saveTask();
+          break;
+        }
+
+        default:
+          break;
       }
     },
     destoryComponent() {
@@ -684,11 +752,9 @@ export default {
       if (this.hasChanged) {
         this.saveTask();
       }
-      window.removeEventListener("keyup", this.toggleDisplay);
+      window.removeEventListener("keyup", this.keyListener);
     },
-    viewNextTask() {
-      this.$emit("nextTask");
-    },
+
     checkDrawer(label, match) {
       return (
         label.toLowerCase() == match && this.selectedItem.toLowerCase() == match
@@ -696,6 +762,12 @@ export default {
     },
     deleteComment(commentIndex) {
       this.task.comments.splice(commentIndex, 1);
+    },
+    completeTask() {
+      this.task.state = 3;
+      this.task.complete_date = new Date().toISOString();
+
+      this.saveTask();
     },
     createComment({ message }) {
       let comment = {
@@ -865,6 +937,7 @@ $due_date_ref: (
   position: sticky;
   top: 0px;
   border-radius: 0px;
+  background: white;
 }
 
 .team_member {
@@ -1013,5 +1086,23 @@ $due_date_ref: (
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.mark_as_complete {
+  font-size: 2em;
+  margin-right: 30px;
+  display: flex;
+  align-items: center;
+
+  .bx {
+    border-radius: 50%;
+    border: $border;
+    padding: 20px;
+    transition: $default_transition;
+    &.active,
+    &:hover {
+      background: rgba(var(--success), 0.7);
+      color: white;
+    }
+  }
 }
 </style>

@@ -21,11 +21,9 @@ export default {
   teamRef: {},
 
   globalIntervals: {
-    admin: 60000,
+    admin: 6000,
     client: 20000,
-    chatMessages: 3000,
-    chat: 30000,
-    templates: 30000
+    chat: 30000
   },
 
   token: localStorage.getItem("token") ? localStorage.getItem("token") : "",

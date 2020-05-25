@@ -44,6 +44,11 @@
             <el-tag v-if="taskInformation.due_date">{{
               formatDate(taskInformation.due_date, "DD-MM-YYYY")
             }}</el-tag>
+
+            <i
+              v-if="taskInformation.state == 3"
+              class="bx bx-check marked_complete"
+            ></i>
           </div>
         </div>
 
@@ -132,7 +137,7 @@ export default {
     updateTaskStateConfig() {
       return [
         {
-          "component-type": "select",
+          component_type: "select",
           options: this.stateOptions,
           placeholder: "Change task state",
           model: "state"
@@ -287,5 +292,12 @@ export default {
   color: #999;
   margin-left: -10px;
   z-index: 2;
+}
+.marked_complete {
+  border-radius: 50%;
+  padding: 15px;
+  border: $border;
+  background: rgba(var(--success), 0.7);
+  color: white;
 }
 </style>

@@ -131,7 +131,7 @@ export default {
 
   methods: {
     ...mapMutations([
-      "UPDATE_SYSTEM_NOTIFICATION,CREATE_GLOBAL_INTERVAL",
+      "CREATE_SYSTEM_NOTIFICATION,CREATE_GLOBAL_INTERVAL",
       "DELETE_GLOBAL_INTERVAL"
     ]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
@@ -166,7 +166,7 @@ export default {
       let userName = this.userLookup(this.chat.reciever)?.name;
 
       const createError = message => {
-        this.UPDATE_SYSTEM_NOTIFICATION({
+        this.CREATE_SYSTEM_NOTIFICATION({
           message,
           type: "error"
         });

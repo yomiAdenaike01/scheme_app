@@ -28,45 +28,6 @@ export default {
     state.overlayHistory = payload;
   },
 
-  CREATE_GROUP(state, { groupType, payload }) {
-    let group = state.clientInformation[groupType];
-
-    let groupExists =
-      state.clientInformation[groupType].findIndex(group => {
-        return group?.label?.toLowerCase() == payload?.label?.toLowerCase();
-      }) > -1;
-
-    if (!groupExists) {
-      group.push(payload);
-      updateBreadCrumbs(state, "groupRef", { groupType, payload });
-    }
-  },
-
-  DELETE_GROUP(state, { groupType, groupIndex }) {
-    updateBreadCrumbs(state, "groupRef", {
-      groupType,
-      payload: state.clientInformation[groupType][groupIndex]
-    });
-
-    Vue.delete(state.clientInformation[groupType], groupIndex);
-  },
-
-  UPDATE_GROUP(state, { groupType, groupIndex, payload }) {
-    updateBreadCrumbs(state, "groupRef", {
-      groupType,
-      groupIndex,
-      payload
-    });
-
-    for (let property in payload) {
-      Vue.set(
-        state.clientInformation[groupType][groupIndex],
-        property,
-        payload[property]
-      );
-    }
-  },
-
   CREATE_GLOBAL_INTERVAL(state, payload) {
     payload = payload
       ? payload
@@ -111,7 +72,7 @@ export default {
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    state.clientInformation = Object.assign(state.clientInformation, payload);
+    state.clientInformation = payload;
   },
 
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {
@@ -177,15 +138,11 @@ export default {
     if (VueRouter.currentRoute.name != "signIn") {
       VueRouter.push({ name: "signIn" });
     }
-    for (let property in state.globalIntervals) {
-      if (property != "client") {
-        deleteStateInterval(state, property);
-      }
-    }
+    deleteStateInterval(state);
   },
 
   UPDATE_USER(state, payload) {
-    state.userInformation = Object.assign(state.userInformation, payload);
+    state.userInformation = Object.assign({}, state.userInformation, payload);
   },
 
   UPDATE_USER_SESSION(state, payload) {
@@ -246,9 +203,9 @@ export default {
         state.criticalNetworkError = true;
         state.errorInformation = notification.message;
 
-        if (VueRouter.currentRoute.name != "error") {
-          VueRouter.push({ name: "error" });
-        }
+        // if (VueRouter.currentRoute.name != "error") {
+        //   VueRouter.push({ name: "error" });
+        // }
       }
     }
 
@@ -282,9 +239,10 @@ export default {
     }
     if (state.systemNotifications.length > 0) {
       clearTimeout(removeNotificationTimeout);
+      let timeOut = state.systemNotifications.length * 5000;
       let removeNotificationTimeout = setTimeout(() => {
         state.systemNotifications.pop();
-      }, 5000);
+      }, timeOut);
     }
   }
 };
