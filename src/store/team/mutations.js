@@ -58,10 +58,7 @@ export default {
       index,
       payload: teamMember
     });
-    for (let property in payload) {
-      let payloadVal = payload[property];
-      Vue.set(teamMember, property, payloadVal);
-    }
+    Object.assign(teamMember, payload);
   },
   UPDATE_ONE_TEAM_MEMBER(state, { index, payload }) {
     let teamMember = state.team[index];

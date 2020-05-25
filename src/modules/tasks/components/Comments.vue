@@ -60,12 +60,10 @@ import { SlideXLeftTransition } from "vue2-transitions";
 import scrollToBottom from "@/mixins/scrollToBottom";
 import SButton from "@/components/SButton";
 import Avatar from "@/components/Avatar";
-import ActionIcon from "@/components/ActionIcon";
 
 export default {
   name: "Comments",
   components: {
-    ActionIcon,
     Avatar,
     SlideXLeftTransition,
     SButton

@@ -53,11 +53,12 @@ export default {
   },
   UPDATE_EVENT_REQUEST(state, payload) {
     let { index, ...data } = payload;
+    let request = state.eventRequests[index];
     updateBreadCrumbs(state, "eventRequestRef", {
       index,
-      ...state.eventRequests[index]
+      ...request
     });
-    state.eventRequests.splice(index, 1, data);
+    Object.assign(request, data);
   },
   UPDATE_EVENT_REQUESTS(state, payload) {
     state.eventRequests = payload;
@@ -75,8 +76,7 @@ export default {
       index,
       payload: event
     });
-
-    state.events.splice(index, 1, payload);
+    Object.assign(event, payload);
   },
   DELETE_EVENT(state, index) {
     if (!index) {

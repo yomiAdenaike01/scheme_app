@@ -176,13 +176,14 @@ export default {
             formattedMember[property] = teamMember[property];
           }
         }
-        this.inputtedTeamMemberData = Object.assign({}, formattedMember);
+        this.inputtedTeamMemberData = Object.assign(
+          {},
+          this.inputtedTeamMemberData,
+          formattedMember
+        );
       } else {
         this.inputtedTeamMemberData = {};
       }
-    },
-    updateTeamMemberObject(e) {
-      this.inputtedTeamMemberData = e;
     },
 
     updateView() {

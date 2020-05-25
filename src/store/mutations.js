@@ -60,11 +60,7 @@ export default {
       payload
     });
 
-    for (let property in payload) {
-      if (group?.[property] && group[property] != payload[property]) {
-        Vue.set(group, property, payload[property]);
-      }
-    }
+    Object.assign(group, payload);
   },
 
   CREATE_GLOBAL_INTERVAL(state, payload) {
@@ -111,7 +107,7 @@ export default {
   },
 
   UPDATE_CLIENT_INFORMATION(state, payload) {
-    state.clientInformation = Object.assign(state.clientInformation, payload);
+    Object.assign(state.clientInformation, payload);
   },
 
   UPDATE_TOGGLE_MOBILE_MENU(state, payload) {

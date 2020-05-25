@@ -651,7 +651,7 @@ export default {
       ) {
         task = this.taskInformation;
       }
-      this.task = Object.assign({}, task);
+      Object.assign(this.task, task);
     },
     deleteLabel(id) {
       let labelIndex = this.task.labels.findIndex(x => x._id == id);

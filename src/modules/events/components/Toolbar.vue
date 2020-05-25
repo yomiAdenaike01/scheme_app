@@ -19,11 +19,11 @@
 
 <script>
 import { mapGetters, mapState, mapMutations } from "vuex";
-
+import SButton from "@/components/SButton";
 export default {
   name: "Toolbar",
   components: {
-    SButton: () => import("@/components/SButton")
+    SButton
   },
   props: {
     currentView: {
@@ -55,7 +55,7 @@ export default {
           class: "primary rounded shadow",
           inverseIcon: false,
           method: () => {
-            this.$emit("updateOverlays", "events");
+            this.$emit("updateOverlays", { overlay: "events", display: true });
           }
         },
         {

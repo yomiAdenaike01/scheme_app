@@ -11,17 +11,12 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  Switch,
   DatePicker,
   TimeSelect,
   TimePicker,
-  Tabs,
-  TabPane,
   Tag,
-  Icon,
   Progress,
   Spinner,
-  Collapse,
   Cascader,
   ColorPicker,
   Loading,
@@ -34,17 +29,12 @@ Vue.use(Autocomplete);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
-Vue.use(Switch);
 Vue.use(DatePicker);
 Vue.use(TimeSelect);
 Vue.use(TimePicker);
-Vue.use(Tabs);
-Vue.use(TabPane);
 Vue.use(Tag);
-Vue.use(Icon);
 Vue.use(Progress);
 Vue.use(Spinner);
-Vue.use(Collapse);
 Vue.use(Cascader);
 Vue.use(ColorPicker);
 

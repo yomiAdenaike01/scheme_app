@@ -7,12 +7,6 @@
       @close="displayMenu = false"
     />
     <div class="view_event_container">
-      <TextDisplay
-        class="view_event_title"
-        :display-text="{
-          heading: event.heading
-        }"
-      ></TextDisplay>
       <div class="info_button_container">
         <s-button class="rounded secondary" icon="check">{{
           approvalButtonConfig.content
@@ -125,7 +119,6 @@ import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 
 import overlayEvents from "@/mixins/overlayEvents";
 
-import TextDisplay from "@/components/TextDisplay";
 import Avatar from "@/components/Avatar";
 import Form from "@/components/Form";
 import SButton from "@/components/SButton";
@@ -135,7 +128,6 @@ import Menu from "@/components/Menu";
 export default {
   name: "ViewEventOverlay",
   components: {
-    TextDisplay,
     Avatar,
     Form,
     SButton,

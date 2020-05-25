@@ -1,4 +1,5 @@
 <template>
+  <!-- NEED TO CHANGE CONTENT OF REQUEST -->
   <div class="requests_container">
     <div class="requests_list">
       <div
@@ -138,15 +139,14 @@
 
         <!-- Actions -->
         <div class="actions_wrapper">
-          <s-button
+          <p
             v-for="(action, index) in actionOptions"
             :key="index"
-            :class="[`expanded capitalize ${action.class}`]"
-            :icon="action.icon"
-            @click="action.body()"
+            :class="[`action_item capitalize ${action.class}`]"
+            @click="action.body"
           >
             {{ action.buttonLabel }}
-          </s-button>
+          </p>
         </div>
       </div>
       <div v-else class="grey text_container all_centre">
@@ -163,6 +163,7 @@ import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import SButton from "@/components/SButton";
 import Request from "./Request";
 import { SlideXLeftTransition, FadeTransition } from "vue2-transitions";
+import cleanObject from "@/mixins/cleanObject";
 export default {
   name: "Requests",
   components: {
@@ -171,6 +172,7 @@ export default {
     FadeTransition,
     Request
   },
+  mixins: [cleanObject],
   props: {
     propFilters: {
       type: Object,
@@ -297,6 +299,11 @@ export default {
       }
       return statusOptions;
     },
+    leanAssignedTo() {
+      return this.selectedRequest.assigned_to.map(assignee => {
+        return assignee._id;
+      });
+    },
 
     filteredRequests() {
       let filteredRequests = [];
@@ -332,13 +339,17 @@ export default {
       handler(val) {
         this.assignFilters(val);
       }
+    },
+    filteredRequests: {
+      deep: true,
+      handler(val) {
+        this.initRequests(val);
+      }
     }
   },
 
   created() {
-    if (this.filteredRequests.length > 0) {
-      this.setSelectedRequest({ request: this.filteredRequests[0], index: 0 });
-    }
+    this.initRequests(this.filteredRequests);
   },
 
   methods: {
@@ -348,6 +359,12 @@ export default {
       "UPDATE_EVENT_REQUEST",
       "DELETE_EVENT_REQUEST"
     ]),
+
+    initRequests(requests) {
+      if (requests.length > 0) {
+        this.setSelectedRequest({ request: requests[0], index: 0 });
+      }
+    },
 
     assignFilters(val = this.propFilters) {
       if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
@@ -362,7 +379,7 @@ export default {
       }
     },
     setSelectedRequest({ request, index }) {
-      this.selectedRequest = Object.assign(this.selectedRequest, request, {
+      Object.assign(this.selectedRequest, request, {
         index
       });
 
@@ -406,14 +423,43 @@ export default {
         this.selectedRequest = this.filteredRequests[belowIndex];
       }
     },
+    handleApprove(update) {
+      let formPayload = {
+        assigned_to: [this.selectedRequest.requested_by._id],
+        type: this.selectedRequest.type._id,
+        dates: [this.selectedRequest.start_date, this.selectedRequest.end_date]
+      };
 
+      this.$emit("changeView", {
+        view: "events"
+      });
+
+      this.$emit("updateOverlays", {
+        overlay: "events",
+        display: true
+      });
+
+      this.$emit("approveRequest", formPayload);
+    },
     async updateRequest(update) {
       try {
-        let updatedRequest = Object.assign(this.selectedRequest, update);
-        this.UPDATE_EVENT_REQUEST(updatedRequest);
-        let assignedTo = this.selectedRequest.assigned_to.map(assignee => {
-          return assignee._id;
+        // Check if clicked approve
+        if (update?.status == "approved" && this.adminPermission) {
+          this.handleApprove();
+        }
+
+        let updateWithIndex = Object.assign(update, {
+          index: this.selectedRequest.index
         });
+
+        this.selectedRequest = Object.assign(
+          {},
+          this.selectedRequest,
+          updateWithIndex
+        );
+
+        this.UPDATE_EVENT_REQUEST(updateWithIndex);
+        return;
 
         //  API request
         const apiPayload = {
@@ -422,7 +468,7 @@ export default {
           data: {
             _id: this.selectedRequest._id,
             update,
-            assigned_to: assignedTo
+            assigned_to: this.leanAssignedTo
           }
         };
         await this.request(apiPayload);
@@ -529,16 +575,10 @@ header {
 }
 .actions_wrapper {
   display: flex;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  &/deep/ .button_container {
-    flex: 1;
-    font-size: 1.2em;
-    border-radius: 5px;
-    margin: 0px 1px;
-  }
+  align-items: center;
+}
+.action_item {
+  font-weight: bold;
 }
 .timeline_wrapper {
   padding: 20px;

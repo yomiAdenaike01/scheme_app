@@ -129,7 +129,7 @@ export default {
       immediateCallback: () => {
         this.loading = false;
       },
-      duration: 3000,
+      duration: 10000,
       id: "adminIntervals",
       method: () => {
         return new Promise((resolve, reject) => {
@@ -366,21 +366,20 @@ export default {
 .notification_container {
   position: fixed;
   top: 2%;
-  right: 20px;
+  right: 42px;
+  left: 83%;
   z-index: 999995;
 }
 .notification {
   background: white;
   box-shadow: $box_shadow;
   display: flex;
-  min-width: 410px;
   margin-bottom: 20px;
-  padding: 10px;
-  max-width: fit-content;
+  width: 100%;
+
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  min-height: fit-content;
   border-left: 4px solid rgba(var(--colour_primary), 1);
   &.message,
   .icon_container {
@@ -396,7 +395,6 @@ export default {
   display: flex;
   align-items: center;
   flex: 1;
-  padding: 0 20px;
   position: relative;
 }
 .notification .text_container {
@@ -413,7 +411,8 @@ export default {
   }
 }
 .notification .icon_container {
-  flex: 0.3;
+  flex: 0.35;
+  margin-left: 10px;
   font-size: 2.3em;
   color: rgba(var(--colour_primary), 1);
 }

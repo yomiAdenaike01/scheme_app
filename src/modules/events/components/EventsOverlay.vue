@@ -101,6 +101,10 @@ export default {
     display: {
       type: Boolean,
       default: false
+    },
+    params: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -179,7 +183,7 @@ export default {
       let eventTypeFormItem = {
         label: "Event type",
         component_type: "select",
-        options: this.clientInformation["event_groups"],
+        options: this.clientInformation.event_groups,
         model: "type"
       };
 
@@ -295,10 +299,11 @@ export default {
     }
   },
   created() {
-    if (Object.keys(this.$route.params).length > 0) {
-      this.populateForm(this.$route.params.eventParams);
-    }
     this.selectedTab = this.tabItems[0];
+
+    if (Object.keys(this.params).length > 0) {
+      this.populateForm(this.params);
+    }
   },
 
   methods: {
@@ -317,8 +322,12 @@ export default {
     ]),
 
     populateForm(data) {
-      data = this.cleanObject(["start_date", "end_date"], data);
-      this.formData = Object.assign({}, this.formData, data);
+      console.log(data);
+      this.selectedTab = this.tabItems[1];
+      if (data?.start_date || data?.end_date) {
+        data = this.cleanObject(["start_date", "end_date"], data);
+      }
+      this.formData = data;
 
       if (this.displayTemplates) {
         this.displayTemplates = false;
@@ -327,7 +336,15 @@ export default {
       this.CREATE_SYSTEM_NOTIFICATION({
         title: "Event form populated",
         message: "Your form has been auto populated",
-        type: "info"
+        type: "info",
+        methods: [
+          {
+            label: "Create event",
+            body: async () => {
+              await this.createEvent();
+            }
+          }
+        ]
       });
     },
     async createEvent() {
