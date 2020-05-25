@@ -19,6 +19,7 @@
       </div>
       <div class="mark_as_complete trigger">
         <i
+          v-if="!isNewTask"
           class="bx bx-check"
           :class="{ active: isComplete, disabled: isComplete }"
           @click="completeTask"
