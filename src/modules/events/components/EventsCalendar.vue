@@ -16,7 +16,6 @@
       events-on-month-view="short"
       cell-contextmenu
       :cell-click-hold="false"
-      :on-event-dblclick="deleteEvent"
       :editable-events="editEvents"
       @cell-contextmenu="createEventHere"
     />
@@ -47,7 +46,6 @@ export default {
   computed: {
     ...mapState(["clientInformation"]),
     ...mapState("Events", ["events"]),
-    ...mapGetters(["getUserGroups"]),
     eventGroups() {
       return this.clientInformation.event_groups.map(group => {
         return {
@@ -114,9 +112,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
-    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
-    ...mapMutations("Events", ["DELETE_EVENT"]),
+    ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
     createEventHere({ date }) {
       let startOfDay = new Date(new Date(date).setHours(9, 0)).toISOString();
       let endOfDay = new Date(new Date(date).setHours(17, 0)).toISOString();

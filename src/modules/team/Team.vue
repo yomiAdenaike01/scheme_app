@@ -249,20 +249,21 @@ export default {
         },
         {
           icon: "-calendar",
-          label: `Create event for ${this.selectedTeamMember.name}`,
+          label: `Create event`,
 
           condition: this.hasPermission,
           click: () => {
             this.mode = "delete";
-            this.$router.push({
-              name: "events",
-              params: {
-                createEvent: {
-                  params: {
-                    assigned_to: [this.selectedTeamMember._id]
-                  }
+            let routePayload = {
+              createEvent: {
+                params: {
+                  assigned_to: [this.selectedTeamMember._id]
                 }
               }
+            };
+            this.$router.push({
+              name: "events",
+              params: routePayload
             });
           }
         }
