@@ -5,23 +5,20 @@
       :form-content="credentials"
       class="form_container"
       :config="formConfig"
-      :validations="['email', 'password']"
-      :submit-button="{ text: 'Sign in', icon: 'right-arrow-alt' }"
+      :validations="validations"
+      :submit-button="textXref.button"
       @val="submit"
     >
       <div slot="header" class="header_container">
-        <h1>Sign in</h1>
-        <small class="grey">Fill in the form to login</small>
+        <h1>{{ textXref.header }}</h1>
+        <small class="grey">{{ textXref.description }}</small>
         <collapse-transition>
           <p v-if="errorMessage.length > 0" class="error">{{ errorMessage }}</p>
         </collapse-transition>
       </div>
       <div slot="footer" class="new_client_button_container">
-        <s-button
-          class="rounded plain mini"
-          @click="selectedForm = 'forgotPassword'"
-        >
-          Forgot password ?
+        <s-button class="rounded plain mini" @click="changeForm">
+          {{ selectedForm == "login" ? "Forgot password ?" : "Go to login" }}
         </s-button>
       </div>
     </Form>
@@ -32,7 +29,6 @@
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
 
-import validateInput from "@/mixins/validateInput";
 import SButton from "@/components/SButton";
 import { CollapseTransition } from "vue2-transitions";
 export default {
@@ -42,7 +38,6 @@ export default {
     SButton,
     CollapseTransition
   },
-  mixins: [validateInput],
   data() {
     return {
       newUser: false,
@@ -56,12 +51,43 @@ export default {
     ...mapState(["clientInformation"]),
     ...mapGetters(["getDeviceInformation"]),
 
+    validations() {
+      let validations = {
+        login: ["email", "password"],
+        forgotPassword: ["fp_email", "fp_password", "fp_reentered_password"]
+      };
+      return validations[this.selectedForm];
+    },
+
     submitText() {
       return this.selectedForm == "login" ? "Login" : "Submit new password";
     },
 
     formConfig() {
       return this.forms[this.selectedForm];
+    },
+    textXref() {
+      let textXref = {
+        login: {
+          header: "Sign in",
+          description: "Fill in the form to login",
+          button: {
+            text: "Sign in",
+            icon: "right-arrow-alt"
+          }
+        },
+        forgotPassword: {
+          header: "Reset password",
+          description: "Fill in form to reset password",
+          button: {
+            text: "Reset password",
+            class: "icon_reverse primary rounded",
+            icon: "left-arrow-alt",
+            inverseIcon: true
+          }
+        }
+      };
+      return textXref[this.selectedForm];
     },
     forms() {
       return {
@@ -116,7 +142,13 @@ export default {
       "UPDATE_USER_SESSION",
       "CREATE_SYSTEM_NOTIFICATION"
     ]),
-
+    changeForm() {
+      if (this.selectedForm == "login") {
+        this.selectedForm = "forgotPassword";
+      } else {
+        this.selectedForm = "login";
+      }
+    },
     submit() {
       switch (this.selectedForm) {
         case "login": {
@@ -136,19 +168,13 @@ export default {
 
     resetPassword() {
       // Validate the input;
-      let isValid = this.validateInput(this.formConfig, [
-        "fp_email",
-        "fp_password",
-        "fp_reentered_password"
-      ]);
+
       let equalPasswords =
         this.credentials?.fp_password?.toLowerCase()?.trim() ===
         this.credentials?.fp_reentered_password?.toLowerCase()?.trim();
-      if (!isValid && !equalPasswords) {
-        this.CREATE_SYSTEM_NOTIFICATION({
-          message:
-            "Error processing reset password, please enter your desired password again"
-        });
+      if (!equalPasswords) {
+        this.errorMessage =
+          "Error processing reset password, please enter your desired password again";
       } else {
         this.request({
           method: "POST",
