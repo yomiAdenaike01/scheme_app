@@ -8,7 +8,10 @@
           @updateOverlays="updateOverlays"
         />
         <div v-if="view == 'events'" class="events_wrapper">
-          <EventsCalendar />
+          <EventsCalendar
+            @quickCreate="updateParams"
+            @updateOverlays="updateOverlays"
+          />
           <EventsOverlay
             v-if="overlays.events"
             :display="overlays.events"

@@ -118,26 +118,13 @@ export default {
     ...mapMutations(["CREATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["DELETE_EVENT"]),
     createEventHere({ date }) {
-      return console.log(date);
-      let startDate = date;
-      let endDate = this.initMoment(startDate).add(1, "hour");
-      this.genPromptBox({
-        boxType: "confirm",
-        title: "Create quick event",
-        text: `Would you like to create an event from ${this.formatDate(
-          startDate
-        )} to ${this.formatDate(endDate)}`
-      }).then(() => {});
+      let endOfDay = new Date(new Date(date).setHours(17, 0));
+      date = [date.toISOString(), endOfDay.toISOString()];
+
+      this.$emit("updateOverlays", { overlay: "events", display: true });
+      this.$emit("quickCreate", { dates: date });
     },
-    deleteEvent(event) {
-      console.log(event);
-      // this.DELETE_EVENT(event.event_index);
-      // this.request({
-      //   method: "DELETE",
-      //   url: "events/delete",
-      //   data: { _id: event.id }
-      // });
-    },
+
     viewEvent(event) {
       this.UPDATE_OVERLAY_INDEX({
         view: true,
