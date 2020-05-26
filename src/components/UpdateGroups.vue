@@ -22,28 +22,20 @@
         :submit-button="{ text: `${selectedConfig} group` }"
         :headings="headings"
         @val="handleRequest"
-      >
-        <ColourPicker
-          v-if="groupType == 'event_groups' && selectedConfig == 'Create'"
-          slot="footer"
-          v-model="groupData.colour"
-          display-details
-        />
-      </Form>
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 import Form from "@/components/Form";
 export default {
   name: "UpdateGroups",
   components: {
     Form,
-    SButton: () => import("@/components/SButton"),
-    ColourPicker: () => import("@/components/ColourPicker")
+    SButton: () => import("@/components/SButton")
   },
   props: {
     groupType: {
@@ -157,7 +149,7 @@ export default {
       if (this.groupData?.groupID) {
         form.push({
           component_type: "text",
-          placeholder: "Group name",
+          label: "Group name",
           model: "label",
           noLabel: true
         });
@@ -165,8 +157,8 @@ export default {
         if (this.groupType == "event_groups") {
           form.push({
             component_type: "select",
-            placeholder: "Enable group for",
-            options: this.modGroups,
+            label: "Enable group for",
+            options: this.clientInformation.user_groups,
             multiple: true,
             noLabel: true,
             model: "enabled_for"
@@ -186,10 +178,9 @@ export default {
 
       let newGroupName = {
         component_type: "text",
-        placeholder: `${this.langXref.capitalize()} group name`,
-        required: true,
         noLabel: true,
-        model: "label"
+        model: "label",
+        label: `Select ${this.langXref.label} group`
       };
 
       if (this.groupType == "user_groups") {
@@ -205,10 +196,9 @@ export default {
       } else {
         createForm.push(newGroupName, {
           component_type: "select",
-          placeholder: `Enable group for user groups`,
-          required: true,
+          label: `Enable group for the following user groups`,
           noLabel: true,
-          options: this.getUserGroups,
+          options: this.clientInformation.user_groups,
           model: "enabled_for",
           multiple: true
         });

@@ -9,6 +9,14 @@
         :key="`${index}${input.name}`"
         :class="`form_item ${input.component_type}`"
       >
+        <p
+          v-if="
+            Object.values(headings).length > 0 &&
+              headings.hasOwnProperty(input.model)
+          "
+          class="form_item_heading"
+          v-html="headings[input.model]"
+        ></p>
         <span
           v-if="input.label || input.component_type == 'checkbox'"
           class="form_item_label"
@@ -19,14 +27,6 @@
               : input.label
           }}
         </span>
-        <p
-          v-if="
-            Object.values(headings).length > 0 &&
-              headings.hasOwnProperty(input.model)
-          "
-          class="form_item_heading"
-          v-html="headings[input.model]"
-        ></p>
         <small
           v-if="
             Object.values(rules).length > 0 && rules.hasOwnProperty(input.model)
