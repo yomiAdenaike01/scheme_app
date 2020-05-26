@@ -118,8 +118,10 @@ export default {
     ...mapMutations(["CREATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["DELETE_EVENT"]),
     createEventHere({ date }) {
-      let endOfDay = new Date(new Date(date).setHours(17, 0));
-      date = [date.toISOString(), endOfDay.toISOString()];
+      let startOfDay = new Date(new Date(date).setHours(9, 0)).toISOString();
+      let endOfDay = new Date(new Date(date).setHours(17, 0)).toISOString();
+
+      date = [startOfDay, endOfDay];
 
       this.$emit("updateOverlays", { overlay: "events", display: true });
       this.$emit("quickCreate", { dates: date });
