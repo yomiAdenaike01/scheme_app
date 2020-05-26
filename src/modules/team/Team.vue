@@ -90,6 +90,7 @@
       </div>
 
       <hr />
+      <!-- Activity log -->
       <div
         v-loading="activityLoading"
         class="activity_wrapper"
@@ -102,7 +103,7 @@
         >
           <div class="title_bar">
             <h3>Activity feed</h3>
-            <i class="bx bx-x" @click="deleteActivityLog"></i>
+            <i class="bx bx-x-circle trigger" @click="deleteActivityLog"></i>
           </div>
           <ActivityLog
             v-for="activity in selectedUserActivity"
@@ -510,19 +511,19 @@ export default {
       "DELETE_TEAM_MEMBER",
       "CREATE_TEAM_MEMBER"
     ]),
-    deleteActivityLog() {
+    async deleteActivityLog() {
       this.activityLoading = true;
       let apiPayload = {
         method: "DELETE",
-        url: "services/logs/delete/all"
+        url: "services/logs/delete"
       };
-      this.request(apiPayload)
-        .then(() => {
-          this.activityLoading = false;
-        })
-        .catch(() => {
-          this.activityLoading = false;
-        });
+      try {
+        await this.request(apiPayload);
+        this.activityLoading = false;
+        this.selectedUserActivity = [];
+      } catch (error) {
+        this.activityLoading = false;
+      }
     },
     toggleOverlay(val) {
       this.displayOverlay = val;
@@ -706,6 +707,14 @@ export default {
   align-items: center;
 }
 
+.title_bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  h3 {
+    margin: 0;
+  }
+}
 /*
 
    __  __       _     _ _
