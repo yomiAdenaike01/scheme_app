@@ -11,13 +11,14 @@
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-popover :options="{ placement: 'right' }" trigger="click">
+      <el-popover trigger="click" width="300">
         <Notifications />
-        <s-button
-          slot="reference"
-          class="small only_icon rounded"
-          icon="bell"
-        ></s-button>
+        <div slot="reference" class="button_container">
+          <s-button class="small only_icon rounded" icon="bell"></s-button>
+          <div class="count_container">
+            {{ unreadCount }}
+          </div>
+        </div>
       </el-popover>
     </div>
   </div>
@@ -41,7 +42,11 @@ export default {
   },
   computed: {
     ...mapState(["userInformation", "viewMobileMenu", "apiNotifications"]),
-
+    unreadCount() {
+      return this.apiNotifications.filter(x => {
+        return x.status == "unread";
+      }).length;
+    },
     items() {
       return [
         {
@@ -128,8 +133,20 @@ export default {
   }
 }
 
-.search {
-  margin-left: 10px;
+.button_container {
+  position: relative;
+  .count_container {
+    position: absolute;
+    right: -14px;
+    bottom: -8px;
+    z-index: 2;
+    background: rgba(var(--colour_secondary), 1);
+    color: white;
+    border: 4px solid white;
+    border-radius: 50%;
+    padding: 3px 5px;
+    font-size: 0.7em;
+  }
 }
 /**
  _   _  _  ___ _  _    ___ 

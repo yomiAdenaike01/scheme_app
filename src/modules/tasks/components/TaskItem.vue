@@ -41,9 +41,9 @@
               >
             </div>
 
-            <el-tag v-if="taskInformation.due_date">{{
-              formatDate(taskInformation.due_date, "DD-MM-YYYY")
-            }}</el-tag>
+            <p v-if="taskInformation.due_date" class="grey">
+              {{ formatDate(taskInformation.due_date, "DD-MM-YYYY") }}
+            </p>
 
             <i
               v-if="taskInformation.state == 3"

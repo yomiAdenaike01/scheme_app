@@ -92,13 +92,7 @@ export default {
   },
 
   UPDATE_API_NOTIFICATIONS(state, payload) {
-    updateBreadCrumbs(state, payload);
-
-    for (let i = 0, len = state.apiNotifications.length; i < len; i++) {
-      for (let property in payload) {
-        Vue.set(state.apiNotifications[i], property, payload[property]);
-      }
-    }
+    state.apiNotifications = payload;
   },
 
   UPDATE_API_NOTIFICATION(state, { notificationIndex, update }) {

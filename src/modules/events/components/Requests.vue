@@ -454,6 +454,14 @@ export default {
 
       this.$emit("approveRequest", formPayload);
     },
+    updateMessageXref(update) {
+      let string = `Your request ${this.selectedRequest.type.label} has been`;
+      for (let property in update) {
+        string += update[property];
+      }
+      return string;
+    },
+
     async updateRequest(update) {
       try {
         // Check if clicked approve
@@ -469,6 +477,7 @@ export default {
         });
 
         //  API request
+        update.message = this.updateMessageXref(update);
         const apiPayload = {
           method: "PUT",
           url: "events/requests/update",

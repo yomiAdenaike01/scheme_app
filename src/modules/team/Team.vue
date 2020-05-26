@@ -539,20 +539,26 @@ export default {
       };
       return timeXref[true] ? timeXref[true] : "in_progress";
     },
-    getAuditLog() {
-      this.loading = true;
-      this.request({
-        method: "GET",
-        url: "services/logs",
-        params: { user_id: this.selectedTeamMember._id }
-      }).then(response => {
-        this.loading = false;
-        this.selectedUserActivity = response;
-      });
+    async getAuditLog() {
+      try {
+        this.activityLoading = true;
+        this.selectedUserActivity = await this.request({
+          method: "GET",
+          url: "services/logs",
+          params: { user_id: this.selectedTeamMember._id }
+        });
+        this.activityLoading = false;
+      } catch (error) {
+        this.activityLoading = false;
+      }
     },
     async handleTeamMember(e) {
       if (e) {
-        this.inputtedTeamMemberData = Object.assign({}, e);
+        this.inputtedTeamMemberData = Object.assign(
+          {},
+          this.inputtedTeamMemberData,
+          e
+        );
       }
       // Update team member from form
       let methodXref = this.handleTeamMemberXref.methods[this.mode];

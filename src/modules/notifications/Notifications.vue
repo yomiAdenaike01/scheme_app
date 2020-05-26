@@ -1,29 +1,35 @@
 <template>
   <div v-loading="loading" class="notifications_container">
-    <h3 class="bold">Notifications</h3>
-    <div v-if="apiNotifications.length > 0" class="notification_wrapper">
-      <Notification
-        v-for="(notification, index) in apiNotifications"
+    <div v-if="apiNotifications.length > 0" class="notifications">
+      <!-- Api notifications -->
+      <div
+        v-for="notification in apiNotifications"
         :key="notification._id"
-        :notification="notification"
-        @click="notificationController(notification, index)"
-      />
-      <div v-if="apiNotifications.length > 0" class="mark_all_wrapper">
-        <el-button class="block_button" size="small" @click="readAll"
-          >Mark all as read</el-button
-        >
+        :class="`notification trigger ${notification.type}`"
+      >
+        <i :class="`bx ${iconXref(notification.type)}`"></i>
+        <div class="notification_body_container">
+          <p>{{ notification.message }}</p>
+          <small class="grey">{{
+            initMoment(notification.date_created).calendar()
+          }}</small>
+          <i
+            class="bx bx-x trigger"
+            @click="deleteNotification(notification._id)"
+          ></i>
+        </div>
       </div>
     </div>
     <div v-else class="text_container all_centre">
       <i class="bx bx-bell"></i>
       <h3>No notifications found</h3>
-      <p>Your notifications will appear here once they have come in</p>
+      <p>Your notifications will appear here.</p>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 import Notification from "./components/Notification";
 
@@ -38,66 +44,63 @@ export default {
     };
   },
   computed: {
-    ...mapState(["apiNotifications", "userInformation", "notificationRef"]),
-    formattedNotifications() {
-      return [...this.apiNotifications].map(notification => {
-        return notification;
-      });
-    }
+    ...mapState(["apiNotifications", "userInformation", "notificationRef"])
   },
 
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations([
-      "UPDATE_ALL_NOTIFICATIONS",
-      "CREATE_SYSTEM_NOTIFICATION",
-      "UPDATE_API_NOTIFICATION"
-    ]),
-    notificationController(notification, notificationIndex) {
-      // Read notification
-      this.UPDATE_API_NOTIFICATION({
-        update: { ...notification, status: "read" }
-      });
-      this.request({
-        method: "POST",
-        data: { _id: notification._id, update: { status: "read" } },
-        url: "notifications/update"
-      });
-    },
-    deleteReadNotifications() {
-      this.loading = true;
-      this.request({
-        method: "DELETE",
-        url: "notifications/delete/read"
-      })
-        .then(() => {
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
-    },
-    readAll() {
-      this.UPDATE_ALL_NOTIFICATIONS({ status: "read" });
-      this.request({
-        method: "POST",
-        url: "/notifications/read/all"
-      });
+
+    iconXref(type) {
+      let ref = {
+        message: "bxl-discourse",
+        request: "bx-question-mark"
+      };
+      return ref[type];
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+$notification_ref: (
+  message: var(--colour_secondary),
+  request: var(--purple)
+);
 .notifications_container {
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 400px;
+  min-height: 450px;
+  max-height: 450px;
 }
-.notification_wrapper {
+.notifications {
   max-height: calc(100% - 75px);
   overflow-x: hidden;
+}
+.notification {
+  border-bottom: $border;
+  padding: 14px;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  p {
+    margin: 0;
+  }
+  i {
+    font-size: 1.7em;
+    margin-right: 20px;
+  }
+  @each $key, $value in $notification_ref {
+    &.#{$key} {
+      border-left: 3px solid rgba($value, 1);
+      i {
+        color: rgba($value, 1);
+      }
+    }
+  }
+  &:hover {
+    opacity: 1;
+  }
 }
 .mark_all_wrapper {
   position: absolute;

@@ -14,7 +14,6 @@ import {
   DatePicker,
   TimeSelect,
   TimePicker,
-  Tag,
   Progress,
   Spinner,
   Cascader,
@@ -32,7 +31,6 @@ Vue.use(DropdownItem);
 Vue.use(DatePicker);
 Vue.use(TimeSelect);
 Vue.use(TimePicker);
-Vue.use(Tag);
 Vue.use(Progress);
 Vue.use(Spinner);
 Vue.use(Cascader);
