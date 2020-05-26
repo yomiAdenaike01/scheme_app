@@ -246,6 +246,25 @@ export default {
             this.mode = "delete";
             this.handleTeamMember();
           }
+        },
+        {
+          icon: "-calendar",
+          label: `Create event for ${this.selectedTeamMember.name}`,
+
+          condition: this.hasPermission,
+          click: () => {
+            this.mode = "delete";
+            this.$router.push({
+              name: "events",
+              params: {
+                createEvent: {
+                  params: {
+                    assigned_to: [this.selectedTeamMember._id]
+                  }
+                }
+              }
+            });
+          }
         }
       ];
       return shortcuts.filter((shortcut, index) => {

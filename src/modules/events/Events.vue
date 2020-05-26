@@ -66,8 +66,18 @@ export default {
     };
   },
   created() {
-    if (Object.keys(this.$route?.params).length > 0) {
-      this.updateView(this.$route.params);
+    let routeParams = this.$route.params;
+    if (Object.keys(routeParams).length > 0) {
+      if (routeParams?.view) {
+        this.updateView(routeParams);
+      }
+      if (routeParams?.overlay) {
+        this.updateOverlays(routeParams);
+      }
+      if (routeParams?.createEvent) {
+        this.params = routeParams.createEvent.params;
+        this.overlays.events = true;
+      }
     }
   },
   methods: {
