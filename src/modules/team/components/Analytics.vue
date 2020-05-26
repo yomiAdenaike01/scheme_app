@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 import { FadeTransition } from "vue2-transitions";
 
 import Chart from "./Chart";

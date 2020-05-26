@@ -71,13 +71,22 @@
       <small class="grey">{{ selectedTeamMember.email }}</small>
 
       <div class="shortcuts_container">
-        <i
+        <el-popover
           v-for="(shortcut, index) in shortcuts"
           :key="index"
-          :class="`bx bx${shortcut.icon}`"
-          :style="{ backgroundColor: shortcut.bg }"
-          @click="shortcut.click"
-        ></i>
+          trigger="hover"
+          placement="top"
+        >
+          <i
+            slot="reference"
+            :class="`bx bx${shortcut.icon}`"
+            :style="{ backgroundColor: shortcut.bg }"
+            @click="shortcut.click"
+          ></i>
+          <div class="text_container all_centre">
+            <strong class="capitalize">{{ shortcut.label }}</strong>
+          </div>
+        </el-popover>
       </div>
 
       <hr />
@@ -143,7 +152,6 @@ export default {
     SButton,
     Analytics,
     RelatedEvent,
-
     ActivityLog,
     TeamMembers,
     TeamOverlay
@@ -182,6 +190,7 @@ export default {
         {
           icon: "-question-mark",
           condition,
+          label: "Requests",
 
           click: () => {
             this.$router.push({
@@ -196,6 +205,7 @@ export default {
         {
           icon: "-cog",
           condition: this.hasPermission,
+          label: "settings",
 
           click: () => {
             this.displayOverlay = true;
@@ -204,6 +214,8 @@ export default {
         },
         {
           icon: "-task",
+          label: "Tasks",
+
           condition,
           click: () => {
             this.$router.push({
@@ -214,6 +226,8 @@ export default {
         },
         {
           icon: "l-discourse",
+          label: "View messages",
+
           condition,
           click: () => {
             this.$router.push({
@@ -224,6 +238,8 @@ export default {
         },
         {
           icon: "-trash",
+          label: "Delete account",
+
           condition: this.hasPermission,
           click: () => {
             this.mode = "delete";

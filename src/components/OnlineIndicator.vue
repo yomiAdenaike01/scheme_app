@@ -1,6 +1,9 @@
 <template functional>
   <div class="floating_item">
-    <div class="online_container" :class="{ online: props.is_online }"></div>
+    <div
+      class="online_container"
+      :class="{ online: props.isOnline, not_online: !props.isOnline }"
+    ></div>
   </div>
 </template>
 
@@ -33,7 +36,6 @@ export default {
   padding: 5px;
   border-radius: 50%;
   background: rgba(var(--danger), 1);
-
   &.online {
     background: rgba(var(--success), 1);
   }

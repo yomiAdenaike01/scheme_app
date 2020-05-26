@@ -5,22 +5,25 @@
       :form-content="credentials"
       class="form_container"
       :config="formConfig"
-      :validations="['email', 'password']"
-      :submit-button="{ text: 'Sign in', icon: 'right-arrow-alt' }"
+      :validations="validations"
+      :submit-button="textXref.button"
       @val="submit"
     >
       <div slot="header" class="header_container">
-        <h1>Sign in</h1>
+        <h1>{{ textXref.header }}</h1>
+        <small class="grey">{{ textXref.description }}</small>
         <collapse-transition>
-          <p v-if="errorMessage.length > 0" class="error">{{ errorMessage }}</p>
+          <p
+            v-if="Object.values(response).length > 0"
+            :class="`message ${response.type}`"
+          >
+            {{ response.message }}
+          </p>
         </collapse-transition>
       </div>
       <div slot="footer" class="new_client_button_container">
-        <s-button
-          class="rounded plain mini"
-          @click="selectedForm = 'forgotPassword'"
-        >
-          Forgot password ?
+        <s-button class="rounded plain mini" @click="changeForm">
+          {{ selectedForm == "login" ? "Forgot password ?" : "Go to login" }}
         </s-button>
       </div>
     </Form>
@@ -31,7 +34,6 @@
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 import Form from "@/components/Form";
 
-import validateInput from "@/mixins/validateInput";
 import SButton from "@/components/SButton";
 import { CollapseTransition } from "vue2-transitions";
 export default {
@@ -41,19 +43,27 @@ export default {
     SButton,
     CollapseTransition
   },
-  mixins: [validateInput],
   data() {
     return {
       newUser: false,
       loading: false,
       credentials: {},
       selectedForm: "login",
-      errorMessage: ""
+      response: {},
+      failedCount: 0
     };
   },
   computed: {
     ...mapState(["clientInformation"]),
     ...mapGetters(["getDeviceInformation"]),
+
+    validations() {
+      let validations = {
+        login: ["email", "password"],
+        forgotPassword: ["fp_email", "fp_password", "fp_reentered_password"]
+      };
+      return validations[this.selectedForm];
+    },
 
     submitText() {
       return this.selectedForm == "login" ? "Login" : "Submit new password";
@@ -61,6 +71,29 @@ export default {
 
     formConfig() {
       return this.forms[this.selectedForm];
+    },
+    textXref() {
+      let textXref = {
+        login: {
+          header: "Sign in",
+          description: "Fill in the form to login",
+          button: {
+            text: "Sign in",
+            icon: "right-arrow-alt"
+          }
+        },
+        forgotPassword: {
+          header: "Reset password",
+          description: "Fill in form to reset password",
+          button: {
+            text: "Reset password",
+            class: "icon_reverse primary rounded",
+            icon: "left-arrow-alt",
+            inverseIcon: true
+          }
+        }
+      };
+      return textXref[this.selectedForm];
     },
     forms() {
       return {
@@ -74,13 +107,13 @@ export default {
           {
             name: "password",
             component_type: "password",
-            placeholder: "Password",
+            placeholder: "New password",
             model: "fp_password"
           },
           {
             name: "password",
             component_type: "password",
-            placeholder: "Retype-Password",
+            placeholder: "Retype new password",
             model: "fp_reentered_password"
           }
         ],
@@ -115,7 +148,13 @@ export default {
       "UPDATE_USER_SESSION",
       "CREATE_SYSTEM_NOTIFICATION"
     ]),
-
+    changeForm() {
+      if (this.selectedForm == "login") {
+        this.selectedForm = "forgotPassword";
+      } else {
+        this.selectedForm = "login";
+      }
+    },
     submit() {
       switch (this.selectedForm) {
         case "login": {
@@ -135,19 +174,13 @@ export default {
 
     resetPassword() {
       // Validate the input;
-      let isValid = this.validateInput(this.formConfig, [
-        "fp_email",
-        "fp_password",
-        "fp_reentered_password"
-      ]);
+
       let equalPasswords =
         this.credentials?.fp_password?.toLowerCase()?.trim() ===
         this.credentials?.fp_reentered_password?.toLowerCase()?.trim();
-      if (!isValid && !equalPasswords) {
-        this.CREATE_SYSTEM_NOTIFICATION({
-          message:
-            "Error processing reset password, please enter your desired password again"
-        });
+      if (!equalPasswords) {
+        this.errorMessage =
+          "Error processing reset password, please enter your desired password again";
       } else {
         this.request({
           method: "POST",
@@ -157,9 +190,21 @@ export default {
             email: this.credentials.fp_email,
             password: this.credentials.fp_password
           }
-        }).then(() => {
-          this.selectedForm = "login";
-        });
+        })
+          .then(() => {
+            this.selectedForm = "login";
+            this.response = {
+              type: "success",
+              message:
+                "Password successfully reset. Go to login to test your new password."
+            };
+          })
+          .catch(err => {
+            this.response = {
+              type: "error",
+              message: err
+            };
+          });
       }
     },
     /**
@@ -174,6 +219,7 @@ export default {
         }
       };
       this.loading = true;
+      this.response = {};
       this.request({
         method: "POST",
         disableNotifications: true,
@@ -184,6 +230,9 @@ export default {
         url: "/users/login"
       })
         .then(response => {
+          if (this.failedCount > 0) {
+            this.failedCount = 0;
+          }
           this.UPDATE_USER(response.user);
           this.UPDATE_USER_SESSION(response.token);
 
@@ -201,9 +250,22 @@ export default {
           this.loading = false;
         })
         .catch(err => {
-          this.errorMessage = err;
+          this.response = { message: err, type: "error" };
+          this.failedCount++;
           this.loading = false;
         });
+    }
+  },
+  watch: {
+    failedCount(val) {
+      if (val >= 3) {
+        this.selectedForm = "forgotPassword";
+        this.failedCount = 0;
+        this.response = {
+          type: "error",
+          message: "You have failed to login, you can reset your password."
+        };
+      }
     }
   }
 };
@@ -226,11 +288,17 @@ export default {
 .header_container {
   padding: 20px;
 }
-.error {
+.message {
   padding: 10px;
   border-radius: 5px;
-  background: rgba(var(--danger), 0.05);
-  color: rgba(var(--danger), 1);
+  &.error {
+    background: rgba(var(--danger), 0.05);
+    color: rgba(var(--danger), 1);
+  }
+  &.success {
+    background: rgba(var(--success), 0.05);
+    color: rgba(var(--success), 1);
+  }
 }
 
 .form_container {

@@ -69,12 +69,14 @@ export default {
           if (Object.values(events[i]).length > 0) {
             let firstAssignee = event?.assigned_to?.[0];
             var content = `${firstAssignee?.name ?? "Unassigned"}`;
+
             if (event?.assigned_to?.length - 1 > 0) {
               content = `${content} +${parseInt(
                 event?.assigned_to?.length - 1
               )} others`;
             }
             var eventClass = "";
+
             if (event?.assigned_to.length == 0) {
               eventClass = "no_assignee";
             }
@@ -82,6 +84,7 @@ export default {
               eventClass = "alone";
             }
           }
+
           if (
             filterEvents != "all event groups" &&
             event?.type.label.toLowerCase() != filterEvents

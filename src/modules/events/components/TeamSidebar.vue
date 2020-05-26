@@ -63,22 +63,26 @@ export default {
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
     items() {
-      return [
+      let items = [
         {
           name: "<i class='bx bxl-discourse'></i> Message",
           command: "message",
           divider: true
-        },
-
-        {
-          name: "<i class='bx bxs-calendar-check'></i> View events",
-          command: "view_team_member_events"
-        },
-        {
-          name: "<i class='bx bx-question-mark'></i> View Requests ",
-          command: "view_team_member_requests"
         }
       ];
+      if (this.adminPermission) {
+        items.push(
+          {
+            name: "<i class='bx bxs-calendar-check'></i> View events",
+            command: "view_team_member_events"
+          },
+          {
+            name: "<i class='bx bx-question-mark'></i> View Requests ",
+            command: "view_team_member_requests"
+          }
+        );
+      }
+      return items;
     }
   },
   methods: {
