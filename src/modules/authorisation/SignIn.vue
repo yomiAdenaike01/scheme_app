@@ -13,7 +13,12 @@
         <h1>{{ textXref.header }}</h1>
         <small class="grey">{{ textXref.description }}</small>
         <collapse-transition>
-          <p v-if="errorMessage.length > 0" class="error">{{ errorMessage }}</p>
+          <p
+            v-if="Object.values(response).length > 0"
+            :class="`message ${response.type}`"
+          >
+            {{ response.message }}
+          </p>
         </collapse-transition>
       </div>
       <div slot="footer" class="new_client_button_container">
@@ -44,7 +49,8 @@ export default {
       loading: false,
       credentials: {},
       selectedForm: "login",
-      errorMessage: ""
+      response: {},
+      failedCount: 0
     };
   },
   computed: {
@@ -101,13 +107,13 @@ export default {
           {
             name: "password",
             component_type: "password",
-            placeholder: "Password",
+            placeholder: "New password",
             model: "fp_password"
           },
           {
             name: "password",
             component_type: "password",
-            placeholder: "Retype-Password",
+            placeholder: "Retype new password",
             model: "fp_reentered_password"
           }
         ],
@@ -186,6 +192,11 @@ export default {
           }
         }).then(() => {
           this.selectedForm = "login";
+          this.response = {
+            type: "success",
+            message:
+              "Password successfully reset. Go to login to test your new password."
+          };
         });
       }
     },
@@ -201,6 +212,7 @@ export default {
         }
       };
       this.loading = true;
+      this.response = {};
       this.request({
         method: "POST",
         disableNotifications: true,
@@ -211,6 +223,9 @@ export default {
         url: "/users/login"
       })
         .then(response => {
+          if (this.failedCount > 0) {
+            this.failedCount = 0;
+          }
           this.UPDATE_USER(response.user);
           this.UPDATE_USER_SESSION(response.token);
 
@@ -228,9 +243,22 @@ export default {
           this.loading = false;
         })
         .catch(err => {
-          this.errorMessage = err;
+          this.response = { message: err, type: "error" };
+          this.failedCount++;
           this.loading = false;
         });
+    }
+  },
+  watch: {
+    failedCount(val) {
+      if (val >= 3) {
+        this.selectedForm = "forgotPassword";
+        this.failedCount = 0;
+        this.response = {
+          type: "error",
+          message: "You have failed to login, you can reset your password."
+        };
+      }
     }
   }
 };
@@ -253,11 +281,17 @@ export default {
 .header_container {
   padding: 20px;
 }
-.error {
+.message {
   padding: 10px;
   border-radius: 5px;
-  background: rgba(var(--danger), 0.05);
-  color: rgba(var(--danger), 1);
+  &.error {
+    background: rgba(var(--danger), 0.05);
+    color: rgba(var(--danger), 1);
+  }
+  &.success {
+    background: rgba(var(--success), 0.05);
+    color: rgba(var(--success), 1);
+  }
 }
 
 .form_container {
