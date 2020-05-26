@@ -190,14 +190,21 @@ export default {
             email: this.credentials.fp_email,
             password: this.credentials.fp_password
           }
-        }).then(() => {
-          this.selectedForm = "login";
-          this.response = {
-            type: "success",
-            message:
-              "Password successfully reset. Go to login to test your new password."
-          };
-        });
+        })
+          .then(() => {
+            this.selectedForm = "login";
+            this.response = {
+              type: "success",
+              message:
+                "Password successfully reset. Go to login to test your new password."
+            };
+          })
+          .catch(err => {
+            this.response = {
+              type: "error",
+              message: err
+            };
+          });
       }
     },
     /**
