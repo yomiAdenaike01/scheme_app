@@ -123,10 +123,14 @@ export default {
         {
           name: "comms",
           icon: "bx bxl-discourse"
+        },
+        {
+          name: "Preferences",
+          icon: "bx bx-slider-alt"
         }
       ];
       if (this.adminPermission) {
-        allowedRoutes.push({
+        allowedRoutes.splice(3, 0, {
           name: "team",
           icon: "bx bx-group"
         });
@@ -274,7 +278,7 @@ export default {
       content: "";
       background: rgba(var(--colour_secondary), 1);
     }
-    background: rgba(var(--success), 0.1);
+    background: rgba(var(--colour_secondary), 0.1);
   }
   &:hover {
     background: rgba(var(--colour_secondary), 0.1);

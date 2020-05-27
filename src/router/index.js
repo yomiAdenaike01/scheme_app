@@ -12,6 +12,7 @@ const Events = () => import("@/modules/events/Events");
 const Team = () => import("@/modules/team/Team");
 const Comms = () => import("@/modules/comms/Comms");
 const Tasks = () => import("@/modules/tasks/Tasks");
+const Preferences = () => import("@/modules/preferences/Preferences");
 
 // Support
 const Error = () => import("@/modules/support/Error");
@@ -73,6 +74,14 @@ const routes = [
         path: "comms",
         name: "comms",
         component: Comms,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: "preferences",
+        name: "preferences",
+        component: Preferences,
         meta: {
           authRequired: true
         }

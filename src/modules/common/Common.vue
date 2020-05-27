@@ -164,7 +164,9 @@ export default {
     ...mapMutations("Tasks", ["UPDATE_BOARDS"]),
     ...mapMutations("Team", ["UPDATE_TEAM"]),
     ...mapMutations("Events", ["UPDATE_EVENT_TEMPLATES", "UPDATE_EVENTS"]),
+
     ...mapMutations("Events", ["UPDATE_EVENT_REQUESTS"]),
+
     excecuteNotification(method, notificationIndex) {
       method.body()?.finally(() => {
         this.DELETE_SYSTEM_NOTIFICATION(notificationIndex);
