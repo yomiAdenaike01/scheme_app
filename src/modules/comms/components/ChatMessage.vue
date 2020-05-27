@@ -23,10 +23,7 @@ export default {
       type: Boolean,
       default: false
     },
-    hasAttachments: {
-      type: Boolean,
-      default: false
-    },
+
     content: {
       type: String,
       default: null

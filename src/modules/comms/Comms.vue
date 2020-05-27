@@ -60,18 +60,21 @@ export default {
     });
   },
   activated() {
-    let chatID = this.$route.params?.chatID;
-    if (chatID) {
-      let chatIndex = this.chats.findIndex(chat => {
-        return chat._id == chatID;
-      });
-      this.UPDATE_ACTIVE_CHAT(this.chats[chatIndex]);
-    }
+    this.handleRouting();
   },
   methods: {
     ...mapActions("Comms", ["getChats"]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL"]),
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT"])
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT"]),
+    handleRouting() {
+      let chat_id = this.$route.params?.chat_id;
+      if (chat_id) {
+        let chatIndex = this.chats.findIndex(chat => {
+          return chat._id == chat_id;
+        });
+        this.UPDATE_ACTIVE_CHAT(this.chats[chatIndex]);
+      }
+    }
   }
 };
 </script>

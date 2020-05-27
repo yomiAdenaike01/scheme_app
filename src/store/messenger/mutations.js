@@ -12,45 +12,30 @@ function setActiveChat(state, chat) {
 
 export default {
   UPDATE_CHATS(state, payload) {
-    payload = Array.isArray(payload) ? payload : [payload];
+    // Keep a copy of a new chat
+    let newChatCopy = state.chats.find(chat => {
+      return chat.initChat;
+    });
 
-    if (payload.length > 0) {
-      let otherLen = state.chats.length;
-      for (let i = 0, len = payload.length; i < len; i++) {
-        if (otherLen == 0) {
-          state.chats.push(payload[i]);
-        } else {
-          let foundChat = state.chats.find(chat => {
-            return chat._id == payload[i]._id;
-          });
-          if (!foundChat) {
-            state.chats.push(payload[i]);
-          } else {
-            // check the messages
-            let payloadMessages = payload[i].messages;
-            let stateMessages = state.chats[i].messages;
-            // check whether the payload has more messages
-            payloadMessages.map(sMessage => {
-              let foundPMessage = stateMessages.find(pMessage => {
-                return (
-                  pMessage.content.toLowerCase().trim() ==
-                  sMessage.content.toLowerCase().trim()
-                );
-              });
-
-              if (!foundPMessage) {
-                state.chats[i].messages.push(sMessage);
-              }
-            });
-          }
-        }
-      }
+    if (newChatCopy) {
+      state.chats = [...payload, newChatCopy];
+    } else {
+      state.chats = payload;
     }
+
     if (Object.values(state.activeChat).length == 0) {
       setActiveChat(state, {
         index: state.chats.length - 1,
         ...state.chats[state.chats.length - 1]
       });
+    } else {
+      // Update active chat messages
+      let activeChatInApi = payload.find(chat => {
+        return chat._id == state.activeChat._id;
+      });
+      if (activeChatInApi) {
+        state.activeChat.messages = activeChatInApi.messages;
+      }
     }
   },
   UPDATE_MESSAGES(state, payload) {

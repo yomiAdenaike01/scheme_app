@@ -16,8 +16,6 @@ import {
   TimePicker,
   Progress,
   Spinner,
-  Cascader,
-  ColorPicker,
   Loading,
   MessageBox,
   Message,
@@ -33,8 +31,6 @@ Vue.use(TimeSelect);
 Vue.use(TimePicker);
 Vue.use(Progress);
 Vue.use(Spinner);
-Vue.use(Cascader);
-Vue.use(ColorPicker);
 
 Vue.use(Loading.directive);
 

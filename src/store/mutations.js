@@ -14,10 +14,13 @@ const deleteStateInterval = (state, intervalID) => {
     Vue.set(state.runningIntervals, intervalID, null);
   }
 };
-const deleteSystemNotification = (state, notificationIndex) => {
-  Vue.delete(state.systemNotifications, notificationIndex);
+const deleteSystemNotification = (state, index) => {
+  Vue.delete(state.systemNotifications, index);
 };
 export default {
+  UPDATE_INTERVAL_DELAY(state, { interval, timing }) {
+    state.globalIntervals[interval] = timing;
+  },
   UPDATE_OVERLAY_INDEX(state, payload) {
     payload = payload
       ? payload
@@ -79,33 +82,30 @@ export default {
     Vue.set(state, "viewMobileMenu", payload);
   },
 
-  DELETE_API_NOTIFICATION(state, notificationIndex) {
-    notificationIndex = notificationIndex
-      ? notificationIndex
-      : state.apiNotifications.length - 1;
+  DELETE_API_NOTIFICATION(state, index) {
+    index = index ? index : state.apiNotifications.length - 1;
 
     updateBreadCrumbs(state, {
-      notificationIndex,
-      notification: state.apiNotifications[notificationIndex]
+      index,
+      notification: state.apiNotifications[index]
     });
-    Vue.delete(state.apiNotifications, notificationIndex);
+    Vue.delete(state.apiNotifications, index);
   },
 
   UPDATE_API_NOTIFICATIONS(state, payload) {
     state.apiNotifications = payload;
   },
 
-  UPDATE_API_NOTIFICATION(state, { notificationIndex, update }) {
+  UPDATE_API_NOTIFICATION(state, { index, update }) {
+    let notification = state.apiNotifications[index];
+
     updateBreadCrumbs(state, {
-      notificationIndex,
-      update: state.apiNotifications[notificationIndex]
+      index,
+      update: notification
     });
+
     for (let property in update) {
-      Vue.set(
-        state.apiNotifications[notificationIndex],
-        property,
-        update[property]
-      );
+      Vue.set(notification, property, update[property]);
     }
   },
 
@@ -142,8 +142,8 @@ export default {
   UPDATE_USER_SESSION(state, payload) {
     state.token = payload;
   },
-  DELETE_SYSTEM_NOTIFICATION(state, notificationIndex) {
-    deleteSystemNotification(state, notificationIndex);
+  DELETE_SYSTEM_NOTIFICATION(state, index) {
+    deleteSystemNotification(state, index);
   },
   CREATE_SYSTEM_NOTIFICATION(state, notification) {
     let notificationTypes = [
@@ -168,12 +168,10 @@ export default {
     let closeNotificationObject = {
       label: "Close",
       body() {
-        let notificationIndex = state.systemNotifications.findIndex(
-          _notification => {
-            return _notification._id == notification._id;
-          }
-        );
-        deleteSystemNotification(state, notificationIndex);
+        let index = state.systemNotifications.findIndex(_notification => {
+          return _notification._id == notification._id;
+        });
+        deleteSystemNotification(state, index);
       }
     };
     if (!notification?.methods) {
@@ -223,12 +221,10 @@ export default {
       };
     }
 
-    let notificationIndex = state.systemNotifications.findIndex(
-      ({ message }) => {
-        return message == notification.message;
-      }
-    );
-    if (notificationIndex == -1) {
+    let index = state.systemNotifications.findIndex(({ message }) => {
+      return message == notification.message;
+    });
+    if (index == -1) {
       state.systemNotifications.push(notification);
     }
     if (state.systemNotifications.length > 0) {

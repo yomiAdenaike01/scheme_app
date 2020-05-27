@@ -30,6 +30,7 @@
     "vue-apexcharts": "^1.5.3",
     "vue-avatar": "^2.2.0",
     "vue-cal": "^2.24.7",
+    "vue-color": "^2.7.1",
     "vue-markdown": "^2.2.4",
     "vue-mq": "^1.0.1",
     "vue-nprogress": "^0.1.5",

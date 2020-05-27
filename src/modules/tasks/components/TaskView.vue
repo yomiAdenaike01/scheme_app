@@ -222,11 +222,10 @@
                           class="bx bx-color-fill label_placeholder_icon trigger"
                         ></i>
                         <div class="colour_picker_container">
-                          <small>Select the colour of the new label</small>
-                          <ColourPicker
+                          <p>Select the colour of the new label</p>
+                          <SketchPicker
                             v-model="newLabel.colour"
-                            :display-details="false"
-                            @input="displayPopover = false"
+                            :preset-colors="colours"
                           />
                         </div>
                       </el-popover>
@@ -318,7 +317,7 @@ import genID from "@/mixins/genID";
 
 import SButton from "@/components/SButton";
 import Avatar from "@/components/Avatar";
-import ColourPicker from "@/components/ColourPicker";
+import { Sketch } from "vue-color";
 
 export default {
   name: "TaskView",
@@ -328,7 +327,7 @@ export default {
     Avatar,
     CollapseTransition,
     SlideXLeftTransition,
-    ColourPicker
+    SketchPicker: Sketch
   },
   mixins: [genID],
   props: {

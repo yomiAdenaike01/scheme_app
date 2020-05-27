@@ -16,14 +16,13 @@
       events-on-month-view="short"
       cell-contextmenu
       :cell-click-hold="false"
-      :editable-events="editEvents"
       @cell-contextmenu="createEventHere"
     />
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import VueCal from "vue-cal";
 import SortBy from "@/components/SortBy";
 import "vue-cal/dist/vuecal.css";

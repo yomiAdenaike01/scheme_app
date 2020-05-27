@@ -74,8 +74,8 @@ export default {
       chat: {
         content: "",
         attachements: [],
-        sentAt: new Date().toISOString(),
-        isRead: false,
+        sent_at: new Date().toISOString(),
+        is_read: false,
         editted: false,
         reciever: this.userToMessage?._id
       }
@@ -93,7 +93,7 @@ export default {
         chatMessages = [...this.activeChat?.messages].map(message => {
           return Object.assign(message, {
             id: message._id,
-            sentAt: this.initMoment(message.sentAt).calendar(),
+            sentAt: this.initMoment(message.sent_at).calendar(),
             sentBy: message.sender?.name,
             isSentByUser: message.sender._id == this.userInformation._id
           });
@@ -130,10 +130,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations([
-      "CREATE_SYSTEM_NOTIFICATION,CREATE_GLOBAL_INTERVAL",
-      "DELETE_GLOBAL_INTERVAL"
-    ]),
+    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION", "DELETE_GLOBAL_INTERVAL"]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
     ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
 
@@ -187,16 +184,16 @@ export default {
         this.chat.reciever = this.activeChat.user_two._id;
         userName = this.userLookup(this.chat.reciever)?.name;
       }
-      let sendMessage = {
-        ...this.chat,
-        chatID: this.activeChat._id,
-        isRead: false,
+      let sendMessage = Object.assign({}, this.chat, {
+        chat_id: this.activeChat._id,
+        is_read: false,
         editted: false,
         sender: {
           _id: this.userInformation._id,
           name: this.userInformation.name
         }
-      };
+      });
+
       this.sendMessage(sendMessage);
       this.chat.content = "";
       this.scrollToBottom(this.$refs.chatMessages);
