@@ -13,8 +13,6 @@ const genTheme = () => {
 };
 
 export default {
-  team: [],
-
   runningIntervals: {},
   notificationRef: {},
   groupRef: {},
@@ -22,8 +20,8 @@ export default {
 
   globalIntervals: {
     admin: 6000,
-    client: 20000,
-    chat: 30000
+    client: 2000,
+    chat: 3000
   },
 
   token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
@@ -31,6 +29,7 @@ export default {
   clientInformation: {},
   userInformation: {},
   errorInformation: {},
+  team: [],
 
   systemNotifications: [],
   apiNotifications: [],
