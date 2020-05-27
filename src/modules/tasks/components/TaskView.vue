@@ -224,8 +224,9 @@
                         <div class="colour_picker_container">
                           <p>Select the colour of the new label</p>
                           <SketchPicker
-                            v-model="newLabel.colour"
+                            :value="newLabel.colour"
                             :preset-colors="colours"
+                            @input="newLabel.colour = $event.hex"
                           />
                         </div>
                       </el-popover>
