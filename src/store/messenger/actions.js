@@ -3,11 +3,12 @@ export default {
   createStubChat(context) {
     let methods = genID.methods;
     let isoDate = new Date().toISOString();
-    context.commit("UPDATE_CHATS", {
+    let userInfo = context.rootState.userInformation;
+    context.commit("CREATE_CHAT", {
       muted_notifications: [],
       user_one: {
-        name: context.rootState.userInformation.name,
-        _id: context.rootState.userInformation._id
+        name: userInfo.name,
+        _id: userInfo._id
       },
       user_two: {
         name: "New message",
@@ -76,7 +77,7 @@ export default {
       }
     });
   },
-  startChat({ dispatch, commit, state: { chats } }, payload) {
+  startChat({ dispatch, commit }, payload) {
     return new Promise((resolve, reject) => {
       dispatch(
         "request",
@@ -84,8 +85,7 @@ export default {
         { root: true }
       )
         .then(response => {
-          commit("DELETE_CHAT", chats.length - 1);
-          commit("UPDATE_CHATS", response);
+          commit("UPDATE_CHAT", response);
           resolve();
         })
         .catch(error => {
@@ -101,10 +101,7 @@ export default {
       };
       dispatch("request", payload, { root: true })
         .then(response => {
-          if (response.length > 0) {
-            commit("UPDATE_CHATS", response);
-            resolve(response);
-          }
+          commit("UPDATE_CHATS", response);
           resolve();
         })
         .catch(error => {

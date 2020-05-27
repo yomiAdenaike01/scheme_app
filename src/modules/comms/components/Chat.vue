@@ -93,22 +93,13 @@ export default {
       this.DELETE_CHAT(this.chatIndex);
       if (!this.chatInformation?.initChat) {
         let chat = this.chatInformation;
-        let condition = {};
-        if (chat.user_two == this.userInformation._id) {
-          condition = {
-            user_two: this.userInformation._id
-          };
-        } else {
-          condition = {
-            user_one: this.userInformation._id
-          };
-        }
+
         // get the sender or reciever of messages
 
         this.request({
           method: "DELETE",
           url: "messenger/chat",
-          data: { _id: chat._id, condition }
+          data: { _id: chat._id }
         });
       }
     }

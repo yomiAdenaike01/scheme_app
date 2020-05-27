@@ -27,7 +27,7 @@ import Chats from "./components/Chats";
 import ActiveChat from "./components/ActiveChat";
 import SButton from "@/components/SButton";
 export default {
-  name: "CommsModule",
+  name: "Comms",
   components: {
     Chats,
     ActiveChat,
