@@ -35,7 +35,7 @@ export default {
         dispatch("startChat", payload);
       }
       // Add fake message
-      commit("UPDATE_MESSAGES", payload);
+      commit("UPDATE_ACTIVE_CHAT_MESSAGES", payload);
 
       dispatch(
         "request",
@@ -66,7 +66,7 @@ export default {
           { root: true }
         )
           .then(response => {
-            commit("UPDATE_MESSAGES", response);
+            commit("UPDATE_ACTIVE_CHAT_MESSAGES", response);
             resolve();
           })
           .catch(error => {
@@ -85,7 +85,7 @@ export default {
         { root: true }
       )
         .then(response => {
-          commit("UPDATE_CHAT", response);
+          commit("REPLACE_STUB_CHAT", response);
           resolve();
         })
         .catch(error => {

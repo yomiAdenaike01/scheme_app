@@ -4,34 +4,41 @@ import updateBreadCrumbs from "./helpers";
 import mixins from "@/mixins/genID";
 
 const deleteStateInterval = (state, intervalID) => {
+  const deleteInterval = interval => {
+    Vue.set(state.runningIntervals, interval, null);
+  };
+
   if (!intervalID) {
     for (let property in state.runningIntervals) {
       clearTimeout(state.runningIntervals[property]);
-      Vue.set(state.runningIntervals, property, null);
+
+      deleteInterval(property);
     }
   } else {
     clearTimeout(state.runningIntervals[intervalID]);
-    Vue.set(state.runningIntervals, intervalID, null);
+    deleteInterval(intervalID);
   }
 };
 const deleteSystemNotification = (state, index) => {
   Vue.delete(state.systemNotifications, index);
 };
 export default {
+  UPDATE_STOP_NOTIFICATIONS(state, payload) {
+    state.stopNotifications = payload;
+  },
   UPDATE_INTERVAL_DELAY(state, { interval, timing }) {
     state.globalIntervals[interval] = timing;
   },
   UPDATE_OVERLAY_INDEX(state, payload) {
-    payload = payload
-      ? payload
-      : { overlay: "viewUser", view: false, id: null, data: null };
-    for (let property in state.overlayIndex[payload.overlay]) {
-      Vue.set(state.overlayIndex[payload.overlay], property, payload[property]);
-    }
-    state.overlayHistory = payload;
+    let _payload = payload.payload;
+    let { overlay, display } = overlay;
+    Vue.set(state.overlayIndex, overlay, { display, payload: _payload });
   },
 
   CREATE_GLOBAL_INTERVAL(state, payload) {
+    let intervals = state.runningIntervals;
+    let visible = document.visibilityState == "hidden";
+
     payload = payload
       ? payload
       : {
@@ -47,11 +54,17 @@ export default {
       }
     }
 
-    let timeout;
+    if (!visible) {
+      payload.duration = payload.duration * 2;
+    }
 
-    if (!state.runningIntervals?.id) {
-      var runInterval = () => {
-        timeout = setTimeout(() => {
+    let timeout;
+    // if the timeout exists run it
+
+    const runInterval = () => {
+      timeout = setTimeout(() => {
+        // check that the ID is not null
+        if (intervals[payload.id] != null) {
           payload
             .method()
             .finally(() => {
@@ -60,13 +73,13 @@ export default {
             .catch(() => {
               deleteStateInterval(state, payload.id);
             });
-        }, payload.duration);
-      };
-    }
+        }
+      }, payload.duration);
+    };
 
-    if (!state.runningIntervals[payload.id]) {
+    if (!intervals[payload.id]) {
       runInterval();
-      state.runningIntervals[payload.id] = timeout;
+      Vue.set(intervals, payload.id, timeout);
     }
   },
 
@@ -108,7 +121,9 @@ export default {
       Vue.set(notification, property, update[property]);
     }
   },
-
+  UPDATE_STOP_NOTIFICATIONS(state, payload) {
+    state.stopNotifications = payload;
+  },
   UPDATE_SYSTEM_NOTIFICATIONS(state, payload) {
     for (let i = 0, len = payload.length; i < len; i++) {
       let payloadNotification = payload[i];
@@ -128,11 +143,6 @@ export default {
   DELETE_USER_SESSION(state) {
     state.apiNotifications = [];
     state.systemNotifications = [];
-
-    if (VueRouter.currentRoute.name != "signIn") {
-      VueRouter.push({ name: "signIn" });
-    }
-    deleteStateInterval(state);
   },
 
   UPDATE_USER(state, payload) {

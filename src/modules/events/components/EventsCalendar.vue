@@ -46,7 +46,8 @@ export default {
     ...mapState(["clientInformation"]),
     ...mapState("Events", ["events"]),
     eventGroups() {
-      return this.clientInformation.event_groups.map(group => {
+      let eventGroups = this.clientInformation?.event_groups;
+      return eventGroups?.map(group => {
         return {
           label: group.label,
           value: group._id
@@ -124,9 +125,9 @@ export default {
 
     viewEvent(event) {
       this.UPDATE_OVERLAY_INDEX({
-        view: true,
+        display: true,
         overlay: "viewEvent",
-        data: event
+        payload: event
       });
     }
   }

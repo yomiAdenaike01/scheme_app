@@ -1,5 +1,5 @@
 <template>
-  <Overlay display @close="deactivateOverlay">
+  <Overlay v-model="overlay">
     <Menu
       mode="contextmenu"
       :display-menu="displayMenu"
@@ -117,8 +117,6 @@
 <script>
 import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
 
-import overlayEvents from "@/mixins/overlayEvents";
-
 import Avatar from "@/components/Avatar";
 import Form from "@/components/Form";
 import SButton from "@/components/SButton";
@@ -134,7 +132,6 @@ export default {
     Overlay,
     Menu
   },
-  mixins: [overlayEvents],
   data() {
     return {
       loading: false,
@@ -155,7 +152,14 @@ export default {
     ...mapState("Team", ["team"]),
     ...mapGetters(["getValidEventTypes", "adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-
+    overlay: {
+      get() {
+        return this.overlayIndex.viewEvent;
+      },
+      set() {
+        this.UPDATE_OVERLAY_INDEX("viewEvent", false);
+      }
+    },
     assignedTo() {
       return this.event?.assigned_to ?? [];
     },
@@ -485,6 +489,7 @@ export default {
         }
       });
     },
+
     clockIn() {
       this.request({
         method: "POST",

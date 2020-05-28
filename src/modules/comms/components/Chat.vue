@@ -131,7 +131,6 @@ export default {
   }
 }
 .chat_extension_container {
-  transition: $default_transition opacity;
   opacity: 0;
   margin-left: auto;
 }

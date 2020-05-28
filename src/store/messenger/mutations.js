@@ -44,27 +44,20 @@ export default {
     }
   },
 
-  UPDATE_CHAT(state, payload) {
+  REPLACE_STUB_CHAT(state, payload) {
     let chatIndex = state.chats.findIndex(chat => {
-      return chat._id == payload._id;
+      return chat.initChat;
     });
     if (chatIndex > -1) {
-      let foundChat = state.chats[chatIndex];
-      for (let property in payload) {
-        Vue.set(foundChat, property, payload[property]);
-      }
+      state.chats.splice(chatIndex, 1, payload);
+      setActiveChat(state, state.chats[chatIndex]);
     }
   },
   CREATE_CHAT(state, payload) {
     state.chats.push(payload);
   },
-  UPDATE_MESSAGES(state, payload) {
-    let chatIndex = state.activeChat.index;
-    state.chats[chatIndex].messages.push(payload);
-    updateBreadCrumbs(state, "messageRef", {
-      messageIndex: state.chats[chatIndex].messages.length - 1,
-      chatIndex
-    });
+  UPDATE_ACTIVE_CHAT_MESSAGES(state, payload) {
+    state.activeChat.messages.push(payload);
   },
 
   UPDATE_ACTIVE_CHAT(state, payload) {

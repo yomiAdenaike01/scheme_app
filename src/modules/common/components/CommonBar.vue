@@ -7,16 +7,17 @@
     >
       <i class="el-icon el-icon-menu"></i>
     </div>
+
     <div class="appbar_inner_container">
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-popover trigger="click" width="300">
+      <el-popover v-model="displayPopover" trigger="click" width="300">
         <Notifications />
         <div slot="reference" class="button_container">
           <s-button class="small only_icon rounded" icon="bell"></s-button>
           <div class="count_container">
-            {{ unreadCount }}
+            {{ unreadNotifications.length }}
           </div>
         </div>
       </el-popover>
@@ -25,7 +26,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import Avatar from "@/components/Avatar";
 import Notifications from "@/modules/notifications/Notifications";
@@ -40,13 +41,15 @@ export default {
     Notifications,
     SButton
   },
+  data() {
+    return {
+      displayPopover: false
+    };
+  },
   computed: {
     ...mapState(["userInformation", "viewMobileMenu", "apiNotifications"]),
-    unreadCount() {
-      return this.apiNotifications.filter(x => {
-        return x.status == "unread";
-      }).length;
-    },
+    ...mapGetters(["unreadNotifications"]),
+
     items() {
       return [
         {
@@ -64,7 +67,7 @@ export default {
   },
   methods: {
     ...mapMutations(["DELETE_USER_SESSION", "UPDATE_TOGGLE_MOBILE_MENU"]),
-    ...mapActions(["request"]),
+    ...mapActions(["request", "logOut"]),
 
     handleCommands(command) {
       switch (command) {
@@ -77,12 +80,7 @@ export default {
         }
 
         case "log_out": {
-          this.request({
-            method: "GET",
-            url: "users/logout"
-          }).then(() => {
-            this.DELETE_USER_SESSION();
-          });
+          this.logOut();
           break;
         }
 

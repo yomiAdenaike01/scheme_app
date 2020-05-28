@@ -3,6 +3,11 @@ import Vue from "vue";
 import { methods } from "@/mixins/genID";
 
 export default {
+  unreadNotifications(state) {
+    return state.apiNotifications.filter(x => {
+      return x.status == "read";
+    });
+  },
   getUserGroups({ clientInformation }) {
     let arr = [];
     for (let i = 0, len = clientInformation?.user_groups.length; i < len; i++) {

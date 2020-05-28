@@ -132,7 +132,7 @@ export default {
   methods: {
     ...mapMutations(["CREATE_SYSTEM_NOTIFICATION", "DELETE_GLOBAL_INTERVAL"]),
     ...mapActions("Comms", ["getChatMessages", "sendMessage"]),
-    ...mapMutations("Comms", ["UPDATE_MESSAGES"]),
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT_MESSAGES"]),
 
     editMessage(messageID) {
       console.log(messageID);

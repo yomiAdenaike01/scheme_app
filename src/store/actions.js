@@ -1,6 +1,6 @@
 import axios from "axios";
 import Vue from "vue";
-
+import router from "./../router";
 if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:7070/v1/";
 } else {
@@ -20,57 +20,27 @@ const sortPayload = ({ state, getters }, payload) => {
 
 const exitApplication = (context, networkError = false, logout = false) => {
   context.commit("DELETE_GLOBAL_INTERVAL");
-  context.dispatch("closeOverlay");
   if (networkError) {
     context.commit("UPDATE_NETWORK_ERROR", true);
   }
-  if (logout) {
-    context.commit("DELETE_USER");
+  if (logout && context.state.userInformation?._id) {
+    context.dispatch("logOut");
   }
 };
 
 export default {
-  restoreOverlay(context) {
-    context.commit("UPDATE_OVERLAY_INDEX", context.state.overlayHistory);
-  },
-  updateDevices(context) {
-    return new Promise((resolve, reject) => {
-      context
-        .dispatch("request", {
-          method: "POST",
-          url: "users/devices",
-          data: { device: context.getters.getDeviceInformation }
-        })
-        .then(() => {
-          resolve();
-        })
-        .catch(err => {
-          reject(err);
-        });
+  async logOut(context) {
+    await context.dispatch("request", {
+      method: "GET",
+      url: "users/logout",
+      data: { _id: context.state.userInformation._id }
     });
-  },
-
-  closeOverlay({ getters, state, commit }, name = "") {
-    commit(
-      "UPDATE_OVERLAY_INDEX",
-      {
-        view: false,
-        overlay: name,
-        data: null
-      },
-      { root: true }
-    );
-    if (!name) {
-      let activeOverlay = getters.getActiveOverlay()?.name;
-      console.log(activeOverlay);
-      if (activeOverlay) {
-        commit("UPDATE_OVERLAY_INDEX", {
-          view: false,
-          data: null,
-          overlay: activeOverlay
-        });
-      }
+    if (router.currentRoute.name != "signIn") {
+      router.push({ name: "signIn" });
     }
+    context.commit("DELETE_USER_SESSION");
+    context.commit("DELETE_GLOBAL_INTERVAL");
+    context.commit("UPDATE_STOP_NOTIFICATIONS", true);
   },
   /**
    *
@@ -149,15 +119,20 @@ export default {
 
     let enableNotifications = true;
 
-    if (payload?.disableNotification) {
+    if (
+      payload?.disableNotification ||
+      context.state.networkError ||
+      context.state.stopNotifications
+    ) {
       enableNotifications = false;
     }
 
     const handleError = error => {
       const status = error?.request?.status;
+
       // Web token error
-      if (status === 401) {
-        exitApplication(context, false, true);
+      if (status === 401 || typeof error == "object") {
+        return exitApplication(context, false, true);
       }
 
       if (error?.data) {

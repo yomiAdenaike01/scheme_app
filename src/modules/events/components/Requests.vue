@@ -10,6 +10,12 @@
         <div class="filters_container">
           <h3 class="grey">Filters</h3>
           <input
+            v-model="filters.request_id"
+            class="s_input no_border_radius"
+            placeholder="Search request id"
+          />
+
+          <input
             v-model="filters.label"
             class="s_input no_border_radius"
             placeholder="Search request type"
@@ -192,7 +198,8 @@ export default {
         label: "",
         date_created: "",
         status: "",
-        requested_by: ""
+        requested_by: "",
+        request_id: ""
       }
     };
   },

@@ -1,5 +1,7 @@
 export default {
   runningIntervals: {},
+  stopNotifications: false,
+
   notificationRef: {},
   groupRef: {},
   teamRef: {},

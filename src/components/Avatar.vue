@@ -15,32 +15,40 @@ export default {
   name: "Avatar",
   props: {
     group: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     name: {
-      type: String
+      type: String,
+      default: ""
     },
     initials: {
-      type: String
+      type: String,
+      default: ""
     },
     backgroundColor: {
-      type: String
+      type: String,
+      default: ""
     },
     color: {
-      type: String
+      type: String,
+      default: ""
     },
     customStyle: {
-      type: Object
+      type: Object,
+      default: () => {}
     },
     inline: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     size: {
       type: Number,
       default: 50
     },
     src: {
-      type: String
+      type: String,
+      default: ""
     },
     rounded: {
       type: Boolean,

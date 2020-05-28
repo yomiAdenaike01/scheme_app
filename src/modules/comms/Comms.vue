@@ -48,12 +48,8 @@ export default {
       method: () => {
         return new Promise((resolve, reject) => {
           this.getChats()
-            .then(() => {
-              resolve();
-            })
-            .catch(err => {
-              reject(err);
-            });
+            .then(resolve)
+            .catch(reject);
         });
       },
       duration: this.globalIntervals.chat
@@ -66,6 +62,7 @@ export default {
     ...mapActions("Comms", ["getChats"]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL"]),
     ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT"]),
+
     handleRouting() {
       let chat_id = this.$route.params?.chat_id;
       if (chat_id) {

@@ -152,7 +152,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request", "updateDevices", "closeOverlay"]),
+    ...mapActions(["request"]),
     ...mapMutations([
       "CREATE_SYSTEM_NOTIFICATION",
       "DELETE_SYSTEM_NOTIFICATION",
