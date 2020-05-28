@@ -127,19 +127,21 @@ export default {
           return notification.status == "unread";
         });
 
-        this.CREATE_SYSTEM_NOTIFICATION({
-          message: firstNotification.message,
-          title: firstNotification.type,
-          type: firstNotification.type,
-          methods: [
-            {
-              label: "Open notifications",
-              body() {
-                this.openNotifications = true;
+        if (firstNotification) {
+          this.CREATE_SYSTEM_NOTIFICATION({
+            message: firstNotification.message,
+            title: firstNotification.type,
+            type: firstNotification.type,
+            methods: [
+              {
+                label: "Open notifications",
+                body() {
+                  this.openNotifications = true;
+                }
               }
-            }
-          ]
-        });
+            ]
+          });
+        }
       }
     }
   },

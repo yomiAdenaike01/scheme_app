@@ -34,12 +34,13 @@ export default {
       theme: {}
     };
   },
-  created() {
-    this.genTheme();
-  },
   computed: {
     ...mapState(["colours"])
   },
+  created() {
+    this.genTheme();
+  },
+
   methods: {
     updateTheme(key, value) {
       let root = document.documentElement;

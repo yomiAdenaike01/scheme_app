@@ -367,11 +367,7 @@ export default {
 
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations("Events", [
-      "CREATE_EVENT_REQUEST",
-      "UPDATE_EVENT_REQUEST",
-      "DELETE_EVENT_REQUEST"
-    ]),
+    ...mapMutations("Requests", ["UPDATE_REQUEST", "DELETE_REQUEST"]),
     handleRouting() {
       let params = this.$route.params;
       if (params) {
@@ -403,7 +399,11 @@ export default {
     },
 
     assignFilters(val = this.propFilters) {
-      if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
+      if (
+        val &&
+        Object.keys(val).length > 0 &&
+        this.filteredRequests.length > 0
+      ) {
         for (let property in val) {
           if (
             property != "assigned_to" &&
@@ -430,7 +430,7 @@ export default {
     },
     async deleteRequest() {
       try {
-        this.DELETE_EVENT_REQUEST(this.selectedRequest.index);
+        this.DELETE_REQUEST(this.selectedRequest.index);
 
         //  API request
         let apiPayload = {
@@ -480,7 +480,7 @@ export default {
 
         this.selectedRequest = Object.assign({}, this.selectedRequest, update);
 
-        this.UPDATE_EVENT_REQUEST({
+        this.UPDATE_REQUEST({
           update,
           index: this.selectedRequest.index
         });

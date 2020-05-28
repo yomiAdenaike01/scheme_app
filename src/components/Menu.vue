@@ -1,15 +1,26 @@
 <template>
   <nav :class="{ flex: mode == 'tabs', nav_sidebar: mode == 'main' }">
     <ul v-if="mode == 'main'">
-      <router-link
+      <el-popover
         v-for="route in routes"
         :key="route.path"
-        :to="route.name"
-        tag="li"
-        :index="route.path"
+        trigger="hover"
+        placement="right"
       >
-        <i :class="route.icon" class="home_icon"></i>
-      </router-link>
+        <router-link
+          slot="reference"
+          :to="route.name"
+          tag="li"
+          :index="route.path"
+        >
+          <i :class="route.icon" class="home_icon"></i>
+        </router-link>
+        <div class="label_container">
+          <p class="capitalize bold">
+            {{ langXref[route.name] }}
+          </p>
+        </div>
+      </el-popover>
     </ul>
     <slide-y-down-transition mode="out-in">
       <div
@@ -110,6 +121,16 @@ export default {
     ...mapState(["clientInformation", "localSettings"]),
     ...mapGetters(["getDefaultColour", "adminPermission"]),
 
+    langXref() {
+      return {
+        comms: "Messenger",
+        tasks: "Task-board",
+        events: "Events",
+        preferences: "Settings",
+        requests: "Requests"
+      };
+    },
+
     routes() {
       let allowedRoutes = [
         {
@@ -129,7 +150,7 @@ export default {
           icon: "bx bxl-discourse"
         },
         {
-          name: "Preferences",
+          name: "preferences",
           icon: "bx bx-slider-alt"
         }
       ];
@@ -192,6 +213,9 @@ export default {
     margin: 0;
     padding: 0;
   }
+}
+.label_container {
+  text-align: center;
 }
 
 .nav_sidebar ul li {

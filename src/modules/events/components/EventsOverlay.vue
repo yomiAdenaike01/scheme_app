@@ -122,7 +122,8 @@ export default {
   computed: {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Team", ["team"]),
-    ...mapState("Events", ["events", "eventRequests", "eventTemplates"]),
+    ...mapState("Events", ["events", "eventTemplates"]),
+    ...mapState("Requests", ["requests"]),
     ...mapGetters(["adminPermission", "groupLookup"]),
     ...mapGetters("Team", ["userLookup"]),
 
@@ -318,10 +319,12 @@ export default {
       "UPDATE_EVENT",
       "DELETE_EVENT_TEMPLATE",
       "CREATE_EVENT_TEMPLATE",
-      "UPDATE_EVENT_TEMPLATE",
-      "DELETE_EVENT_REQUEST",
-      "CREATE_EVENT_REQUEST",
-      "UPDATE_EVENT_REQUEST"
+      "UPDATE_EVENT_TEMPLATE"
+    ]),
+    ...mapMutations("Requests", [
+      "DELETE_REQUEST",
+      "CREATE_REQUEST",
+      "UPDATE_REQUEST"
     ]),
 
     populateForm(data) {
