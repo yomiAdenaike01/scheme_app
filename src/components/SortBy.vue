@@ -67,6 +67,7 @@ export default {
 }
 .sortby_body {
   margin: 0 20px;
+  white-space: nowrap;
 }
 .icon_container {
   display: flex;
@@ -82,7 +83,9 @@ export default {
   text-transform: capitalize;
   cursor: pointer;
   &:hover {
-    background: rgb(240, 240, 240);
+    border-top: 1px solid rgba(var(--colour_secondary), 1);
+    color: rgba(var(--colour_secondary), 1);
+    background: rgba(var(--colour_secondary), 0.1);
   }
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <div class="events_container">
-    <div class="events_inner_container">
+    <div class="events_sub_container">
+      <!-- Toolbar -->
+
       <EventsCalendar
         @quickCreate="updateParams"
         @updateOverlays="updateOverlays"
@@ -23,6 +25,7 @@ import { SlideXRightTransition } from "vue2-transitions";
 import EventsOverlay from "./components/EventsOverlay";
 import EventsCalendar from "./components/EventsCalendar";
 import TeamSidebar from "./components/TeamSidebar";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Events",
@@ -40,10 +43,20 @@ export default {
       params: {}
     };
   },
+  computed: {
+    ...mapGetters(["adminPermission"])
+  },
   created() {
     this.handleRouting();
   },
+
   methods: {
+    handler() {
+      this.updateOverlays({
+        overlay: "events",
+        display: true
+      });
+    },
     handleRouting() {
       let routeParams = this.$route.params;
       if (Object.keys(routeParams).length > 0) {
@@ -82,7 +95,7 @@ export default {
   flex: 1;
   max-height: calc(100% - 90px);
 }
-.events_inner_container {
+.events_sub_container {
   display: flex;
   flex-direction: column;
   flex: 1;

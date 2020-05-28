@@ -4,7 +4,7 @@
       <s-button
         v-for="(button, index) in config"
         :key="index"
-        class="rounded flat"
+        class="rounded plain"
         :class="{
           active: button.toLowerCase() == selectedConfig.toLowerCase()
         }"
@@ -178,9 +178,8 @@ export default {
 
       let newGroupName = {
         component_type: "text",
-        noLabel: true,
         model: "label",
-        label: `Select ${this.langXref.label} group`
+        label: "Enter new group name"
       };
 
       if (this.groupType == "user_groups") {
@@ -366,8 +365,12 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 30px;
   &/deep/ .button_container {
     margin: 10px;
+    &.active {
+      transform: translateY(-10px);
+    }
   }
 }
 </style>

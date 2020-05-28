@@ -9,7 +9,7 @@ import mutations from "./mutations";
 
 import Events from "./events";
 import Tasks from "./tasks";
-import Comms from "./messenger";
+import Comms from "./comms";
 import Team from "./team";
 import Requests from "./requests";
 

@@ -223,6 +223,10 @@ ul {
   outline: none;
   width: 100%;
   border: 1px solid rgba(var(--colour_primary), 0.17);
+  &:focus {
+    border: 1px solid rgba(var(--colour_secondary), 0.6);
+    caret-color: rgba(var(--colour_secondary), 0.6);
+  }
 
   &.checkbox {
     width: initial;
@@ -246,6 +250,7 @@ ul {
     font-weight: bold;
   }
 }
+
 /*
 
 Fonts

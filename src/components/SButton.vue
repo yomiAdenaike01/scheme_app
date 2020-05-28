@@ -115,12 +115,14 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     background: white;
     color: initial;
     border: 1px solid rgb(220, 220, 220);
-    border-radius: 5px;
     max-width: fit-content;
     padding: 0;
     margin: 5px 0;
-    &:hover {
-      background: rgb(245, 245, 245);
+    &:hover,
+    &.active {
+      border: 1px solid rgba(var(--colour_secondary), 0.8);
+      color: rgba(var(--colour_secondary), 1);
+      background: rgba(var(--colour_secondary), 0.05);
     }
   }
   &.flat {

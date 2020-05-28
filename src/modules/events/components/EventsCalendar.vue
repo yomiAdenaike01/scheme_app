@@ -1,10 +1,16 @@
 <template>
   <div class="cal_container">
     <div class="sort_by_container">
+      <s-button
+        class="primary rounded"
+        @click="$emit('updateOverlays', { overlay: 'events', display: true })"
+      >
+        {{ adminPermission ? "Groups & Event management" : "Create request" }}
+      </s-button>
       <SortBy
         v-model="eventType"
         filter-text="All event types"
-        :items="[{ label: 'all event groups', value: 0 }, ...eventGroups]"
+        :items="[{ label: 'all event types', value: 0 }, ...eventGroups]"
       />
     </div>
 
@@ -22,15 +28,18 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 import VueCal from "vue-cal";
 import SortBy from "@/components/SortBy";
+import SButton from "@/components/SButton";
+
 import "vue-cal/dist/vuecal.css";
 export default {
   name: "EventsCalendar",
   components: {
     VueCal,
-    SortBy
+    SortBy,
+    SButton
   },
   data() {
     return {
@@ -45,6 +54,7 @@ export default {
   computed: {
     ...mapState(["clientInformation"]),
     ...mapState("Events", ["events"]),
+    ...mapGetters(["adminPermission"]),
     eventGroups() {
       let eventGroups = this.clientInformation?.event_groups;
       return eventGroups?.map(group => {
@@ -139,6 +149,9 @@ export default {
   padding: 10px;
 }
 .sort_by_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 20px;
 }
 .cal_container {

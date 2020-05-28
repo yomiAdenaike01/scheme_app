@@ -77,7 +77,7 @@ export default {
             command: "view_team_member_events"
           },
           {
-            name: "<i class='bx bx-question-mark'></i> View Requests ",
+            name: "<i class='bx bxs-dashboard'></i> View Requests ",
             command: "view_team_member_requests"
           }
         );

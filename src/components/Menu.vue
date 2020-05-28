@@ -127,7 +127,8 @@ export default {
         tasks: "Task-board",
         events: "Events",
         preferences: "Settings",
-        requests: "Requests"
+        requests: "Requests",
+        team: "Team"
       };
     },
 
@@ -296,20 +297,25 @@ export default {
   border-right: 1px solid rgb(230, 230, 230);
   position: relative;
   transition: $default_transition;
+  &::after {
+    position: absolute;
+    top: 0;
+    height: 1.2px;
+    left: 0;
+    right: 0;
+    content: "";
+    background: rgb(220, 220, 220);
+  }
   &.active {
+    color: rgba(var(--colour_secondary), 0.9);
     &::after {
-      position: absolute;
-      top: 0;
-      height: 1.3px;
-      left: 0;
-      right: 0;
-      content: "";
       background: rgba(var(--colour_secondary), 1);
     }
-    background: rgba(var(--colour_secondary), 0.1);
+    background: rgba(var(--colour_secondary), 0.091);
   }
   &:hover {
     background: rgba(var(--colour_secondary), 0.1);
+    color: rgba(var(--colour_secondary), 0.8);
   }
 }
 </style>
