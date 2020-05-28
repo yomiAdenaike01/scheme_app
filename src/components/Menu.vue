@@ -114,6 +114,10 @@ export default {
       let allowedRoutes = [
         {
           name: "events",
+          icon: "bx bx-calendar"
+        },
+        {
+          name: "requests",
           icon: "bx bxs-dashboard"
         },
         {

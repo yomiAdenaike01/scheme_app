@@ -27,3 +27,12 @@ $app_bar_height:64px;
   }
 }
 
+$notification_ref: (
+  message: var(--colour_secondary),
+  request: var(--purple),
+  read: var(--colour_dark_grey),
+  annoucement: var(--danger),
+  info:var(--colour_primary),
+  warning:var(--orange)
+
+);

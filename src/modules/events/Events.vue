@@ -1,36 +1,19 @@
 <template>
   <div class="events_container">
-    <slide-x-right-transition mode="out-in">
-      <div class="events_inner_container">
-        <Toolbar
-          :current-view="view"
-          @changeView="view = $event"
-          @updateOverlays="updateOverlays"
-        />
-        <div v-if="view == 'events'" class="events_wrapper">
-          <EventsCalendar
-            @quickCreate="updateParams"
-            @updateOverlays="updateOverlays"
-          />
-          <EventsOverlay
-            v-if="overlays.events"
-            :display="overlays.events"
-            :params="params"
-            @close="updateOverlays({ overlay: 'events', display: false })"
-            @changeView="updateView"
-          />
-        </div>
-
-        <Requests
-          v-if="view == 'requests'"
-          :prop-filters="requests.filters"
-          @changeView="updateView"
-          @updateOverlays="updateOverlays"
-          @approveRequest="updateParams"
-        />
-      </div>
-    </slide-x-right-transition>
-    <TeamSidebar @changeView="updateView" />
+    <div class="events_inner_container">
+      <EventsCalendar
+        @quickCreate="updateParams"
+        @updateOverlays="updateOverlays"
+      />
+      <EventsOverlay
+        v-if="overlays.events"
+        :display="overlays.events"
+        :params="params"
+        @close="updateOverlays({ overlay: 'events', display: false })"
+        @changeView="updateView"
+      />
+    </div>
+    <TeamSidebar />
   </div>
 </template>
 
@@ -38,27 +21,19 @@
 import { SlideXRightTransition } from "vue2-transitions";
 
 import EventsOverlay from "./components/EventsOverlay";
-import Toolbar from "./components/Toolbar";
 import EventsCalendar from "./components/EventsCalendar";
 import TeamSidebar from "./components/TeamSidebar";
-import Requests from "./components/Requests";
 
 export default {
   name: "Events",
   components: {
     EventsCalendar,
     EventsOverlay,
-    Toolbar,
     TeamSidebar,
-    Requests,
     SlideXRightTransition
   },
   data() {
     return {
-      view: "events",
-      requests: {
-        filters: {}
-      },
       overlays: {
         events: false
       },
@@ -72,9 +47,6 @@ export default {
     handleRouting() {
       let routeParams = this.$route.params;
       if (Object.keys(routeParams).length > 0) {
-        if (routeParams?.view) {
-          this.updateView(routeParams);
-        }
         if (routeParams?.overlay) {
           this.updateOverlays(routeParams);
         }
@@ -95,12 +67,6 @@ export default {
         if (this.overlays[property]) {
           this.overlays[property] = false;
         }
-      }
-    },
-    updateView({ view, teamMember = null }) {
-      this.view = view;
-      if (teamMember) {
-        this.requests.filters.requested_by = teamMember._id;
       }
     }
   }

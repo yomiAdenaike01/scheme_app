@@ -5,7 +5,7 @@ import { methods } from "@/mixins/genID";
 export default {
   unreadNotifications(state) {
     return state.apiNotifications.filter(x => {
-      return x.status == "read";
+      return x.status == "unread";
     });
   },
   getUserGroups({ clientInformation }) {

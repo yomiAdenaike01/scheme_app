@@ -156,23 +156,8 @@ export default {
     deleteSystemNotification(state, index);
   },
   CREATE_SYSTEM_NOTIFICATION(state, notification) {
-    let notificationTypes = [
-      "success",
-      "error",
-      "warning",
-      "message",
-      "annoucement",
-      "info"
-    ];
+    let notificationTypes = Object.keys(state.iconXref);
 
-    let notificationXref = {
-      success: "check-circle",
-      error: "x-circle",
-      warning: "error-circle",
-      message: "message-rounded",
-      annoucement: "user-voice",
-      info: "mail-send"
-    };
     notification._id = mixins.methods.genID();
 
     let closeNotificationObject = {
@@ -193,7 +178,7 @@ export default {
       notification.type = "info";
     }
     if (!notification?.icon) {
-      notification.icon = notificationXref[notification.type];
+      notification.icon = `bx ${state.iconXref[notification.type]}`;
     }
 
     if (notification.type == "success" && !notification.title) {

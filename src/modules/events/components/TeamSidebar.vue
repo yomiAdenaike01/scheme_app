@@ -92,9 +92,9 @@ export default {
     handleEvents(event) {
       switch (event) {
         case "view_team_member_requests": {
-          this.$emit("changeView", {
-            view: "requests",
-            teamMember: this.selectedTeamMember
+          this.$router.push({
+            name: "requests",
+            params: { teamMember: this.selectedTeamMember }
           });
           break;
         }

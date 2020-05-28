@@ -173,7 +173,7 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import SButton from "@/components/SButton";
-import Request from "./Request";
+import Request from "./components/Request";
 import { SlideXLeftTransition, FadeTransition } from "vue2-transitions";
 import cleanObject from "@/mixins/cleanObject";
 export default {
@@ -185,12 +185,7 @@ export default {
     Request
   },
   mixins: [cleanObject],
-  props: {
-    propFilters: {
-      type: Object,
-      default: () => {}
-    }
-  },
+
   data() {
     return {
       selectedRequest: {},
@@ -206,7 +201,7 @@ export default {
 
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Events", ["eventRequests"]),
+    ...mapState("Requests", ["requests"]),
     ...mapState("Team", ["team"]),
 
     ...mapGetters(["adminPermission"]),
@@ -323,7 +318,7 @@ export default {
       let filterStatus = this.filters.status.toLowerCase();
       let filterRequestedBy = this.filters.requested_by;
 
-      let requests = [...this.eventRequests];
+      let requests = [...this.requests];
       for (let i = 0, len = requests.length; i < len; i++) {
         let request = requests[i];
         if (!filterLabel.includes(request?.type?.label.toLowerCase())) {
@@ -363,6 +358,9 @@ export default {
   created() {
     this.initRequests(this.filteredRequests);
   },
+  activated() {
+    this.handleRouting();
+  },
   destroyed() {
     this.selectedRequest = {};
   },
@@ -374,7 +372,12 @@ export default {
       "UPDATE_EVENT_REQUEST",
       "DELETE_EVENT_REQUEST"
     ]),
-
+    handleRouting() {
+      let params = this.$route.params;
+      if (params) {
+        this.assignFilters(params);
+      }
+    },
     initRequests(requests) {
       let hasSelected = Object.keys(this.selectedRequest).length > 0;
 
@@ -432,7 +435,7 @@ export default {
         //  API request
         let apiPayload = {
           method: "DELETE",
-          url: "events/requests/delete",
+          url: "requests/delete",
           data: {
             _id: this.selectedRequest._id
           }
@@ -450,19 +453,18 @@ export default {
         type: this.selectedRequest.type._id,
         dates: [this.selectedRequest.start_date, this.selectedRequest.end_date]
       };
-      this.$emit("changeView", {
-        view: "events"
-      });
 
-      this.$emit("updateOverlays", {
-        overlay: "events",
-        display: true
+      this.$router.push({
+        name: "events",
+        params: {
+          createEvent: {
+            params: formPayload
+          }
+        }
       });
-
-      this.$emit("approveRequest", formPayload);
     },
     updateMessageXref(update) {
-      let string = `Your request ${this.selectedRequest.type.label} has been`;
+      let string = `Your request ${this.selectedRequest.type.label} has been `;
       for (let property in update) {
         string += update[property];
       }
@@ -487,9 +489,10 @@ export default {
         update.message = this.updateMessageXref(update);
         const apiPayload = {
           method: "PUT",
-          url: "events/requests/update",
+          url: "requests/update",
           data: {
             _id: this.selectedRequest._id,
+            requested_by: this.selectedRequest.requested_by._id,
             update,
             assigned_to: this.leanAssignedTo
           }

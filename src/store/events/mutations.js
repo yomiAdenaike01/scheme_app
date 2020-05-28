@@ -39,37 +39,7 @@ export default {
   UPDATE_EVENTS(state, payload) {
     state.events = payload;
   },
-  CREATE_EVENT_REQUEST(state, payload) {
-    state.eventRequests.push(payload);
 
-    updateBreadCrumbs(state, "eventRequestRef", {
-      index: state.eventRequests.length - 1,
-      ...payload
-    });
-  },
-  DELETE_EVENT_REQUEST(state, index) {
-    if (typeof index == "undefined") {
-      state.eventRequests.pop();
-    } else {
-      updateBreadCrumbs(state, "eventRequestRef", state.eventRequests[index]);
-      state.eventRequests.splice(index, 1);
-    }
-  },
-  UPDATE_EVENT_REQUEST(state, { index, update }) {
-    let request = state.eventRequests[index];
-    updateBreadCrumbs(state, "eventRequestRef", {
-      index,
-      ...request
-    });
-    if (update) {
-      for (let property in update) {
-        Vue.set(state.eventRequests[index], property, update[property]);
-      }
-    }
-  },
-  UPDATE_EVENT_REQUESTS(state, payload) {
-    state.eventRequests = payload;
-  },
   CREATE_EVENT(state, payload) {
     // Get the data
     state.events.push(payload);

@@ -9,6 +9,8 @@ const Support = () => import("@/modules/support/Support");
 const SignIn = () => import("@/modules/authorisation/SignIn");
 // Common
 const Events = () => import("@/modules/events/Events");
+const Requests = () => import("@/modules/requests/Requests");
+
 const Team = () => import("@/modules/team/Team");
 const Comms = () => import("@/modules/comms/Comms");
 const Tasks = () => import("@/modules/tasks/Tasks");
@@ -61,7 +63,14 @@ const routes = [
           authRequired: true
         }
       },
-
+      {
+        path: "requests",
+        name: "requests",
+        component: Requests,
+        meta: {
+          authRequired: true
+        }
+      },
       {
         path: "team",
         name: "team",

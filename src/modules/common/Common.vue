@@ -5,10 +5,13 @@
     class="common_container"
   >
     <NprogressContainer />
-    <CommonBar />
+    <CommonBar
+      :display-notifications="displayNotifications"
+      @closeNotifications="closeNotifiactions"
+    />
 
     <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
-
+    <!-- System notifications -->
     <div class="notification_container">
       <slide-x-right-transition group>
         <div
@@ -21,7 +24,7 @@
               <i :class="`bx bx-${notification.icon}`"></i>
             </div>
             <div class="text_container">
-              <strong class="title">
+              <strong class="title capitalize">
                 {{ notification.title }}
               </strong>
               <p v-html="notification.message"></p>
@@ -82,7 +85,7 @@ export default {
     return {
       loading: true,
       display: true,
-      botDisplay: true
+      displayNotifications: false
     };
   },
   computed: {
@@ -114,6 +117,30 @@ export default {
         }
       }
       return tasksDueToday;
+    }
+  },
+  watch: {
+    apiNotifications(newVal, oldVal) {
+      if (newVal.length > oldVal.length) {
+        // Display the first notification that is read
+        let firstNotification = newVal.find(notification => {
+          return notification.status == "unread";
+        });
+
+        this.CREATE_SYSTEM_NOTIFICATION({
+          message: firstNotification.message,
+          title: firstNotification.type,
+          type: firstNotification.type,
+          methods: [
+            {
+              label: "Open notifications",
+              body() {
+                this.openNotifications = true;
+              }
+            }
+          ]
+        });
+      }
     }
   },
 
@@ -150,7 +177,6 @@ export default {
       window.Notification.requestPermission();
     }
   },
-
   methods: {
     ...mapActions(["request"]),
     ...mapMutations([
@@ -165,8 +191,10 @@ export default {
     ...mapMutations("Team", ["UPDATE_TEAM"]),
     ...mapMutations("Events", ["UPDATE_EVENT_TEMPLATES", "UPDATE_EVENTS"]),
 
-    ...mapMutations("Events", ["UPDATE_EVENT_REQUESTS"]),
-
+    ...mapMutations("Requests", ["UPDATE_REQUESTS"]),
+    closeNotifiactions() {
+      this.displayNotifications = false;
+    },
     excecuteNotification(method, notificationIndex) {
       method.body()?.finally(() => {
         this.DELETE_SYSTEM_NOTIFICATION(notificationIndex);
@@ -194,11 +222,11 @@ export default {
       return new Promise((resolve, reject) => {
         const payload = {
           method: "GET",
-          url: "events/requests/all"
+          url: "requests/all"
         };
         this.request(payload)
           .then(response => {
-            this.UPDATE_EVENT_REQUESTS(response);
+            this.UPDATE_REQUESTS(response);
             resolve();
           })
           .catch(err => {
@@ -315,16 +343,14 @@ export default {
   margin-bottom: 20px;
   width: 450px;
   border-radius: 5px;
-  border-left: 4px solid rgba(var(--colour_primary), 1);
   overflow: hidden;
-  &.message,
-  .icon_container {
-    border-left-color: var(--colour_secondary);
-    color: var(--colour_secondary);
-  }
-  &.warning {
-    border-left-color: var(--colour_yellow);
-    color: var(--colour_yellow);
+  @each $key, $value in $notification_ref {
+    &.#{$key} {
+      border-left: 3px solid rgba($value, 1);
+      .icon_container {
+        color: rgba($value, 1);
+      }
+    }
   }
 }
 .notification .body_container {
@@ -352,7 +378,6 @@ export default {
   flex: 0.35;
   margin-left: 10px;
   font-size: 2.3em;
-  color: rgba(var(--colour_primary), 1);
 }
 
 .functions_container {

@@ -27,7 +27,7 @@
                 ]"
                 @click="handleNotification($event, notification, index)"
               >
-                <i :class="`bx ${iconXref(notification.type)} action_icon`"></i>
+                <i :class="`bx ${iconXref[notification.type]} action_icon`"></i>
                 <div class="notification_body_container">
                   <p>{{ notification.message }}</p>
                   <small class="grey">{{
@@ -86,7 +86,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(["apiNotifications", "userInformation", "notificationRef"]),
+    ...mapState([
+      "apiNotifications",
+      "userInformation",
+      "notificationRef",
+      "iconXref"
+    ]),
 
     categoryLangXref() {
       return {
@@ -180,7 +185,7 @@ export default {
     },
     handleRequest(notification) {
       this.updateRoute({
-        name: "events",
+        name: "requests",
         params: {
           view: "requests",
           teamMember: notification.sent_from._id
@@ -240,25 +245,12 @@ export default {
       } catch (error) {
         console.warn(error);
       }
-    },
-
-    iconXref(type) {
-      let ref = {
-        message: "bxl-discourse",
-        request: "bx-question-mark"
-      };
-      return ref[type];
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-$notification_ref: (
-  message: var(--colour_secondary),
-  request: var(--purple),
-  read: var(--colour_dark_grey)
-);
 .notifications_container {
   display: flex;
   flex-direction: column;
@@ -338,6 +330,7 @@ $notification_ref: (
   text-transform: uppercase;
   margin-left: 40px;
   padding: 5px 10px;
+  white-space: nowrap;
 }
 .delete_notifications_controller {
   position: absolute;

@@ -30,6 +30,15 @@ export default {
     viewEvent: { view: false, data: {} },
     eventModule: { view: false, data: {} }
   },
+  iconXref: {
+    success: "bx-check-circle",
+    error: "bx-x-circle",
+    warning: "bx-error-circle",
+    annoucement: "bx-user-voice",
+    info: "bx-mail-send",
+    message: "bxl-discourse",
+    request: "bx-question-mark"
+  },
   colours: [
     "#0168fa",
     "#5b47fb",

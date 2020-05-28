@@ -12,7 +12,7 @@
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-popover v-model="displayPopover" trigger="click" width="300">
+      <el-popover v-model="popup" trigger="click" width="300">
         <Notifications />
         <div slot="reference" class="button_container">
           <s-button class="small only_icon rounded" icon="bell"></s-button>
@@ -41,14 +41,25 @@ export default {
     Notifications,
     SButton
   },
-  data() {
-    return {
-      displayPopover: false
-    };
+  props: {
+    displayNotifications: {
+      type: Boolean,
+      default: false
+    }
   },
+
   computed: {
     ...mapState(["userInformation", "viewMobileMenu", "apiNotifications"]),
     ...mapGetters(["unreadNotifications"]),
+
+    popup: {
+      get() {
+        return this.displayNotifications;
+      },
+      set(val) {
+        this.$emit("closeNotifications");
+      }
+    },
 
     items() {
       return [

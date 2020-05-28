@@ -11,6 +11,7 @@ import Events from "./events";
 import Tasks from "./tasks";
 import Comms from "./messenger";
 import Team from "./team";
+import Requests from "./requests";
 
 Vue.use(Vuex);
 
@@ -21,5 +22,5 @@ export default new Vuex.Store({
   mutations,
   actions,
   getters,
-  modules: { Comms, Events, Tasks, Team }
+  modules: { Comms, Events, Tasks, Team, Requests }
 });
