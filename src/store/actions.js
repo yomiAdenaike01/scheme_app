@@ -68,8 +68,7 @@ export default {
 
   async genApiNotification(context, notificationContent) {
     try {
-      return console.log(notificationContent);
-      let response = context.dispatch("request", {
+      let response = await context.dispatch("request", {
         method: "POST",
         url: "extensions/notification",
         data: notificationContent

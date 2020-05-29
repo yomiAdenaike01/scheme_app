@@ -123,11 +123,6 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
       border: 1px solid rgba(var(--colour_secondary), 0.8);
       color: rgba(var(--colour_secondary), 1);
       background: rgba(var(--colour_secondary), 0.07);
-      &:hover {
-        border: 1px solid rgba(var(--colour_secondary), 1);
-        color: white;
-        background: rgba(var(--colour_secondary), 1);
-      }
     }
   }
 

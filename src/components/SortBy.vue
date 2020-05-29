@@ -13,7 +13,7 @@
       <div
         v-for="(item, index) in items"
         :key="index"
-        class="item"
+        class="popover_item"
         @click="
           $emit('itemSelected', item.label);
           displayPopover = false;
@@ -77,15 +77,5 @@ export default {
   color: white;
   font-size: 1.5em;
   padding: 5px;
-}
-.item {
-  padding: 10px;
-  text-transform: capitalize;
-  cursor: pointer;
-  &:hover {
-    border-top: 1px solid rgba(var(--colour_secondary), 1);
-    color: rgba(var(--colour_secondary), 1);
-    background: rgba(var(--colour_secondary), 0.1);
-  }
 }
 </style>

@@ -1,14 +1,12 @@
 <template>
   <Overlay v-model="display">
     <div class="view_event_container">
-      <!-- Required actions -->
-
       <!-- Title -->
       <div class="text_container all_centre">
         <div v-if="isApproved" class="check_container">
           <i class="bx bx-check"></i>
         </div>
-        <h2>{{ event.title }}</h2>
+        <h2>{{ event.type.label }}</h2>
       </div>
       <!-- Assigned_to -->
       <div v-if="adminPermission" class="text_container all_centre">
@@ -43,7 +41,7 @@
         <div
           v-for="member in getFilteredTeam"
           :key="member._id"
-          class="assignee"
+          class="popover_item"
           :class="{ disabled: isAssigned(member) > -1 }"
           @click="addTeamMember(member)"
         >
@@ -77,53 +75,62 @@
             @click="updateKeyValue(key)"
             >update {{ makePretty(key) }}</s-button
           >
-          <collapse-transition mode="out-in">
-            <div
-              v-if="
-                adminPermission &&
-                  updateKey == key &&
-                  enableUpdates.indexOf(key) > -1
-              "
-              class="form_wrapper"
+          <div
+            v-if="
+              adminPermission &&
+                updateKey == key &&
+                enableUpdates.indexOf(key) > -1
+            "
+            class="form_wrapper"
+          >
+            <h5>Update information</h5>
+            <!-- Update event type -->
+            <select
+              v-if="updateKey == 'event_type'"
+              class="s_input"
+              :value="event.type._id"
+              @input="updateEventType"
             >
-              <h5>Update information</h5>
-              <!-- Update event type -->
-              <select
-                v-if="updateKey == 'event_type'"
-                class="s_input"
-                :value="event.type._id"
-                @input="updateEventType"
+              <option
+                v-for="option in clientInformation.event_groups"
+                :key="option._id"
+                :value="option._id"
+                >{{ option.label }}</option
               >
-                <option
-                  v-for="option in clientInformation.event_groups"
-                  :key="option._id"
-                  :value="option._id"
-                  >{{ option.label }}</option
-                >
-              </select>
-              <!-- date picker -->
-              <el-date-picker
-                v-if="updateKey == 'dates'"
-                :value="[event.start, event.end]"
-                type="daterange"
-                range-separator="To"
-                start-placeholder="Start date"
-                end-placeholder="End date"
-                @input="updateDate"
-              >
-              </el-date-picker>
-            </div>
-          </collapse-transition>
+            </select>
+            <!-- date picker -->
+            <el-date-picker
+              v-if="updateKey == 'dates'"
+              :value="[event.start, event.end]"
+              type="daterange"
+              range-separator="To"
+              start-placeholder="Start date"
+              end-placeholder="End date"
+              @input="updateDate"
+            >
+            </el-date-picker>
+          </div>
         </div>
       </div>
 
       <div class="button_container">
-        <s-button class="secondary expanded" @click="updateEvent">
+        <s-button
+          v-if="adminPermission"
+          class="secondary expanded"
+          @click="updateEvent"
+        >
           <p>Save changes</p>
         </s-button>
       </div>
       <s-button v-if="canReject" class="primary expanded" @click="rejectEvent">
         <p>Reject</p>
+      </s-button>
+      <s-button
+        v-if="adminPermission && !eventStarted"
+        class="tertiary expanded"
+        @click="deleteEvent"
+      >
+        <p>Delete</p>
       </s-button>
     </div>
   </Overlay>
@@ -135,15 +142,13 @@ import Overlay from "@/components/Overlay";
 import Avatar from "@/components/Avatar";
 import SButton from "@/components/SButton";
 import Form from "@/components/Form";
-import { CollapseTransition } from "vue2-transitions";
 export default {
   name: "ViewEventOverlay",
   components: {
     Overlay,
     Avatar,
     SButton,
-    Form,
-    CollapseTransition
+    Form
   },
   data() {
     return {
@@ -161,6 +166,9 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
+    eventStarted() {
+      return this.initMoment(new Date()).isBefore(this.event.start);
+    },
     updateApiPayload() {
       let update = {
         assigned_to: this.depopulatedAssigned,
@@ -199,7 +207,7 @@ export default {
       // Can also reject is the start date hasnt already
       let canReject = this.userInformation.user_group.enable_event_rejection;
       let assigned = this.currentUserIndex > -1;
-      let beforeStart = this.initMoment(new Date()).isBefore(this.event.start);
+      let beforeStart = !this.eventStarted;
 
       return canReject && assigned && beforeStart && !this.adminPermission;
     },
@@ -266,7 +274,7 @@ export default {
   methods: {
     ...mapActions(["request", "genApiNotification"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
-    ...mapMutations("Events", ["UPDATE_EVENT"]),
+    ...mapMutations("Events", ["UPDATE_EVENT", "DELETE_EVENT"]),
     async rejectEvent() {
       try {
         // api payload
@@ -303,6 +311,9 @@ export default {
       });
       this.updateKey = "";
     },
+    closeOverlay() {
+      this.display = false;
+    },
 
     isAssigned(member) {
       return this.assigned.findIndex(x => {
@@ -326,6 +337,7 @@ export default {
           };
 
           await this.request(apiPayload);
+          this.closeOverlay();
         }
       } catch (error) {
         console.error(error);
@@ -348,6 +360,7 @@ export default {
     },
     addTeamMember(member) {
       this.event.assigned_to.push(member);
+      this.displayPopover = false;
     },
     initEvent() {
       this.event = Object.assign(
@@ -434,14 +447,6 @@ export default {
   padding: 10px;
   text-align: center;
   margin-top: 20px;
-}
-.assignee {
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    background: rgba(var(--colour_secondary), 0.06);
-    color: rgba(var(--colour_secondary), 1);
-  }
 }
 
 .category_container {

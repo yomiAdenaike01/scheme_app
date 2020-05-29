@@ -37,7 +37,8 @@ export default {
     annoucement: "bx-user-voice",
     info: "bx-mail-send",
     message: "bxl-discourse",
-    request: "bx-question-mark"
+    request: "bx-question-mark",
+    event: "bx-calendar"
   },
   colours: [
     "#0168fa",

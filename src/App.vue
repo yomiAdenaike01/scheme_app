@@ -213,6 +213,17 @@ ul {
     cursor: default;
   }
 }
+.popover_item {
+  padding: 10px;
+  text-transform: capitalize;
+  transition: $default_transition;
+  cursor: pointer;
+  &:hover {
+    background: rgba(var(--colour_secondary), 0.06);
+    color: rgba(var(--colour_secondary), 1);
+  }
+}
+
 .s_input {
   border: none;
   background: transparent;

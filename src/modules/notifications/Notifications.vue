@@ -92,6 +92,7 @@ export default {
       "notificationRef",
       "iconXref"
     ]),
+    ...mapState("Events", ["events"]),
 
     categoryLangXref() {
       return {
@@ -121,7 +122,11 @@ export default {
 
   methods: {
     ...mapActions(["request"]),
-    ...mapMutations(["DELETE_API_NOTIFICATION", "UPDATE_API_NOTIFICATION"]),
+    ...mapMutations([
+      "UPDATE_OVERLAY_INDEX",
+      "DELETE_API_NOTIFICATION",
+      "UPDATE_API_NOTIFICATION"
+    ]),
     handleDelete() {
       if (this.displayRead) {
         this.deleteAll();
@@ -192,6 +197,16 @@ export default {
         }
       });
     },
+    handleEvent(notification) {
+      let eventPayload = this.events.find(x => {
+        return x._id == notification.payload.event_id;
+      });
+      this.UPDATE_OVERLAY_INDEX({
+        overlay: "viewEvent",
+        display: true,
+        payload: eventPayload
+      });
+    },
     handleNotification(e, notification, index) {
       e.stopPropagation();
       if (notification?.payload) {
@@ -207,7 +222,10 @@ export default {
             this.handleRequest(notification);
             break;
           }
-
+          case "event": {
+            this.handleEvent(notification);
+            break;
+          }
           default:
             break;
         }
