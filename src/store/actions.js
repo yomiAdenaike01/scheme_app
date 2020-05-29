@@ -66,21 +66,18 @@ export default {
     });
   },
 
-  genApiNotification(context, notificationContent) {
-    return new Promise((resolve, reject) => {
-      context
-        .dispatch("request", {
-          method: "POST",
-          url: "extensions/notification",
-          data: notificationContent
-        })
-        .then(response => {
-          resolve(response);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+  async genApiNotification(context, notificationContent) {
+    try {
+      return console.log(notificationContent);
+      let response = context.dispatch("request", {
+        method: "POST",
+        url: "extensions/notification",
+        data: notificationContent
+      });
+      return Promise.resolve(response);
+    } catch (error) {
+      return Promise.reject(error);
+    }
   },
   /**
    * 

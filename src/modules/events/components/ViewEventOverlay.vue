@@ -2,20 +2,20 @@
   <Overlay v-model="display">
     <div class="view_event_container">
       <!-- Required actions -->
+
       <!-- Title -->
       <div class="text_container all_centre">
-        <h2>{{ event.title }}</h2>
-
         <div v-if="isApproved" class="check_container">
           <i class="bx bx-check"></i>
         </div>
+        <h2>{{ event.title }}</h2>
       </div>
       <!-- Assigned_to -->
-      <div class="text_container all_centre">
+      <div v-if="adminPermission" class="text_container all_centre">
         <small class="grey">Right click on team member to remove.</small>
       </div>
 
-      <div class="avatar_container">
+      <div v-if="assigned.length > 0" class="avatar_container">
         <Avatar
           v-for="assignee in assigned"
           :key="assignee._id"
@@ -26,8 +26,17 @@
           @contextmenu.native="dropTeamMember($event, assignee)"
         />
       </div>
+      <!-- If no assignees -->
+      <p v-else class="grey text_container all_centre">
+        No team members assigned
+      </p>
       <!-- Create new assignee -->
-      <el-popover v-model="displayPopover" trigger="click" placement="bottom">
+      <el-popover
+        v-if="adminPermission"
+        v-model="displayPopover"
+        trigger="click"
+        placement="bottom"
+      >
         <div slot="reference" class="add_team_member trigger grey">
           <span><i class="bx bx-plus"></i> Add team member to event</span>
         </div>
@@ -42,7 +51,7 @@
         </div>
       </el-popover>
       <!-- Information -->
-      <div class="categories trigger">
+      <div class="categories">
         <div
           v-for="(value, key) in informationXref"
           :key="
@@ -51,7 +60,6 @@
               .slice(2)
           "
           class="category_container"
-          @click="updateKey = key"
         >
           <span class="capitalize grey">{{ makePretty(key) }}</span>
           <p
@@ -64,17 +72,24 @@
             {{ method(event[eventKey]) }}
           </p>
           <s-button
-            v-if="enableUpdates[key]"
+            v-if="enableUpdates.indexOf(key) > -1 && adminPermission"
             class="plain rounded active"
-            @click="updateKey = key"
+            @click="updateKeyValue(key)"
             >update {{ makePretty(key) }}</s-button
           >
           <collapse-transition mode="out-in">
-            <div v-if="updateKey == key" class="form_wrapper">
+            <div
+              v-if="
+                adminPermission &&
+                  updateKey == key &&
+                  enableUpdates.indexOf(key) > -1
+              "
+              class="form_wrapper"
+            >
               <h5>Update information</h5>
               <!-- Update event type -->
               <select
-                v-if="key == 'event_type'"
+                v-if="updateKey == 'event_type'"
                 class="s_input"
                 :value="event.type._id"
                 @input="updateEventType"
@@ -88,7 +103,7 @@
               </select>
               <!-- date picker -->
               <el-date-picker
-                v-else
+                v-if="updateKey == 'dates'"
                 :value="[event.start, event.end]"
                 type="daterange"
                 range-separator="To"
@@ -102,15 +117,14 @@
         </div>
       </div>
 
-      <div
-        v-if="displaySave"
-        class="save_container trigger"
-        @click="updateEvent"
-      >
-        <s-button class="secondary expanded">
+      <div class="button_container">
+        <s-button class="secondary expanded" @click="updateEvent">
           <p>Save changes</p>
         </s-button>
       </div>
+      <s-button v-if="canReject" class="primary expanded" @click="rejectEvent">
+        <p>Reject</p>
+      </s-button>
     </div>
   </Overlay>
 </template>
@@ -135,7 +149,6 @@ export default {
     return {
       event: {},
       displayPopover: false,
-      displaySave: false,
       updateKey: "",
       popovers: {
         event_type: false,
@@ -148,41 +161,51 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-    isApproved() {
-      let res = false;
+    updateApiPayload() {
+      let update = {
+        assigned_to: this.depopulatedAssigned,
+        type: this.event.type._id,
+        start_date: new Date(this.event.start).toISOString(),
+        end_date: new Date(this.event.end).toISOString()
+      };
 
-      return res;
+      return {
+        url: "events/update",
+        method: "PUT",
+        data: update
+      };
+    },
+    depopulatedAssigned() {
+      return this.assigned.map(e => {
+        return e._id;
+      });
+    },
+    loaded() {
+      return Object.values(this.event).length > 0;
     },
 
-    formConfig() {
-      let formConfig = {
-        dates: [
-          {
-            component_type: "date-picker",
-            input_type: "date-time-range",
-            model: "dates",
-            label: "Timings",
-            start_placeholder: "Start datetime",
-            end_placeholder: "End datetime"
-          }
-        ],
-        event_type: [
-          {
-            component_type: "select",
-            options: this.clientInformation.event_groups,
-            model: "type",
-            label: "Label"
-          }
-        ]
-      };
-      return formConfig[this.updateKey];
+    isApproved() {
+      return this.event.created_by.user_group.is_admin;
+    },
+
+    currentUserIndex() {
+      return this.assigned.findIndex(x => {
+        return this.userInformation._id == x._id;
+      });
+    },
+
+    canReject() {
+      // Can reject is within the assigned to and can reject events
+      // Can also reject is the start date hasnt already
+      let canReject = this.userInformation.user_group.enable_event_rejection;
+      let assigned = this.currentUserIndex > -1;
+      let beforeStart = this.initMoment(new Date()).isBefore(this.event.start);
+
+      return canReject && assigned && beforeStart && !this.adminPermission;
     },
 
     enableUpdates() {
-      return {
-        dates: true,
-        event_type: true
-      };
+      return ["dates", "event_type"];
     },
     langXref() {
       return {
@@ -198,9 +221,6 @@ export default {
           },
           end: val => {
             return this.formatDate(val);
-          },
-          startTimeMinutes: val => {
-            return parseInt(val) / 60;
           }
         },
         event_type: {
@@ -238,42 +258,52 @@ export default {
       }
     }
   },
-  watch: {
-    event: {
-      deep: true,
-      handler(val) {
-        console.log(val);
-        this.displaySave = true;
-      }
-    }
-  },
+
   created() {
     this.initEvent();
   },
 
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "genApiNotification"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["UPDATE_EVENT"]),
+    async rejectEvent() {
+      try {
+        // api payload
+        let apiPayload = {
+          methods: "DELETE",
+          url: "events/user/delete",
+          data: { eventID: this.event._id, userID: this.userInformation._id }
+        };
+        // remove their name from the array
+        this.event.assigned_to.splice(this.currentUserIndex, 1);
+        // await this.request(apiPayload);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    updateKeyValue(key) {
+      if (this.enableUpdates.indexOf(key) > -1) {
+        if (this.updateKey == key) {
+          this.updateKey = "";
+        } else {
+          this.updateKey = key;
+        }
+      }
+    },
     updateDate(e) {
       this.event.start = e[0];
       this.event.end = e[1];
+      this.updateKey = "";
     },
     updateEventType(e) {
       let eventType = e.target.value;
       this.event.type = this.clientInformation.event_groups.find(x => {
         return x._id == eventType;
       });
+      this.updateKey = "";
     },
-    handlePopover(key) {
-      this.$set(this.popovers, key, true);
-      for (let property in this.popovers) {
-        if (property != key) {
-          this.$set(this.popovers, property, false);
-        }
-      }
-      this.updateKey = key;
-    },
+
     isAssigned(member) {
       return this.assigned.findIndex(x => {
         return x._id == member._id;
@@ -303,16 +333,17 @@ export default {
     },
     dropTeamMember(e, member) {
       e.preventDefault();
-
-      if (this.assigned.length - 1 > 0) {
-        let memberIndex = this.assigned.findIndex(x => {
-          return x._id == member._id;
-        });
-        if (memberIndex > -1) {
-          this.event.assigned_to.splice(memberIndex, 1);
+      if (this.adminPermission) {
+        if (this.assigned.length - 1 > 0) {
+          let memberIndex = this.assigned.findIndex(x => {
+            return x._id == member._id;
+          });
+          if (memberIndex > -1) {
+            this.event.assigned_to.splice(memberIndex, 1);
+          }
+        } else {
+          this.deleteEvent();
         }
-      } else {
-        this.deleteEvent();
       }
     },
     addTeamMember(member) {
@@ -325,7 +356,7 @@ export default {
       );
     },
     viewTeamMember(assignee) {
-      if (assignee._id != this.userInformation._id) {
+      if (assignee._id != this.userInformation._id && this.adminPermission) {
         this.display = false;
         this.$router.push({
           name: "team",
@@ -337,15 +368,45 @@ export default {
     },
     async updateEvent() {
       try {
-        // Update local event
-        let apiPayload = {
-          url: "events/update",
-          data: this.event,
-          method: "PUT"
-        };
+        // Send notififcation to new assignees
+        this.handleNewAssignees();
 
         this.UPDATE_EVENT(this.event);
-        await this.request(apiPayload);
+        // await this.request(this.updateApiPayload);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async handleNewAssignees() {
+      try {
+        let newAssignees = [];
+
+        // Find out who is new
+        let origAssigned = this.overlayIndex.viewEvent.payload.assigned_to;
+        // if they are not in the original assigned then they are new
+        for (let i = 0, len = this.assigned.length; i < len; i++) {
+          let assignee = this.assigned[i];
+          let assigneeID = assignee._id;
+
+          for (let j = 0, jlen = origAssigned.length; j < jlen; j++) {
+            let origAssignee = origAssigned[j];
+            let origAssigneeID = origAssignee._id;
+
+            if (origAssigneeID != assigneeID) {
+              newAssignees.push(assigneeID);
+            }
+          }
+        }
+        // Create notification for each person
+        if (newAssignees.length > 0) {
+          await this.genApiNotification({
+            payload: { event_id: this.event._id },
+            type: "event",
+            sent_from: this.userInformation._id,
+            for: newAssignees,
+            message: "You have been assigned to a new event"
+          });
+        }
       } catch (error) {
         console.error(error);
       }
@@ -357,7 +418,7 @@ export default {
 <style lang="scss" scoped>
 .view_event_container {
   overflow-x: hidden;
-  padding: 10px;
+  position: relative;
 }
 .avatar_container {
   display: flex;
@@ -380,13 +441,9 @@ export default {
   &:hover {
     background: rgba(var(--colour_secondary), 0.06);
     color: rgba(var(--colour_secondary), 1);
-    border-top: 1px solid rgba(var(--colour_secondary), 1);
   }
 }
-.save_container {
-  display: flex;
-  flex: 1;
-}
+
 .category_container {
   border: $border;
   margin: 10px;
@@ -400,6 +457,7 @@ export default {
 }
 .check_container {
   border-radius: 50%;
+  margin: 20px;
   border: $border;
   font-size: 2.3em;
   color: white;

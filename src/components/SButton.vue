@@ -122,20 +122,15 @@ $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
     &.active {
       border: 1px solid rgba(var(--colour_secondary), 0.8);
       color: rgba(var(--colour_secondary), 1);
-      background: rgba(var(--colour_secondary), 0.05);
+      background: rgba(var(--colour_secondary), 0.07);
+      &:hover {
+        border: 1px solid rgba(var(--colour_secondary), 1);
+        color: white;
+        background: rgba(var(--colour_secondary), 1);
+      }
     }
   }
-  &.flat {
-    background: rgba(200, 200, 200, 0.3);
-    color: rgb(150, 150, 150);
-    transition: $default_transition;
-    &:hover,
-    &.active {
-      transform: translateY(-5px);
-      background: rgb(230, 230, 230);
-      color: rgb(10, 10, 10);
-    }
-  }
+
   @each $key, $value in $sbutton_config {
     &.#{$key} {
       background: rgba($value, 1);
