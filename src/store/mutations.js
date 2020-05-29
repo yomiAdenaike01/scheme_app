@@ -29,10 +29,10 @@ export default {
   UPDATE_INTERVAL_DELAY(state, { interval, timing }) {
     state.globalIntervals[interval] = timing;
   },
-  UPDATE_OVERLAY_INDEX(state, payload) {
-    let _payload = payload.payload;
-    let { overlay, display } = overlay;
-    Vue.set(state.overlayIndex, overlay, { display, payload: _payload });
+  UPDATE_OVERLAY_INDEX(state, overlayData) {
+    let payload = overlayData.payload;
+    let { overlay, display } = overlayData;
+    Vue.set(state.overlayIndex, overlay, { display, payload });
   },
 
   CREATE_GLOBAL_INTERVAL(state, payload) {
@@ -189,16 +189,10 @@ export default {
       if (typeof notification.message == "object") {
         state.criticalNetworkError = true;
         state.errorInformation = notification.message;
-
-        // if (VueRouter.currentRoute.name != "error") {
-        //   VueRouter.push({ name: "error" });
-        // }
       }
     }
 
     if (document.visibilityState == "hidden") {
-      //  params:  // 'To do list', { body: text, icon: img }
-
       let desktopNotification = new Notification(notification.title, {
         icon: "",
         body: notification.message

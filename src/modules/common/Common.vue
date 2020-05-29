@@ -10,7 +10,7 @@
       @closeNotifications="closeNotifiactions"
     />
 
-    <ViewEventOverlay v-if="overlayIndex.viewEvent.view" />
+    <ViewEventOverlay v-if="overlayIndex.viewEvent.display" />
     <!-- System notifications -->
     <div class="notification_container">
       <slide-x-right-transition group>

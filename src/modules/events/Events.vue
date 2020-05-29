@@ -12,7 +12,6 @@
         :display="overlays.events"
         :params="params"
         @close="updateOverlays({ overlay: 'events', display: false })"
-        @changeView="updateView"
       />
     </div>
     <TeamSidebar />

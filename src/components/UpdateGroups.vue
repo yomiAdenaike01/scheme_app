@@ -140,7 +140,7 @@ export default {
         {
           component_type: "select",
           label: `Select ${this.langXref.label} group`,
-          required: true,
+
           options: this.groups,
           model: "groupID"
         }
@@ -220,7 +220,7 @@ export default {
             {
               component_type: "select",
               label: `Select ${this.langXref.label} group`,
-              required: true,
+
               options: this.groups,
               model: "groupID"
             }
