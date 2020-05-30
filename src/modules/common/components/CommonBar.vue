@@ -12,7 +12,7 @@
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-popover v-model="popup" trigger="click" width="300">
+      <el-popover v-model="popup" trigger="click" width="400">
         <Notifications />
         <div slot="reference" class="button_container">
           <s-button class="small only_icon rounded" icon="bell"></s-button>

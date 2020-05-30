@@ -25,10 +25,8 @@ export default {
   networkError: false,
   viewMobileMenu: false,
 
-  overlayHistory: {},
   overlayIndex: {
-    viewEvent: { view: false, data: {} },
-    eventModule: { view: false, data: {} }
+    viewEvent: { view: false, payload: {} }
   },
   iconXref: {
     success: "bx-check-circle",
@@ -37,7 +35,7 @@ export default {
     annoucement: "bx-user-voice",
     info: "bx-mail-send",
     message: "bxl-discourse",
-    request: "bx-question-mark",
+    request: "bx-error-alt",
     event: "bx-calendar"
   },
   colours: [

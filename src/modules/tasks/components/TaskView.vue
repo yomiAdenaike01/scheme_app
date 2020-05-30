@@ -615,6 +615,8 @@ export default {
         });
 
         let res = await this.request(taskPayload);
+        // Notify users of the new task
+
         this.loading = "";
         this.selectedItem = "";
 
@@ -652,6 +654,7 @@ export default {
     deadlineNavigation() {
       this.assignedToEvent = !this.assignedToEvent;
     },
+
     loadTask() {
       let task = {
         _id: this.genID(),

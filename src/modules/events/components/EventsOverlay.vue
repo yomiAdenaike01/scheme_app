@@ -311,7 +311,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
+    ...mapActions(["request", "genPromptBox", "notify"]),
     ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
     ...mapMutations("Events", [
       "CREATE_EVENT",
@@ -326,6 +326,10 @@ export default {
       "CREATE_REQUEST",
       "UPDATE_REQUEST"
     ]),
+
+    closeOverlay() {
+      this.view = false;
+    },
 
     populateForm(data) {
       if (!this.populated) {
@@ -355,6 +359,20 @@ export default {
         this.populated = true;
       }
     },
+    // Create notification for assigned users
+    async handleNotify() {
+      try {
+        this.notify({
+          for: this.formData.assigned_to,
+          message: `You have been assigned to a ${this.localData.type.label} event`,
+          payload: { event_id: this.newEventID },
+          sent_from: this.userInformation._id,
+          type: "event"
+        });
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
     async createEvent() {
       try {
         let apiPayload = Object.assign(
@@ -371,10 +389,14 @@ export default {
 
         let apiResponse = await this.request(apiPayload);
 
+        // Create the qr code the event
         if (apiResponse) {
           this.newEventID = apiResponse._id;
           this.UPDATE_EVENT({ payload: apiResponse });
         }
+        // Create notification for the assignees
+        this.handleNotify();
+        // Create template
         await this.createTemplate(localPayload, apiPayload);
       } catch (e) {
         this.DELETE_EVENT();
@@ -449,19 +471,19 @@ export default {
         let { request, mutation } = this.requestPayload;
         // Create local request
 
-        this.CREATE_EVENT_REQUEST(mutation);
+        this.CREATE_REQUEST(mutation);
 
         // Create api request
         let apiRequstPayload = {
           data: request,
-          url: "events/requests/create",
+          url: "requests/create",
           method: "POST"
         };
         let apiResponse = await this.request(apiRequstPayload);
 
         if (apiResponse) {
-          this.UPDATE_EVENT_REQUEST({
-            index: this.eventRequests.length - 1,
+          this.UPDATE_REQUEST({
+            index: this.requests.length - 1,
             ...apiResponse
           });
         }
@@ -476,16 +498,18 @@ export default {
               body: () => {
                 // Close overlay and go to requests with params
                 this.$emit("close");
-                this.$emit("changeView", {
-                  view: "requests",
-                  teamMember: this.userInformation
+                this.$router.push({
+                  name: "requests",
+                  params: {
+                    request_id: apiResponse._id
+                  }
                 });
               }
             }
           ]
         });
       } catch (error) {
-        this.DELETE_EVENT_REQUEST();
+        this.DELETE_REQUEST();
         console.error(error);
       }
     },
@@ -493,8 +517,10 @@ export default {
       try {
         if (this.adminPermission) {
           await this.createEvent();
+          this.closeOverlay();
         } else {
           await this.createRequest();
+          this.closeOverlay();
         }
       } catch (error) {
         return Promise.reject(error);

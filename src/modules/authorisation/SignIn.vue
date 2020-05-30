@@ -135,19 +135,9 @@ export default {
     }
   },
 
-  activated() {
-    if (this.hasEntries(this.$route.params)) {
-      this.login(this.$route.params);
-    }
-  },
-
   methods: {
-    ...mapActions(["request", "getClient"]),
-    ...mapMutations([
-      "UPDATE_USER",
-      "UPDATE_USER_SESSION",
-      "CREATE_SYSTEM_NOTIFICATION"
-    ]),
+    ...mapActions(["request"]),
+    ...mapMutations(["UPDATE_USER", "UPDATE_USER_SESSION"]),
     changeForm() {
       if (this.selectedForm == "login") {
         this.selectedForm = "forgotPassword";
@@ -172,17 +162,18 @@ export default {
       }
     },
 
-    resetPassword() {
+    async resetPassword() {
       // Validate the input;
-
-      let equalPasswords =
-        this.credentials?.fp_password?.toLowerCase()?.trim() ===
-        this.credentials?.fp_reentered_password?.toLowerCase()?.trim();
-      if (!equalPasswords) {
-        this.errorMessage =
-          "Error processing reset password, please enter your desired password again";
-      } else {
-        this.request({
+      try {
+        let equalPasswords =
+          this.credentials?.fp_password?.toLowerCase()?.trim() ===
+          this.credentials?.fp_reentered_password?.toLowerCase()?.trim();
+        if (!equalPasswords) {
+          this.errorMessage =
+            "Error processing reset password, please enter your desired password again";
+        }
+        // api payload
+        let apiPayload = {
           method: "POST",
           url: "users/password",
           data: {
@@ -190,70 +181,62 @@ export default {
             email: this.credentials.fp_email,
             password: this.credentials.fp_password
           }
-        })
-          .then(() => {
-            this.selectedForm = "login";
-            this.response = {
-              type: "success",
-              message:
-                "Password successfully reset. Go to login to test your new password."
-            };
-          })
-          .catch(err => {
-            this.response = {
-              type: "error",
-              message: err
-            };
-          });
+        };
+        let response = await this.request(apiPayload);
+        if (response) {
+          this.selectedForm = "login";
+          this.handleSuccess(
+            "Password successfully reset. Go to login to test your new password."
+          );
+        }
+      } catch (error) {
+        this.handleError(error);
       }
     },
     /**
      *
      */
-    login() {
-      const goToEvents = () => {
+    async login() {
+      try {
+        this.loading = true;
+        // Empty response for errors
+        this.response = {};
+        let data = Object.assign(this.credentials, {
+          client_id: this.clientInformation._id
+        });
+        // api payload
+        let apiPayload = {
+          method: "POST",
+          url: "users/login",
+          disableNotifications: true,
+          data
+        };
+        // Login request
+        let response = await this.request(apiPayload);
+
+        if (this.failedCount > 0) {
+          this.failedCount = 0;
+        }
+        // Update user session
+        this.UPDATE_USER(response.user);
+        this.UPDATE_USER_SESSION(response.token);
+
         if (this.$route.name != "events") {
           this.$router.push({
             name: "events"
           });
         }
-      };
-      this.loading = true;
-      this.response = {};
-      this.request({
-        method: "POST",
-        disableNotifications: true,
-        data: {
-          client_id: this.clientInformation._id,
-          ...this.credentials
-        },
-        url: "/users/login"
-      })
-        .then(response => {
-          if (this.failedCount > 0) {
-            this.failedCount = 0;
-          }
-          this.UPDATE_USER(response.user);
-          this.UPDATE_USER_SESSION(response.token);
-
-          if (response.user.admin_gen == true) {
-            this.CREATE_SYSTEM_NOTIFICATION({
-              title: "Insecure password detected",
-              message:
-                "Use the forgot password functionality to reset you password."
-            });
-
-            goToEvents();
-          }
-          goToEvents();
-
-          this.loading = false;
-        })
-        .catch(err => {
-          this.response = { message: err, type: "error" };
-          this.failedCount++;
-          this.loading = false;
-        });
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+    handleSuccess(success) {
+      this.response = { message: success, type: "success" };
+    },
+    handleError(error) {
+      this.response = { message: error, type: "error" };
+      this.failedCount++;
+      this.loading = false;
     }
   },
   watch: {
@@ -261,10 +244,9 @@ export default {
       if (val >= 3) {
         this.selectedForm = "forgotPassword";
         this.failedCount = 0;
-        this.response = {
-          type: "error",
-          message: "You have failed to login, you can reset your password."
-        };
+        this.handleError(
+          "You have failed to login, you can reset your password."
+        );
       }
     }
   }

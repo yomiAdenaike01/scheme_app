@@ -27,23 +27,29 @@
                 ]"
                 @click="handleNotification($event, notification, index)"
               >
-                <i :class="`bx ${iconXref[notification.type]} action_icon`"></i>
-                <div class="notification_body_container">
-                  <p>{{ notification.message }}</p>
-                  <small class="grey">{{
-                    initMoment(notification.date_created).calendar()
-                  }}</small>
+                <!-- Close icon -->
+                <i
+                  class="bx bx-x trigger close_icon grey"
+                  @click="deleteNotification($event, notification._id, index)"
+                ></i>
+                <!-- Notification body -->
+                <div class="notification_body">
                   <i
-                    class="bx bx-x trigger close_icon grey"
-                    @click="deleteNotification(notification._id, index)"
+                    :class="`bx ${iconXref[notification.type]} action_icon`"
                   ></i>
-                </div>
+                  <div class="notification_body_container">
+                    <p>{{ notification.message }}</p>
+                    <small class="grey">{{
+                      initMoment(notification.date_created).calendar()
+                    }}</small>
+                  </div>
 
-                <small
-                  v-if="notification.status == 'read'"
-                  class="read_container"
-                  >Read</small
-                >
+                  <small
+                    v-if="notification.status == 'read'"
+                    class="read_container"
+                    >Read</small
+                  >
+                </div>
               </div>
             </slide-x-left-transition>
           </div>
@@ -125,9 +131,13 @@ export default {
     ...mapMutations([
       "UPDATE_OVERLAY_INDEX",
       "DELETE_API_NOTIFICATION",
-      "UPDATE_API_NOTIFICATION"
+      "UPDATE_API_NOTIFICATION",
+      "CREATE_SYSTEM_NOTIFICATION",
+      "DELETE_ALL_API_NOTIFICATIONS"
     ]),
-    handleDelete() {
+    handleDelete(e) {
+      e.stopPropagation();
+
       if (this.displayRead) {
         this.deleteAll();
       } else {
@@ -164,9 +174,7 @@ export default {
           url: "notifications/delete/all"
         };
 
-        this.deleteLocalNotifications(notification => {
-          return notification?.type;
-        });
+        this.DELETE_ALL_API_NOTIFICATIONS();
 
         await this.request(apiPayload);
       } catch (error) {
@@ -201,11 +209,19 @@ export default {
       let eventPayload = this.events.find(x => {
         return x._id == notification.payload.event_id;
       });
-      this.UPDATE_OVERLAY_INDEX({
-        overlay: "viewEvent",
-        display: true,
-        payload: eventPayload
-      });
+      if (eventPayload) {
+        this.UPDATE_OVERLAY_INDEX({
+          overlay: "viewEvent",
+          display: true,
+          payload: eventPayload
+        });
+      } else {
+        this.CREATE_SYSTEM_NOTIFICATION({
+          title: "Event not found",
+          message:
+            "Your requested event could not be found. It may have been deleted"
+        });
+      }
     },
     handleNotification(e, notification, index) {
       e.stopPropagation();
@@ -251,8 +267,9 @@ export default {
         this.UPDATE_API_NOTIFICATION(this.notificationRef);
       }
     },
-    async deleteNotification(_id, index) {
+    async deleteNotification(e, _id, index) {
       try {
+        e.stopPropagation();
         this.DELETE_API_NOTIFICATION(index);
         let apiPayload = {
           method: "DELETE",
@@ -293,30 +310,25 @@ export default {
   padding: 14px;
   opacity: 0.8;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   position: relative;
+  white-space: nowrap;
   p {
     margin: 0;
   }
 
-  @each $key, $value in $notification_ref {
-    &.#{$key} {
-      border-left: 3px solid rgba($value, 1);
-      .action_icon {
-        color: rgba($value, 1);
-        margin-right: 20px;
-        font-size: 1.7em;
-      }
-    }
-  }
+  @include notificationLoop;
   &:hover {
     opacity: 1;
   }
 }
+.notification_body {
+  display: flex;
+  align-items: center;
+}
 .close_icon {
-  position: absolute;
-  right: 10px;
-  top: 10px;
+  display: flex;
+  align-self: flex-end;
   font-size: 1.3em;
 }
 .mark_all_wrapper {
@@ -351,10 +363,6 @@ export default {
   white-space: nowrap;
 }
 .delete_notifications_controller {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background: rgb(252, 252, 252);
   padding: 10px;
   text-transform: capitalize;

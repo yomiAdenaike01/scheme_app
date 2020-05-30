@@ -98,7 +98,6 @@
       >
         <div
           v-if="selectedUserActivity.length > 0"
-          v-loading="loading"
           class="activity_subcontainer"
         >
           <div class="title_bar">
@@ -170,7 +169,7 @@ export default {
       selectedTeamMemberIndex: 0,
       selectedUserActivity: [],
       loading: false,
-      activityLoading: false,
+      activityLoading: true,
       filters: {
         userGroup: ""
       }
@@ -561,7 +560,6 @@ export default {
     },
     async getAuditLog() {
       try {
-        this.activityLoading = true;
         this.selectedUserActivity = await this.request({
           method: "GET",
           url: "services/logs",

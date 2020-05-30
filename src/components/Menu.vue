@@ -140,7 +140,7 @@ export default {
         },
         {
           name: "requests",
-          icon: "bx bxs-dashboard"
+          icon: "bx bx-error-alt"
         },
         {
           name: "tasks",

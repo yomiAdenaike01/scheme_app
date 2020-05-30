@@ -47,23 +47,29 @@ export default {
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
       id: "client",
-      method: () => {
-        return new Promise((resolve, reject) => {
+      method: async () => {
+        try {
           this.identifyClient()
-            .then(resolve)
-            .catch(reject);
-        });
+            .then(() => {
+              return Promise.resolve();
+            })
+            .catch(() => {
+              return Promise.reject();
+            });
+        } catch (error) {
+          return Promise.reject(error);
+        }
       },
       duration: this.globalIntervals.client
     });
   },
 
-  destroyed() {
-    this.destroyApplication();
+  beforeDestroy() {
+    this.logOut();
   },
 
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
+    ...mapActions(["request", "genPromptBox", "logOut"]),
     ...mapMutations([
       "DELETE_USER_SESSION",
       "CREATE_GLOBAL_INTERVAL",
@@ -72,6 +78,7 @@ export default {
       "CLEAR_NOTIFICATIONS"
     ]),
     destroyApplication() {
+      this.DELETE_GLOBAL_INTERVAL("client");
       this.DELETE_GLOBAL_INTERVAL();
       this.DELETE_USER_SESSION();
     },
@@ -88,6 +95,7 @@ export default {
 
         this.UPDATE_CLIENT_INFORMATION(apiResponse);
         this.loading = false;
+
         return Promise.resolve();
       } catch (error) {
         let { value } = await this.genPromptBox({

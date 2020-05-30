@@ -1,6 +1,13 @@
 import axios from "axios";
 import Vue from "vue";
 import router from "./../router";
+import generateID from "@/mixins/genID";
+import axiosCancel from "axios-cancel";
+
+axiosCancel(axios, {
+  debug: false
+});
+
 if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:7070/v1/";
 } else {
@@ -14,6 +21,7 @@ const sortPayload = ({ state, getters }, payload) => {
       authorisation: token,
       version: getters.getCurrentVersion
     };
+    payload.requestID = generateID.methods.genID();
   }
   return payload;
 };
@@ -22,6 +30,7 @@ const exitApplication = (context, networkError = false, logout = false) => {
   context.commit("DELETE_GLOBAL_INTERVAL");
   if (networkError) {
     context.commit("UPDATE_NETWORK_ERROR", true);
+    axios.cancelAll();
   }
   if (logout && context.state.userInformation?._id) {
     context.dispatch("logOut");
@@ -41,6 +50,7 @@ export default {
     context.commit("DELETE_USER_SESSION");
     context.commit("DELETE_GLOBAL_INTERVAL");
     context.commit("UPDATE_STOP_NOTIFICATIONS", true);
+    axios.cancelAll();
   },
   /**
    *
@@ -66,8 +76,10 @@ export default {
     });
   },
 
-  async genApiNotification(context, notificationContent) {
+  async notify(context, notificationContent) {
     try {
+      notificationContent.sent_from = context.state.userInformation._id;
+
       let response = await context.dispatch("request", {
         method: "POST",
         url: "extensions/notification",
@@ -110,20 +122,21 @@ export default {
         });
     });
   },
-  request(context, payload) {
+  async request(context, payload) {
     payload = sortPayload(context, payload);
 
     let enableNotifications = true;
 
-    if (
+    let disableNotificationCondition =
       payload?.disableNotification ||
       context.state.networkError ||
-      context.state.stopNotifications
-    ) {
+      context.state.stopNotifications;
+
+    if (disableNotificationCondition) {
       enableNotifications = false;
     }
 
-    const handleError = error => {
+    const handleError = async error => {
       const status = error?.request?.status;
 
       // Web token error
@@ -141,29 +154,29 @@ export default {
         });
       }
       // exitApplication(context, true);
+      return Promise.reject(error);
     };
-    return new Promise((resolve, reject) => {
-      axios(payload)
-        .then(response => {
-          response = response.data;
-          if (response?.success) {
-            if (typeof response.content == "string" && enableNotifications) {
-              context.commit("CREATE_SYSTEM_NOTIFICATION", {
-                message: response.content,
-                type: "success"
-              });
-            }
-            resolve(response.content);
-          }
-          if (response?.error) {
-            handleError(response.content);
-            reject(response.content);
-          }
-        })
-        .catch(error => {
-          handleError(error);
-          reject(error);
-        });
-    });
+    try {
+      let response = await axios(payload);
+      response = response.data;
+
+      if (response?.success) {
+        if (typeof response.content == "string" && enableNotifications) {
+          context.commit("CREATE_SYSTEM_NOTIFICATION", {
+            message: response.content,
+            type: "success"
+          });
+        }
+
+        return Promise.resolve(response.content);
+      }
+
+      if (response?.error) {
+        handleError(response.content);
+        return Promise.reject(response.content);
+      }
+    } catch (error) {
+      handleError(error);
+    }
   }
 };

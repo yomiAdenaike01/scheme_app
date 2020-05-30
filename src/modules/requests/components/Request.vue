@@ -1,8 +1,8 @@
 <template>
   <!-- CHANGE TO FUNCTIONAL -->
   <div
-    :class="[`request trigger`, { active: selected._id == request._id }]"
-    @click="$emit('setRequest', { request, index })"
+    :class="[`request trigger`, { active: selected == request._id }]"
+    @click="$emit('setRequest', request)"
   >
     <!-- Dates -->
     <div class="dates_container">
@@ -34,8 +34,8 @@ export default {
   name: "Request",
   props: {
     selected: {
-      type: Object,
-      default: () => {}
+      type: String,
+      default: ""
     },
     index: {
       type: Number,

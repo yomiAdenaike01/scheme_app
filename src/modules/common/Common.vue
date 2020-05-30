@@ -119,32 +119,6 @@ export default {
       return tasksDueToday;
     }
   },
-  watch: {
-    apiNotifications(newVal, oldVal) {
-      if (newVal.length > oldVal.length) {
-        // Display the first notification that is read
-        let firstNotification = newVal.find(notification => {
-          return notification.status == "unread";
-        });
-
-        if (firstNotification) {
-          this.CREATE_SYSTEM_NOTIFICATION({
-            message: firstNotification.message,
-            title: firstNotification.type,
-            type: firstNotification.type,
-            methods: [
-              {
-                label: "Open notifications",
-                body() {
-                  this.openNotifications = true;
-                }
-              }
-            ]
-          });
-        }
-      }
-    }
-  },
 
   activated() {
     this.CREATE_GLOBAL_INTERVAL({
@@ -346,14 +320,7 @@ export default {
   width: 450px;
   border-radius: 5px;
   overflow: hidden;
-  @each $key, $value in $notification_ref {
-    &.#{$key} {
-      border-left: 3px solid rgba($value, 1);
-      .icon_container {
-        color: rgba($value, 1);
-      }
-    }
-  }
+  @include notificationLoop;
 }
 .notification .body_container {
   display: flex;

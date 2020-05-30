@@ -1,12 +1,24 @@
 <template>
   <Overlay v-model="display">
     <div class="view_event_container">
-      <!-- Title -->
+      <!-- Approval -->
       <div class="text_container all_centre">
         <div v-if="isApproved" class="check_container">
           <i class="bx bx-check"></i>
         </div>
+        <!-- Title -->
         <h2>{{ event.type.label }}</h2>
+      </div>
+      <!-- Qr code -->
+      <div v-if="beforeStart" class="qr_container text_container all_centre">
+        <small class="grey">Scan with our companion app to clock in</small>
+        <qrcode-vue :value="event._id" level="H"></qrcode-vue>
+        <s-button
+          icon="printer"
+          class="mini rounded primary"
+          @click="printQRCode"
+          >Print QR code</s-button
+        >
       </div>
       <!-- Assigned_to -->
       <div v-if="adminPermission" class="text_container all_centre">
@@ -126,8 +138,8 @@
         <p>Reject</p>
       </s-button>
       <s-button
-        v-if="adminPermission && !eventStarted"
-        class="tertiary expanded"
+        v-if="adminPermission && beforeStart"
+        class="primary expanded"
         @click="deleteEvent"
       >
         <p>Delete</p>
@@ -142,13 +154,16 @@ import Overlay from "@/components/Overlay";
 import Avatar from "@/components/Avatar";
 import SButton from "@/components/SButton";
 import Form from "@/components/Form";
+import QrcodeVue from "qrcode.vue";
+
 export default {
   name: "ViewEventOverlay",
   components: {
     Overlay,
     Avatar,
     SButton,
-    Form
+    Form,
+    QrcodeVue
   },
   data() {
     return {
@@ -166,7 +181,7 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-    eventStarted() {
+    beforeStart() {
       return this.initMoment(new Date()).isBefore(this.event.start);
     },
     updateApiPayload() {
@@ -207,9 +222,8 @@ export default {
       // Can also reject is the start date hasnt already
       let canReject = this.userInformation.user_group.enable_event_rejection;
       let assigned = this.currentUserIndex > -1;
-      let beforeStart = !this.eventStarted;
 
-      return canReject && assigned && beforeStart && !this.adminPermission;
+      return canReject && assigned && this.beforeStart && !this.adminPermission;
     },
 
     enableUpdates() {
@@ -272,7 +286,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request", "genApiNotification"]),
+    ...mapActions(["request", "notify"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["UPDATE_EVENT", "DELETE_EVENT"]),
     async rejectEvent() {
@@ -281,11 +295,20 @@ export default {
         let apiPayload = {
           methods: "DELETE",
           url: "events/user/delete",
-          data: { eventID: this.event._id, userID: this.userInformation._id }
+          data: { event_id: this.event._id, user_id: this.userInformation._id }
         };
         // remove their name from the array
         this.event.assigned_to.splice(this.currentUserIndex, 1);
-        // await this.request(apiPayload);
+
+        // notify the admin who created that you have rejected it
+        const rejectMessage = `${this.userInformation.name} has rejected a ${this.event.type.label} event`;
+        const forUsers = [this.event.created_by._id];
+
+        this.createNotification(rejectMessage, forUsers);
+
+        // Remove user from the assigned to
+        this.event.assigned_to.splice(this.currentUserIndex, 1);
+        await this.request(apiPayload);
       } catch (error) {
         console.error(error);
       }
@@ -332,9 +355,17 @@ export default {
 
           let apiPayload = {
             url: "events/delete",
-            data: { _id: this.event._id },
+            data: { event_id: this.event._id },
             method: "DELETE"
           };
+          let notificationMessage = `
+          A ${this.event.type.label} event has been deleted
+          `;
+
+          this.createNotification(
+            notificationMessage,
+            this.depopulatedAssigned
+          );
 
           await this.request(apiPayload);
           this.closeOverlay();
@@ -351,6 +382,7 @@ export default {
             return x._id == member._id;
           });
           if (memberIndex > -1) {
+            // mark as deleted
             this.event.assigned_to.splice(memberIndex, 1);
           }
         } else {
@@ -379,6 +411,9 @@ export default {
         });
       }
     },
+    printQRCode() {
+      window.print();
+    },
     async updateEvent() {
       try {
         // Send notififcation to new assignees
@@ -388,6 +423,19 @@ export default {
         // await this.request(this.updateApiPayload);
       } catch (error) {
         console.error(error);
+      }
+    },
+    async createNotification(message, forUsers) {
+      try {
+        await this.notify({
+          payload: { event_id: this.event._id },
+          type: "event",
+          for: forUsers,
+          message
+        });
+        return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
       }
     },
     async handleNewAssignees() {
@@ -412,13 +460,10 @@ export default {
         }
         // Create notification for each person
         if (newAssignees.length > 0) {
-          await this.genApiNotification({
-            payload: { event_id: this.event._id },
-            type: "event",
-            sent_from: this.userInformation._id,
-            for: newAssignees,
-            message: "You have been assigned to a new event"
-          });
+          await this.createNotification(
+            "You have been assigned to a new event",
+            newAssignees
+          );
         }
       } catch (error) {
         console.error(error);
@@ -448,7 +493,9 @@ export default {
   text-align: center;
   margin-top: 20px;
 }
-
+.qr_container > * {
+  margin: 20px 0;
+}
 .category_container {
   border: $border;
   margin: 10px;

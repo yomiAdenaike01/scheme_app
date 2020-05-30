@@ -27,6 +27,23 @@ $app_bar_height:64px;
   }
 }
 
+@mixin notificationLoop {
+  @each $key, $value in $notification_ref {
+    &.#{$key} {
+      border-left: 3px solid rgba($value, 1);
+      .action_icon {
+        color: rgba($value, 1);
+        margin-right: 20px;
+        font-size: 1.7em;
+      }
+      .icon_container{
+    color: rgba($value, 1);
+
+      }
+    }
+  }
+}
+
 $notification_ref: (
   message: var(--colour_secondary),
   request: var(--purple),

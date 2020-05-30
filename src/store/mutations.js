@@ -10,9 +10,10 @@ const deleteStateInterval = (state, intervalID) => {
 
   if (!intervalID) {
     for (let property in state.runningIntervals) {
-      clearTimeout(state.runningIntervals[property]);
-
-      deleteInterval(property);
+      if (property != "client") {
+        clearTimeout(state.runningIntervals[property]);
+        deleteInterval(property);
+      }
     }
   } else {
     clearTimeout(state.runningIntervals[intervalID]);
@@ -96,34 +97,22 @@ export default {
   },
 
   DELETE_API_NOTIFICATION(state, index) {
-    index = index ? index : state.apiNotifications.length - 1;
-
-    updateBreadCrumbs(state, {
-      index,
-      notification: state.apiNotifications[index]
-    });
+    console.log(index);
     Vue.delete(state.apiNotifications, index);
   },
 
   UPDATE_API_NOTIFICATIONS(state, payload) {
     state.apiNotifications = payload;
   },
-
+  DELETE_ALL_API_NOTIFICATIONS(state) {
+    state.apiNotifications = [];
+  },
   UPDATE_API_NOTIFICATION(state, { index, update }) {
-    let notification = state.apiNotifications[index];
-
-    updateBreadCrumbs(state, {
-      index,
-      update: notification
-    });
-
     for (let property in update) {
-      Vue.set(notification, property, update[property]);
+      Vue.set(state.apiNotifications[index], property, update[property]);
     }
   },
-  UPDATE_STOP_NOTIFICATIONS(state, payload) {
-    state.stopNotifications = payload;
-  },
+
   UPDATE_SYSTEM_NOTIFICATIONS(state, payload) {
     for (let i = 0, len = payload.length; i < len; i++) {
       let payloadNotification = payload[i];

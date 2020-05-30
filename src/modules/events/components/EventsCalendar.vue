@@ -106,7 +106,6 @@ export default {
             content,
             start: this.formatDate(event?.start_date, dateFormat),
             end: this.formatDate(event?.end_date, dateFormat),
-            class: eventClass,
             is_approved: event?.is_approved,
             assigned_to: event?.assigned_to,
             type: event?.type,
@@ -166,12 +165,11 @@ export default {
     }
 
     .vuecal__event {
-      background: #ecf5ff;
-      border-top: 2px solid $element_colour;
-      border-right: 2px solid white;
-      color: $element_colour;
-      font-size: 0.8em;
-      padding: 1em;
+      background: rgba(var(--colour_secondary), 0.1);
+      border-top: 2px solid rgba(var(--colour_secondary), 1);
+      border-right: none;
+      border-left: none;
+      padding: 1em 0;
       text-transform: capitalize;
 
       &.alone {
