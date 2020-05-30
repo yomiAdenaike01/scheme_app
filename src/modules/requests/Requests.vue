@@ -467,39 +467,44 @@ export default {
 
     async updateRequest(update) {
       try {
-        // Check if clicked approve
+        const handleUpdate = async () => {
+          this.UPDATE_REQUEST({
+            update,
+            index: this.requestIndex
+          });
+
+          //  API request
+          update.message = this.updateMessageXref(update);
+
+          const apiPayload = {
+            method: "PUT",
+            url: "requests/update",
+            data: {
+              _id: this.requestID,
+              requested_by: this.selectedRequest.requested_by._id,
+              update,
+              assigned_to: this.leanAssignedTo
+            }
+          };
+          await this.request(apiPayload);
+          // Notify
+          this.notify({
+            for: [this.selectedRequest.requested_by._id],
+            message: `Your ${this.selectedRequest.type.label} request has been ${update.status}`,
+            payload: {
+              request_id: this.requestID
+            },
+            type: "request"
+          });
+        };
+
+        // handle approve
         if (update?.status == "approved" && this.adminPermission) {
           this.handleApprove();
+          handleUpdate();
+        } else {
+          handleUpdate();
         }
-
-        this.UPDATE_REQUEST({
-          update,
-          index: this.requestIndex
-        });
-        // Notify
-        this.notify({
-          for: [this.selectedRequest.requested_by._id],
-          message: `Your ${this.selectedRequest.type.label} request has been ${update.status}`,
-          payload: {
-            request_id: this.requestID
-          },
-          type: "request"
-        });
-
-        //  API request
-        update.message = this.updateMessageXref(update);
-
-        const apiPayload = {
-          method: "PUT",
-          url: "requests/update",
-          data: {
-            _id: this.requestID,
-            requested_by: this.selectedRequest.requested_by._id,
-            update,
-            assigned_to: this.leanAssignedTo
-          }
-        };
-        await this.request(apiPayload);
       } catch (error) {
         return Promise.reject(error);
       }
