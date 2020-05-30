@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import VuexReset from "@ianwalter/vuex-reset";
 
 import state from "./state";
 import actions from "./actions";
@@ -8,16 +9,18 @@ import mutations from "./mutations";
 
 import Events from "./events";
 import Tasks from "./tasks";
-import Comms from "./messenger";
+import Comms from "./comms";
 import Team from "./team";
+import Requests from "./requests";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  plugins: [VuexReset({ trigger: "DELETE_USER_SESSION" })],
+
   state,
   mutations,
   actions,
   getters,
-
-  modules: { Comms, Events, Tasks, Team }
+  modules: { Comms, Events, Tasks, Team, Requests }
 });

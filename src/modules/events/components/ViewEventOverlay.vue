@@ -1,621 +1,537 @@
 <template>
-  <Overlay display @close="deactivateOverlay">
-    <Menu
-      mode="contextmenu"
-      :display-menu="displayMenu"
-      :menu-items="menuItems"
-      @close="displayMenu = false"
-    />
+  <Overlay v-model="display">
     <div class="view_event_container">
-      <div class="info_button_container">
-        <s-button class="rounded secondary" icon="check">{{
-          approvalButtonConfig.content
-        }}</s-button>
-
+      <!-- Approval -->
+      <div class="text_container all_centre">
+        <div v-if="isApproved" class="check_container">
+          <i class="bx bx-check"></i>
+        </div>
+        <!-- Title -->
+        <h2>{{ event.type.label }}</h2>
+      </div>
+      <!-- Qr code -->
+      <div v-if="beforeStart" class="qr_container text_container all_centre">
+        <small class="grey">Scan with our companion app to clock in</small>
+        <qrcode-vue :value="event._id" level="H"></qrcode-vue>
         <s-button
-          v-if="hasPermissions"
-          class="rounded tertiary"
-          icon="x"
-          @click="deleteEvent('Are you sure you want to delete this event ? ')"
-          >Delete Event</s-button
+          icon="printer"
+          class="mini rounded primary"
+          @click="printQRCode"
+          >Print QR code</s-button
         >
       </div>
-      <!-- Required actions -->
+      <!-- Assigned_to -->
+      <div v-if="adminPermission" class="text_container all_centre">
+        <small class="grey">Right click on team member to remove.</small>
+      </div>
 
-      <div
-        v-if="userInformation.user_group.enable_event_rejection"
-        class="view_dialog_information_container"
+      <div v-if="assigned.length > 0" class="avatar_container">
+        <Avatar
+          v-for="assignee in assigned"
+          :key="assignee._id"
+          :name="assignee.name"
+          :size="70"
+          group
+          @click.native="viewTeamMember(assignee)"
+          @contextmenu.native="dropTeamMember($event, assignee)"
+        />
+      </div>
+      <!-- If no assignees -->
+      <p v-else class="grey text_container all_centre">
+        No team members assigned
+      </p>
+      <!-- Create new assignee -->
+      <el-popover
+        v-if="adminPermission"
+        v-model="displayPopover"
+        trigger="click"
+        placement="bottom"
       >
-        <h3>Actions</h3>
-        <!-- Reject event -->
-        <div class="info_unit">
-          <s-button
-            :class="{ disabled: noticePeriodExceeded }"
-            class="flat rounded"
-            @click="rejectEvent"
-            >Reject event</s-button
+        <div slot="reference" class="add_team_member trigger grey">
+          <span><i class="bx bx-plus"></i> Add team member to event</span>
+        </div>
+        <div
+          v-for="member in getFilteredTeam"
+          :key="member._id"
+          class="popover_item"
+          :class="{ disabled: isAssigned(member) > -1 }"
+          @click="addTeamMember(member)"
+        >
+          <span>{{ member.name }}</span>
+        </div>
+      </el-popover>
+      <!-- Information -->
+      <div class="categories">
+        <div
+          v-for="(value, key) in informationXref"
+          :key="
+            Math.random()
+              .toString(16)
+              .slice(2)
+          "
+          class="category_container"
+        >
+          <span class="capitalize grey">{{ makePretty(key) }}</span>
+          <p
+            v-for="(method, eventKey) in value"
+            :key="eventKey"
+            class="capitalize"
           >
-        </div>
-      </div>
-
-      <div class="view_dialog_information_container">
-        <!-- Assigned users -->
-
-        <h3>Assigned users</h3>
-
-        <div class="info_unit avatar_wrapper">
-          <div v-if="assignedTo.length > 0" class="assigned_users_container">
-            <div v-for="(member, index) in assignedTo" ref="user" :key="index">
-              <Avatar
-                ref="avatar"
-                :size="70"
-                class="assigned_user"
-                :name="member.name"
-                :group="assignedTo.length > 1"
-                @contextmenu.native="alterDisplayMenu(member)"
-              >
-              </Avatar>
-            </div>
-          </div>
-
-          <p v-else>There are no users assigned to this event.</p>
-
-          <div v-if="canAddMoreUsers" class="add_new_user trigger">
-            <el-popover trigger="click">
-              <div
-                v-for="option in getFilteredTeam"
+            {{ langXref[eventKey] ? langXref[eventKey] : makePretty(eventKey) }}
+            :
+            {{ method(event[eventKey]) }}
+          </p>
+          <s-button
+            v-if="enableUpdates.indexOf(key) > -1 && adminPermission"
+            class="plain rounded active"
+            @click="updateKeyValue(key)"
+            >update {{ makePretty(key) }}</s-button
+          >
+          <div
+            v-if="
+              adminPermission &&
+                updateKey == key &&
+                enableUpdates.indexOf(key) > -1
+            "
+            class="form_wrapper"
+          >
+            <h5>Update information</h5>
+            <!-- Update event type -->
+            <select
+              v-if="updateKey == 'event_type'"
+              class="s_input"
+              :value="event.type._id"
+              @input="updateEventType"
+            >
+              <option
+                v-for="option in clientInformation.event_groups"
                 :key="option._id"
-                class="users_container trigger"
-                :class="{
-                  disabled:
-                    assignedTo.findIndex(assignee => {
-                      return assignee._id == option._id;
-                    }) > -1
-                }"
-                @click="assignNewUser(option)"
+                :value="option._id"
+                >{{ option.label }}</option
               >
-                <span>{{ option.name }}</span>
-              </div>
-              <p slot="reference" class="assign_team_member" flat>
-                Assign to team member
-              </p>
-            </el-popover>
-          </div>
-        </div>
-        <!-- Event dates -->
-        <div class="view_dialog_information_container">
-          <h3>Event date information</h3>
-          <!-- INSERT FORM HERE -->
-
-          <div class="info_unit">
-            <span class="info_label">Event start:</span>
-            <span>{{ dates.start }}</span>
-            <br />
-            <span class="info_label">Event end:</span>
-
-            <span>{{ dates.end }}</span>
-          </div>
-        </div>
-        <!-- Event duration type -->
-        <div class="view_dialog_information_container">
-          <h3>Event type & duration</h3>
-          <!-- INSERT FORM HERE -->
-
-          <div class="info_unit">
-            <span class="info_label">Event duration:</span>
-            <span>{{ duration }} hours</span>
-            <br />
-            <span class="info_label">Event type:</span>
-            <span class="member_name">{{ event.type.label }}</span>
+            </select>
+            <!-- date picker -->
+            <el-date-picker
+              v-if="updateKey == 'dates'"
+              :value="[event.start, event.end]"
+              type="daterange"
+              range-separator="To"
+              start-placeholder="Start date"
+              end-placeholder="End date"
+              @input="updateDate"
+            >
+            </el-date-picker>
           </div>
         </div>
       </div>
+
+      <div class="button_container">
+        <s-button
+          v-if="adminPermission"
+          class="secondary expanded"
+          @click="updateEvent"
+        >
+          <p>Save changes</p>
+        </s-button>
+      </div>
+      <s-button v-if="canReject" class="primary expanded" @click="rejectEvent">
+        <p>Reject</p>
+      </s-button>
+      <s-button
+        v-if="adminPermission && beforeStart"
+        class="primary expanded"
+        @click="deleteEvent"
+      >
+        <p>Delete</p>
+      </s-button>
     </div>
   </Overlay>
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState, mapMutations } from "vuex";
-
-import overlayEvents from "@/mixins/overlayEvents";
-
-import Avatar from "@/components/Avatar";
-import Form from "@/components/Form";
-import SButton from "@/components/SButton";
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import Overlay from "@/components/Overlay";
-import Menu from "@/components/Menu";
+import Avatar from "@/components/Avatar";
+import SButton from "@/components/SButton";
+import Form from "@/components/Form";
+import QrcodeVue from "qrcode.vue";
 
 export default {
   name: "ViewEventOverlay",
   components: {
-    Avatar,
-    Form,
-    SButton,
     Overlay,
-    Menu
+    Avatar,
+    SButton,
+    Form,
+    QrcodeVue
   },
-  mixins: [overlayEvents],
   data() {
     return {
-      loading: false,
-      selectedConfig: "date",
-      overlayName: "viewEvent",
-      updates: {},
-      displayMenu: false,
-      popover: {
-        team: false
-      },
-      menuItems: []
+      event: {},
+      displayPopover: false,
+      updateKey: "",
+      popovers: {
+        event_type: false,
+        dates: false
+      }
     };
   },
-
   computed: {
-    ...mapState(["userInformation", "overlayIndex"]),
-    ...mapState("Events", ["events", "eventRef"]),
     ...mapState("Team", ["team"]),
-    ...mapGetters(["getValidEventTypes", "adminPermission"]),
+    ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
+    ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
-
-    assignedTo() {
-      return this.event?.assigned_to ?? [];
+    propertiesToEdit() {
+      return ["assigned_to", "start", "end"];
     },
-    noticePeriodExceeded() {
-      return this.initMoment(
-        this.event?.notice_period ??
-          this.initMoment(this.event.start).subtract(1, "days")
-      ).isSame(this.initMoment(), "day");
+    beforeStart() {
+      return this.initMoment(new Date()).isBefore(this.event.start);
     },
-    approvalButtonConfig() {
-      let buttonConfig = {
-        type: "danger",
-        content: "Not approved",
-        circle: this.$mq != "lg",
-        round: this.$mq == "lg"
+    updateApiPayload() {
+      let update = {
+        assigned_to: this.depopulatedAssigned,
+        type: this.event.type._id,
+        start_date: new Date(this.event.start).toISOString(),
+        end_date: new Date(this.event.end).toISOString()
       };
-      if (this.approval) {
-        buttonConfig.type = "success";
-        buttonConfig.content = "Approved";
-      }
-      if (!this.adminPermission && this.noticePeriodExceeded) {
-        buttonConfig.disabled = true;
-        buttonConfig.content =
-          "You cannot disapprove this event as it is past the notice period";
-      }
-      return buttonConfig;
-    },
-    canRejectEvent() {
-      return this.userInformation.user_group.enable_event_rejection;
-    },
-    currentEventIndex() {
-      return this.events.findIndex(event => {
-        return event._id == this.event._id;
-      });
-    },
-    updateConfigs() {
-      return [
-        {
-          component_type: "date-picker",
-          input_type: "date-time",
-          placeholder: "Start date time",
-          model: "start_date",
-          optional: true,
-          hint: "",
-          tag: "date"
-        },
-        {
-          component_type: "date-picker",
-          input_type: "date-time",
-          placeholder: "End date time",
-          model: "end_date",
-          optional: true,
-          hint: "",
-          tag: "date"
-        },
-        {
-          component_type: "select",
-          placeholder: "Select event type",
-          options: this.getValidEventTypes,
-          model: "type",
-          validType: "number",
-          tag: "type",
-          optional: true
-        }
-      ];
-    },
-    configXref() {
-      return this.updateConfigs.filter(({ tag }) => {
-        return tag == this.selectedConfig;
-      });
-    },
 
-    canAddMoreUsers() {
-      return this.assignedTo.length < this.team.length;
-    },
-
-    event() {
-      return this.activeOverlayData;
-    },
-
-    duration() {
-      return Math.round(this.event.endTimeMinutes / 60);
-    },
-    canReject() {
-      return (
-        this.assignedTo.findIndex(assignee => {
-          return assignee.user_group.enable_event_rejection == true;
-        }) == -1
-      );
-    },
-
-    approval() {
-      // How many users can reject the event
-      let canRejectCount = 0,
-        hasApprovedCount = 0,
-        isCreatorAdmin =
-          this.event?.created_by?.user_group?.label?.toLowerCase() ===
-          "system administrator";
-      for (let i = 0, len = this.assignedTo?.length; i < len; i++) {
-        let assignee = this.assignedTo[i];
-        if (assignee?.user_group?.enabledEventRejection) {
-          canRejectCount++;
-        }
-      }
-      for (let i = 0, len = this.event?.is_approved; i < len; i++) {
-        let assignee = this.event?.is_approved[i];
-        if (assignee?.user_group?.enable_event_rejection) {
-          hasApprovedCount++;
-        }
-      }
-      // If there is a user that can reject an event
-      return canRejectCount === hasApprovedCount && isCreatorAdmin;
-    },
-
-    dates() {
-      let start = this.formatDate(this.event.start_date);
-      let end = this.formatDate(this.event.end_date);
       return {
-        start,
-        end
+        url: "events/update",
+        method: "PUT",
+        data: update
       };
     },
-    isEventMine() {
-      return this.assignedTo?.some(() => {
-        return this.userInformation._id;
+    depopulatedAssigned() {
+      return this.assigned.map(e => {
+        return e._id;
       });
     },
-    hasPermissions() {
-      return this.adminPermission;
+    loaded() {
+      return Object.values(this.event).length > 0;
+    },
+
+    isApproved() {
+      return this.event.created_by.user_group.is_admin;
+    },
+
+    currentUserIndex() {
+      return this.assigned.findIndex(x => {
+        return this.userInformation._id == x._id;
+      });
+    },
+
+    canReject() {
+      // Can reject is within the assigned to and can reject events
+      // Can also reject is the start date hasnt already
+      let canReject = this.userInformation.user_group.enable_event_rejection;
+      let assigned = this.currentUserIndex > -1;
+
+      return canReject && assigned && this.beforeStart && !this.adminPermission;
+    },
+
+    enableUpdates() {
+      return ["dates", "event_type"];
+    },
+    langXref() {
+      return {
+        startTimeMinutes: "Hours"
+      };
+    },
+
+    informationXref() {
+      return {
+        dates: {
+          start: val => {
+            return this.formatDate(val);
+          },
+          end: val => {
+            return this.formatDate(val);
+          }
+        },
+        event_type: {
+          type: val => {
+            return val.label;
+          }
+        },
+        created_by: {
+          created_by: val => {
+            return val.name;
+          }
+        }
+      };
+    },
+    assigned() {
+      return this.event.assigned_to;
+    },
+    viewEvent() {
+      return this.overlayIndex.viewEvent;
+    },
+
+    index() {
+      return this.event.event_index;
+    },
+
+    display: {
+      get() {
+        return this.viewEvent.display;
+      },
+      set() {
+        this.UPDATE_OVERLAY_INDEX({
+          overlay: "viewEvent",
+          display: false
+        });
+      }
     }
   },
+
+  created() {
+    this.initEvent();
+  },
+
   methods: {
-    ...mapActions([
-      "request",
-      "genEmail",
-      "genPromptBox",
-      "getApiNotification"
-    ]),
-    ...mapActions("Events", ["getEvents"]),
-    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
-    ...mapMutations("Events", [
-      "UPDATE_EVENT",
-      "ADD_USER_TO_EVENT",
-      "DELETE_USER_FROM_EVENT",
-      "DELETE_EVENT",
-      "CREATE_EVENT",
-      "UPDATE_APPROVE_EVENT",
-      "UPDATE_REJECT_EVENT"
-    ]),
+    ...mapActions(["request", "notify"]),
+    ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
+    ...mapMutations("Events", ["UPDATE_EVENT", "DELETE_EVENT"]),
+    async rejectEvent() {
+      try {
+        // api payload
+        let apiPayload = {
+          methods: "DELETE",
+          url: "events/user/delete",
+          data: { event_id: this.event._id, user_id: this.userInformation._id }
+        };
+        // remove their name from the array
+        this.event.assigned_to.splice(this.currentUserIndex, 1);
 
-    hasAdminApproved() {
-      return this.event.is_approved.find(approvee => {
-        return (
-          approvee.user_group.label.toLowerCase().trim() ==
-          "system administrator"
-        );
+        // notify the admin who created that you have rejected it
+        const rejectMessage = `${this.userInformation.name} has rejected a ${this.event.type.label} event`;
+        const forUsers = [this.event.created_by._id];
+
+        this.createNotification(rejectMessage, forUsers);
+
+        // Remove user from the assigned to
+        this.event.assigned_to.splice(this.currentUserIndex, 1);
+        await this.request(apiPayload);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    updateKeyValue(key) {
+      if (this.enableUpdates.indexOf(key) > -1) {
+        if (this.updateKey == key) {
+          this.updateKey = "";
+        } else {
+          this.updateKey = key;
+        }
+      }
+    },
+    updateDate(e) {
+      this.event.start = e[0];
+      this.event.end = e[1];
+      this.updateKey = "";
+    },
+    updateEventType(e) {
+      let eventType = e.target.value;
+      this.event.type = this.clientInformation.event_groups.find(x => {
+        return x._id == eventType;
+      });
+      this.updateKey = "";
+    },
+    closeOverlay() {
+      this.display = false;
+    },
+
+    isAssigned(member) {
+      return this.assigned.findIndex(x => {
+        return x._id == member._id;
       });
     },
-    alterDisplayMenu(member) {
-      this.displayMenu = true;
-      this.menuItems = [
-        {
-          label: "Remove user from event",
-          style: {
-            backgroundColor: "rgba(245,108,108,.1)",
-            color: "rgba(245,108,108,1)"
-          },
-          action: () => {
-            this.removeUser(member);
+    async deleteEvent() {
+      try {
+        let confirm = await this.$confirm(
+          "Are you sure you want to delete this event",
+          "Delete event"
+        );
+
+        if (confirm) {
+          this.DELETE_EVENT(this.index);
+
+          let apiPayload = {
+            url: "events/delete",
+            data: { event_id: this.event._id },
+            method: "DELETE"
+          };
+          let notificationMessage = `
+          A ${this.event.type.label} event has been deleted
+          `;
+
+          this.createNotification(
+            notificationMessage,
+            this.depopulatedAssigned
+          );
+
+          await this.request(apiPayload);
+          this.closeOverlay();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    dropTeamMember(e, member) {
+      e.preventDefault();
+      if (this.adminPermission) {
+        if (this.assigned.length - 1 > 0) {
+          let memberIndex = this.assigned.findIndex(x => {
+            return x._id == member._id;
+          });
+          if (memberIndex > -1) {
+            // mark as deleted
+            this.event.assigned_to.splice(memberIndex, 1);
+          }
+        } else {
+          this.deleteEvent();
+        }
+      }
+    },
+    addTeamMember(member) {
+      this.event.assigned_to.push(member);
+      this.displayPopover = false;
+    },
+    initEvent() {
+      this.event = Object.assign(
+        {},
+        JSON.parse(JSON.stringify(this.overlayIndex.viewEvent.payload))
+      );
+    },
+    viewTeamMember(assignee) {
+      if (assignee._id != this.userInformation._id && this.adminPermission) {
+        this.display = false;
+        this.$router.push({
+          name: "team",
+          params: {
+            teamMember: assignee.name
+          }
+        });
+      }
+    },
+    printQRCode() {
+      window.print();
+    },
+    async updateEvent() {
+      try {
+        // Send notififcation to new assignees
+        this.handleNewAssignees();
+        let updateEventPayload = {};
+        // check what has changed and whether it is in the scope of properties that are allowed to be changed
+        for (let property in this.viewEvent.payload) {
+          if (this.propertiesToEdit.indexOf(property) > -1) {
+            if (this.viewEvent.payload[property] != this.event[property]) {
+              updateEventPayload[property] = this.event[property];
+            }
           }
         }
-      ];
-    },
+        return console.log(updateEventPayload);
 
-    approvalController() {
-      // only disapprove if you have approved and have
-      let canMakeAction = this.canRejectEvent;
-    },
-    approveEvent() {
-      this.UPDATE_APPROVE_EVENT({
-        eventIndex: this.currentEventIndex,
-        userID: this.userInformation._id
-      });
-      this.request({
-        method: "PUT",
-        url: "events/users/approve",
-        data: { eventID: this.event._id }
-      }).catch(() => {
-        this.UPDATE_REJECT_EVENT(this.eventRef);
-      });
-    },
-    rejectEvent() {
-      // remove from is_approved array
-      this.UPDATE_REJECT_EVENT({
-        eventIndex: this.currentEventIndex,
-        userID: this.userInformation._id
-      });
-      this.request({
-        method: "DELETE",
-        url: "events/user/approve",
-        data: { eventID: this.event._id }
-      }).catch(() => {
-        this.UPDATE_APPROVE_EVENT(this.eventRef);
-      });
-    },
-    updateEvent(update) {
-      if (Object.values(update).length > 0) {
-        this.UPDATE_EVENT({
-          eventIndex: this.currentEventIndex,
-          payload: update
-        });
-        this.request({
-          method: "PUT",
-          url: "events/update",
-          data: { update, _id: this.event._id }
-        }).catch(() => {
-          this.UPDATE_EVENT(this.eventRef);
-        });
-      } else {
-        return this.CREATE_SYSTEM_NOTIFICATION({
-          message: "You must add data to the inputs to make changes to an event"
-        });
+        this.UPDATE_EVENT(updateEventPayload);
+        await this.request(this.updateApiPayload);
+      } catch (error) {
+        console.error(error);
       }
     },
-
-    getOneEmail(id) {
-      return this.getEmail.findIndex(assignee => {
-        return assignee.id == id;
-      }).email;
-    },
-
-    removeUser(user) {
-      let userIndex = this.assignedTo.findIndex(assignee => {
-        return assignee._id == user._id;
-      });
-      if (this.assignedTo.length - 1 == 0) {
-        this.deleteEvent(
-          "This is the last user on the event, if you delete this user it will delete the event. Are you sure you want to delete this event ? "
-        );
-      } else {
-        this.DELETE_USER_FROM_EVENT({
-          eventIndex: this.currentEventIndex,
-          userIndex
+    async createNotification(message, forUsers) {
+      try {
+        await this.notify({
+          payload: { event_id: this.event._id },
+          type: "event",
+          for: forUsers,
+          message
         });
-        this.request({
-          method: "DELETE",
-          url: "events/user",
-          data: { eventID: this.event._id, userID: user._id }
-        }).catch(() => {
-          this.ADD_USER_TO_EVENT(this.eventRef);
-        });
+        return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
       }
     },
-    assignNewUser(user) {
-      this.ADD_USER_TO_EVENT({
-        eventIndex: this.currentEventIndex,
-        payload: user
-      });
-      this.request({
-        url: "events/user",
-        data: { eventID: this.event._id, userID: user._id },
-        method: "PUT"
-      }).catch(() => {
-        this.DELETE_USER_FROM_EVENT(this.eventRef);
-      });
-    },
-    deleteEvent(msg = "Are you sure you want to delete this event ?") {
-      this.genPromptBox({
-        boxType: "confirm",
-        title: "Confirm",
-        text: msg,
-        confirm: "Yes"
-      }).then(() => {
-        // Delete event
-        this.DELETE_EVENT(this.currentEventIndex);
-        this.request({
-          method: "DELETE",
-          url: "events/delete",
-          data: {
-            _id: this.event._id
+    async handleNewAssignees() {
+      try {
+        let newAssignees = [];
+
+        // Find out who is new
+        let origAssigned = this.overlayIndex.viewEvent.payload.assigned_to;
+        // if they are not in the original assigned then they are new
+        for (let i = 0, len = this.assigned.length; i < len; i++) {
+          let assignee = this.assigned[i];
+          let assigneeID = assignee._id;
+
+          for (let j = 0, jlen = origAssigned.length; j < jlen; j++) {
+            let origAssignee = origAssigned[j];
+            let origAssigneeID = origAssignee._id;
+
+            if (origAssigneeID != assigneeID) {
+              newAssignees.push(assigneeID);
+            }
           }
-        }).catch(() => {
-          this.CREATE_EVENT({ restore: true, ...this.eventRef });
-        });
-        this.deactivateOverlay();
-      });
-    },
-    notifyAssignees() {
-      let assigned_to = this.assignedTo;
-      let removalMessage = `You have an event on ${this.dates.start} to ${this.dates.end} has been deleted by ${this.userInformation.name}`;
-      this.genEmail({
-        subject: "Event removal",
-        to: this.getEmail,
-        context: {
-          body: removalMessage
         }
-      });
-
-      for (
-        let index = 0, len = assigned_to.length;
-        index < assigned_to.length;
-        index++
-      ) {
-        let assignee = assigned_to[i];
-        this.getApiNotification({
-          type: "attention",
-          title: "Event removal",
-          for: assignee,
-          message: removalMessage
-        });
+        // Create notification for each person
+        if (newAssignees.length > 0) {
+          await this.createNotification(
+            "You have been assigned to a new event",
+            newAssignees
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
-    },
-    sendReminderToUser() {
-      let contentMessage = `You have an event on ${this.dates.start} to ${this.dates.end}. Sent from ${this.userInformation.name}`;
-      let assigned_to = [...this.assignedTo, this.userInformation._id];
-      this.genEmail({
-        subject: "Reminder",
-        to: this.getEmail,
-        context: {
-          body: contentMessage
-        },
-        notification: {
-          type: "reminder",
-          title: contentMessage,
-          for: assigned_to,
-          message: contentMessage
-        }
-      });
-    },
-    clockIn() {
-      this.request({
-        method: "POST",
-        url: "events/clockin",
-        data: {
-          id: this.event._id,
-          user: this.userInformation._id
-        }
-      }).then(() => {
-        this.getEvents();
-      });
     }
   }
 };
 </script>
+
 <style lang="scss" scoped>
-.title_button_container {
-  text-align: left;
+.view_event_container {
+  overflow-x: hidden;
+  position: relative;
 }
-.info_button_container {
-  display: flex;
-  justify-content: center;
-  margin: -10px 0 10px 0;
-}
-.info_label {
-  margin-right: 10px;
-}
-.info_unit {
-  border: $border;
-  line-height: 2em;
-  padding: 20px;
-}
-.view_event_container_item {
-  border: 1$border;
-  border-radius: 5px;
-  margin: 1em;
-  max-width: 100%;
-  padding: 1em;
-  &.no_border {
-    border: none;
-  }
-}
-.view_event_title {
-  text-transform: capitalize;
-}
-.view_dialog_information_container {
-  padding: 20px;
-  .el-button {
-    margin-bottom: 20px;
-  }
-}
-h4,
-h3 {
-  margin: 10px 0;
-}
-.view_event_col {
-  margin: 1em;
-}
-.avatar_wrapper {
+.avatar_container {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
 }
-.assigned_users_container {
-  display: flex;
-}
-
-.mobile {
-  .info_button_container {
-    flex-direction: column;
-    &/deep/ > * {
-      margin: 10px 0;
-    }
-    .avatar_wrapper {
-      align-items: center;
-      display: flex;
-      justify-content: center;
-    }
-  }
-}
-.remove_icon {
-  transition: 0.5 ease opacity;
-  will-change: opacity;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.users_container {
+.text_container {
+  margin: 10px;
   padding: 10px;
-  &:hover {
-    background: whitesmoke;
-  }
 }
-
-.assigned_user {
-  .member_name {
-    opacity: 0;
-    transition: $default_transition opacity;
-    will-change: opacity;
-    text-align: center;
-  }
-  .floating_item {
-    @include floating_item;
-    top: 0;
-    max-height: 20px;
-    opacity: 0;
-    transition: $default_transition opacity;
-    will-change: opacity;
-  }
-  &:hover {
-    .floating_item,
-    .member_name {
-      opacity: 1;
-    }
-  }
+.add_team_member {
+  border: $border;
+  padding: 10px;
+  text-align: center;
+  margin-top: 20px;
 }
-.add_new_user {
-  /deep/ .button_container {
-    margin: 12px;
-  }
+.qr_container > * {
+  margin: 20px 0;
 }
-.assign_team_member {
-  border-radius: 10px;
-  color: #999;
-  padding: 10px 30px;
-  border: 2px dashed #efefef;
-  will-change: transform;
-  transition: $default_transition transform;
-  &:hover {
-    transform: translateX(2px);
-  }
+.category_container {
+  border: $border;
+  margin: 10px;
+  padding: 10px 20px;
+  border-radius: 3px;
+}
+.form_wrapper {
+  margin: 20px 0;
+  padding: 10px;
+  flex: 1;
+}
+.check_container {
+  border-radius: 50%;
+  margin: 20px;
+  border: $border;
+  font-size: 2.3em;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // background: rgba(var(--success), 0.2);
+  border: 1.3px solid rgba(var(--success), 1);
+  color: rgba(var(--success), 0.7);
 }
 </style>

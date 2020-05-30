@@ -1,33 +1,20 @@
 <template>
   <div class="events_container">
-    <slide-x-right-transition mode="out-in">
-      <div class="events_inner_container">
-        <Toolbar
-          :current-view="view"
-          @changeView="view = $event"
-          @updateOverlays="updateOverlays"
-        />
-        <div v-if="view == 'events'" class="events_wrapper">
-          <EventsCalendar />
-          <EventsOverlay
-            v-if="overlays.events"
-            :display="overlays.events"
-            :params="params"
-            @close="updateOverlays({ overlay: 'events', display: false })"
-            @changeView="updateView"
-          />
-        </div>
+    <div class="events_sub_container">
+      <!-- Toolbar -->
 
-        <Requests
-          v-if="view == 'requests'"
-          :prop-filters="requests.filters"
-          @changeView="updateView"
-          @updateOverlays="updateOverlays"
-          @approveRequest="updateParams"
-        />
-      </div>
-    </slide-x-right-transition>
-    <TeamSidebar @changeView="updateView" />
+      <EventsCalendar
+        @quickCreate="updateParams"
+        @updateOverlays="updateOverlays"
+      />
+      <EventsOverlay
+        v-if="overlays.events"
+        :display="overlays.events"
+        :params="params"
+        @close="updateOverlays({ overlay: 'events', display: false })"
+      />
+    </div>
+    <TeamSidebar />
   </div>
 </template>
 
@@ -35,39 +22,52 @@
 import { SlideXRightTransition } from "vue2-transitions";
 
 import EventsOverlay from "./components/EventsOverlay";
-import Toolbar from "./components/Toolbar";
 import EventsCalendar from "./components/EventsCalendar";
 import TeamSidebar from "./components/TeamSidebar";
-import Requests from "./components/Requests";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Events",
   components: {
     EventsCalendar,
     EventsOverlay,
-    Toolbar,
     TeamSidebar,
-    Requests,
     SlideXRightTransition
   },
   data() {
     return {
-      view: "events",
-      requests: {
-        filters: {}
-      },
       overlays: {
         events: false
       },
       params: {}
     };
   },
-  created() {
-    if (Object.keys(this.$route?.params).length > 0) {
-      this.updateView(this.$route.params);
-    }
+  computed: {
+    ...mapGetters(["adminPermission"])
   },
+  created() {
+    this.handleRouting();
+  },
+
   methods: {
+    handler() {
+      this.updateOverlays({
+        overlay: "events",
+        display: true
+      });
+    },
+    handleRouting() {
+      let routeParams = this.$route.params;
+      if (Object.keys(routeParams).length > 0) {
+        if (routeParams?.overlay) {
+          this.updateOverlays(routeParams);
+        }
+        if (routeParams?.createEvent) {
+          this.params = routeParams.createEvent.params;
+          this.overlays.events = true;
+        }
+      }
+    },
     updateParams(payload) {
       this.params = payload;
     },
@@ -79,12 +79,6 @@ export default {
         if (this.overlays[property]) {
           this.overlays[property] = false;
         }
-      }
-    },
-    updateView({ view, teamMember = null }) {
-      this.view = view;
-      if (teamMember) {
-        this.requests.filters.requested_by = teamMember._id;
       }
     }
   }
@@ -100,7 +94,7 @@ export default {
   flex: 1;
   max-height: calc(100% - 90px);
 }
-.events_inner_container {
+.events_sub_container {
   display: flex;
   flex-direction: column;
   flex: 1;

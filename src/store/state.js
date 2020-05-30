@@ -1,29 +1,15 @@
-let baseStyle = getComputedStyle(document.body);
-const getStyle = cssVar => {
-  return baseStyle.getPropertyValue(cssVar);
-};
-const genTheme = () => {
-  let theme = {};
-  let themeVars = ["colour_primary", "colour_secondary", "danger"];
-  for (let i = 0, len = themeVars.length; i < len; i++) {
-    let themeItem = `--${themeVars[i]}`;
-    theme[themeVars[i]] = getStyle(themeItem);
-  }
-  return theme;
-};
-
 export default {
-  team: [],
-
   runningIntervals: {},
+  stopNotifications: false,
+
   notificationRef: {},
   groupRef: {},
   teamRef: {},
 
   globalIntervals: {
     admin: 6000,
-    client: 20000,
-    chat: 30000
+    client: 2000,
+    chat: 3000
   },
 
   token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
@@ -31,6 +17,7 @@ export default {
   clientInformation: {},
   userInformation: {},
   errorInformation: {},
+  team: [],
 
   systemNotifications: [],
   apiNotifications: [],
@@ -38,12 +25,19 @@ export default {
   networkError: false,
   viewMobileMenu: false,
 
-  overlayHistory: {},
   overlayIndex: {
-    viewEvent: { view: false, data: {} },
-    eventModule: { view: false, data: {} }
+    viewEvent: { view: false, payload: {} }
   },
-
+  iconXref: {
+    success: "bx-check-circle",
+    error: "bx-x-circle",
+    warning: "bx-error-circle",
+    annoucement: "bx-user-voice",
+    info: "bx-mail-send",
+    message: "bxl-discourse",
+    request: "bx-error-alt",
+    event: "bx-calendar"
+  },
   colours: [
     "#0168fa",
     "#5b47fb",
@@ -58,8 +52,6 @@ export default {
     "#dc3545",
     "#3b4863"
   ],
-
-  theme: genTheme(),
 
   daysOfWeek: [
     {

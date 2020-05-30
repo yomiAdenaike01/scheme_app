@@ -13,7 +13,7 @@
       <div
         v-for="(item, index) in items"
         :key="index"
-        class="item"
+        class="popover_item"
         @click="
           $emit('itemSelected', item.label);
           displayPopover = false;
@@ -67,6 +67,7 @@ export default {
 }
 .sortby_body {
   margin: 0 20px;
+  white-space: nowrap;
 }
 .icon_container {
   display: flex;
@@ -76,13 +77,5 @@ export default {
   color: white;
   font-size: 1.5em;
   padding: 5px;
-}
-.item {
-  padding: 10px;
-  text-transform: capitalize;
-  cursor: pointer;
-  &:hover {
-    background: rgb(240, 240, 240);
-  }
 }
 </style>

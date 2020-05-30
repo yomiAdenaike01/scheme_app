@@ -4,31 +4,42 @@ import updateBreadCrumbs from "./helpers";
 import mixins from "@/mixins/genID";
 
 const deleteStateInterval = (state, intervalID) => {
+  const deleteInterval = interval => {
+    Vue.set(state.runningIntervals, interval, null);
+  };
+
   if (!intervalID) {
     for (let property in state.runningIntervals) {
-      clearTimeout(state.runningIntervals[property]);
-      Vue.set(state.runningIntervals, property, null);
+      if (property != "client") {
+        clearTimeout(state.runningIntervals[property]);
+        deleteInterval(property);
+      }
     }
   } else {
     clearTimeout(state.runningIntervals[intervalID]);
-    Vue.set(state.runningIntervals, intervalID, null);
+    deleteInterval(intervalID);
   }
 };
-const deleteSystemNotification = (state, notificationIndex) => {
-  Vue.delete(state.systemNotifications, notificationIndex);
+const deleteSystemNotification = (state, index) => {
+  Vue.delete(state.systemNotifications, index);
 };
 export default {
-  UPDATE_OVERLAY_INDEX(state, payload) {
-    payload = payload
-      ? payload
-      : { overlay: "viewUser", view: false, id: null, data: null };
-    for (let property in state.overlayIndex[payload.overlay]) {
-      Vue.set(state.overlayIndex[payload.overlay], property, payload[property]);
-    }
-    state.overlayHistory = payload;
+  UPDATE_STOP_NOTIFICATIONS(state, payload) {
+    state.stopNotifications = payload;
+  },
+  UPDATE_INTERVAL_DELAY(state, { interval, timing }) {
+    state.globalIntervals[interval] = timing;
+  },
+  UPDATE_OVERLAY_INDEX(state, overlayData) {
+    let payload = overlayData.payload;
+    let { overlay, display } = overlayData;
+    Vue.set(state.overlayIndex, overlay, { display, payload });
   },
 
   CREATE_GLOBAL_INTERVAL(state, payload) {
+    let intervals = state.runningIntervals;
+    let visible = document.visibilityState == "hidden";
+
     payload = payload
       ? payload
       : {
@@ -44,11 +55,17 @@ export default {
       }
     }
 
-    let timeout;
+    if (!visible) {
+      payload.duration = payload.duration * 2;
+    }
 
-    if (!state.runningIntervals?.id) {
-      var runInterval = () => {
-        timeout = setTimeout(() => {
+    let timeout;
+    // if the timeout exists run it
+
+    const runInterval = () => {
+      timeout = setTimeout(() => {
+        // check that the ID is not null
+        if (intervals[payload.id] != null) {
           payload
             .method()
             .finally(() => {
@@ -57,13 +74,13 @@ export default {
             .catch(() => {
               deleteStateInterval(state, payload.id);
             });
-        }, payload.duration);
-      };
-    }
+        }
+      }, payload.duration);
+    };
 
-    if (!state.runningIntervals[payload.id]) {
+    if (!intervals[payload.id]) {
       runInterval();
-      state.runningIntervals[payload.id] = timeout;
+      Vue.set(intervals, payload.id, timeout);
     }
   },
 
@@ -79,39 +96,20 @@ export default {
     Vue.set(state, "viewMobileMenu", payload);
   },
 
-  DELETE_API_NOTIFICATION(state, notificationIndex) {
-    notificationIndex = notificationIndex
-      ? notificationIndex
-      : state.apiNotifications.length - 1;
-
-    updateBreadCrumbs(state, {
-      notificationIndex,
-      notification: state.apiNotifications[notificationIndex]
-    });
-    Vue.delete(state.apiNotifications, notificationIndex);
+  DELETE_API_NOTIFICATION(state, index) {
+    console.log(index);
+    Vue.delete(state.apiNotifications, index);
   },
 
   UPDATE_API_NOTIFICATIONS(state, payload) {
-    updateBreadCrumbs(state, payload);
-
-    for (let i = 0, len = state.apiNotifications.length; i < len; i++) {
-      for (let property in payload) {
-        Vue.set(state.apiNotifications[i], property, payload[property]);
-      }
-    }
+    state.apiNotifications = payload;
   },
-
-  UPDATE_API_NOTIFICATION(state, { notificationIndex, update }) {
-    updateBreadCrumbs(state, {
-      notificationIndex,
-      update: state.apiNotifications[notificationIndex]
-    });
+  DELETE_ALL_API_NOTIFICATIONS(state) {
+    state.apiNotifications = [];
+  },
+  UPDATE_API_NOTIFICATION(state, { index, update }) {
     for (let property in update) {
-      Vue.set(
-        state.apiNotifications[notificationIndex],
-        property,
-        update[property]
-      );
+      Vue.set(state.apiNotifications[index], property, update[property]);
     }
   },
 
@@ -134,11 +132,6 @@ export default {
   DELETE_USER_SESSION(state) {
     state.apiNotifications = [];
     state.systemNotifications = [];
-
-    if (VueRouter.currentRoute.name != "signIn") {
-      VueRouter.push({ name: "signIn" });
-    }
-    deleteStateInterval(state);
   },
 
   UPDATE_USER(state, payload) {
@@ -148,38 +141,21 @@ export default {
   UPDATE_USER_SESSION(state, payload) {
     state.token = payload;
   },
-  DELETE_SYSTEM_NOTIFICATION(state, notificationIndex) {
-    deleteSystemNotification(state, notificationIndex);
+  DELETE_SYSTEM_NOTIFICATION(state, index) {
+    deleteSystemNotification(state, index);
   },
   CREATE_SYSTEM_NOTIFICATION(state, notification) {
-    let notificationTypes = [
-      "success",
-      "error",
-      "warning",
-      "message",
-      "annoucement",
-      "info"
-    ];
+    let notificationTypes = Object.keys(state.iconXref);
 
-    let notificationXref = {
-      success: "check-circle",
-      error: "x-circle",
-      warning: "error-circle",
-      message: "message-rounded",
-      annoucement: "user-voice",
-      info: "mail-send"
-    };
     notification._id = mixins.methods.genID();
 
     let closeNotificationObject = {
       label: "Close",
       body() {
-        let notificationIndex = state.systemNotifications.findIndex(
-          _notification => {
-            return _notification._id == notification._id;
-          }
-        );
-        deleteSystemNotification(state, notificationIndex);
+        let index = state.systemNotifications.findIndex(_notification => {
+          return _notification._id == notification._id;
+        });
+        deleteSystemNotification(state, index);
       }
     };
     if (!notification?.methods) {
@@ -191,7 +167,7 @@ export default {
       notification.type = "info";
     }
     if (!notification?.icon) {
-      notification.icon = notificationXref[notification.type];
+      notification.icon = `bx ${state.iconXref[notification.type]}`;
     }
 
     if (notification.type == "success" && !notification.title) {
@@ -202,16 +178,10 @@ export default {
       if (typeof notification.message == "object") {
         state.criticalNetworkError = true;
         state.errorInformation = notification.message;
-
-        // if (VueRouter.currentRoute.name != "error") {
-        //   VueRouter.push({ name: "error" });
-        // }
       }
     }
 
     if (document.visibilityState == "hidden") {
-      //  params:  // 'To do list', { body: text, icon: img }
-
       let desktopNotification = new Notification(notification.title, {
         icon: "",
         body: notification.message
@@ -229,12 +199,10 @@ export default {
       };
     }
 
-    let notificationIndex = state.systemNotifications.findIndex(
-      ({ message }) => {
-        return message == notification.message;
-      }
-    );
-    if (notificationIndex == -1) {
+    let index = state.systemNotifications.findIndex(({ message }) => {
+      return message == notification.message;
+    });
+    if (index == -1) {
       state.systemNotifications.push(notification);
     }
     if (state.systemNotifications.length > 0) {

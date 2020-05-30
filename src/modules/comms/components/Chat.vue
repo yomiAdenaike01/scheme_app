@@ -92,10 +92,14 @@ export default {
       e.stopPropagation();
       this.DELETE_CHAT(this.chatIndex);
       if (!this.chatInformation?.initChat) {
+        let chat = this.chatInformation;
+
+        // get the sender or reciever of messages
+
         this.request({
           method: "DELETE",
           url: "messenger/chat",
-          data: { _id: this.chatInformation._id }
+          data: { _id: chat._id }
         });
       }
     }
@@ -127,7 +131,6 @@ export default {
   }
 }
 .chat_extension_container {
-  transition: $default_transition opacity;
   opacity: 0;
   margin-left: auto;
 }

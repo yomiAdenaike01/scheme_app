@@ -9,6 +9,14 @@
         :key="`${index}${input.name}`"
         :class="`form_item ${input.component_type}`"
       >
+        <p
+          v-if="
+            Object.values(headings).length > 0 &&
+              headings.hasOwnProperty(input.model)
+          "
+          class="form_item_heading"
+          v-html="headings[input.model]"
+        ></p>
         <span
           v-if="input.label || input.component_type == 'checkbox'"
           class="form_item_label"
@@ -19,14 +27,6 @@
               : input.label
           }}
         </span>
-        <p
-          v-if="
-            Object.values(headings).length > 0 &&
-              headings.hasOwnProperty(input.model)
-          "
-          class="form_item_heading"
-          v-html="headings[input.model]"
-        ></p>
         <small
           v-if="
             Object.values(rules).length > 0 && rules.hasOwnProperty(input.model)
@@ -78,8 +78,9 @@
         </select>
 
         <textarea
-          v-if="input.compoent_type == 'textarea'"
+          v-if="input.component_type == 'textarea'"
           v-model="formContent[input.model]"
+          :placeholder="input.placeholder"
           class="s_input"
         />
         <!-- DYNAMIC INPUTS -->

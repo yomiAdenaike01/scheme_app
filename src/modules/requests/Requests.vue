@@ -9,6 +9,7 @@
         <!-- Filters -->
         <div class="filters_container">
           <h3 class="grey">Filters</h3>
+
           <input
             v-model="filters.label"
             class="s_input no_border_radius"
@@ -57,9 +58,12 @@
             :key="request._id"
             :request="request"
             :index="index"
-            :selected="selectedRequest"
+            :selected="requestID"
             :user="userInformation._id"
-            @setRequest="setSelectedRequest"
+            @setRequest="
+              setSelectedRequest($event._id);
+              updateSeenRequest($event);
+            "
           />
         </slide-x-left-transition>
       </div>
@@ -69,7 +73,7 @@
     </div>
     <div class="viewing_request">
       <div
-        v-if="Object.keys(selectedRequest).length > 0"
+        v-if="requestID.length > 0 && selectedRequest"
         class="viewing_request_subcontainer"
       >
         <!-- Header -->
@@ -86,7 +90,7 @@
               adminPermission ||
                 selectedRequest.requested_by._id == userInformation._id
             "
-            class="bx grey bx-x trigger"
+            class="bx grey bx-trash"
             @click="deleteRequest"
           ></i>
         </header>
@@ -138,7 +142,7 @@
           <h2 class="grey">Notes</h2>
           <textarea
             v-model="selectedRequest.notes"
-            :disabled="!hasAccess"
+            disabled
             class="s_input"
           ></textarea>
         </div>
@@ -167,7 +171,7 @@
 <script>
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import SButton from "@/components/SButton";
-import Request from "./Request";
+import Request from "./components/Request";
 import { SlideXLeftTransition, FadeTransition } from "vue2-transitions";
 import cleanObject from "@/mixins/cleanObject";
 export default {
@@ -179,15 +183,10 @@ export default {
     Request
   },
   mixins: [cleanObject],
-  props: {
-    propFilters: {
-      type: Object,
-      default: () => {}
-    }
-  },
+
   data() {
     return {
-      selectedRequest: {},
+      requestID: "",
       filters: {
         label: "",
         date_created: "",
@@ -196,14 +195,31 @@ export default {
       }
     };
   },
-
+  watch: {
+    filters: {
+      deep: true,
+      handler() {
+        if (this.filteredRequests.length > 0) {
+          this.setSelectedRequest(this.filteredRequests[0]._id);
+        }
+      }
+    }
+  },
   computed: {
     ...mapState(["userInformation"]),
-    ...mapState("Events", ["eventRequests"]),
+    ...mapState("Requests", ["requests"]),
     ...mapState("Team", ["team"]),
 
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["userLookup"]),
+    requestIndex() {
+      return this.requests.findIndex(x => {
+        return x._id == this.requestID;
+      });
+    },
+    selectedRequest() {
+      return this.requests[this.requestIndex];
+    },
     displayActions() {
       let ignore = ["approved", "rejected"];
       let { status } = this.selectedRequest;
@@ -294,13 +310,16 @@ export default {
         }
       };
     },
+    statuses() {
+      return ["sent", "seen", "approved", "rejected"];
+    },
     statusOptions() {
-      let statusOptions = ["sent", "seen", "approved", "rejected"];
+      let statusOptions = [...this.statuses];
       if (this.selectedRequest?.status == "approved") {
-        statusOptions.pop();
+        statusOptions.splice(statusOptions.indexOf("rejected"), 1);
       }
       if (this.selectedRequest?.status == "rejected") {
-        statusOptions.splice(2, 1);
+        statusOptions.splice(statusOptions.indexOf("approved"), 1);
       }
       return statusOptions;
     },
@@ -316,17 +335,18 @@ export default {
       let filterStatus = this.filters.status.toLowerCase();
       let filterRequestedBy = this.filters.requested_by;
 
-      let requests = [...this.eventRequests];
+      let requests = [...this.requests];
       for (let i = 0, len = requests.length; i < len; i++) {
         let request = requests[i];
-        if (!filterLabel.includes(request?.type?.label.toLowerCase())) {
+        if (!filterLabel.includes(request?.type?.label)) {
           continue;
         }
+
         if (filterRequestedBy != request?.requested_by?._id) {
           continue;
         }
 
-        if (!filterStatus.includes(request?.status?.toLowerCase())) {
+        if (filterStatus != request?.status) {
           continue;
         }
 
@@ -337,63 +357,41 @@ export default {
     }
   },
 
-  watch: {
-    propFilters: {
-      immediate: true,
-      deep: true,
-      handler(val) {
-        this.assignFilters(val);
-      }
-    },
-    filteredRequests: {
-      deep: true,
-      handler(val) {
-        this.initRequests(val);
-      }
+  created() {
+    if (this.filteredRequests.length > 0) {
+      this.setSelectedRequest(this.filteredRequests[0]._id);
     }
   },
-
-  created() {
-    this.initRequests(this.filteredRequests);
+  activated() {
+    this.handleRouting();
   },
   destroyed() {
-    this.selectedRequest = {};
+    this.unsetRequest();
   },
 
   methods: {
-    ...mapActions(["request"]),
-    ...mapMutations("Events", [
-      "CREATE_EVENT_REQUEST",
-      "UPDATE_EVENT_REQUEST",
-      "DELETE_EVENT_REQUEST"
-    ]),
-
-    initRequests(requests) {
-      let hasSelected = Object.keys(this.selectedRequest).length > 0;
-
-      if (requests.length > 0) {
-        if (!hasSelected) {
-          this.setSelectedRequest({ request: requests[0], index: 0 });
-        } else {
-          let selectedIndex = requests.findIndex(request => {
-            return request._id == this.selectedRequest._id;
-          });
-          if (selectedIndex > -1) {
-            this.setSelectedRequest({
-              request: requests[selectedIndex],
-              index: selectedIndex
-            });
-          }
-        }
-      } else {
-        if (hasSelected) {
-          this.selectedRequest = {};
+    ...mapActions(["request", "notify"]),
+    ...mapMutations("Requests", ["UPDATE_REQUEST", "DELETE_REQUEST"]),
+    updateSeenRequest(request) {
+      if (request.status == "sent" && this.adminPermission) {
+        this.updateRequest({ status: "seen" });
+      }
+    },
+    handleRouting() {
+      let params = this.$route.params;
+      if (params) {
+        if (params?.request_id) {
+          this.setSelectedRequest(params.request_id);
         }
       }
     },
 
     assignFilters(val = this.propFilters) {
-      if (Object.keys(val).length > 0 && this.filteredRequests.length > 0) {
+      if (
+        val &&
+        Object.keys(val).length > 0 &&
+        this.filteredRequests.length > 0
+      ) {
         for (let property in val) {
           if (
             property != "assigned_to" &&
@@ -409,32 +407,36 @@ export default {
         this.filters[property] = "";
       }
     },
-    setSelectedRequest({ request, index }) {
-      // If status is sent update to seen
-      if (request?.status == "sent" && this.adminPermission) {
-        this.updateRequest({ status: "seen" });
-      }
-      this.selectedRequest = Object.assign({}, this.selectedRequest, request, {
-        index
-      });
+    setSelectedRequest(id) {
+      this.requestID = id;
     },
     async deleteRequest() {
       try {
-        this.DELETE_EVENT_REQUEST(this.selectedRequest.index);
+        let confirm = await this.$confirm(
+          "Are you sure you want to delete request",
+          "Confirm delete"
+        );
+        if (confirm) {
+          this.DELETE_REQUEST(this.requestIndex);
 
-        //  API request
-        let apiPayload = {
-          method: "DELETE",
-          url: "events/requests/delete",
-          data: {
-            _id: this.selectedRequest._id
-          }
-        };
-        await this.request(apiPayload);
-        this.selectedRequest = {};
+          //  API request
+          let apiPayload = {
+            method: "DELETE",
+            url: "requests/delete",
+            data: {
+              _id: this.requestID
+            }
+          };
+          await this.request(apiPayload);
+          this.unsetRequest();
+        }
       } catch (error) {
         return Promise.reject(error);
       }
+    },
+
+    unsetRequest() {
+      this.requestID = "";
     },
 
     handleApprove() {
@@ -443,42 +445,64 @@ export default {
         type: this.selectedRequest.type._id,
         dates: [this.selectedRequest.start_date, this.selectedRequest.end_date]
       };
-      this.$emit("changeView", {
-        view: "events"
-      });
 
-      this.$emit("updateOverlays", {
-        overlay: "events",
-        display: true
+      this.$router.push({
+        name: "events",
+        params: {
+          createEvent: {
+            params: formPayload
+          }
+        }
       });
-
-      this.$emit("approveRequest", formPayload);
     },
+    updateMessageXref(update) {
+      let string = `Your request ${this.selectedRequest.type.label} has been `;
+      for (let property in update) {
+        string += update[property];
+      }
+      return string;
+    },
+
     async updateRequest(update) {
       try {
-        // Check if clicked approve
+        const handleUpdate = async () => {
+          this.UPDATE_REQUEST({
+            update,
+            index: this.requestIndex
+          });
+
+          //  API request
+          update.message = this.updateMessageXref(update);
+
+          const apiPayload = {
+            method: "PUT",
+            url: "requests/update",
+            data: {
+              _id: this.requestID,
+              requested_by: this.selectedRequest.requested_by._id,
+              update,
+              assigned_to: this.leanAssignedTo
+            }
+          };
+
+          this.notify({
+            for: [this.selectedRequest.requested_by._id],
+            message: `Your ${this.selectedRequest.type.label} request has been ${update.status}`,
+            payload: {
+              request_id: this.requestID
+            },
+            type: "request"
+          });
+          await this.request(apiPayload);
+        };
+
+        // handle approve
         if (update?.status == "approved" && this.adminPermission) {
           this.handleApprove();
+          handleUpdate();
+        } else {
+          handleUpdate();
         }
-
-        this.selectedRequest = Object.assign({}, this.selectedRequest, update);
-
-        this.UPDATE_EVENT_REQUEST({
-          update,
-          index: this.selectedRequest.index
-        });
-
-        //  API request
-        const apiPayload = {
-          method: "PUT",
-          url: "events/requests/update",
-          data: {
-            _id: this.selectedRequest._id,
-            update,
-            assigned_to: this.leanAssignedTo
-          }
-        };
-        await this.request(apiPayload);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -543,7 +567,10 @@ header {
   max-width: fit-content;
   white-space: nowrap;
   color: white;
-  background: rgba(var(--colour_primary), 0.9);
+  background: rgba(var(--colour_secondary), 0.06);
+  border: 1px solid rgba(var(--colour_secondary), 1);
+  color: rgba(var(--colour_secondary), 1);
+
   margin: 10px;
   border-radius: 20px;
   .bx {

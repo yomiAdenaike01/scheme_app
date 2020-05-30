@@ -7,24 +7,26 @@
     >
       <i class="el-icon el-icon-menu"></i>
     </div>
+
     <div class="appbar_inner_container">
       <Dropdown :items="items" :icon="false" @method="handleCommands">
         <Avatar class="profile_avatar" :name="userInformation.name" />
       </Dropdown>
-      <el-popover :options="{ placement: 'right' }" trigger="click">
+      <el-popover v-model="popup" trigger="click" width="400">
         <Notifications />
-        <s-button
-          slot="reference"
-          class="small only_icon rounded"
-          icon="bell"
-        ></s-button>
+        <div slot="reference" class="button_container">
+          <s-button class="small only_icon rounded" icon="bell"></s-button>
+          <div class="count_container">
+            {{ unreadNotifications.length }}
+          </div>
+        </div>
       </el-popover>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 
 import Avatar from "@/components/Avatar";
 import Notifications from "@/modules/notifications/Notifications";
@@ -39,8 +41,25 @@ export default {
     Notifications,
     SButton
   },
+  props: {
+    displayNotifications: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   computed: {
     ...mapState(["userInformation", "viewMobileMenu", "apiNotifications"]),
+    ...mapGetters(["unreadNotifications"]),
+
+    popup: {
+      get() {
+        return this.displayNotifications;
+      },
+      set(val) {
+        this.$emit("closeNotifications");
+      }
+    },
 
     items() {
       return [
@@ -59,7 +78,7 @@ export default {
   },
   methods: {
     ...mapMutations(["DELETE_USER_SESSION", "UPDATE_TOGGLE_MOBILE_MENU"]),
-    ...mapActions(["request"]),
+    ...mapActions(["request", "logOut"]),
 
     handleCommands(command) {
       switch (command) {
@@ -72,12 +91,7 @@ export default {
         }
 
         case "log_out": {
-          this.request({
-            method: "GET",
-            url: "users/logout"
-          }).then(() => {
-            this.DELETE_USER_SESSION();
-          });
+          this.logOut();
           break;
         }
 
@@ -128,8 +142,20 @@ export default {
   }
 }
 
-.search {
-  margin-left: 10px;
+.button_container {
+  position: relative;
+  .count_container {
+    position: absolute;
+    right: -14px;
+    bottom: -8px;
+    z-index: 2;
+    background: rgba(var(--colour_secondary), 1);
+    color: white;
+    border: 4px solid white;
+    border-radius: 50%;
+    padding: 3px 5px;
+    font-size: 0.7em;
+  }
 }
 /**
  _   _  _  ___ _  _    ___ 

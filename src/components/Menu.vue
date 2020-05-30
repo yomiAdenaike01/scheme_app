@@ -1,15 +1,26 @@
 <template>
   <nav :class="{ flex: mode == 'tabs', nav_sidebar: mode == 'main' }">
     <ul v-if="mode == 'main'">
-      <router-link
+      <el-popover
         v-for="route in routes"
         :key="route.path"
-        :to="route.name"
-        tag="li"
-        :index="route.path"
+        trigger="hover"
+        placement="right"
       >
-        <i :class="route.icon" class="home_icon"></i>
-      </router-link>
+        <router-link
+          slot="reference"
+          :to="route.name"
+          tag="li"
+          :index="route.path"
+        >
+          <i :class="route.icon" class="home_icon"></i>
+        </router-link>
+        <div class="label_container">
+          <p class="capitalize bold">
+            {{ langXref[route.name] }}
+          </p>
+        </div>
+      </el-popover>
     </ul>
     <slide-y-down-transition mode="out-in">
       <div
@@ -110,11 +121,26 @@ export default {
     ...mapState(["clientInformation", "localSettings"]),
     ...mapGetters(["getDefaultColour", "adminPermission"]),
 
+    langXref() {
+      return {
+        comms: "Messenger",
+        tasks: "Task-board",
+        events: "Events",
+        preferences: "Settings",
+        requests: "Requests",
+        team: "Team"
+      };
+    },
+
     routes() {
       let allowedRoutes = [
         {
           name: "events",
-          icon: "bx bxs-dashboard"
+          icon: "bx bx-calendar"
+        },
+        {
+          name: "requests",
+          icon: "bx bx-error-alt"
         },
         {
           name: "tasks",
@@ -123,10 +149,14 @@ export default {
         {
           name: "comms",
           icon: "bx bxl-discourse"
+        },
+        {
+          name: "preferences",
+          icon: "bx bx-slider-alt"
         }
       ];
       if (this.adminPermission) {
-        allowedRoutes.push({
+        allowedRoutes.splice(3, 0, {
           name: "team",
           icon: "bx bx-group"
         });
@@ -184,6 +214,9 @@ export default {
     margin: 0;
     padding: 0;
   }
+}
+.label_container {
+  text-align: center;
 }
 
 .nav_sidebar ul li {
@@ -264,20 +297,25 @@ export default {
   border-right: 1px solid rgb(230, 230, 230);
   position: relative;
   transition: $default_transition;
+  &::after {
+    position: absolute;
+    top: 0;
+    height: 1.2px;
+    left: 0;
+    right: 0;
+    content: "";
+    background: rgb(220, 220, 220);
+  }
   &.active {
+    color: rgba(var(--colour_secondary), 0.9);
     &::after {
-      position: absolute;
-      top: 0;
-      height: 1.3px;
-      left: 0;
-      right: 0;
-      content: "";
       background: rgba(var(--colour_secondary), 1);
     }
-    background: rgba(var(--success), 0.1);
+    background: rgba(var(--colour_secondary), 0.091);
   }
   &:hover {
     background: rgba(var(--colour_secondary), 0.1);
+    color: rgba(var(--colour_secondary), 0.8);
   }
 }
 </style>

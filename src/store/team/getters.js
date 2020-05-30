@@ -29,5 +29,20 @@ export default {
     return team.filter(({ _id }) => {
       return _id != userInformation._id;
     });
+  },
+  admins: ({ team }) => populated => {
+    let admins = [];
+    for (let i = 0, len = team.length; i < len; i++) {
+      let member = team[i];
+      if (member.user_group.is_admin) {
+        if (populated) {
+          admins.push(member);
+        } else {
+          admins.push(member._id);
+        }
+      }
+    }
+
+    return admins;
   }
 };

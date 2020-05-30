@@ -10,14 +10,12 @@
           placeholder="Search chats"
         />
       </header>
-      <fade-transition group>
-        <Chat
-          v-for="(chat, index) in filteredChats"
-          :key="`${index}${genID()}`"
-          :chat-index="index"
-          :chat-information="chat"
-        />
-      </fade-transition>
+      <Chat
+        v-for="(chat, index) in filteredChats"
+        :key="`${index}${genID()}`"
+        :chat-index="index"
+        :chat-information="chat"
+      />
       <div class="grey compose_container">
         <i class="bx bx-plus"></i>
         <p>Start new chat</p>
@@ -33,7 +31,6 @@
 
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
-import { FadeTransition } from "vue2-transitions";
 import Chat from "./Chat";
 
 import genID from "@/mixins/genID";
@@ -43,8 +40,7 @@ export default {
   name: "Chats",
   components: {
     Chat,
-    SButton,
-    FadeTransition
+    SButton
   },
   mixins: [genID],
   data() {

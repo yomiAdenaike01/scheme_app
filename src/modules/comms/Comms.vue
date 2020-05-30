@@ -27,7 +27,7 @@ import Chats from "./components/Chats";
 import ActiveChat from "./components/ActiveChat";
 import SButton from "@/components/SButton";
 export default {
-  name: "CommsModule",
+  name: "Comms",
   components: {
     Chats,
     ActiveChat,
@@ -48,30 +48,30 @@ export default {
       method: () => {
         return new Promise((resolve, reject) => {
           this.getChats()
-            .then(() => {
-              resolve();
-            })
-            .catch(err => {
-              reject(err);
-            });
+            .then(resolve)
+            .catch(reject);
         });
       },
       duration: this.globalIntervals.chat
     });
   },
   activated() {
-    let chatID = this.$route.params?.chatID;
-    if (chatID) {
-      let chatIndex = this.chats.findIndex(chat => {
-        return chat._id == chatID;
-      });
-      this.UPDATE_ACTIVE_CHAT(this.chats[chatIndex]);
-    }
+    this.handleRouting();
   },
   methods: {
     ...mapActions("Comms", ["getChats"]),
     ...mapMutations(["CREATE_GLOBAL_INTERVAL"]),
-    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT"])
+    ...mapMutations("Comms", ["UPDATE_ACTIVE_CHAT"]),
+
+    handleRouting() {
+      let chat_id = this.$route.params?.chat_id;
+      if (chat_id) {
+        let chatIndex = this.chats.findIndex(chat => {
+          return chat._id == chat_id;
+        });
+        this.UPDATE_ACTIVE_CHAT(this.chats[chatIndex]);
+      }
+    }
   }
 };
 </script>

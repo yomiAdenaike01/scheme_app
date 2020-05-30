@@ -1,10 +1,16 @@
 <template>
   <div class="cal_container">
     <div class="sort_by_container">
+      <s-button
+        class="primary rounded"
+        @click="$emit('updateOverlays', { overlay: 'events', display: true })"
+      >
+        {{ adminPermission ? "Groups & Event management" : "Create request" }}
+      </s-button>
       <SortBy
         v-model="eventType"
         filter-text="All event types"
-        :items="[{ label: 'all event groups', value: 0 }, ...eventGroups]"
+        :items="[{ label: 'all event types', value: 0 }, ...eventGroups]"
       />
     </div>
 
@@ -16,23 +22,24 @@
       events-on-month-view="short"
       cell-contextmenu
       :cell-click-hold="false"
-      :on-event-dblclick="deleteEvent"
-      :editable-events="editEvents"
       @cell-contextmenu="createEventHere"
     />
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 import VueCal from "vue-cal";
 import SortBy from "@/components/SortBy";
+import SButton from "@/components/SButton";
+
 import "vue-cal/dist/vuecal.css";
 export default {
   name: "EventsCalendar",
   components: {
     VueCal,
-    SortBy
+    SortBy,
+    SButton
   },
   data() {
     return {
@@ -47,9 +54,10 @@ export default {
   computed: {
     ...mapState(["clientInformation"]),
     ...mapState("Events", ["events"]),
-    ...mapGetters(["getUserGroups"]),
+    ...mapGetters(["adminPermission"]),
     eventGroups() {
-      return this.clientInformation.event_groups.map(group => {
+      let eventGroups = this.clientInformation?.event_groups;
+      return eventGroups?.map(group => {
         return {
           label: group.label,
           value: group._id
@@ -98,7 +106,6 @@ export default {
             content,
             start: this.formatDate(event?.start_date, dateFormat),
             end: this.formatDate(event?.end_date, dateFormat),
-            class: eventClass,
             is_approved: event?.is_approved,
             assigned_to: event?.assigned_to,
             type: event?.type,
@@ -114,35 +121,22 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
-    ...mapMutations(["CREATE_SYSTEM_NOTIFICATION", "UPDATE_OVERLAY_INDEX"]),
-    ...mapMutations("Events", ["DELETE_EVENT"]),
+    ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
     createEventHere({ date }) {
-      return console.log(date);
-      let startDate = date;
-      let endDate = this.initMoment(startDate).add(1, "hour");
-      this.genPromptBox({
-        boxType: "confirm",
-        title: "Create quick event",
-        text: `Would you like to create an event from ${this.formatDate(
-          startDate
-        )} to ${this.formatDate(endDate)}`
-      }).then(() => {});
+      let startOfDay = new Date(new Date(date).setHours(9, 0)).toISOString();
+      let endOfDay = new Date(new Date(date).setHours(17, 0)).toISOString();
+
+      date = [startOfDay, endOfDay];
+
+      this.$emit("updateOverlays", { overlay: "events", display: true });
+      this.$emit("quickCreate", { dates: date });
     },
-    deleteEvent(event) {
-      console.log(event);
-      // this.DELETE_EVENT(event.event_index);
-      // this.request({
-      //   method: "DELETE",
-      //   url: "events/delete",
-      //   data: { _id: event.id }
-      // });
-    },
+
     viewEvent(event) {
       this.UPDATE_OVERLAY_INDEX({
-        view: true,
+        display: true,
         overlay: "viewEvent",
-        data: event
+        payload: event
       });
     }
   }
@@ -154,6 +148,9 @@ export default {
   padding: 10px;
 }
 .sort_by_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 20px;
 }
 .cal_container {
@@ -168,12 +165,11 @@ export default {
     }
 
     .vuecal__event {
-      background: #ecf5ff;
-      border-top: 2px solid $element_colour;
-      border-right: 2px solid white;
-      color: $element_colour;
-      font-size: 0.8em;
-      padding: 1em;
+      background: rgba(var(--colour_secondary), 0.1);
+      border-top: 2px solid rgba(var(--colour_secondary), 1);
+      border-right: none;
+      border-left: none;
+      padding: 1em 0;
       text-transform: capitalize;
 
       &.alone {

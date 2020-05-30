@@ -3,23 +3,29 @@
     <!-- Display if in mobile view -->
 
     <div v-if="getFilteredTeam.length > 0" class="team_members_container">
-      <div
-        v-for="(member, index) in team"
-        :key="index"
-        class="team_member_container"
+      <el-popover
+        v-for="(member, teamIndex) in team"
+        :key="teamIndex"
+        placement="left"
       >
-        <Dropdown
-          :items="items"
-          position="left"
-          :icon="false"
-          @click.native="selectedTeamMember = member"
-          @method="handleEvents"
+        <div
+          slot="reference"
+          class="team_member_container"
+          @click="selectedTeamMember = member"
         >
           <Avatar :name="member.name" :size="40">
             <OnlineIndicator :is-online="member.is_online" />
           </Avatar>
-        </Dropdown>
-      </div>
+        </div>
+        <div
+          v-for="(item, index) in items"
+          :key="index"
+          class="popover_item"
+          @click="item.method"
+        >
+          <span v-html="item.name"></span>
+        </div>
+      </el-popover>
     </div>
     <div v-else class="text_container all_centre">
       <i class="bx bx-user flex_center"></i>
@@ -65,20 +71,19 @@ export default {
     items() {
       let items = [
         {
-          name: "<i class='bx bxl-discourse'></i> Message",
-          command: "message",
-          divider: true
+          name: "Message",
+          method: this.handleComms
         }
       ];
       if (this.adminPermission) {
         items.push(
           {
-            name: "<i class='bx bxs-calendar-check'></i> View events",
-            command: "view_team_member_events"
+            name: " View events",
+            method: this.handleViewTeamMember
           },
           {
-            name: "<i class='bx bx-question-mark'></i> View Requests ",
-            command: "view_team_member_requests"
+            name: " View Requests ",
+            method: this.handleRequests
           }
         );
       }
@@ -88,44 +93,32 @@ export default {
   methods: {
     ...mapActions("Comms", ["createStubChat"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
-
-    handleEvents(event) {
-      switch (event) {
-        case "view_team_member_requests": {
-          this.$emit("changeView", {
-            view: "requests",
-            teamMember: this.selectedTeamMember
-          });
-          break;
+    handleViewTeamMember() {
+      this.$router.push({
+        name: "team",
+        params: {
+          user: this.selectedTeamMember?.name,
+          tab: "events_timeline"
         }
-        case "message": {
-          this.$router.push({
-            name: "comms",
-            params: {
-              userToMessage: {
-                name: this.selectedTeamMember?.name,
-                _id: this.selectedTeamMember?._id
-              }
-            }
-          });
-          this.createStubChat();
-          break;
+      });
+    },
+    handleRequests() {
+      this.$router.push({
+        name: "requests",
+        params: { teamMember: this.selectedTeamMember }
+      });
+    },
+    handleComms() {
+      this.$router.push({
+        name: "comms",
+        params: {
+          userToMessage: {
+            name: this.selectedTeamMember?.name,
+            _id: this.selectedTeamMember?._id
+          }
         }
-
-        case "view_team_member_events": {
-          this.$router.push({
-            name: "team",
-            params: {
-              user: this.selectedTeamMember?.name,
-              tab: "events_timeline"
-            }
-          });
-          break;
-        }
-
-        default:
-          break;
-      }
+      });
+      this.createStubChat();
     }
   }
 };

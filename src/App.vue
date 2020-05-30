@@ -38,68 +38,84 @@ export default {
     ...mapState(["team", "overlayIndex"]),
     ...mapGetters(["getIsIE"])
   },
-
   created() {
     if (this.getIsIE) {
       alert(
         "Your browser is Internet explorer, we do not support this browser and suggest movement towards a more modern browser i.e. Google chrome, we apologise for the inconvinience"
       );
     }
-
-    let currentHostname = window.location.hostname.toString().split(".");
-    let subdomain = currentHostname[0];
     this.CREATE_GLOBAL_INTERVAL({
       immediate: true,
       id: "client",
-      method: () => {
-        return new Promise((resolve, reject) => {
-          this.request({
-            method: "GET",
-            url: "clients/get",
-            params: { subdomain }
-          })
-            .then(response => {
-              this.UPDATE_CLIENT_INFORMATION(response);
-              this.loading = false;
-              resolve();
+      method: async () => {
+        try {
+          this.identifyClient()
+            .then(() => {
+              return Promise.resolve();
             })
-            .catch(err => {
-              this.loading = false;
-              this.DELETE_USER_SESSION();
-              if (this.dialogShowing == false) {
-                this.genPromptBox({
-                  boxType: "prompt",
-                  title: "No client found",
-                  text:
-                    "Please enter your client subdomain to go to your scheme cloud instance",
-                  type: "info"
-                }).then(({ value }) => {
-                  this.refactorWindowLocation(value);
-                });
-                this.dialogShowing = true;
-              }
-              reject(err);
+            .catch(() => {
+              return Promise.reject();
             });
-        });
+        } catch (error) {
+          return Promise.reject(error);
+        }
       },
       duration: this.globalIntervals.client
     });
   },
 
   beforeDestroy() {
-    this.DELETE_GLOBAL_INTERVAL();
-    this.DELETE_USER_SESSION();
+    this.logOut();
   },
 
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
+    ...mapActions(["request", "genPromptBox", "logOut"]),
     ...mapMutations([
       "DELETE_USER_SESSION",
       "CREATE_GLOBAL_INTERVAL",
       "DELETE_GLOBAL_INTERVAL",
       "UPDATE_CLIENT_INFORMATION",
       "CLEAR_NOTIFICATIONS"
-    ])
+    ]),
+    destroyApplication() {
+      this.DELETE_GLOBAL_INTERVAL("client");
+      this.DELETE_GLOBAL_INTERVAL();
+      this.DELETE_USER_SESSION();
+    },
+    async identifyClient() {
+      try {
+        let currentHostname = window.location.hostname.toString().split(".");
+        let subdomain = currentHostname[0];
+
+        let apiResponse = await this.request({
+          method: "GET",
+          url: "clients/get",
+          params: { subdomain }
+        });
+
+        this.UPDATE_CLIENT_INFORMATION(apiResponse);
+        this.loading = false;
+
+        return Promise.resolve();
+      } catch (error) {
+        let { value } = await this.genPromptBox({
+          boxType: "prompt",
+          title: "No client found",
+          text:
+            "Please enter your client subdomain to go to your scheme cloud instance",
+          type: "info"
+        });
+
+        this.refactorWindowLocation(value);
+        this.destroyApplication();
+
+        if (this.dialogShowing == false) {
+          this.dialogShowing = true;
+        }
+
+        return Promise.reject(error);
+      }
+    }
   }
 };
 </script>
@@ -142,8 +158,8 @@ ul {
   --colour_primary: 74, 85, 100;
   --colour_grey: 250, 250, 250;
   --colour_secondary: 89, 212, 140;
-  --colour_grey_light: hsl(0, 0%, 98%);
-  --colour_yellow: hsl(23, 100%, 63%);
+  --colour_dark_grey: 210, 210, 210;
+
   --blue: 1, 104, 250;
   --indigo: 91, 71, 251;
   --purple: 111, 66, 193;
@@ -154,9 +170,6 @@ ul {
   --green: 16, 183, 89;
   --teal: 0, 204, 204;
   --cyan: 0, 184, 212;
-  --white: 255, 255, 255;
-  --gray: 121, 135, 161;
-  --gray-dark: 59, 72, 99;
   --primary: 1, 104, 250;
   --secondary: 59, 72, 99;
   --success: 16, 183, 89;
@@ -208,6 +221,17 @@ ul {
     cursor: default;
   }
 }
+.popover_item {
+  padding: 10px;
+  text-transform: capitalize;
+  transition: $default_transition;
+  cursor: pointer;
+  &:hover {
+    background: rgba(var(--colour_secondary), 0.06);
+    color: rgba(var(--colour_secondary), 1);
+  }
+}
+
 .s_input {
   border: none;
   background: transparent;
@@ -218,6 +242,10 @@ ul {
   outline: none;
   width: 100%;
   border: 1px solid rgba(var(--colour_primary), 0.17);
+  &:focus {
+    border: 1px solid rgba(var(--colour_secondary), 0.6);
+    caret-color: rgba(var(--colour_secondary), 0.6);
+  }
 
   &.checkbox {
     width: initial;
@@ -241,6 +269,7 @@ ul {
     font-weight: bold;
   }
 }
+
 /*
 
 Fonts

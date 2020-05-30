@@ -90,6 +90,7 @@
       </div>
 
       <hr />
+      <!-- Activity log -->
       <div
         v-loading="activityLoading"
         class="activity_wrapper"
@@ -97,12 +98,11 @@
       >
         <div
           v-if="selectedUserActivity.length > 0"
-          v-loading="loading"
           class="activity_subcontainer"
         >
           <div class="title_bar">
             <h3>Activity feed</h3>
-            <i class="bx bx-x" @click="deleteActivityLog"></i>
+            <i class="bx bx-x-circle trigger" @click="deleteActivityLog"></i>
           </div>
           <ActivityLog
             v-for="activity in selectedUserActivity"
@@ -169,7 +169,7 @@ export default {
       selectedTeamMemberIndex: 0,
       selectedUserActivity: [],
       loading: false,
-      activityLoading: false,
+      activityLoading: true,
       filters: {
         userGroup: ""
       }
@@ -244,6 +244,26 @@ export default {
           click: () => {
             this.mode = "delete";
             this.handleTeamMember();
+          }
+        },
+        {
+          icon: "-calendar",
+          label: `Create event`,
+
+          condition: this.hasPermission,
+          click: () => {
+            this.mode = "delete";
+            let routePayload = {
+              createEvent: {
+                params: {
+                  assigned_to: [this.selectedTeamMember._id]
+                }
+              }
+            };
+            this.$router.push({
+              name: "events",
+              params: routePayload
+            });
           }
         }
       ];
@@ -510,19 +530,19 @@ export default {
       "DELETE_TEAM_MEMBER",
       "CREATE_TEAM_MEMBER"
     ]),
-    deleteActivityLog() {
+    async deleteActivityLog() {
       this.activityLoading = true;
       let apiPayload = {
         method: "DELETE",
-        url: "services/logs/delete/all"
+        url: "services/logs/delete"
       };
-      this.request(apiPayload)
-        .then(() => {
-          this.activityLoading = false;
-        })
-        .catch(() => {
-          this.activityLoading = false;
-        });
+      try {
+        await this.request(apiPayload);
+        this.activityLoading = false;
+        this.selectedUserActivity = [];
+      } catch (error) {
+        this.activityLoading = false;
+      }
     },
     toggleOverlay(val) {
       this.displayOverlay = val;
@@ -538,20 +558,25 @@ export default {
       };
       return timeXref[true] ? timeXref[true] : "in_progress";
     },
-    getAuditLog() {
-      this.loading = true;
-      this.request({
-        method: "GET",
-        url: "services/logs",
-        params: { user_id: this.selectedTeamMember._id }
-      }).then(response => {
-        this.loading = false;
-        this.selectedUserActivity = response;
-      });
+    async getAuditLog() {
+      try {
+        this.selectedUserActivity = await this.request({
+          method: "GET",
+          url: "services/logs",
+          params: { user_id: this.selectedTeamMember._id }
+        });
+        this.activityLoading = false;
+      } catch (error) {
+        this.activityLoading = false;
+      }
     },
     async handleTeamMember(e) {
       if (e) {
-        this.inputtedTeamMemberData = Object.assign({}, e);
+        this.inputtedTeamMemberData = Object.assign(
+          {},
+          this.inputtedTeamMemberData,
+          e
+        );
       }
       // Update team member from form
       let methodXref = this.handleTeamMemberXref.methods[this.mode];
@@ -706,6 +731,14 @@ export default {
   align-items: center;
 }
 
+.title_bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  h3 {
+    margin: 0;
+  }
+}
 /*
 
    __  __       _     _ _

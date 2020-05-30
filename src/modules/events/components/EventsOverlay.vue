@@ -122,9 +122,10 @@ export default {
   computed: {
     ...mapState(["clientInformation", "userInformation"]),
     ...mapState("Team", ["team"]),
-    ...mapState("Events", ["events", "eventRequests", "eventTemplates"]),
+    ...mapState("Events", ["events", "eventTemplates"]),
+    ...mapState("Requests", ["requests"]),
     ...mapGetters(["adminPermission", "groupLookup"]),
-    ...mapGetters("Team", ["userLookup"]),
+    ...mapGetters("Team", ["userLookup", "admins"]),
 
     displayForEvents() {
       return ["create_event", "create_request"].indexOf(this.selectedTab) > -1;
@@ -138,13 +139,12 @@ export default {
       return validations[true];
     },
     tabItems() {
-      let tabItems = [];
-      if (this.adminPermission) {
-        tabItems.unshift("manage_groups", "create_event");
-      } else {
-        tabItems.unshift("create_request");
-      }
-      return tabItems;
+      let tabItems = {
+        [this.adminPermission]: ["create_event", "manage_groups"],
+        [!this.adminPermission]: ["create_request"]
+      };
+
+      return tabItems[true];
     },
     filteredTemplates() {
       let templates = [];
@@ -208,7 +208,7 @@ export default {
           }
         ]
       };
-      form[true].push(dateTimeFormItem, eventTypeFormItem);
+      form[true].unshift(dateTimeFormItem, eventTypeFormItem);
       return form[true];
     },
     view: {
@@ -223,8 +223,8 @@ export default {
       let excludeProperties = ["is_approved", "assigned_to"];
       // Get admins for assigned to request
       let admins = {
-        request: this.getAdmins(false),
-        mutation: this.getAdmins(true)
+        request: this.admins(false),
+        mutation: this.admins(true)
       };
 
       let mutation = Object.assign(
@@ -310,7 +310,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request", "genPromptBox"]),
+    ...mapActions(["request", "genPromptBox", "notify"]),
     ...mapMutations(["CREATE_SYSTEM_NOTIFICATION"]),
     ...mapMutations("Events", [
       "CREATE_EVENT",
@@ -318,15 +318,36 @@ export default {
       "UPDATE_EVENT",
       "DELETE_EVENT_TEMPLATE",
       "CREATE_EVENT_TEMPLATE",
-      "UPDATE_EVENT_TEMPLATE",
-      "DELETE_EVENT_REQUEST",
-      "CREATE_EVENT_REQUEST",
-      "UPDATE_EVENT_REQUEST"
+      "UPDATE_EVENT_TEMPLATE"
+    ]),
+    ...mapMutations("Requests", [
+      "DELETE_REQUEST",
+      "CREATE_REQUEST",
+      "UPDATE_REQUEST"
     ]),
 
+    closeOverlay() {
+      this.view = false;
+    },
+
     populateForm(data) {
+      let notifyXref = {
+        [!this.adminPermission]: {
+          title: "Request form populated",
+          type: "request",
+          label: "Create request"
+        },
+        [this.adminPermission]: {
+          title: "Event form populated",
+          type: "event",
+          label: "Create event"
+        }
+      };
+
+      let notificationContent = notifyXref[true];
+
       if (!this.populated) {
-        this.selectedTab = this.tabItems[1];
+        this.selectedTab = this.tabItems[0];
         if (data?.start_date || data?.end_date) {
           data = this.cleanObject(["start_date", "end_date"], data);
         }
@@ -337,19 +358,31 @@ export default {
         }
 
         this.CREATE_SYSTEM_NOTIFICATION({
-          title: "Event form populated",
+          title: notificationContent.title,
           message: "Your form has been auto populated",
-          type: "info",
+          type: notificationContent.type,
           methods: [
             {
-              label: "Create event",
-              body: async () => {
-                await this.createEvent();
-              }
+              label: notificationContent.label,
+              body: this.createEvent
             }
           ]
         });
         this.populated = true;
+      }
+    },
+    // Create notification for assigned users
+    async handleNotify() {
+      try {
+        this.notify({
+          for: this.formData.assigned_to,
+          message: `You have been assigned to a ${this.localData.type.label} event`,
+          payload: { event_id: this.newEventID },
+          sent_from: this.userInformation._id,
+          type: "event"
+        });
+      } catch (error) {
+        return Promise.reject(error);
       }
     },
     async createEvent() {
@@ -368,10 +401,14 @@ export default {
 
         let apiResponse = await this.request(apiPayload);
 
+        // Create the qr code the event
         if (apiResponse) {
           this.newEventID = apiResponse._id;
           this.UPDATE_EVENT({ payload: apiResponse });
         }
+        // Create notification for the assignees
+        this.handleNotify();
+        // Create template
         await this.createTemplate(localPayload, apiPayload);
       } catch (e) {
         this.DELETE_EVENT();
@@ -446,23 +483,35 @@ export default {
         let { request, mutation } = this.requestPayload;
         // Create local request
 
-        this.CREATE_EVENT_REQUEST(mutation);
+        this.CREATE_REQUEST(mutation);
 
         // Create api request
         let apiRequstPayload = {
           data: request,
-          url: "events/requests/create",
+          url: "requests/create",
           method: "POST"
         };
         let apiResponse = await this.request(apiRequstPayload);
 
         if (apiResponse) {
-          this.UPDATE_EVENT_REQUEST({
-            index: this.eventRequests.length - 1,
+          this.UPDATE_REQUEST({
+            index: this.requests.length - 1,
             ...apiResponse
           });
         }
-
+        // Create request notifications
+        let user = this.userInformation;
+        this.notify({
+          message: `${
+            user.name
+          } has created a ${this.localData.type.label.toLowerCase()} request`,
+          for: this.admins(false),
+          payload: {
+            request_id: apiResponse._id
+          },
+          type: "request"
+        });
+        // Go to requests
         this.CREATE_SYSTEM_NOTIFICATION({
           title: "Request created",
           message:
@@ -473,16 +522,18 @@ export default {
               body: () => {
                 // Close overlay and go to requests with params
                 this.$emit("close");
-                this.$emit("changeView", {
-                  view: "requests",
-                  teamMember: this.userInformation
+                this.$router.push({
+                  name: "requests",
+                  params: {
+                    request_id: apiResponse._id
+                  }
                 });
               }
             }
           ]
         });
       } catch (error) {
-        this.DELETE_EVENT_REQUEST();
+        this.DELETE_REQUEST();
         console.error(error);
       }
     },
@@ -490,8 +541,10 @@ export default {
       try {
         if (this.adminPermission) {
           await this.createEvent();
+          this.closeOverlay();
         } else {
           await this.createRequest();
+          this.closeOverlay();
         }
       } catch (error) {
         return Promise.reject(error);
@@ -532,22 +585,6 @@ export default {
       } catch (error) {
         this.UPDATE_EVENT_TEMPLATE(this.eventTemplateRef);
       }
-    },
-
-    getAdmins(populated) {
-      let admins = [];
-      for (let i = 0, len = this.team.length; i < len; i++) {
-        let member = this.team[i];
-        if (member.user_group.is_admin) {
-          if (populated) {
-            admins.push(member);
-          } else {
-            admins.push(member._id);
-          }
-        }
-      }
-
-      return admins;
     }
   }
 };
