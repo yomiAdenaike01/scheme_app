@@ -139,13 +139,12 @@ export default {
       return validations[true];
     },
     tabItems() {
-      let tabItems = [];
-      if (this.adminPermission) {
-        tabItems.unshift("manage_groups", "create_event");
-      } else {
-        tabItems.unshift("create_request");
-      }
-      return tabItems;
+      let tabItems = {
+        [this.adminPermission]: ["create_event", "manage_groups"],
+        [!this.adminPermission]: ["create_request"]
+      };
+
+      return tabItems[true];
     },
     filteredTemplates() {
       let templates = [];
@@ -332,8 +331,23 @@ export default {
     },
 
     populateForm(data) {
+      let notifyXref = {
+        [!this.adminPermission]: {
+          title: "Request form populated",
+          type: "request",
+          label: "Create request"
+        },
+        [this.adminPermission]: {
+          title: "Event form populated",
+          type: "event",
+          label: "Create event"
+        }
+      };
+
+      let notificationContent = notifyXref[true];
+
       if (!this.populated) {
-        this.selectedTab = this.tabItems[1];
+        this.selectedTab = this.tabItems[0];
         if (data?.start_date || data?.end_date) {
           data = this.cleanObject(["start_date", "end_date"], data);
         }
@@ -344,15 +358,13 @@ export default {
         }
 
         this.CREATE_SYSTEM_NOTIFICATION({
-          title: "Event form populated",
+          title: notificationContent.title,
           message: "Your form has been auto populated",
-          type: "info",
+          type: notificationContent.type,
           methods: [
             {
-              label: "Create event",
-              body: async () => {
-                await this.createEvent();
-              }
+              label: notificationContent.label,
+              body: this.createEvent
             }
           ]
         });

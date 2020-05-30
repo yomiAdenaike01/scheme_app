@@ -181,6 +181,9 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
+    propertiesToEdit() {
+      return ["assigned_to", "start", "end"];
+    },
     beforeStart() {
       return this.initMoment(new Date()).isBefore(this.event.start);
     },
@@ -418,9 +421,19 @@ export default {
       try {
         // Send notififcation to new assignees
         this.handleNewAssignees();
+        let updateEventPayload = {};
+        // check what has changed and whether it is in the scope of properties that are allowed to be changed
+        for (let property in this.viewEvent.payload) {
+          if (this.propertiesToEdit.indexOf(property) > -1) {
+            if (this.viewEvent.payload[property] != this.event[property]) {
+              updateEventPayload[property] = this.event[property];
+            }
+          }
+        }
+        return console.log(updateEventPayload);
 
-        this.UPDATE_EVENT(this.event);
-        // await this.request(this.updateApiPayload);
+        this.UPDATE_EVENT(updateEventPayload);
+        await this.request(this.updateApiPayload);
       } catch (error) {
         console.error(error);
       }
