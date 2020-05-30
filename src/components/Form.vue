@@ -78,8 +78,9 @@
         </select>
 
         <textarea
-          v-if="input.compoent_type == 'textarea'"
+          v-if="input.component_type == 'textarea'"
           v-model="formContent[input.model]"
+          :placeholder="input.placeholder"
           class="s_input"
         />
         <!-- DYNAMIC INPUTS -->

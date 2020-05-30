@@ -125,7 +125,7 @@ export default {
     ...mapState("Events", ["events", "eventTemplates"]),
     ...mapState("Requests", ["requests"]),
     ...mapGetters(["adminPermission", "groupLookup"]),
-    ...mapGetters("Team", ["userLookup"]),
+    ...mapGetters("Team", ["userLookup", "admins"]),
 
     displayForEvents() {
       return ["create_event", "create_request"].indexOf(this.selectedTab) > -1;
@@ -209,7 +209,7 @@ export default {
           }
         ]
       };
-      form[true].push(dateTimeFormItem, eventTypeFormItem);
+      form[true].unshift(dateTimeFormItem, eventTypeFormItem);
       return form[true];
     },
     view: {
@@ -224,8 +224,8 @@ export default {
       let excludeProperties = ["is_approved", "assigned_to"];
       // Get admins for assigned to request
       let admins = {
-        request: this.getAdmins(false),
-        mutation: this.getAdmins(true)
+        request: this.admins(false),
+        mutation: this.admins(true)
       };
 
       let mutation = Object.assign(
@@ -487,7 +487,19 @@ export default {
             ...apiResponse
           });
         }
-
+        // Create request notifications
+        let user = this.userInformation;
+        this.notify({
+          message: `${
+            user.name
+          } has created a ${this.localData.type.label.toLowerCase()} request`,
+          for: this.admins(false),
+          payload: {
+            request_id: apiResponse._id
+          },
+          type: "request"
+        });
+        // Go to requests
         this.CREATE_SYSTEM_NOTIFICATION({
           title: "Request created",
           message:
@@ -561,22 +573,6 @@ export default {
       } catch (error) {
         this.UPDATE_EVENT_TEMPLATE(this.eventTemplateRef);
       }
-    },
-
-    getAdmins(populated) {
-      let admins = [];
-      for (let i = 0, len = this.team.length; i < len; i++) {
-        let member = this.team[i];
-        if (member.user_group.is_admin) {
-          if (populated) {
-            admins.push(member);
-          } else {
-            admins.push(member._id);
-          }
-        }
-      }
-
-      return admins;
     }
   }
 };

@@ -142,7 +142,7 @@
           <h2 class="grey">Notes</h2>
           <textarea
             v-model="selectedRequest.notes"
-            :disabled="!hasAccess"
+            disabled
             class="s_input"
           ></textarea>
         </div>
@@ -372,7 +372,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["request"]),
+    ...mapActions(["request", "notify"]),
     ...mapMutations("Requests", ["UPDATE_REQUEST", "DELETE_REQUEST"]),
     updateSeenRequest(request) {
       if (request.status == "sent" && this.adminPermission) {
@@ -476,9 +476,19 @@ export default {
           update,
           index: this.requestIndex
         });
+        // Notify
+        this.notify({
+          for: [this.selectedRequest.requested_by._id],
+          message: `Your ${this.selectedRequest.type.label} request has been ${update.status}`,
+          payload: {
+            request_id: this.requestID
+          },
+          type: "request"
+        });
 
         //  API request
         update.message = this.updateMessageXref(update);
+
         const apiPayload = {
           method: "PUT",
           url: "requests/update",

@@ -56,6 +56,7 @@
         </div>
       </div>
     </div>
+    <!-- No notifications -->
     <div v-else class="text_container all_centre">
       <i class="bx bx-bell"></i>
       <h3>No notifications found</h3>
@@ -99,6 +100,8 @@ export default {
       "iconXref"
     ]),
     ...mapState("Events", ["events"]),
+    ...mapState("Comms", ["chats"]),
+    ...mapState("Requests", ["requests"]),
 
     categoryLangXref() {
       return {
@@ -188,40 +191,63 @@ export default {
     },
     handleMessage(notification) {
       let payload = notification.payload;
+      let chatExists = this.chats.findIndex(x => x._id == payload.chat_id) > -1;
+
+      if (chatExists) {
+        this.updateRoute({
+          name: "comms",
+          params: {
+            chat_id: payload.chat_id
+          }
+        });
+      } else {
+        this.sysNotify("Chat", "chat");
+      }
       // Route to chat and message
-      this.updateRoute({
-        name: "comms",
-        params: {
-          chat_id: payload.chat_id
-        }
-      });
     },
     handleRequest(notification) {
-      this.updateRoute({
-        name: "requests",
-        params: {
-          view: "requests",
-          teamMember: notification.sent_from._id
-        }
-      });
+      let requestPayload = notification.payload.request_id;
+      let requestExists =
+        this.requests.findIndex(x => x._id == requestPayload) > -1;
+      if (requestExists) {
+        this.updateRoute({
+          name: "requests",
+          params: {
+            view: "requests",
+            teamMember: notification.sent_from._id
+          }
+        });
+      } else {
+        this.sysNotify("Request", "request");
+      }
     },
     handleEvent(notification) {
-      let eventPayload = this.events.find(x => {
+      // check event exists
+      let eventIndex = this.events.findIndex(x => {
         return x._id == notification.payload.event_id;
       });
-      if (eventPayload) {
+
+      // go to route and display overlay
+      if (eventIndex > -1) {
+        this.updateRoute({
+          name: "events"
+        });
+
         this.UPDATE_OVERLAY_INDEX({
           overlay: "viewEvent",
           display: true,
-          payload: eventPayload
+          payload: this.events[eventIndex]
         });
       } else {
-        this.CREATE_SYSTEM_NOTIFICATION({
-          title: "Event not found",
-          message:
-            "Your requested event could not be found. It may have been deleted"
-        });
+        this.sysNotify("Event", "requested event");
       }
+    },
+    sysNotify(title, message) {
+      // abstract notification
+      this.CREATE_SYSTEM_NOTIFICATION({
+        title: `${title} not found`,
+        message: `Your ${message} could not be found it may have been deleted`
+      });
     },
     handleNotification(e, notification, index) {
       e.stopPropagation();
