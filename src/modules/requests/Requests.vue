@@ -338,18 +338,16 @@ export default {
       let requests = [...this.requests];
       for (let i = 0, len = requests.length; i < len; i++) {
         let request = requests[i];
-        if (request) {
-          if (!filterLabel.includes(request.type.label)) {
-            continue;
-          }
+        if (!filterLabel.includes(request?.type?.label)) {
+          continue;
+        }
 
-          if (filterRequestedBy != request.requested_by._id) {
-            continue;
-          }
+        if (filterRequestedBy != request?.requested_by?._id) {
+          continue;
+        }
 
-          if (filterStatus != request.status) {
-            continue;
-          }
+        if (filterStatus != request?.status) {
+          continue;
         }
 
         filteredRequests.push(request);
@@ -486,8 +484,7 @@ export default {
               assigned_to: this.leanAssignedTo
             }
           };
-          await this.request(apiPayload);
-          // Notify
+
           this.notify({
             for: [this.selectedRequest.requested_by._id],
             message: `Your ${this.selectedRequest.type.label} request has been ${update.status}`,
@@ -496,6 +493,7 @@ export default {
             },
             type: "request"
           });
+          await this.request(apiPayload);
         };
 
         // handle approve
