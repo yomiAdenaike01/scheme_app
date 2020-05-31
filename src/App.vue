@@ -142,6 +142,7 @@ ul {
 .el-popper {
   padding: 0px !important;
 }
+
 .popover_title {
   background: rgb(250, 250, 250);
   flex: 1;

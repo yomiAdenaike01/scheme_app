@@ -59,7 +59,9 @@ $sbutton_config: (
   grey: var(--colour_grey)
 );
 $shadow: -4px 10px 21px var(--colour_even_lighter_primary);
-
+.no_cap {
+  text-transform: initial;
+}
 .button_container {
   font-size: 0.9em;
   background: rgba(var(--colour_primary), 1);

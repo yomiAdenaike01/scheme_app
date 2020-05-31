@@ -7,9 +7,6 @@ import NProgress from "vue-nprogress";
 // Plugins
 import "./plugins/mobile";
 import "./plugins/element";
-import "./plugins/firebase";
-import "./plugins/shortKeys";
-import "./plugins/intro";
 // boxicons
 import "boxicons";
 // Prototypes
