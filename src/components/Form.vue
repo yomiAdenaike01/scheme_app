@@ -121,6 +121,11 @@
           :disabled="input.disabled"
           :start-placeholder="input.start_placeholder"
           :end-placeholder="input.end_placeholder"
+          format="DD-MM-yyyy HH:mm"
+          :disabled-date="today"
+          :default-date="today"
+          :shortcuts="datePickerShortcuts"
+          :default-time="['08:00:00', '20:59:59']"
         />
 
         <!-- Hint -->
@@ -203,6 +208,16 @@ export default {
     }
   },
   computed: {
+    datePickerShortcuts() {
+      return [
+        {
+          text: "Monday to friday"
+        }
+      ];
+    },
+    today() {
+      return new Date();
+    },
     inputTypes() {
       return ["text", "checkbox", "password"];
     },
@@ -359,5 +374,8 @@ header {
 .first_option {
   padding: 15px;
   cursor: not-allowed;
+}
+.form_item /deep/ .el-date-editor--datetimerange {
+  width: 100%;
 }
 </style>
