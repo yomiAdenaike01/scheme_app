@@ -4,7 +4,7 @@
       <!-- Approval -->
       <div class="header_container text_container all_centre">
         <!-- Pin code -->
-        <div  class="pins_container">
+        <div  v-if="currentUserIndex > -1 || adminPermission" class="pins_container">
           <input
           v-for="(digit,digitIndex) in event.clock_in_code"
           :key="digit"
@@ -164,6 +164,7 @@ import Avatar from "@/components/Avatar";
 import SButton from "@/components/SButton";
 import Form from "@/components/Form";
 import { FadeTransition } from "vue2-transitions";
+import cleanObject from "@/mixins/cleanObject"
 export default {
   name: "ViewEventOverlay",
   components: {
@@ -173,6 +174,7 @@ export default {
     Form,
     FadeTransition
   },
+  mixins:[cleanObject],
   data() {
     return {
       event: {},
@@ -191,6 +193,7 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
+ 
     isCorrectCode(){
       let enteredCode = Object.values(this.pinCode);
       return this.event.clock_in_code == enteredCode.join('')
@@ -203,7 +206,26 @@ export default {
       return momentStart.isBefore(timeCapBefore);
     },
     propertiesToEdit() {
-      return ["assigned_to", "start", "end"];
+      let clearedProperties = this.cleanObject(["assigned_to", "start", "end",'type'],this.event,true);
+  
+     let dateFunc = (val) => {
+return new Date(val).toISOString();
+}
+     let xref = {
+       assigned_to:()=>{
+         return this.depopulatedAssigned
+       },
+       start:dateFunc,
+       end:dateFunc,
+       type:(val)=>{
+         return val._id
+       }
+     }
+     for(let property in xref){
+       clearedProperties[property] = xref[property](this.event[property])
+     }
+     
+     return clearedProperties;
     },
     beforeStart() {
       return this.initMoment(new Date()).isBefore(this.event.start);

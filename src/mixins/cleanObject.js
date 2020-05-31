@@ -1,11 +1,17 @@
 export default {
   methods: {
-    cleanObject(excludeProperties, object) {
+    cleanObject(excludeProperties, object, include = false) {
       let returnObject = {};
 
       for (let property in object) {
-        if (excludeProperties.indexOf(property) == -1) {
-          returnObject[property] = object[property];
+        if (!include) {
+          if (excludeProperties.indexOf(property) == -1) {
+            returnObject[property] = object[property];
+          }
+        } else {
+          if (excludeProperties.indexOf(property) > -1) {
+            returnObject[property] = object[property];
+          }
         }
       }
 
