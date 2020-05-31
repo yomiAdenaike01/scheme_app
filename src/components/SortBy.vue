@@ -15,11 +15,11 @@
         :key="index"
         class="popover_item"
         @click="
-          $emit('itemSelected', item.label);
+          $emit('itemSelected', item._id);
           displayPopover = false;
         "
       >
-        {{ item.label }}
+        {{ item.label || item.name }}
       </div>
     </el-popover>
   </div>
@@ -75,7 +75,7 @@ export default {
   background: rgba(var(--colour_primary), 1);
   border-radius: 50%;
   color: white;
-  font-size: 1.5em;
-  padding: 5px;
+  font-size: 1em;
+  padding: 10px;
 }
 </style>

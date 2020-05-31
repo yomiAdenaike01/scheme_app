@@ -1,10 +1,14 @@
 <template>
   <Overlay v-model="display">
     <div class="view_event_container">
+      <div class=" event_type_container text_container all_centre">
+        <h2>{{ event.type.label }}</h2>
+        <div class="id_container">ID:{{ event._id }}</div>
+      </div>
       <!-- Approval -->
       <div class="header_container text_container all_centre">
         <!-- Pin code -->
-        <p>{{ pinCodeText }}</p>
+        <p v-if="currentUserIndex > -1">{{ pinCodeText }}</p>
         <div
           v-if="currentUserIndex > -1 || adminPermission"
           class="pins_container"
@@ -212,6 +216,7 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
+
     pinCodeText() {
       let message =
         "You need to enter the code below to clock in for your event";
@@ -378,6 +383,15 @@ export default {
     ...mapActions(["request", "notify"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["UPDATE_EVENT", "DELETE_EVENT"]),
+    async requestAssignment() {
+      // Create a request to be assigned to an event
+      try {
+        this.createNotification(
+          `${this.userInformation.name} is requesting to be assigend to event ${this.event._id}`,
+          [this.event.created_by._id]
+        );
+      } catch (error) {}
+    },
     hasClockedIn(assginee) {
       return this.event.clocked_in.findIndex(x => x._id == assginee._id) > -1;
     },
@@ -603,6 +617,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.event_type_container {
+  margin: 30px 0;
+}
 .view_event_container {
   overflow-x: hidden;
   position: relative;
@@ -612,7 +629,12 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
+.id_container {
+  border: 1.3px solid rgba(var(--success), 1);
+  color: rgba(var(--success), 1);
+  padding: 5px 10px;
+  border-radius: 10px;
+}
 .add_team_member {
   border: $border;
   padding: 10px;

@@ -205,23 +205,7 @@ ul {
 .large_icon {
   font-size: 9em;
 }
-.input_pill {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 10px;
-  justify-content: space-evenly;
-  max-width: fit-content;
-  border: $border;
-  border-radius: 40px;
-  margin: 10px;
-  cursor: pointer;
-  font-size: 0.9em;
-  text-transform: capitalize;
-  &.no_pointer {
-    cursor: default;
-  }
-}
+
 .popover_item {
   padding: 10px;
   text-transform: capitalize;

@@ -7,11 +7,6 @@
       >
         {{ adminPermission ? "Groups & Event management" : "Create request" }}
       </s-button>
-      <SortBy
-        v-model="eventType"
-        filter-text="All event types"
-        :items="[{ label: 'all event types', value: 0 }, ...eventGroups]"
-      />
     </div>
 
     <VueCal
@@ -45,85 +40,64 @@ export default {
     return {
       view: false,
       loading: false,
-      eventsXref: {},
-      eventType: "all event groups",
-      userGroup: "",
+
       editEvents: false
     };
   },
   computed: {
     ...mapState(["clientInformation"]),
     ...mapState("Events", ["events"]),
+    ...mapState("Team", ["team"]),
     ...mapGetters(["adminPermission"]),
-    eventGroups() {
-      let eventGroups = this.clientInformation?.event_groups;
-      return eventGroups?.map(group => {
-        return {
-          label: group.label,
-          value: group._id
-        };
-      });
-    },
+
     calEvents() {
-      let filterEvents = this.eventType.toLowerCase();
-      if (this.events.length > 0) {
-        let dateFormat = "YYYY-MM-DD hh:mm";
-        let events = [...this.events];
-        var _events = [];
+      let localEvents = [];
+      let apiEvents = [...this.events];
 
-        for (let i = 0, len = events.length; i < len; i++) {
-          let event = events[i];
+      if (apiEvents.length > 0) {
+        for (let i = 0, len = apiEvents.length; i < len; i++) {
+          let apiEvent = apiEvents[i];
 
-          if (Object.values(events[i]).length > 0) {
-            let firstAssignee = event?.assigned_to?.[0];
-            var content = `${firstAssignee?.name ?? "Unassigned"}`;
+          let formattedEvent = this.convertToVueCal(apiEvent, i);
 
-            if (event?.assigned_to?.length - 1 > 0) {
-              content = `${content} +${parseInt(
-                event?.assigned_to?.length - 1
-              )} others`;
-            }
-            var eventClass = "";
+          formattedEvent = Object.assign(formattedEvent, apiEvent);
 
-            if (event?.assigned_to.length == 0) {
-              eventClass = "no_assignee";
-            }
-            if (event?.assigned_to.length == 1) {
-              eventClass = "alone";
-            }
-          }
-
-          if (
-            filterEvents != "all event groups" &&
-            event?.type.label.toLowerCase() != filterEvents
-          ) {
-            continue;
-          }
-
-          _events.push({
-            title: `${event?.type?.label} event`,
-            heading: event?.type?.label,
-            content,
-            start: this.formatDate(event?.start_date, dateFormat),
-            end: this.formatDate(event?.end_date, dateFormat),
-            is_approved: event?.is_approved,
-            assigned_to: event?.assigned_to,
-            type: event?.type,
-            _id: event._id,
-            deleteadble: true,
-            notice_period: event?.notice_period,
-            created_by: event?.created_by,
-            event_index: i,
-            ...event
-          });
+          localEvents.push(formattedEvent);
         }
       }
-      return _events;
+      return localEvents;
+    },
+    convertToVueCal() {
+      return (apiEvent, i) => {
+        let dateFormat = "YYYY-MM-DD hh:mm";
+
+        let firstAssignee = apiEvent.assigned_to[0];
+        let content = `${firstAssignee?.name ?? "Unassigned"}`;
+
+        if (apiEvent.assigned_to.length - 1 > 0) {
+          content = `${content} +${parseInt(
+            apiEvent.assigned_to.length - 1
+          )} others`;
+        }
+
+        let formattedEvent = {
+          title: `${apiEvent.type.label} event`,
+          heading: apiEvent.type.label,
+          content,
+          start: this.formatDate(apiEvent.start_date, dateFormat),
+          end: this.formatDate(apiEvent.end_date, dateFormat),
+          deleteadble: true,
+          event_index: i
+        };
+        return formattedEvent;
+      };
     }
   },
   methods: {
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
+
     createEventHere({ date }) {
+      // Select the start and end of day
       let startOfDay = new Date(new Date(date).setHours(9, 0)).toISOString();
       let endOfDay = new Date(new Date(date).setHours(17, 0)).toISOString();
 
@@ -137,14 +111,17 @@ export default {
       let eventIndex = this.events.findIndex(x => {
         return x._id == event._id;
       });
-      this.UPDATE_OVERLAY_INDEX({
+
+      let defaultPayload = {
         display: true,
-        overlay: "viewEvent",
-        payload: {
-          ...this.events[eventIndex],
-          event_index: eventIndex
-        }
+        overlay: "viewEvent"
+      };
+
+      let overlayIndexPayload = Object.assign(defaultPayload, {
+        payload: this.events[eventIndex]
       });
+
+      this.UPDATE_OVERLAY_INDEX(overlayIndexPayload);
     }
   }
 };
@@ -206,13 +183,5 @@ export default {
       }
     }
   }
-}
-
-.bar_incidator {
-  border: 1px solid whitesmoke;
-  border-radius: 5px;
-  margin-bottom: 40px;
-  padding: 20px;
-  text-align: center;
 }
 </style>
