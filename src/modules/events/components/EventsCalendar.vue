@@ -113,7 +113,9 @@ export default {
             deleteadble: true,
             notice_period: event?.notice_period,
             created_by: event?.created_by,
-            event_index: i
+            event_index: i,
+            clock_in_code: event?.clock_in_code,
+            clocked_in: event?.clocked_in
           });
         }
       }

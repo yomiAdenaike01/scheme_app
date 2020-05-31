@@ -2,26 +2,32 @@
   <Overlay v-model="display">
     <div class="view_event_container">
       <!-- Approval -->
-      <div class="text_container all_centre">
-        <div v-if="isApproved" class="check_container">
-          <i class="bx bx-check"></i>
+      <div class="header_container text_container all_centre">
+        <!-- Pin code -->
+        <div  class="pins_container">
+          <input
+          v-for="(digit,digitIndex) in event.clock_in_code"
+          :key="digit"
+            v-model="pinCode[digitIndex]"
+            :disabled="isCorrectCode || adminPermission"
+            type="text"
+            :placeholder="adminPermission ? digit : ''"
+            maxlength="1"
+            class="pin"
+          >
+          </div>
+      
+          <fade-transition>
+          <s-button v-if="isCorrectCode" icon="check" class="secondary rounded mini no_cap" @click="clockIn">Pin is correct click to clock in</s-button>
+          </fade-transition>
         </div>
-        <!-- Title -->
-        <h2>{{ event.type.label }}</h2>
+     
       </div>
-      <!-- Qr code -->
-      <div v-if="beforeStart" class="qr_container text_container all_centre">
-        <small class="grey">Scan with our companion app to clock in</small>
-        <qrcode-vue :value="event._id" level="H"></qrcode-vue>
-        <s-button
-          icon="printer"
-          class="mini rounded primary"
-          @click="printQRCode"
-          >Print QR code</s-button
-        >
-      </div>
+
       <!-- Assigned_to -->
       <div v-if="adminPermission" class="text_container all_centre">
+        <h2>{{ event.type.label }}</h2>
+
         <small class="grey">Right click on team member to remove.</small>
       </div>
 
@@ -30,11 +36,14 @@
           v-for="assignee in assigned"
           :key="assignee._id"
           :name="assignee.name"
+          :title="hasClockedIn(assignee) ? 'Clocked in' : 'Not clocked in'"
           :size="70"
-          group
+          :group="assigned.length > 1"
           @click.native="viewTeamMember(assignee)"
           @contextmenu.native="dropTeamMember($event, assignee)"
-        />
+        >
+            <i :class="[`clock_in_indicator bx bx-${hasClockedIn(assignee) ? 'check' : 'x'}`,{clocked_in:hasClockedIn(assignee)}]"></i>
+        </Avatar>
       </div>
       <!-- If no assignees -->
       <p v-else class="grey text_container all_centre">
@@ -154,8 +163,7 @@ import Overlay from "@/components/Overlay";
 import Avatar from "@/components/Avatar";
 import SButton from "@/components/SButton";
 import Form from "@/components/Form";
-import QrcodeVue from "qrcode.vue";
-
+import { FadeTransition } from "vue2-transitions";
 export default {
   name: "ViewEventOverlay",
   components: {
@@ -163,13 +171,15 @@ export default {
     Avatar,
     SButton,
     Form,
-    QrcodeVue
+    FadeTransition
   },
   data() {
     return {
       event: {},
       displayPopover: false,
+      displayEnterPin: false,
       updateKey: "",
+      pinCode:{},
       popovers: {
         event_type: false,
         dates: false
@@ -181,6 +191,17 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
+    isCorrectCode(){
+      let enteredCode = Object.values(this.pinCode);
+      return this.event.clock_in_code == enteredCode.join('')
+    },
+    canClockIn() {
+      // can clock in 30 minutes before the event
+      // is now 30 minutes before the event
+      let timeCapBefore = this.initMoment(new Date()).subtract(30, "minutes");
+      let momentStart = this.initMoment(this.event.start);
+      return momentStart.isBefore(timeCapBefore);
+    },
     propertiesToEdit() {
       return ["assigned_to", "start", "end"];
     },
@@ -283,7 +304,9 @@ export default {
       }
     }
   },
-
+  destroyed(){
+    clearInterval(this.durationInterval);
+  },
   created() {
     this.initEvent();
   },
@@ -292,6 +315,9 @@ export default {
     ...mapActions(["request", "notify"]),
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["UPDATE_EVENT", "DELETE_EVENT"]),
+    hasClockedIn(assginee) {
+      return this.event.clocked_in.findIndex(x=>x._id == assginee._id) > -1;
+    },
     async rejectEvent() {
       try {
         // api payload
@@ -403,6 +429,7 @@ export default {
         JSON.parse(JSON.stringify(this.overlayIndex.viewEvent.payload))
       );
     },
+  
     viewTeamMember(assignee) {
       if (assignee._id != this.userInformation._id && this.adminPermission) {
         this.display = false;
@@ -414,9 +441,7 @@ export default {
         });
       }
     },
-    printQRCode() {
-      window.print();
-    },
+
     async updateEvent() {
       try {
         // Send notififcation to new assignees
@@ -450,6 +475,11 @@ export default {
       } catch (error) {
         return Promise.reject(error);
       }
+    },
+    async clockIn(){
+      // push user to clock in
+      let user = this.userInformation;
+      this.event.clocked_in.push({_id:user._id,name:user.name})
     },
     async handleNewAssignees() {
       try {
@@ -496,10 +526,10 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.text_container {
-  margin: 10px;
-  padding: 10px;
+.header_container{
+  margin:40px 0;
 }
+
 .add_team_member {
   border: $border;
   padding: 10px;
@@ -522,7 +552,6 @@ export default {
 }
 .check_container {
   border-radius: 50%;
-  margin: 20px;
   border: $border;
   font-size: 2.3em;
   color: white;
@@ -530,8 +559,35 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  // background: rgba(var(--success), 0.2);
   border: 1.3px solid rgba(var(--success), 1);
   color: rgba(var(--success), 0.7);
+}
+
+.pins_container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.pin {
+  border-radius: 10px;
+  max-width: 50px;
+  text-align: center;
+  border: 2px solid rgb(220, 220, 220);
+  padding: 10px;
+  font-size: 2em;
+  margin: 0 5px;
+}
+.clock_in_indicator{
+  position: absolute;
+  bottom:-3px;
+  right:-10px;
+  font-size: .9em;
+  background:rgba(var(--danger), 1);
+  
+  &.clocked_in{
+  background:rgba(var(--success), 1);
+  }
+  border-radius: 50%;
+  border:3px  solid white;
 }
 </style>

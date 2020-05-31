@@ -56,12 +56,11 @@
           </div>
         </collapse-transition>
 
-        <!-- QR Code -->
-        <div v-if="newEventID.length > 0" class="qr_container">
-          <qrcode-vue :value="newEventID" level="H"></qrcode-vue>
-
+        <!-- Pin Code -->
+        <div v-if="pinCode.length > 0" class="qr_container">
+          <h1>{{ pinCode }}</h1>
           <p class="grey">
-            Scan this code with the companion app to clock in.
+            This code will need to be entered, for a team member to login.
           </p>
         </div>
       </div>
@@ -77,7 +76,6 @@
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 import { CollapseTransition } from "vue2-transitions";
-import QrcodeVue from "qrcode.vue";
 import Menu from "@/components/Menu";
 import Overlay from "@/components/Overlay";
 import genID from "@/mixins/genID";
@@ -95,8 +93,7 @@ export default {
     Overlay,
     UpdateGroups,
     CollapseTransition,
-    EventTemplate,
-    QrcodeVue
+    EventTemplate
   },
   mixins: [genID, cleanObject],
   props: {
@@ -115,7 +112,7 @@ export default {
       formData: {},
       searchTemplates: "",
       displayTemplates: false,
-      newEventID: "",
+      pinCode: "",
       populated: false
     };
   },
@@ -372,12 +369,12 @@ export default {
       }
     },
     // Create notification for assigned users
-    async handleNotify() {
+    async handleNotify(id) {
       try {
         this.notify({
           for: this.formData.assigned_to,
           message: `You have been assigned to a ${this.localData.type.label} event`,
-          payload: { event_id: this.newEventID },
+          payload: { event_id: id },
           sent_from: this.userInformation._id,
           type: "event"
         });
@@ -403,11 +400,11 @@ export default {
 
         // Create the qr code the event
         if (apiResponse) {
-          this.newEventID = apiResponse._id;
+          this.pinCode = apiResponse.clock_in_code;
           this.UPDATE_EVENT({ payload: apiResponse });
         }
         // Create notification for the assignees
-        this.handleNotify();
+        this.handleNotify(apiResponse._id);
         // Create template
         await this.createTemplate(localPayload, apiPayload);
       } catch (e) {
@@ -541,14 +538,13 @@ export default {
       try {
         if (this.adminPermission) {
           await this.createEvent();
-          this.closeOverlay();
         } else {
           await this.createRequest();
-          this.closeOverlay();
         }
       } catch (error) {
         return Promise.reject(error);
       }
+      // this.closeOverlay();
     },
     // Delete template
     async deleteTemplate({ _id, index }) {
