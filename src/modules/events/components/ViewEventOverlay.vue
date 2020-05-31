@@ -4,24 +4,36 @@
       <!-- Approval -->
       <div class="header_container text_container all_centre">
         <!-- Pin code -->
-        <div  v-if="currentUserIndex > -1 || adminPermission" class="pins_container">
+        <p>{{ pinCodeText }}</p>
+        <div
+          v-if="currentUserIndex > -1 || adminPermission"
+          class="pins_container"
+        >
           <input
-          v-for="(digit,digitIndex) in event.clock_in_code"
-          :key="digit"
+            v-for="(digit, digitIndex) in event.clock_in_code"
+            :key="
+              `${Math.random()
+                .toString(16)
+                .slice(2)}${digitIndex}${digit}`
+            "
             v-model="pinCode[digitIndex]"
-            :disabled="isCorrectCode || adminPermission"
+            :disabled="isCorrectCode || adminPermission || hasClockedIn"
             type="text"
-            :placeholder="adminPermission ? digit : ''"
+            :placeholder="adminPermission || hasClockedIn ? digit : ''"
             maxlength="1"
             class="pin"
-          >
-          </div>
-      
-          <fade-transition>
-          <s-button v-if="isCorrectCode" icon="check" class="secondary rounded mini no_cap" @click="clockIn">Pin is correct click to clock in</s-button>
-          </fade-transition>
+          />
         </div>
-     
+
+        <fade-transition>
+          <s-button
+            v-if="isCorrectCode"
+            icon="check"
+            class="secondary rounded mini no_cap"
+            @click="clockIn"
+            >Pin is correct click to clock in</s-button
+          >
+        </fade-transition>
       </div>
 
       <!-- Assigned_to -->
@@ -42,7 +54,14 @@
           @click.native="viewTeamMember(assignee)"
           @contextmenu.native="dropTeamMember($event, assignee)"
         >
-            <i :class="[`clock_in_indicator bx bx-${hasClockedIn(assignee) ? 'check' : 'x'}`,{clocked_in:hasClockedIn(assignee)}]"></i>
+          <i
+            :class="[
+              `clock_in_indicator bx bx-${
+                hasClockedIn(assignee) ? 'check' : 'x'
+              }`,
+              { clocked_in: hasClockedIn(assignee) }
+            ]"
+          ></i>
         </Avatar>
       </div>
       <!-- If no assignees -->
@@ -110,7 +129,7 @@
               v-if="updateKey == 'event_type'"
               class="s_input"
               :value="event.type._id"
-              @input="updateEventType"
+              @input="updateEventDetailsType"
             >
               <option
                 v-for="option in clientInformation.event_groups"
@@ -122,7 +141,7 @@
             <!-- date picker -->
             <el-date-picker
               v-if="updateKey == 'dates'"
-              :value="[event.start, event.end]"
+              :value="[event.start_date, event.end_date]"
               type="daterange"
               range-separator="To"
               start-placeholder="Start date"
@@ -138,7 +157,7 @@
         <s-button
           v-if="adminPermission"
           class="secondary expanded"
-          @click="updateEvent"
+          @click="updateEventDetails"
         >
           <p>Save changes</p>
         </s-button>
@@ -164,7 +183,7 @@ import Avatar from "@/components/Avatar";
 import SButton from "@/components/SButton";
 import Form from "@/components/Form";
 import { FadeTransition } from "vue2-transitions";
-import cleanObject from "@/mixins/cleanObject"
+import cleanObject from "@/mixins/cleanObject";
 export default {
   name: "ViewEventOverlay",
   components: {
@@ -174,14 +193,14 @@ export default {
     Form,
     FadeTransition
   },
-  mixins:[cleanObject],
+  mixins: [cleanObject],
   data() {
     return {
       event: {},
       displayPopover: false,
       displayEnterPin: false,
       updateKey: "",
-      pinCode:{},
+      pinCode: {},
       popovers: {
         event_type: false,
         dates: false
@@ -193,10 +212,18 @@ export default {
     ...mapState(["userInformation", "overlayIndex", "clientInformation"]),
     ...mapGetters(["adminPermission"]),
     ...mapGetters("Team", ["getFilteredTeam"]),
- 
-    isCorrectCode(){
+    pinCodeText() {
+      let message =
+        "You need to enter the code below to clock in for your event";
+      if (this.adminPermission) {
+        message = "This is the pin code to clock in for the event";
+      }
+      return message;
+    },
+
+    isCorrectCode() {
       let enteredCode = Object.values(this.pinCode);
-      return this.event.clock_in_code == enteredCode.join('')
+      return this.event.clock_in_code == enteredCode.join("");
     },
     canClockIn() {
       // can clock in 30 minutes before the event
@@ -205,45 +232,49 @@ export default {
       let momentStart = this.initMoment(this.event.start);
       return momentStart.isBefore(timeCapBefore);
     },
-    propertiesToEdit() {
-      let clearedProperties = this.cleanObject(["assigned_to", "start", "end",'type'],this.event,true);
-  
-     let dateFunc = (val) => {
-return new Date(val).toISOString();
-}
-     let xref = {
-       assigned_to:()=>{
-         return this.depopulatedAssigned
-       },
-       start:dateFunc,
-       end:dateFunc,
-       type:(val)=>{
-         return val._id
-       }
-     }
-     for(let property in xref){
-       clearedProperties[property] = xref[property](this.event[property])
-     }
-     
-     return clearedProperties;
+    payloadObject() {
+      // Clean the object and only include the properties
+      let properties = this.cleanObject(
+        ["assigned_to", "start_date", "end_date", "type"],
+        this.event,
+        true
+      );
+      properties.start_date = new Date(properties.start_date).toISOString();
+      properties.end_date = new Date(properties.end_date).toISOString();
+      return properties;
     },
     beforeStart() {
-      return this.initMoment(new Date()).isBefore(this.event.start);
+      return this.initMoment(new Date()).isBefore(this.event.start_date);
     },
     updateApiPayload() {
-      let update = {
-        assigned_to: this.depopulatedAssigned,
-        type: this.event.type._id,
-        start_date: new Date(this.event.start).toISOString(),
-        end_date: new Date(this.event.end).toISOString()
-      };
-
-      return {
+      // with the cleared properties create the api version
+      let clearedProperties = {
+        data: { event_id: this.event._id, update: {} },
         url: "events/update",
-        method: "PUT",
-        data: update
+        method: "PUT"
       };
+      let dateFunc = val => {
+        return new Date(val).toISOString();
+      };
+      let xref = {
+        assigned_to: () => {
+          return this.depopulatedAssigned;
+        },
+        start_date: dateFunc,
+        end_date: dateFunc,
+        type: val => {
+          return val._id;
+        }
+      };
+      for (let property in this.payloadObject) {
+        clearedProperties.data.update[property] = xref[property](
+          this.event[property]
+        );
+      }
+
+      return clearedProperties;
     },
+
     depopulatedAssigned() {
       return this.assigned.map(e => {
         return e._id;
@@ -268,8 +299,18 @@ return new Date(val).toISOString();
       // Can also reject is the start date hasnt already
       let canReject = this.userInformation.user_group.enable_event_rejection;
       let assigned = this.currentUserIndex > -1;
+      let hasClockedIn =
+        this.event.clocked_in.findIndex(
+          x => x._id == this.userInformation._id
+        ) > -1;
 
-      return canReject && assigned && this.beforeStart && !this.adminPermission;
+      return (
+        canReject &&
+        assigned &&
+        this.beforeStart &&
+        !this.adminPermission &&
+        !hasClockedIn
+      );
     },
 
     enableUpdates() {
@@ -284,10 +325,10 @@ return new Date(val).toISOString();
     informationXref() {
       return {
         dates: {
-          start: val => {
+          start_date: val => {
             return this.formatDate(val);
           },
-          end: val => {
+          end_date: val => {
             return this.formatDate(val);
           }
         },
@@ -326,7 +367,7 @@ return new Date(val).toISOString();
       }
     }
   },
-  destroyed(){
+  destroyed() {
     clearInterval(this.durationInterval);
   },
   created() {
@@ -338,7 +379,7 @@ return new Date(val).toISOString();
     ...mapMutations(["UPDATE_OVERLAY_INDEX"]),
     ...mapMutations("Events", ["UPDATE_EVENT", "DELETE_EVENT"]),
     hasClockedIn(assginee) {
-      return this.event.clocked_in.findIndex(x=>x._id == assginee._id) > -1;
+      return this.event.clocked_in.findIndex(x => x._id == assginee._id) > -1;
     },
     async rejectEvent() {
       try {
@@ -365,6 +406,8 @@ return new Date(val).toISOString();
       }
     },
     updateKeyValue(key) {
+      // update what field is active to be updated
+      // Will display the input fields when active
       if (this.enableUpdates.indexOf(key) > -1) {
         if (this.updateKey == key) {
           this.updateKey = "";
@@ -374,11 +417,13 @@ return new Date(val).toISOString();
       }
     },
     updateDate(e) {
-      this.event.start = e[0];
-      this.event.end = e[1];
+      // Update date in the event
+      this.event.start_date = e[0];
+      this.event.end_date = e[1];
       this.updateKey = "";
     },
-    updateEventType(e) {
+    updateEventDetailsType(e) {
+      // When eht event type is updated it will display the label instead on the overlay
       let eventType = e.target.value;
       this.event.type = this.clientInformation.event_groups.find(x => {
         return x._id == eventType;
@@ -390,6 +435,7 @@ return new Date(val).toISOString();
     },
 
     isAssigned(member) {
+      // Check that user is assigned to event (mapping avatars)
       return this.assigned.findIndex(x => {
         return x._id == member._id;
       });
@@ -426,6 +472,7 @@ return new Date(val).toISOString();
       }
     },
     dropTeamMember(e, member) {
+      // Remove team member if team member is last team member ask to delete event
       e.preventDefault();
       if (this.adminPermission) {
         if (this.assigned.length - 1 > 0) {
@@ -446,12 +493,10 @@ return new Date(val).toISOString();
       this.displayPopover = false;
     },
     initEvent() {
-      this.event = Object.assign(
-        {},
-        JSON.parse(JSON.stringify(this.overlayIndex.viewEvent.payload))
-      );
+      // parse and strinify because mutating store directly (bug)
+      this.event = Object.assign({}, this.overlayIndex.viewEvent.payload);
     },
-  
+
     viewTeamMember(assignee) {
       if (assignee._id != this.userInformation._id && this.adminPermission) {
         this.display = false;
@@ -464,22 +509,15 @@ return new Date(val).toISOString();
       }
     },
 
-    async updateEvent() {
+    async updateEventDetails() {
       try {
         // Send notififcation to new assignees
         this.handleNewAssignees();
-        let updateEventPayload = {};
-        // check what has changed and whether it is in the scope of properties that are allowed to be changed
-        for (let property in this.viewEvent.payload) {
-          if (this.propertiesToEdit.indexOf(property) > -1) {
-            if (this.viewEvent.payload[property] != this.event[property]) {
-              updateEventPayload[property] = this.event[property];
-            }
-          }
-        }
-        return console.log(updateEventPayload);
-
-        this.UPDATE_EVENT(updateEventPayload);
+        let localUpdatePayload = {
+          index: this.index,
+          payload: this.payloadObject
+        };
+        this.UPDATE_EVENT(localUpdatePayload);
         await this.request(this.updateApiPayload);
       } catch (error) {
         console.error(error);
@@ -498,10 +536,34 @@ return new Date(val).toISOString();
         return Promise.reject(error);
       }
     },
-    async clockIn(){
-      // push user to clock in
-      let user = this.userInformation;
-      this.event.clocked_in.push({_id:user._id,name:user.name})
+    async clockIn() {
+      try {
+        // push user to clock in
+        let user = this.userInformation;
+        this.event.clocked_in.push({ _id: user._id, name: user.name });
+        // mutation
+        this.UPDATE_EVENT({
+          index: this.index,
+          payload: {
+            clocked_in: this.event.clocked_in
+          }
+        });
+        // create notification
+        this.createNotification(
+          `${this.userInformation.name} has clocked into an event`,
+          [this.event.created_by._id]
+        );
+        await this.request({
+          url: "events/clockin",
+          data: {
+            event_id: this.event._id,
+            user_id: this.userInformation._id
+          },
+          method: "PUT"
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
     async handleNewAssignees() {
       try {
@@ -510,25 +572,27 @@ return new Date(val).toISOString();
         // Find out who is new
         let origAssigned = this.overlayIndex.viewEvent.payload.assigned_to;
         // if they are not in the original assigned then they are new
-        for (let i = 0, len = this.assigned.length; i < len; i++) {
-          let assignee = this.assigned[i];
-          let assigneeID = assignee._id;
+        if (this.assigned.length > origAssigned.length) {
+          for (let i = 0, len = this.assigned.length; i < len; i++) {
+            let assignee = this.assigned[i];
+            let assigneeID = assignee._id;
 
-          for (let j = 0, jlen = origAssigned.length; j < jlen; j++) {
-            let origAssignee = origAssigned[j];
-            let origAssigneeID = origAssignee._id;
+            for (let j = 0, jlen = origAssigned.length; j < jlen; j++) {
+              let origAssignee = origAssigned[j];
+              let origAssigneeID = origAssignee._id;
 
-            if (origAssigneeID != assigneeID) {
-              newAssignees.push(assigneeID);
+              if (origAssigneeID != assigneeID) {
+                newAssignees.push(assigneeID);
+              }
             }
           }
-        }
-        // Create notification for each person
-        if (newAssignees.length > 0) {
-          await this.createNotification(
-            "You have been assigned to a new event",
-            newAssignees
-          );
+          // Create notification for each person
+          if (newAssignees.length > 0) {
+            await this.createNotification(
+              "You have been assigned to a new event",
+              newAssignees
+            );
+          }
         }
       } catch (error) {
         console.error(error);
@@ -547,9 +611,6 @@ return new Date(val).toISOString();
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.header_container{
-  margin:40px 0;
 }
 
 .add_team_member {
@@ -599,17 +660,17 @@ return new Date(val).toISOString();
   font-size: 2em;
   margin: 0 5px;
 }
-.clock_in_indicator{
+.clock_in_indicator {
   position: absolute;
-  bottom:-3px;
-  right:-10px;
-  font-size: .9em;
-  background:rgba(var(--danger), 1);
-  
-  &.clocked_in{
-  background:rgba(var(--success), 1);
+  bottom: -3px;
+  right: -10px;
+  font-size: 0.9em;
+  background: rgba(var(--danger), 1);
+
+  &.clocked_in {
+    background: rgba(var(--success), 1);
   }
   border-radius: 50%;
-  border:3px  solid white;
+  border: 3px solid white;
 }
 </style>

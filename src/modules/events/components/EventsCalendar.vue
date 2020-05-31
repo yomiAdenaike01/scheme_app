@@ -114,8 +114,7 @@ export default {
             notice_period: event?.notice_period,
             created_by: event?.created_by,
             event_index: i,
-            clock_in_code: event?.clock_in_code,
-            clocked_in: event?.clocked_in
+            ...event
           });
         }
       }
@@ -135,10 +134,16 @@ export default {
     },
 
     viewEvent(event) {
+      let eventIndex = this.events.findIndex(x => {
+        return x._id == event._id;
+      });
       this.UPDATE_OVERLAY_INDEX({
         display: true,
         overlay: "viewEvent",
-        payload: event
+        payload: {
+          ...this.events[eventIndex],
+          event_index: eventIndex
+        }
       });
     }
   }
