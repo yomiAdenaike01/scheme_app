@@ -46,7 +46,7 @@
     "eslint": "^5.16.0",
     "eslint-formatter-pretty": "^2.1.1",
     "eslint-plugin-vue": "^5.2.3",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2",
     "vue-cli-plugin-fontawesome": "~0.2.0",
