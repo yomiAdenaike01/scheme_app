@@ -17,7 +17,7 @@
     "core-js": "^3.6.4",
     "element-ui": "^2.4.5",
     "material-icons": "^0.2.3",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "ua-parser-js": "^0.7.21",
     "uuid-by-string": "^3.0.2",
     "v-click-outside": "^3.0.1",
